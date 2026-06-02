@@ -11,7 +11,19 @@ export default function App() {
   const { theme } = useTheme()
   const [timedOut, setTimedOut] = useState(false)
   const [redirecting, setRedirecting] = useState(false)
-  const [didDisconnect, setDidDisconnect] = useState(false)
+  const [forceLogout, setForceLogout] = useState(false)
+
+  // Check if coming back from a disconnect
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('disconnected') === '1') {
+      // Clean URL
+      window.history.replaceState({}, '', '/')
+      // Sign out of Dynamic
+      setForceLogout(true)
+      handleLogOut().catch(() => {})
+    }
+  }, [])
 
   useEffect(() => {
     const t = setTimeout(() => setTimedOut(true), 5000)
@@ -19,19 +31,14 @@ export default function App() {
   }, [])
 
   useEffect(() => {
+    if (forceLogout) return
     const connected = isAuthenticated || !!primaryWallet
     if (!connected) return
-    if (didDisconnect) return
 
-    // Get address from any available source
-    const addr = wagmiAddress 
-      || primaryWallet?.address 
-      || localStorage.getItem('nan_dynamic_address')
-
+    const addr = wagmiAddress || primaryWallet?.address
     if (addr) {
       doRedirect(addr)
     } else {
-      // Wait for embedded wallet to be created (social/email login)
       const attempts = [500, 1000, 2000, 3000]
       attempts.forEach(delay => {
         setTimeout(() => {
@@ -40,7 +47,7 @@ export default function App() {
         }, delay)
       })
     }
-  }, [isAuthenticated, primaryWallet, wagmiAddress])
+  }, [isAuthenticated, primaryWallet, wagmiAddress, forceLogout])
 
   function doRedirect(addr) {
     if (redirecting) return
@@ -51,28 +58,28 @@ export default function App() {
     window.location.replace('/legacy/app.html')
   }
 
-  function signOut() {
-    setDidDisconnect(true)
-    localStorage.removeItem('nan_dynamic_address')
-    localStorage.removeItem('nan_dynamic_token')
-    localStorage.removeItem('nan_dynamic_email')
-    handleLogOut()
-    setTimeout(() => window.location.reload(), 500)
-  }
-
   if (!sdkHasLoaded && !timedOut) {
-    return <div style={{minHeight:'100vh', background:'#111'}} />
+    return <div style={{minHeight:'100vh', background:'#000'}} />
   }
 
-  if (didDisconnect) return <Landing />
+  // Force show landing after disconnect
+  if (forceLogout) return <Landing />
 
   if ((isAuthenticated || primaryWallet) || redirecting) {
     return (
-      <div style={{minHeight:'100vh',background:'#111',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:16,fontFamily:'Inter,sans-serif'}}>
-        <div style={{color:'#7000ff',fontSize:'2.5rem'}}>∞</div>
-        <div style={{color:'#fff',fontSize:'1rem',fontWeight:600}}>Loading NAN Wallet...</div>
-        <div style={{color:'#555',fontSize:'.8rem'}}>Setting up your wallet</div>
-        <button onClick={signOut} style={{marginTop:24,color:'#555',background:'none',border:'1px solid #333',borderRadius:8,cursor:'pointer',fontSize:'.8rem',padding:'6px 14px'}}>
+      <div style={{minHeight:'100vh',background:'#000',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:16,fontFamily:'Inter,sans-serif'}}>
+        <svg width="60" height="30" viewBox="0 0 50 20" fill="none">
+          <path d="M16,0 C16,-8 0,-8 0,0 C0,8 16,8 25,0 C34,-8 50,-8 50,0 C50,8 34,8 25,0 Z"
+            fill="none" stroke="#ffffff" strokeWidth="3" strokeLinecap="round"/>
+        </svg>
+        <div style={{color:'#fff',fontSize:'1rem',fontWeight:600}}>Loading NAN...</div>
+        <button onClick={() => {
+          localStorage.removeItem('nan_dynamic_address')
+          localStorage.removeItem('nan_dynamic_token')
+          localStorage.removeItem('nan_dynamic_email')
+          handleLogOut()
+          setForceLogout(true)
+        }} style={{marginTop:24,color:'#555',background:'none',border:'1px solid #222',borderRadius:8,cursor:'pointer',fontSize:'.8rem',padding:'6px 14px',color:'#666'}}>
           Sign out
         </button>
       </div>

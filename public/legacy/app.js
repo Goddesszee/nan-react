@@ -1070,7 +1070,7 @@ function disconnect(){
   sessionStorage.removeItem('nan_from_landing');
   localStorage.removeItem('nan_metamask_was_connected');
   toast('Disconnected','info',1500);
-  setTimeout(()=>{ window.location.replace('/'); }, 800);
+  setTimeout(()=>{ window.location.replace('/?disconnected=1'); }, 800);
 }
 
 // ═══════════════════════════════════════════
