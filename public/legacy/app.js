@@ -1627,9 +1627,11 @@ function flipSwap(){
   document.getElementById('swapToBal').textContent=swapFlipped?parseFloat(usdcBal).toFixed(2):parseFloat(eurcBal).toFixed(2);
   updateSwapRateDisplay();
 }
-﻿async function doSwap(){
+async function doSwap(){
   if(!userAddr){toast('Connect wallet first','error');return;}
   if(!onArcNetwork&&!isCircleWallet&&wp){toast('Switch to Arc Testnet first','error');return;}
+  // Debug: log wallet state
+  console.log('doSwap state:', {userAddr, isCircleWallet, circleWalletId, wp:!!wp, signer:!!signer, onArcNetwork});
   const fromAmt=parseFloat(document.getElementById('swapFrom').value);
   if(!fromAmt||fromAmt<=0){toast('Enter an amount','error');return;}
   const isUSDCtoEURC=!swapFlipped;
