@@ -1,8 +1,9 @@
 // Dynamic wallet bootstrap — runs before anything else
-var userAddr = localStorage.getItem('nan_dynamic_address') || null;
-var userEmail = localStorage.getItem('nan_dynamic_email') || null;
-var isCircleWallet = false;
-var onArcNetwork = true;
+// Note: userAddr etc are declared later in app.js, we just pre-load from localStorage
+window._dynamicBootstrap = {
+  addr: localStorage.getItem('nan_dynamic_address') || null,
+  email: localStorage.getItem('nan_dynamic_email') || null,
+};
 
 // ═══════════════════════════════════════════
 // CONFIG — Arc Testnet

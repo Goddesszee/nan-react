@@ -130,27 +130,32 @@ function updateHomeScreen() {
   }
 }
 
-// ── Hook into existing updateBalDisplay so home also updates ──
-const _origUpdateBalDisplay = window.updateBalDisplay;
-window.updateBalDisplay = function () {
-  if (_origUpdateBalDisplay) _origUpdateBalDisplay();
-  updateHomeScreen();
-};
+// ── Hook into updateBalDisplay after app.js loads ──
+window.addEventListener('load', function() {
+  const _origUpdateBalDisplay = window.updateBalDisplay;
+  window.updateBalDisplay = function () {
+    if (_origUpdateBalDisplay) _origUpdateBalDisplay();
+    updateHomeScreen();
+  };
+});
 
-// ── On connected — show home instead of send ──
-const _origOnConnected = window.onConnected;
-window.onConnected = async function (isEmail, isDev) {
-  await _origOnConnected(isEmail, isDev);
-  document.querySelectorAll('.page:not(.page-land)').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  const homePage = document.getElementById('page-home');
-  if (homePage) homePage.classList.add('active');
-  const homeNav = document.getElementById('nav-home');
-  if (homeNav) homeNav.classList.add('active');
-  updateHomeScreen();
-  // Show desktop sidebar after connect
-  updateDesktopNav();
-};
+// ── On connected — wrap after app.js loads ──
+window.addEventListener('load', function() {
+  const _origOnConnected = window.onConnected;
+  if (typeof _origOnConnected === 'function') {
+    window.onConnected = async function (isEmail, isDev) {
+      await _origOnConnected(isEmail, isDev);
+      document.querySelectorAll('.page:not(.page-land)').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      const homePage = document.getElementById('page-home');
+      if (homePage) homePage.classList.add('active');
+      const homeNav = document.getElementById('nav-home');
+      if (homeNav) homeNav.classList.add('active');
+      updateHomeScreen();
+      updateDesktopNav();
+    };
+  }
+});
 
 // ── Desktop nav visibility ──
 function updateDesktopNav() {
