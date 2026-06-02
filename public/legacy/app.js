@@ -114,7 +114,7 @@ async function getDynamicSigner() {
   // Already have signer
   if (window.signer) return window.signer;
   
-  // Try all injected providers
+  // Try all injected providers — Dynamic injects into window.ethereum for embedded wallets
   var injected = window.rabby 
     || window.ethereum 
     || (window.evmproviders && Object.values(window.evmproviders)[0])
@@ -124,7 +124,12 @@ async function getDynamicSigner() {
   
   if (injected) {
     try {
-      await injected.request({ method: 'eth_requestAccounts' });
+      // For Dynamic embedded wallets, accounts may already be available without prompting
+      var accounts = [];
+      try { accounts = await injected.request({ method: 'eth_accounts' }); } catch(e2) {}
+      if (!accounts || !accounts.length) {
+        accounts = await injected.request({ method: 'eth_requestAccounts' });
+      }
       var prov = new ethers.BrowserProvider(injected);
       var s = await prov.getSigner();
       window.signer = s;

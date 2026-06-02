@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head><script>
+// Apply theme IMMEDIATELY — before any CSS to prevent flash
+(function(){var t=localStorage.getItem('nan_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();
+</script>
+<script>
 // Dynamic bridge - set userAddr IMMEDIATELY before any other script runs
 (function() {
   var addr = localStorage.getItem('nan_dynamic_address');
