@@ -109,6 +109,37 @@ function getArcProvider(){
     ensAddress: null,
   });
 }
+// Dynamic wallet signer helper — gets signer fresh each time
+async function getDynamicSigner() {
+  // Already have signer
+  if (window.signer) return window.signer;
+  
+  // Try all injected providers
+  var injected = window.rabby 
+    || window.ethereum 
+    || (window.evmproviders && Object.values(window.evmproviders)[0])
+    || window.coinbaseWalletExtension
+    || window.trustwallet
+    || null;
+  
+  if (injected) {
+    try {
+      await injected.request({ method: 'eth_requestAccounts' });
+      var prov = new ethers.BrowserProvider(injected);
+      var s = await prov.getSigner();
+      window.signer = s;
+      window.wp = injected;
+      window.provider = prov;
+      window.onArcNetwork = true;
+      return s;
+    } catch(e) {
+      console.error('getDynamicSigner error:', e);
+    }
+  }
+  return null;
+}
+
+
 // Arc gas helper — EVM gwei units, settled in USDC not ETH
 function arcGasOpts(){
   return {
@@ -1303,8 +1334,10 @@ async function doSend(){
     return;
   }
 
-  // ── MetaMask path ──
-  if(!signer||!onArcNetwork){toast('Connect wallet & switch to Arc Testnet','error');return;}
+  // ── MetaMask / Dynamic wallet path ──
+  // Get signer fresh in case it wasn't set at page load
+  if (!signer) { signer = await getDynamicSigner(); }
+  if(!signer){toast('Connect wallet & switch to Arc Testnet','error');return;}
   btn.innerHTML='<span class="spinner"></span>Waiting for wallet…';btn.disabled=true;
   const tokenAddr=sendToken==='USDC'?USDC_ADDR:EURC_ADDR;
   const decimals=sendToken==='USDC'?USDC_DECIMALS:EURC_DECIMALS;
@@ -1689,6 +1722,8 @@ async function doSwap(){
     }
   }
   try{
+    // Get signer fresh if not set
+    if (!signer) { signer = await getDynamicSigner(); }
     if(signer){
       const swapContract=new ethers.Contract(SWAP_CONTRACT,SWAP_ABI,signer);
       const tokenAddr=isUSDCtoEURC?USDC_ADDR:EURC_ADDR;
