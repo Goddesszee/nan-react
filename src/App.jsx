@@ -16,34 +16,42 @@ export default function App() {
     return () => clearTimeout(t)
   }, [])
 
-  // Handle disconnect param FIRST — clear everything and show landing
+  // Disconnect param — wipe everything, show landing
   const params = new URLSearchParams(window.location.search)
   const isDisconnecting = params.get('disconnected') === '1'
 
   useEffect(() => {
     if (!isDisconnecting) return
-    // Clean URL and clear all storage
     window.history.replaceState({}, '', '/')
     localStorage.removeItem('nan_dynamic_address')
     localStorage.removeItem('nan_dynamic_token')
     localStorage.removeItem('nan_dynamic_email')
     sessionStorage.removeItem('nan_from_landing')
-    // Best-effort logout — don't block on it
     try { handleLogOut().catch(() => {}) } catch(e) {}
   }, [isDisconnecting])
 
+  // Redirect when connected — handles BOTH fresh login AND returning sessions
   useEffect(() => {
     if (isDisconnecting) return
     if (didRedirect.current) return
-    
-    const storedAddr = localStorage.getItem('nan_dynamic_address')
-    if (!storedAddr) return  // no stored session, stay on landing
 
     const connected = isAuthenticated || !!primaryWallet
-    if (!connected) return  // SDK not ready yet
+    if (!connected) return
 
-    const addr = wagmiAddress || primaryWallet?.address || storedAddr
-    if (addr) doRedirect(addr)
+    const addr = wagmiAddress || primaryWallet?.address
+    if (addr) {
+      doRedirect(addr)
+    } else {
+      // Address might arrive slightly later (wagmi sync delay)
+      const retries = [300, 700, 1500, 3000]
+      retries.forEach(delay => {
+        setTimeout(() => {
+          if (didRedirect.current) return
+          const a = wagmiAddress || primaryWallet?.address
+          if (a) doRedirect(a)
+        }, delay)
+      })
+    }
   }, [isAuthenticated, primaryWallet, wagmiAddress, isDisconnecting])
 
   function doRedirect(addr) {
@@ -56,17 +64,15 @@ export default function App() {
     window.location.replace('/legacy/app.html')
   }
 
-  // Disconnecting — show landing immediately
-  if (isDisconnecting) {
-    return <Landing />
-  }
+  // Show landing while disconnecting
+  if (isDisconnecting) return <Landing />
 
-  // SDK still loading
+  // Wait for SDK (max 5s)
   if (!sdkHasLoaded && !timedOut) {
     return <div style={{minHeight:'100vh', background:'#000'}} />
   }
 
-  // Redirecting to legacy app
+  // Redirecting loader
   if (redirecting) {
     return (
       <div style={{minHeight:'100vh',background:'#000',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:16,fontFamily:'Inter,sans-serif'}}>
@@ -89,6 +95,5 @@ export default function App() {
     )
   }
 
-  // Not connected
   return <Landing />
 }
