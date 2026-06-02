@@ -691,7 +691,8 @@ function detectWallet(){
   return window.ethereum||window.rabby||null;
 }
 async function checkNetwork(){
-  if(!wp)return false;
+  // If using Dynamic wallet (no injected provider), assume Arc Testnet
+  if(!wp){ onArcNetwork=true; return true; }
   try{
     const hex=await wp.request({method:'eth_chainId'});
     const chainId=parseInt(hex,16);
@@ -1628,7 +1629,7 @@ function flipSwap(){
 }
 ﻿async function doSwap(){
   if(!userAddr){toast('Connect wallet first','error');return;}
-  if(!onArcNetwork&&!isCircleWallet){toast('Switch to Arc Testnet first','error');return;}
+  if(!onArcNetwork&&!isCircleWallet&&wp){toast('Switch to Arc Testnet first','error');return;}
   const fromAmt=parseFloat(document.getElementById('swapFrom').value);
   if(!fromAmt||fromAmt<=0){toast('Enter an amount','error');return;}
   const isUSDCtoEURC=!swapFlipped;
@@ -1875,7 +1876,7 @@ async function doBridge(){
   }
   return;
 }if(!signer){toast('Connect MetaMask to use the bridge','error');return;}
-  if(!onArcNetwork&&!isCircleWallet){toast('Switch to Arc Testnet first','error');return;}
+  if(!onArcNetwork&&!isCircleWallet&&wp){toast('Switch to Arc Testnet first','error');return;}
   if(!destAddr||!ethers.isAddress(destAddr)){toast('Enter a valid destination address','error');return;}
   if(!amt||amt<=0){toast('Enter an amount','error');return;}
   await refreshBalances();
