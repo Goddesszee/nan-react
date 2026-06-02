@@ -302,7 +302,7 @@ export function Landing() {
             <span className="l-h1-purple"><TypewriterCycle /></span>
           </h1>
           <p className="l-sub l-fade-in" style={{ animationDelay: '0.45s' }}>
-            The complete stablecoin wallet built for Arc. Send and receive USDC and EURC instantly. Swap at live rates. Bridge cross-chain with Circle CCTP V2. Earn 4.80% APY. Zero gas fees.
+            The complete stablecoin wallet on Arc. Send, swap, bridge and earn with USDC and EURC. Powered by Circle. Zero gas fees.
           </p>
           <div className="l-cta-row l-fade-in" style={{ animationDelay: '0.6s' }}>
             <button className="btn-primary" style={{ padding: '13px 32px', fontSize: '1rem' }}
