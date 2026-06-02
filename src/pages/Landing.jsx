@@ -4,17 +4,17 @@ import { NanLogo } from '../components/NanLogo'
 import { useTheme } from '../hooks/useTheme'
 
 const features = [
-  { icon: '↑', title: 'Send', desc: 'Send USDC & EURC instantly to any address on Arc.' },
-  { icon: '⇄', title: 'Swap', desc: 'Swap between USDC and EURC at live market rates.' },
-  { icon: '⊞', title: 'Bridge', desc: 'Move stablecoins cross-chain via Circle CCTP V2.' },
-  { icon: '📈', title: 'Earn', desc: '4.80% APY on your USDC. Withdraw anytime.' },
+  { icon: '↑', title: 'Send', desc: 'Transfer USDC and EURC to any Arc address in under a second. Zero gas fees. Settled on-chain instantly.' },
+  { icon: '⇄', title: 'Swap', desc: 'Exchange between USDC and EURC at live market rates. No slippage surprises. Always the best on-chain price.' },
+  { icon: '⊞', title: 'Bridge', desc: 'Move stablecoins between chains using Circle CCTP V2. Native burns and mints. No wrapped tokens, no risk.' },
+  { icon: '📈', title: 'Earn', desc: 'Put idle stablecoins to work at 4.80% APY. Fully liquid. Withdraw your funds at any time with no lockup.' },
 ]
 
 const stats = [
-  { value: '$0',     label: 'Gas fees' },
-  { value: '30s',    label: 'To onboard' },
+  { value: '$0',     label: 'Gas fees ever' },
+  { value: '<1s',    label: 'Settlement time' },
   { value: '4.80%',  label: 'APY on USDC' },
-  { value: 'CCTP V2',label: 'Bridge tech' },
+  { value: 'CCTP V2',label: 'Bridge protocol' },
 ]
 
 const CYCLE_WORDS = ['Borders.', 'Limits.', 'Barriers.', 'Borders.']
@@ -302,7 +302,7 @@ export function Landing() {
             <span className="l-h1-purple"><TypewriterCycle /></span>
           </h1>
           <p className="l-sub l-fade-in" style={{ animationDelay: '0.45s' }}>
-            Send, swap, and bridge USDC & EURC on Arc — Circle's stablecoin-native blockchain. No gas fees. No borders. For everyone, everywhere.
+            The complete stablecoin wallet built for Arc. Send and receive USDC and EURC instantly. Swap at live rates. Bridge cross-chain with Circle CCTP V2. Earn 4.80% APY. Zero gas fees. Non-custodial.
           </p>
           <div className="l-cta-row l-fade-in" style={{ animationDelay: '0.6s' }}>
             <button className="btn-primary" style={{ padding: '13px 32px', fontSize: '1rem' }}
@@ -325,8 +325,8 @@ export function Landing() {
       {/* Features */}
       <section className="l-features" ref={featuresRef} style={{ position: 'relative', zIndex: 1 }}>
         <div className="l-features-inner">
-          <h2 className="l-section-title">Everything you need</h2>
-          <p className="l-section-sub">One wallet. All the stablecoin rails you need on Arc.</p>
+          <h2 className="l-section-title">Built for the stablecoin era</h2>
+          <p className="l-section-sub">One wallet. Every stablecoin primitive on Arc, fully integrated.</p>
           <div className="l-feature-grid">
             {features.map((f, i) => (
               <div key={f.title}
@@ -344,8 +344,8 @@ export function Landing() {
       {/* CTA Banner */}
       <section className="l-banner" style={{ position: 'relative', zIndex: 1 }}>
         <div className="l-banner-inner">
-          <h2>Ready to start?</h2>
-          <p>Connect with email, Google, Discord or your existing wallet. No gas fees.</p>
+          <h2>Start in 30 seconds.</h2>
+          <p>Sign up with email, Google or an existing wallet. No seed phrases. No gas. No borders.</p>
           <button className="btn-primary" style={{ padding: '13px 32px', fontSize: '1rem', background: '#fff', color: '#7000ff' }}
             onClick={() => setShowAuthFlow && setShowAuthFlow(true)}>
             Connect Wallet →
