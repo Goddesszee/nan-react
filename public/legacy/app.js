@@ -577,16 +577,18 @@ document.addEventListener('click',function(e){
 
 function toggleTheme(){
   const root=document.documentElement;
-  const isLight=root.getAttribute('data-theme')==='light';
-  const t=isLight?'dark':'light';
-  root.setAttribute('data-theme',t==='light'?'light':'');
+  const isDark=root.getAttribute('data-theme')==='dark'||root.getAttribute('data-theme')==='';
+  const t=isDark?'light':'dark';
+  root.setAttribute('data-theme',t);
   localStorage.setItem('nan_theme',t);
-  document.getElementById('themeToggle').textContent=t==='light'?'🌙':'☀️';
+  const btn=document.getElementById('themeToggle');
+  if(btn) btn.textContent=t==='light'?'🌙':'☀️';
 }
 function initTheme(){
-  const s=localStorage.getItem('nan_theme')||'light';
-  document.documentElement.setAttribute('data-theme',s==='light'?'light':'');
-  document.getElementById('themeToggle').textContent=s==='light'?'🌙':'☀️';
+  const s=localStorage.getItem('nan_theme')||'dark';
+  document.documentElement.setAttribute('data-theme',s);
+  const btn=document.getElementById('themeToggle');
+  if(btn) btn.textContent=s==='light'?'🌙':'☀️';
 }
 function updateTopBar(connected){
   const bar=document.getElementById('globalTopBar');
