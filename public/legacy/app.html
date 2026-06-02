@@ -1872,16 +1872,35 @@ window.addEventListener('load', function() {
     window.wp = injected;
     window.onArcNetwork = true;
     try {
-      var browserProv = new ethers.BrowserProvider(injected);
-      browserProv.getSigner().then(function(s) {
-        window.signer = s;
-        window.provider = browserProv;
-      }).catch(function() {});
+      // Request accounts first so signer works
+      injected.request({ method: 'eth_requestAccounts' }).then(function(accounts) {
+        if (accounts && accounts.length > 0) {
+          var browserProv = new ethers.BrowserProvider(injected);
+          browserProv.getSigner().then(function(s) {
+            window.signer = s;
+            window.provider = browserProv;
+            // Update userAddr with the actual connected account
+            if (accounts[0] && !window.userAddr) {
+              window.userAddr = accounts[0];
+              localStorage.setItem('nan_dynamic_address', accounts[0]);
+            }
+          }).catch(function(e) { console.log('signer err:', e); });
+        }
+      }).catch(function(e) {
+        // Already connected, just get signer
+        try {
+          var browserProv = new ethers.BrowserProvider(injected);
+          browserProv.getSigner().then(function(s) {
+            window.signer = s;
+            window.provider = browserProv;
+          }).catch(function() {});
+        } catch(e2) {}
+      });
     } catch(e) {}
   } else {
     window.wp = null;
     window.signer = null;
-    window.onArcNetwork = true; // Dynamic embedded wallet, assume Arc
+    window.onArcNetwork = true;
   }
 
   // Show bottom nav
