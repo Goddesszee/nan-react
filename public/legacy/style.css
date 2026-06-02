@@ -1,23 +1,36 @@
 
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes scaleIn{from{opacity:0;transform:scale(.88) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
-:root, [data-theme="dark"] {
-  --bg:#0d0d0d;--bg2:#141414;--surface:#1a1a1a;--card:#181818;--card2:#222222;
+:root{
+  --bg:#111111;--surface:#1a1a1a;--card:#1a1a1a;--card2:#222222;
   --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.12);
-  --accent:#7000ff;--accent2:rgba(112,0,255,.15);--accent3:#a855f7;--accent4:#c084fc;
-  --text:#f0f0f0;--text2:#888888;--text3:#444444;
-  --danger:#f87171;--success:#4ade80;--gold:#fbbf24;--warning:#fbbf24;
-  --radius:16px;--radius-sm:10px;
-  --topbar-bg:#0d0d0d;--nav-bg:#0d0d0d;
+  --accent:#7000ff;--accent3:#a855f7;--accent4:#c084fc;
+  --text:#ffffff;--text2:#a0a0a0;--text3:#555555;
+  --danger:#f87171;--success:#7000ff;--gold:#fbbf24;--warning:#fbbf24;
+  --radius:14px;--radius-sm:10px;
+  --topbar-bg:#111111;--nav-bg:#111111;
 }
 [data-theme="light"]{
-  --bg:#f7f7f8;--bg2:#efefef;--surface:#ffffff;--card:#ffffff;--card2:#f0f0f0;
-  --border:rgba(0,0,0,.08);--border2:rgba(0,0,0,.13);
-  --accent:#7000ff;--accent2:rgba(112,0,255,.08);--accent3:#7000ff;--accent4:#9333ea;
-  --text:#111111;--text2:#666666;--text3:#999999;
-  --danger:#ef4444;--success:#16a34a;--gold:#d97706;--warning:#d97706;
-  --topbar-bg:#ffffff;--nav-bg:#ffffff;
-  --radius:16px;--radius-sm:10px;
+  --bg:#fafafa;
+  --surface:#f4f4f4;
+  --card:#f4f4f4;
+  --card2:#ebebeb;
+  --border:#e4e4e4;
+  --border2:#cccccc;
+  --accent:#7000ff;
+  --accent2:#8b00ff;
+  --accent3:#7000ff;
+  --accent4:#9333ea;
+  --text:#1a1a1a;
+  --text2:#555555;
+  --text3:#999999;
+  --danger:#ef4444;
+  --success:#7000ff;
+  --gold:#d97706;
+  --warning:#d97706;
+  --topbar-bg:#ffffff;
+  --nav-bg:#ffffff;
+  --card-shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
 }
 *{box-sizing:border-box;margin:0;padding:0;transition:background-color .25s,border-color .25s,color .25s;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;overflow:hidden;background:var(--bg);-webkit-font-smoothing:antialiased;}
