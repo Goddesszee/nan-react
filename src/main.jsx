@@ -27,7 +27,7 @@ export const arcTestnet = defineChain({
 
 const config = createConfig({
   chains: [arcTestnet],
-  multiInjectedProviderDiscovery: false,
+  multiInjectedProviderDiscovery: true,
   transports: { [arcTestnet.id]: http() },
 })
 
@@ -59,6 +59,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         overrides: { evmNetworks },
         appName: 'NAN Wallet',
         appLogoUrl: 'https://nanarc.xyz/favicon.ico',
+        initialAuthenticationMode: 'connect-only',
+        shadowDOMEnabled: false,
       }}
     >
       <WagmiProvider config={config}>

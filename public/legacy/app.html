@@ -1852,12 +1852,20 @@ window.addEventListener('load', function() {
     });
   } catch(e) {}
 
-  // Detect injected wallet — Rabby, MetaMask, or any EIP-1193 provider
-  var injected = window.rabby || window.ethereum || null;
-  // Also check EIP-6963 providers
-  if (!injected && window.evmproviders) {
-    var providers = Object.values(window.evmproviders);
-    if (providers.length > 0) injected = providers[0];
+  // Detect any injected EVM wallet (EIP-6963 + legacy)
+  var injected = null;
+  // EIP-6963: check all announced providers
+  if (window.evmproviders && Object.keys(window.evmproviders).length > 0) {
+    injected = Object.values(window.evmproviders)[0];
+  }
+  // Legacy: Rabby, MetaMask, Coinbase, Trust, etc
+  if (!injected) {
+    injected = window.rabby 
+      || window.ethereum 
+      || window.coinbaseWalletExtension
+      || window.trustwallet
+      || window.okxwallet
+      || null;
   }
 
   if (injected) {
