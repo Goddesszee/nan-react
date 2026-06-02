@@ -1,4 +1,4 @@
-import { DynamicWidget } from '@dynamic-labs/sdk-react-core'
+import { DynamicWidget, useDynamicContext } from '@dynamic-labs/sdk-react-core'
 import { NanLogo } from '../components/NanLogo'
 import { useTheme } from '../hooks/useTheme'
 
@@ -10,14 +10,15 @@ const features = [
 ]
 
 const stats = [
-  { value: '$0', label: 'Gas fees' },
-  { value: '30s', label: 'To onboard' },
-  { value: '4.80%', label: 'APY on USDC' },
-  { value: 'CCTP V2', label: 'Bridge tech' },
+  { value: '$0',     label: 'Gas fees' },
+  { value: '30s',    label: 'To onboard' },
+  { value: '4.80%',  label: 'APY on USDC' },
+  { value: 'CCTP V2',label: 'Bridge tech' },
 ]
 
 export function Landing() {
   const { theme, toggleTheme } = useTheme()
+  const { setShowAuthFlow } = useDynamicContext()
 
   return (
     <div className="landing" data-theme={theme}>
@@ -27,6 +28,7 @@ export function Landing() {
         <div className="l-nav-right">
           <button className="l-theme-btn" onClick={toggleTheme}>{theme==='light'?'🌙':'☀️'}</button>
           <span className="l-net-pill">• Arc Testnet</span>
+          {/* Single DynamicWidget in nav only */}
           <DynamicWidget />
         </div>
       </nav>
@@ -46,7 +48,10 @@ export function Landing() {
             NAN is the simplest way to send, swap, lend, borrow, and bridge USDC and EURC on Arc — Circle's stablecoin-native blockchain. Non-custodial. For everyone, everywhere.
           </p>
           <div className="l-cta-row">
-            <DynamicWidget />
+            <button className="btn-primary" style={{padding:'13px 32px',fontSize:'1rem'}}
+              onClick={() => setShowAuthFlow && setShowAuthFlow(true)}>
+              Get Started →
+            </button>
             <a className="l-btn-ghost" href="https://faucet.arc.fun" target="_blank" rel="noreferrer">Get Free Tokens →</a>
           </div>
           <div className="l-stats">
@@ -81,8 +86,11 @@ export function Landing() {
       <section className="l-banner">
         <div className="l-banner-inner">
           <h2>Ready to start?</h2>
-          <p>Connect with email, Google, or your existing wallet. No gas fees.</p>
-          <DynamicWidget />
+          <p>Connect with email, Google, Discord or your existing wallet. No gas fees.</p>
+          <button className="btn-primary" style={{padding:'13px 32px',fontSize:'1rem',background:'#fff',color:'#7000ff'}}
+            onClick={() => setShowAuthFlow && setShowAuthFlow(true)}>
+            Connect Wallet →
+          </button>
         </div>
       </section>
 
