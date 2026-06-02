@@ -1845,27 +1845,35 @@ window.addEventListener('load', function() {
   var addr = window._nanDynamicAddr || localStorage.getItem('nan_dynamic_address');
   if (!addr) return;
 
-  // Set up provider — always use Arc RPC directly for reading
+  // Set up read provider via Arc RPC
   try {
     window.provider = new ethers.JsonRpcProvider('https://rpc.testnet.arc.network', {
       chainId: 5042002, name: 'arc-testnet', ensAddress: null
     });
   } catch(e) {}
 
-  // Set up signer — use MetaMask if available, otherwise read-only
-  if (window.ethereum) {
-    window.wp = window.ethereum;
+  // Detect injected wallet — Rabby, MetaMask, or any EIP-1193 provider
+  var injected = window.rabby || window.ethereum || null;
+  // Also check EIP-6963 providers
+  if (!injected && window.evmproviders) {
+    var providers = Object.values(window.evmproviders);
+    if (providers.length > 0) injected = providers[0];
+  }
+
+  if (injected) {
+    window.wp = injected;
+    window.onArcNetwork = true;
     try {
-      var browserProv = new ethers.BrowserProvider(window.ethereum);
+      var browserProv = new ethers.BrowserProvider(injected);
       browserProv.getSigner().then(function(s) {
         window.signer = s;
-        // Override provider with browser provider for transactions
         window.provider = browserProv;
       }).catch(function() {});
     } catch(e) {}
   } else {
     window.wp = null;
     window.signer = null;
+    window.onArcNetwork = true; // Dynamic embedded wallet, assume Arc
   }
 
   // Show bottom nav
