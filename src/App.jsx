@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useDynamicContext, DynamicWidget } from '@dynamic-labs/sdk-react-core'
 import { useAccount } from 'wagmi'
 import { useTheme } from './hooks/useTheme'
@@ -9,6 +9,13 @@ export default function App() {
   const { isAuthenticated, primaryWallet, sdkHasLoaded, user } = useDynamicContext()
   const { address } = useAccount()
   const { theme } = useTheme()
+  const [timedOut, setTimedOut] = useState(false)
+
+  // Timeout fallback — if SDK doesn't load in 4s, show landing anyway
+  useEffect(() => {
+    const t = setTimeout(() => setTimedOut(true), 4000)
+    return () => clearTimeout(t)
+  }, [])
 
   const connected = isAuthenticated || !!primaryWallet
 
@@ -21,16 +28,14 @@ export default function App() {
     }
   }, [connected, address])
 
-  // Still loading SDK
-  if (!sdkHasLoaded) {
+  // Show landing once SDK loads or times out
+  if (!sdkHasLoaded && !timedOut) {
     return <div style={{minHeight:'100vh', background:'#111'}} />
   }
 
-  // Already connected — waiting for redirect
   if (connected) {
     return <div style={{minHeight:'100vh', background:'#111'}} />
   }
 
-  // Not connected — show landing
   return <Landing />
 }
