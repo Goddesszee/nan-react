@@ -1,31 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head><script>
-// Dynamic → NAN bridge
+// Dynamic bridge - must run AFTER app.js loads
 (function() {
   var addr = localStorage.getItem('nan_dynamic_address');
-  if (!addr) {
-    window.location.href = '/';
-    return;
-  }
-  window._nanDynamicAddress = addr;
-  window._nanDynamicToken = 'dynamic_authenticated';
-  // Patch connectWallet to auto-run after all scripts load
-  window.addEventListener('load', function() {
-    setTimeout(function() {
-      if (typeof onConnected === 'function') {
-        window.userAddr = addr;
-        window.userEmail = localStorage.getItem('nan_dynamic_email') || '';
-        window.userToken = 'dynamic_authenticated';
-        // Skip the splash/connect screen
-        var splash = document.getElementById('connectLoader');
-        if (splash) splash.remove();
-        var land = document.getElementById('page-land');
-        if (land) { land.style.display = 'none'; }
-        onConnected(false, false);
-      }
-    }, 300);
-  });
+  if (!addr) { window.location.href = '/'; return; }
+  window._nanDynamicAddr = addr;
 })();
 </script>
 <meta charset="UTF-8"/>
@@ -1856,5 +1836,35 @@ window.addEventListener('load', function() {
     window.location.href = '/';
   };
 });
-</script></body>
+</script><script>
+// Auto-connect with Dynamic address after everything loads
+(function() {
+  var addr = window._nanDynamicAddr;
+  if (!addr) return;
+  // Set globals that app.js expects
+  window.userAddr = addr;
+  window.userEmail = localStorage.getItem('nan_dynamic_email') || '';
+  window.userToken = 'dynamic_auth';
+  window.walletType = 'dynamic';
+  // Remove any connect loader
+  var loader = document.getElementById('connectLoader');
+  if (loader) loader.remove();
+  // Hide page-land
+  document.querySelectorAll('.page-land').forEach(function(el) {
+    el.classList.remove('active');
+    el.style.display = 'none';
+  });
+  // Call onConnected
+  if (typeof onConnected === 'function') {
+    onConnected(false, false);
+  } else {
+    // Fallback: directly show home
+    if (typeof showPage === 'function') showPage('home');
+    if (typeof updateTopBar === 'function') updateTopBar(true);
+    var bn = document.getElementById('bottomNav');
+    if (bn) bn.classList.add('show');
+  }
+})();
+</script>
+</body>
 </html>
