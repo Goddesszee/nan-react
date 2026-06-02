@@ -178,11 +178,11 @@ export function Landing() {
             NOW LIVE ON ARC TESTNET
           </div>
           <h1 className="l-h1 l-fade-in" style={{ animationDelay: '0.25s' }}>
-            Weave. Connect.<br/>
-            <span className="l-h1-purple"><TypewriterCycle /></span>
+            Payments without<br/>
+            <span className="l-h1-purple">borders.</span>
           </h1>
           <p className="l-sub l-fade-in" style={{ animationDelay: '0.45s' }}>
-            NAN is the simplest way to send, swap, lend, borrow, and bridge USDC and EURC on Arc — Circle's stablecoin-native blockchain. Non-custodial. For everyone, everywhere.
+            Send, swap, and bridge USDC & EURC on Arc — Circle's stablecoin-native blockchain. No gas fees. No borders. For everyone, everywhere.
           </p>
           <div className="l-cta-row l-fade-in" style={{ animationDelay: '0.6s' }}>
             <button className="btn-primary" style={{ padding: '13px 32px', fontSize: '1rem' }}
