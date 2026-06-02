@@ -16,7 +16,7 @@ import { Toast } from './components/Toast'
 
 export default function App() {
   const { isAuthenticated } = useDynamicContext()
-  const { address, usdcBal, eurcBal, totalUSD, totalNGN, disconnect, fetchBalances } = useWallet()
+  const { address, usdcBal, eurcBal, totalUSD, totalNGN, disconnect, fetchBalances, apiFetch } = useWallet()
   const { theme, toggleTheme } = useTheme()
   const { toasts, toast } = useToast()
   const [page, setPage] = useState('home')
@@ -29,7 +29,7 @@ export default function App() {
     { id: 'more', label: 'More' },
   ]
 
-  const pageProps = { toast, setPage, address, usdcBal, eurcBal, totalUSD, totalNGN, fetchBalances }
+  const pageProps = { toast, setPage, address, usdcBal, eurcBal, totalUSD, totalNGN, fetchBalances, apiFetch }
 
   const renderPage = () => {
     switch(page) {

@@ -9,25 +9,30 @@ const CHAINS = [
 
 export function Bridge({ toast, setPage, usdcBal, address, apiFetch }) {
   const [chain, setChain] = useState('ETH-SEPOLIA')
-  const [token, setToken] = useState('USDC')
   const [toAddr, setToAddr] = useState('')
   const [amt, setAmt] = useState('')
   const [bridging, setBridging] = useState(false)
 
   const doBridge = async () => {
     if (!amt || !toAddr) return toast('Enter amount and destination address', 'error')
+    if (parseFloat(amt) > parseFloat(usdcBal)) return toast('Insufficient USDC balance', 'error')
     setBridging(true)
     try {
-      const res = await apiFetch('/api/bridge', {
-        method:'POST',
-        body: JSON.stringify({ fromChain:'ARC', toChain:chain, token, amount:amt, toAddress:toAddr, fromAddress:address }),
+      const res = await apiFetch('/api/appkit/bridge', {
+        method: 'POST',
+        body: JSON.stringify({
+          walletAddress: address,
+          destChain: chain,
+          destAddr: toAddr,
+          amount: amt,
+        }),
       })
-      toast('Bridge initiated! ' + (res.txHash||''), 'success')
+      if (!res.success && !res.pending) throw new Error(res.error || 'Bridge failed')
+      toast('Bridge submitted via CCTP V2! Takes ~20 seconds.', 'success')
       setAmt('')
     } catch(e) {
       toast(e.message || 'Bridge failed', 'error')
-    } finally {
-      setBridging(false) }
+    } finally { setBridging(false) }
   }
 
   return (
@@ -41,33 +46,26 @@ export function Bridge({ toast, setPage, usdcBal, address, apiFetch }) {
           <div className="bridge-chain">Arc Testnet</div>
           <div className="bridge-arrow">→</div>
           <div className="bridge-chain">
-            <select style={{background:'none',border:'none',color:'inherit',fontWeight:700,width:'100%',outline:'none'}} value={chain} onChange={e=>setChain(e.target.value)}>
-              {CHAINS.map(c=><option key={c.val} value={c.val}>{c.icon} {c.label}</option>)}
+            <select style={{background:'none',border:'none',color:'inherit',fontWeight:700,width:'100%',outline:'none',fontSize:'inherit'}}
+              value={chain} onChange={e => setChain(e.target.value)}>
+              {CHAINS.map(c => <option key={c.val} value={c.val}>{c.icon} {c.label}</option>)}
             </select>
           </div>
         </div>
-        <div className="bridge-info">⚡ Powered by Circle CCTP V2 · Cross-chain in ~20 seconds</div>
-        <div className="form-group">
-          <label>Token</label>
-          <div className="token-toggle">
-            {['USDC','EURC'].map(t=>(
-              <button key={t} className={`token-btn${token===t?' active':''}`} onClick={()=>setToken(t)}>{t}</button>
-            ))}
-          </div>
-        </div>
+        <div className="bridge-info">⚡ Powered by Circle CCTP V2 · Arrives in ~20 seconds · No gas on destination</div>
         <div className="form-group">
           <label>Destination address</label>
-          <input className="inp" placeholder="0x..." value={toAddr} onChange={e=>setToAddr(e.target.value)}/>
+          <input className="inp" placeholder="0x..." value={toAddr} onChange={e => setToAddr(e.target.value)}/>
         </div>
         <div className="form-group">
-          <label>Amount <span className="bal-hint">Bal: {usdcBal} {token}</span></label>
+          <label>Amount (USDC) <span className="bal-hint">Bal: {usdcBal} USDC</span></label>
           <div className="amt-row">
-            <input className="inp" type="number" placeholder="0.00" value={amt} onChange={e=>setAmt(e.target.value)}/>
-            <button className="max-btn" onClick={()=>setAmt(usdcBal)}>MAX</button>
+            <input className="inp" type="number" placeholder="0.00" value={amt} onChange={e => setAmt(e.target.value)}/>
+            <button className="max-btn" onClick={() => setAmt(usdcBal)}>MAX</button>
           </div>
         </div>
         <button className="btn-primary full" onClick={doBridge} disabled={bridging}>
-          {bridging?'Bridging...':'Bridge via CCTP V2'}
+          {bridging ? 'Bridging...' : 'Bridge via CCTP V2'}
         </button>
       </div>
     </div>

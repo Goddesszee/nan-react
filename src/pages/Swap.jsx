@@ -1,86 +1,84 @@
 import { useState } from 'react'
-import { ethers } from 'ethers'
-import { useWallet, USDC_ADDR, EURC_ADDR, ERC20_ABI } from '../hooks/useWallet'
 
 const USDC_LOGO = 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png'
 const EURC_LOGO = 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c/logo.png'
 
 export function Swap({ toast, setPage, usdcBal, eurcBal, fetchBalances, address, apiFetch }) {
-  const { getSigner } = useWallet()
-  const [from, setFrom] = useState('USDC')
-  const [amt, setAmt]   = useState('')
+  const [from, setFrom]   = useState('USDC')
+  const [amt, setAmt]     = useState('')
+  const [quote, setQuote] = useState(null)
   const [swapping, setSwapping] = useState(false)
+  const [quoting, setQuoting]   = useState(false)
 
   const to = from === 'USDC' ? 'EURC' : 'USDC'
   const fromBal = from === 'USDC' ? usdcBal : eurcBal
-  const FX = 1.08 // approx EURC rate
-  const toAmt = from === 'USDC'
-    ? (parseFloat(amt||0) / FX).toFixed(6)
-    : (parseFloat(amt||0) * FX).toFixed(6)
+  const logo = (sym) => sym === 'USDC' ? USDC_LOGO : EURC_LOGO
 
-  const flip = () => { setFrom(to); setAmt('') }
+  const flip = () => { setFrom(to); setAmt(''); setQuote(null) }
+
+  const getQuote = async (value) => {
+    if (!value || parseFloat(value) <= 0) return setQuote(null)
+    setQuoting(true)
+    try {
+      const res = await apiFetch('/api/appkit/swap', {
+        method: 'POST',
+        body: JSON.stringify({ action:'quote', tokenIn:from, tokenOut:to, amountIn:value, walletAddress:address }),
+      })
+      if (res.success && res.amountOut) setQuote(res.amountOut)
+    } catch(e) {} finally { setQuoting(false) }
+  }
 
   const doSwap = async () => {
     if (!amt || parseFloat(amt) <= 0) return toast('Enter amount', 'error')
+    if (parseFloat(amt) > parseFloat(fromBal)) return toast('Insufficient balance', 'error')
     setSwapping(true)
     try {
-      const signer = await getSigner()
-      const fromAddr = from === 'USDC' ? USDC_ADDR : EURC_ADDR
-      const contract = new ethers.Contract(fromAddr, ERC20_ABI, signer)
-      const signerAddr = await signer.getAddress()
-      // Simple swap via approval + API
-      const units = ethers.parseUnits(amt, 6)
-      toast('Approving...', 'info')
-      const approveTx = await contract.approve('0x0000000000000000000000000000000000000001', units)
-      await approveTx.wait()
-      toast('Swapping...', 'info')
-      // Call Railway swap endpoint
-      await apiFetch('/api/swap', {
+      const res = await apiFetch('/api/appkit/swap', {
         method: 'POST',
-        body: JSON.stringify({ from, to, amount: amt, address: signerAddr }),
+        body: JSON.stringify({ action:'swap', walletAddress:address, tokenIn:from, tokenOut:to, amountIn:amt }),
       })
-      toast(`Swapped ${amt} ${from} → ${toAmt} ${to}!`, 'success')
-      fetchBalances(address)
-      setAmt('')
+      if (!res.success && !res.pending) throw new Error(res.error || 'Swap failed')
+      toast(`Swap submitted! ${amt} ${from} → ${to}`, 'success')
+      setTimeout(() => fetchBalances(address), 5000)
+      setAmt(''); setQuote(null)
     } catch(e) {
       toast(e.message || 'Swap failed', 'error')
-    } finally {
-      setSwapping(false)
-    }
+    } finally { setSwapping(false) }
   }
 
   return (
-    <div className="page page-swap">
+    <div className="page">
       <div className="page-card">
         <div className="page-header">
           <button className="back-btn" onClick={() => setPage('home')}>←</button>
           <h2>Swap</h2>
         </div>
         <div className="swap-box">
-          <label>From</label>
+          <label>FROM</label>
           <div className="swap-row">
             <div className="token-sel">
-              <img src={from==='USDC'?USDC_LOGO:EURC_LOGO} width={20} height={20} style={{borderRadius:'50%'}} alt={from}/>
+              <img src={logo(from)} width={22} height={22} style={{borderRadius:'50%'}} alt=""/>
               <span>{from}</span>
             </div>
-            <input className="swap-inp" type="number" placeholder="0.00"
-              value={amt} onChange={e => setAmt(e.target.value)}/>
+            <input className="swap-inp" type="number" placeholder="0.00" value={amt}
+              onChange={e => { setAmt(e.target.value); getQuote(e.target.value) }}/>
           </div>
-          <div className="swap-bal">Bal: {fromBal}</div>
+          <div className="swap-bal">Balance: {fromBal} {from}</div>
         </div>
         <button className="flip-btn" onClick={flip}>⇅</button>
         <div className="swap-box">
-          <label>To (estimated)</label>
+          <label>TO (estimated)</label>
           <div className="swap-row">
             <div className="token-sel">
-              <img src={to==='USDC'?USDC_LOGO:EURC_LOGO} width={20} height={20} style={{borderRadius:'50%'}} alt={to}/>
+              <img src={logo(to)} width={22} height={22} style={{borderRadius:'50%'}} alt=""/>
               <span>{to}</span>
             </div>
-            <input className="swap-inp" readOnly value={toAmt} placeholder="0.00"/>
+            <input className="swap-inp" readOnly value={quoting ? '...' : (quote || '')} placeholder="0.00"/>
           </div>
         </div>
+        {quote && <div className="rate-row">Rate: 1 {from} ≈ {(parseFloat(quote)/parseFloat(amt||1)).toFixed(4)} {to}</div>}
         <button className="btn-primary full" onClick={doSwap} disabled={swapping}>
-          {swapping ? 'Swapping...' : 'Swap'}
+          {swapping ? 'Swapping...' : `Swap ${from} → ${to}`}
         </button>
       </div>
     </div>
