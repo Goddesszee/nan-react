@@ -2,5 +2,11 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [
+    { "source": "/legacy/app.js", "destination": "/legacy/app.js" },
+    { "source": "/legacy/ui.js", "destination": "/legacy/ui.js" },
+    { "source": "/legacy/style.css", "destination": "/legacy/style.css" },
+    { "source": "/legacy/app.html", "destination": "/legacy/app.html" },
+    { "source": "/((?!legacy).*)", "destination": "/index.html" }
+  ]
 }
