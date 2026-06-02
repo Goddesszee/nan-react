@@ -10,7 +10,6 @@ export default function App() {
   const { address: wagmiAddress } = useAccount()
   const { theme } = useTheme()
   const [timedOut, setTimedOut] = useState(false)
-  const [redirecting, setRedirecting] = useState(false)
 
   useEffect(() => {
     const t = setTimeout(() => setTimedOut(true), 5000)
@@ -18,47 +17,64 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    const connected = isAuthenticated || !!primaryWallet
-    if (!connected) return
+    if (!isAuthenticated && !primaryWallet) return
 
-    const addr = wagmiAddress || primaryWallet?.address
-    if (!addr) {
-      // Wait for address
-      const retry = setTimeout(() => {
-        const a = primaryWallet?.address
-        if (a) doRedirect(a)
-      }, 1500)
-      return () => clearTimeout(retry)
+    // Try every possible source for the address
+    const addr = wagmiAddress 
+      || primaryWallet?.address
+      || user?.verifiedCredentials?.[0]?.address
+      || user?.verifiedCredentials?.find(c => c.address)?.address
+
+    if (addr) {
+      doRedirect(addr)
+    } else {
+      // Poll for address every 500ms up to 10 seconds
+      let attempts = 0
+      const poll = setInterval(() => {
+        attempts++
+        const a = wagmiAddress 
+          || primaryWallet?.address
+          || user?.verifiedCredentials?.[0]?.address
+        if (a) {
+          clearInterval(poll)
+          doRedirect(a)
+        } else if (attempts > 20) {
+          clearInterval(poll)
+          // Last resort — use user ID as placeholder and redirect anyway
+          const fallback = user?.userId || user?.id
+          if (fallback) {
+            // Can't do much without an address but redirect to show the app
+            doRedirect('0x0000000000000000000000000000000000000000')
+          }
+        }
+      }, 500)
+      return () => clearInterval(poll)
     }
-    doRedirect(addr)
-  }, [isAuthenticated, primaryWallet, wagmiAddress])
+  }, [isAuthenticated, primaryWallet, wagmiAddress, user])
 
   function doRedirect(addr) {
-    setRedirecting(true)
     localStorage.setItem('nan_dynamic_address', addr)
     localStorage.setItem('nan_dynamic_email', user?.email || '')
     localStorage.setItem('nan_dynamic_token', 'dynamic_authenticated')
     window.location.replace('/legacy/app.html')
   }
 
-  // Still loading SDK
   if (!sdkHasLoaded && !timedOut) {
     return <div style={{minHeight:'100vh', background:'#111'}} />
   }
 
-  // Connected — redirecting to legacy app
-  if ((isAuthenticated || primaryWallet) || redirecting) {
+  if (isAuthenticated || primaryWallet) {
     return (
       <div style={{minHeight:'100vh', background:'#111', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:16, fontFamily:'Inter,sans-serif'}}>
-        <div style={{color:'#7000ff', fontSize:'2rem'}}>∞</div>
-        <div style={{color:'#fff', fontSize:'1rem'}}>Loading NAN...</div>
+        <div style={{color:'#7000ff', fontSize:'3rem'}}>∞</div>
+        <div style={{color:'#fff', fontSize:'1rem', fontWeight:600}}>Loading NAN Wallet...</div>
+        <div style={{color:'#666', fontSize:'.8rem'}}>Connecting to Arc Testnet</div>
         <button onClick={() => {
           localStorage.removeItem('nan_dynamic_address')
           localStorage.removeItem('nan_dynamic_token')
-          handleLogOut()
-          window.location.reload()
-        }} style={{marginTop:20, color:'#666', background:'none', border:'none', cursor:'pointer', fontSize:'.8rem'}}>
-          Not you? Sign out
+          handleLogOut().then(() => window.location.reload())
+        }} style={{marginTop:24, color:'#555', background:'none', border:'1px solid #333', borderRadius:8, padding:'6px 16px', cursor:'pointer', fontSize:'.8rem', color:'#888'}}>
+          Sign out
         </button>
       </div>
     )
