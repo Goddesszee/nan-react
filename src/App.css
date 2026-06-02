@@ -125,8 +125,8 @@ a { color: inherit; text-decoration: none; }
 .token-btn.active { background: #7000ff; color: #fff; border-color: #7000ff; }
 
 /* ── Buttons ── */
-.btn-primary { background: #7000ff; color: #ffffff; border-radius: var(--radius-sm); padding: 13px 24px; font-size: .95rem; font-weight: 800; letter-spacing: -.01em; transition: all .15s; }
-.btn-primary:hover { background: #5a00cc; transform: translateY(-1px); }
+.btn-primary { background: #7000ff; color: #ffffff; border-radius: var(--radius-sm); padding: 13px 24px; font-size: .95rem; font-weight: 800; letter-spacing: -.01em; transition: all .18s; box-shadow: 0 0 28px rgba(112,0,255,.55), 0 4px 16px rgba(112,0,255,.35); }
+.btn-primary:hover { background: #8a00ff; transform: translateY(-2px); box-shadow: 0 0 40px rgba(112,0,255,.75), 0 8px 24px rgba(112,0,255,.45); }
 .btn-primary:disabled { opacity: .4; cursor: not-allowed; transform: none; }
 .btn-primary.full { width: 100%; margin-top: 8px; }
 .btn-danger { width: 100%; background: rgba(255,255,255,.05); color: #ff4444; border: 1px solid rgba(255,68,68,.2); border-radius: var(--radius-sm); padding: 13px; font-weight: 700; margin-top: 16px; transition: all .15s; }
@@ -194,8 +194,12 @@ a { color: inherit; text-decoration: none; }
 .landing { min-height: 100vh; background: var(--bg); color: var(--text); }
 .l-nav { display: flex; justify-content: space-between; align-items: center; padding: 16px 40px; border-bottom: 1px solid var(--border); background: var(--topbar); backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 100; }
 .l-nav-right { display: flex; align-items: center; gap: 12px; }
-.l-theme-btn { font-size: 1rem; padding: 6px 10px; border-radius: var(--radius-sm); color: var(--text3); }
-.l-net-pill { background: var(--surface); color: var(--text2); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: .78rem; font-weight: 700; }
+.l-theme-btn { font-size: 1rem; padding: 6px 10px; border-radius: var(--radius-sm); color: rgba(255,255,255,.7); transition: color .15s; }
+.l-theme-btn:hover { color: #fff; }
+[data-theme="light"] .l-theme-btn { color: rgba(0,0,0,.6); }
+[data-theme="light"] .l-theme-btn:hover { color: #111; }
+.l-net-pill { background: rgba(112,0,255,.15); color: #c084fc; border: 1px solid rgba(112,0,255,.35); border-radius: 20px; padding: 5px 12px; font-size: .78rem; font-weight: 700; letter-spacing: .01em; }
+[data-theme="light"] .l-net-pill { background: rgba(112,0,255,.08); color: #7000ff; border-color: rgba(112,0,255,.25); }
 .l-hero { padding: 100px 40px 80px; max-width: 900px; margin: 0 auto; text-align: center; }
 .l-hero-full {
   min-height: calc(100vh - 64px);
@@ -211,8 +215,10 @@ a { color: inherit; text-decoration: none; }
 .l-h1-purple { color: #7000ff; }
 .l-sub { font-size: 1.1rem; color: var(--text3); line-height: 1.65; max-width: 600px; margin: 0 auto 36px; font-weight: 400; }
 .l-cta-row { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 48px; flex-wrap: wrap; }
-.l-btn-ghost { border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 12px 22px; font-size: .9rem; font-weight: 700; color: var(--text2); transition: all .15s; }
-.l-btn-ghost:hover { border-color: #fff; color: #fff; }
+.l-btn-ghost { border: 1.5px solid rgba(255,255,255,.35); border-radius: var(--radius-sm); padding: 12px 22px; font-size: .9rem; font-weight: 700; color: rgba(255,255,255,.85); transition: all .18s; background: rgba(255,255,255,.06); backdrop-filter: blur(8px); }
+.l-btn-ghost:hover { border-color: rgba(255,255,255,.7); color: #fff; background: rgba(255,255,255,.12); transform: translateY(-2px); }
+[data-theme="light"] .l-btn-ghost { border-color: rgba(0,0,0,.25); color: rgba(0,0,0,.75); background: rgba(0,0,0,.04); }
+[data-theme="light"] .l-btn-ghost:hover { border-color: rgba(0,0,0,.5); color: #111; background: rgba(0,0,0,.08); }
 .l-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; border-top: 1px solid var(--border); padding-top: 40px; }
 .l-stat { text-align: center; }
 .l-stat-val { font-size: 1.6rem; font-weight: 800; letter-spacing: -1px; color: #fff; margin-bottom: 4px; }

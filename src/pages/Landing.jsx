@@ -302,7 +302,7 @@ export function Landing() {
             <span className="l-h1-purple"><TypewriterCycle /></span>
           </h1>
           <p className="l-sub l-fade-in" style={{ animationDelay: '0.45s' }}>
-            The complete stablecoin wallet built for Arc. Send and receive USDC and EURC instantly. Swap at live rates. Bridge cross-chain with Circle CCTP V2. Earn 4.80% APY. Zero gas fees. Non-custodial.
+            The complete stablecoin wallet built for Arc. Send and receive USDC and EURC instantly. Swap at live rates. Bridge cross-chain with Circle CCTP V2. Earn 4.80% APY. Zero gas fees.
           </p>
           <div className="l-cta-row l-fade-in" style={{ animationDelay: '0.6s' }}>
             <button className="btn-primary" style={{ padding: '13px 32px', fontSize: '1rem' }}
@@ -345,7 +345,7 @@ export function Landing() {
       <section className="l-banner" style={{ position: 'relative', zIndex: 1 }}>
         <div className="l-banner-inner">
           <h2>Start in 30 seconds.</h2>
-          <p>Sign up with email, Google or an existing wallet. No seed phrases. No gas. No borders.</p>
+          <p>Sign up with email, Google or an existing wallet. No seed phrases. No gas fees.</p>
           <button className="btn-primary" style={{ padding: '13px 32px', fontSize: '1rem', background: '#fff', color: '#7000ff' }}
             onClick={() => setShowAuthFlow && setShowAuthFlow(true)}>
             Connect Wallet →
