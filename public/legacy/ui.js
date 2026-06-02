@@ -10,7 +10,11 @@ function goBack(){
 function goPage(name) {
   window._prevPage = window._currentPage || 'home';
   window._currentPage = name;
-  const _userAddr = (typeof userAddr !== 'undefined') ? userAddr : null;
+  // Check userAddr OR Dynamic localStorage fallback
+  const _userAddr = (typeof userAddr !== 'undefined' && userAddr) 
+    ? userAddr 
+    : localStorage.getItem('nan_dynamic_address');
+  if (_userAddr && !userAddr) { userAddr = _userAddr; window.userAddr = _userAddr; }
   if (!_userAddr) { if(typeof toast==='function') toast('Connect wallet first', 'error'); return; }
 
   // Hide all pages
