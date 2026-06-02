@@ -341,19 +341,8 @@ export function Landing() {
         </div>
       </section>
 
-      {/* CTA Banner */}
-      <section className="l-banner" style={{ position: 'relative', zIndex: 1 }}>
-        <div className="l-banner-inner">
-          <h2>Start in 30 seconds.</h2>
-          <p>Sign up with email, Google or an existing wallet. No seed phrases. No gas fees.</p>
-          <button className="btn-primary" style={{ padding: '13px 32px', fontSize: '1rem', background: '#fff', color: '#7000ff' }}
-            onClick={() => setShowAuthFlow && setShowAuthFlow(true)}>
-            Connect Wallet →
-          </button>
-        </div>
-      </section>
 
-      {/* Footer */}
+            {/* Footer */}
       <footer className="l-footer" style={{ position: 'relative', zIndex: 1 }}>
         <NanLogo width={120} height={30} />
         <span className="l-footer-txt">Built on Arc · Powered by Circle · © 2025 NAN</span>
