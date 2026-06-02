@@ -1095,6 +1095,11 @@ async function refreshBalances(){
     const[ur,er]=await Promise.all([cu.balanceOf(userAddr),ce.balanceOf(userAddr)]);
     usdcBal=ethers.formatUnits(ur,USDC_DECIMALS);
     eurcBal=ethers.formatUnits(er,EURC_DECIMALS);
+    // Cache balances so they persist across refreshes
+    if(userAddr){
+      localStorage.setItem('nan_cached_usdc_'+userAddr, usdcBal);
+      localStorage.setItem('nan_cached_eurc_'+userAddr, eurcBal);
+    }
     const u=parseFloat(usdcBal).toFixed(2);
     const e=parseFloat(eurcBal).toFixed(2);
     updateBalDisplay();
