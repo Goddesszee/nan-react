@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head><script>
-// Dynamic bridge - must run AFTER app.js loads
+// Dynamic bridge
 (function() {
   var addr = localStorage.getItem('nan_dynamic_address');
   if (!addr) { window.location.href = '/'; return; }
   window._nanDynamicAddr = addr;
+  // Set sessionStorage flag so original app guard doesn't redirect back to /
+  sessionStorage.setItem('nan_from_landing', '1');
 })();
 </script>
 <meta charset="UTF-8"/>
