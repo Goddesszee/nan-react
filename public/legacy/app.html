@@ -1839,26 +1839,33 @@ window.addEventListener('load', function() {
   };
 });
 </script><script>
-// Auto-connect with Dynamic address after everything loads
 (function() {
   var addr = window._nanDynamicAddr || localStorage.getItem('nan_dynamic_address');
   if (!addr) return;
-  
-  // Set ALL globals that app.js expects
+
+  // Set globals app.js needs
   window.userAddr = addr;
   window.userEmail = localStorage.getItem('nan_dynamic_email') || '';
-  window.userToken = 'dynamic_auth';
-  window.walletType = 'dynamic';
-  window.isEmailUser = false;
-  
-  // Also set the provider so ethers.js works
-  if (window.ethereum) {
-    window._provider = window.ethereum;
-  }
+  window.isCircleWallet = false;
+  window.onArcNetwork = true;
 
-  // Remove connect loader if present
-  var loader = document.getElementById('connectLoader');
-  if (loader) loader.style.display = 'none';
+  // Use window.ethereum if available (MetaMask/injected), else create a read-only provider
+  var ethProv = window.ethereum;
+  if (ethProv) {
+    window.wp = ethProv;
+    try {
+      window.provider = new ethers.BrowserProvider(ethProv);
+      window.provider.getSigner().then(function(s) {
+        window.signer = s;
+      }).catch(function(){});
+    } catch(e) {}
+  } else {
+    // No injected wallet — use read-only JSON-RPC provider for balance reads
+    try {
+      window.provider = new ethers.JsonRpcProvider('https://rpc.arc.fun', 5042002);
+    } catch(e) {}
+    window.wp = null;
+  }
 
   // Hide page-land
   document.querySelectorAll('.page-land, #page-land').forEach(function(el) {
@@ -1870,19 +1877,14 @@ window.addEventListener('load', function() {
   var bn = document.getElementById('bottomNav');
   if (bn) bn.classList.add('show');
 
-  // Call onConnected with the address set
+  // Call onConnected
   if (typeof onConnected === 'function') {
-    try {
-      onConnected(false, false);
-    } catch(e) {
-      console.log('onConnected error:', e);
-      // Fallback
+    // Pass isEmail=false — checkNetwork will skip if wp is null
+    onConnected(false, false).catch(function(e) {
+      console.log('onConnected err:', e);
       if (typeof showPage === 'function') showPage('home');
       if (typeof updateTopBar === 'function') updateTopBar(true);
-    }
-  } else {
-    if (typeof showPage === 'function') showPage('home');
-    if (typeof updateTopBar === 'function') updateTopBar(true);
+    });
   }
 })();
 </script>
