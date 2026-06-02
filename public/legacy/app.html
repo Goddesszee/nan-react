@@ -1845,49 +1845,37 @@ window.addEventListener('load', function() {
   var addr = window._nanDynamicAddr || localStorage.getItem('nan_dynamic_address');
   if (!addr) return;
 
-  // Set wp from injected wallet if available
-  if (window.ethereum && !window.wp) {
-    window.wp = window.ethereum;
-  }
-  // Set globals app.js needs
-  window.userAddr = addr;
-  window.userEmail = localStorage.getItem('nan_dynamic_email') || '';
-  window.isCircleWallet = false;
-  window.onArcNetwork = true;
+  // Set up provider — always use Arc RPC directly for reading
+  try {
+    window.provider = new ethers.JsonRpcProvider('https://rpc.testnet.arc.network', {
+      chainId: 5042002, name: 'arc-testnet', ensAddress: null
+    });
+  } catch(e) {}
 
-  // Use window.ethereum if available (MetaMask/injected), else create a read-only provider
-  var ethProv = window.ethereum;
-  if (ethProv) {
-    window.wp = ethProv;
+  // Set up signer — use MetaMask if available, otherwise read-only
+  if (window.ethereum) {
+    window.wp = window.ethereum;
     try {
-      window.provider = new ethers.BrowserProvider(ethProv);
-      window.provider.getSigner().then(function(s) {
+      var browserProv = new ethers.BrowserProvider(window.ethereum);
+      browserProv.getSigner().then(function(s) {
         window.signer = s;
-      }).catch(function(){});
+        // Override provider with browser provider for transactions
+        window.provider = browserProv;
+      }).catch(function() {});
     } catch(e) {}
   } else {
-    // No injected wallet — use read-only JSON-RPC provider for balance reads
-    try {
-      window.provider = new ethers.JsonRpcProvider('https://rpc.arc.fun', 5042002);
-    } catch(e) {}
     window.wp = null;
+    window.signer = null;
   }
-
-  // Hide page-land
-  document.querySelectorAll('.page-land, #page-land').forEach(function(el) {
-    el.classList.remove('active');
-    el.style.display = 'none';
-  });
 
   // Show bottom nav
   var bn = document.getElementById('bottomNav');
   if (bn) bn.classList.add('show');
 
-  // Call onConnected
+  // Call onConnected(isEmail=true) — skips checkNetwork, loads balances
   if (typeof onConnected === 'function') {
-    // Pass isEmail=false — checkNetwork will skip if wp is null
-    onConnected(false, false).catch(function(e) {
-      console.log('onConnected err:', e);
+    onConnected(true, false).catch(function(e) {
+      console.error('onConnected error:', e);
       if (typeof showPage === 'function') showPage('home');
       if (typeof updateTopBar === 'function') updateTopBar(true);
     });
@@ -1895,4 +1883,3 @@ window.addEventListener('load', function() {
 })();
 </script>
 </body>
-</html>
