@@ -1,4 +1,22 @@
-/* â”€â”€ NAN Wallet â€” style.css â€” Relay v2 â”€â”€ */
+/* NAN — black and white */
+:root, [data-theme="light"], [data-theme=""], [data-theme="dark"] {
+  --bg: #000000 !important;
+  --bg2: #0d0d0d !important;
+  --surface: #1a1a1a !important;
+  --card: #111111 !important;
+  --topbar-bg: rgba(0,0,0,.98) !important;
+  --text: #ffffff !important;
+  --text2: #cccccc !important;
+  --text3: #777777 !important;
+  --border: rgba(255,255,255,.1) !important;
+  --border2: rgba(255,255,255,.06) !important;
+}
+body, #app-root {
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+/* Ã¢ââ¬Ã¢ââ¬ NAN Wallet Ã¢â¬â style.css Ã¢â¬â Relay v2 Ã¢ââ¬Ã¢ââ¬ */
 :root{
   --bg:#111111;--surface:#1a1a1a;--card:#1a1a1a;--card2:#222222;
   --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.12);
@@ -43,17 +61,17 @@ body{
   letter-spacing:-.01em;
 }
 
-/* â”€â”€ App shell â”€â”€ */
+/* Ã¢ââ¬Ã¢ââ¬ App shell Ã¢ââ¬Ã¢ââ¬ */
 #app-root{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;max-width:480px;margin:0 auto;height:100%;overflow:hidden;background:transparent;box-shadow:none;scrollbar-width:none;display:flex;flex-direction:column;}
 #app-root::before{display:none;}
 #app-root::after{display:none;}
 #app-root::-webkit-scrollbar{display:none;}
 
-/* â”€â”€ Background effects â€” none, pure black â”€â”€ */
+/* Ã¢ââ¬Ã¢ââ¬ Background effects Ã¢â¬â none, pure black Ã¢ââ¬Ã¢ââ¬ */
 body::before{display:none;}
 body::after{display:none;}
 
-/* â”€â”€ Top bar â”€â”€ */
+/* Ã¢ââ¬Ã¢ââ¬ Top bar Ã¢ââ¬Ã¢ââ¬ */
 #globalTopBar{position:absolute;top:0;left:0;right:0;z-index:200;display:none;align-items:center;justify-content:space-between;padding:12px 18px;background:var(--topbar-bg);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);}
 .brand{display:flex;align-items:center;gap:9px;}
 
@@ -68,7 +86,7 @@ body::after{display:none;}
 #connectTopBtn:hover{transform:translateY(-1px);}
 #connectTopBtn.connected{background:rgba(168,85,247,.12);border:1.5px solid rgba(168,85,247,.4);box-shadow:none;color:var(--text);font-family:'Inter var','Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:.9rem;font-weight:700;cursor:default;letter-spacing:-.01em;}
 
-/* â”€â”€ Bottom Nav â”€â”€ */
+/* Ã¢ââ¬Ã¢ââ¬ Bottom Nav Ã¢ââ¬Ã¢ââ¬ */
 .bottom-nav{position:absolute;bottom:0;left:0;right:0;height:76px;z-index:100;background:var(--nav-bg);backdrop-filter:blur(32px);border-top:1px solid rgba(255,255,255,0.06);padding:6px 10px 10px;display:none;}
 .bottom-nav.show{display:block;}
 .nav-pill-wrap{display:flex;max-width:480px;margin:0 auto;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:4px;gap:2px;}
@@ -82,7 +100,7 @@ body::after{display:none;}
 .nav-send-hl{background:rgba(168,85,247,.08);color:var(--accent3);border-color:rgba(168,85,247,.16)!important;flex:1.2;}
 .nav-send-hl.active{background:rgba(168,85,247,.2);}
 
-/* â”€â”€ Pages â”€â”€ */
+/* Ã¢ââ¬Ã¢ââ¬ Pages Ã¢ââ¬Ã¢ââ¬ */
 .page{display:none;position:absolute;top:57px;left:0;right:0;bottom:76px;z-index:10;overflow-y:auto;overflow-x:hidden;padding:12px 14px 90px;animation:up .28s ease both;scrollbar-width:none;}
 .page::-webkit-scrollbar{display:none;}
 .page.active{display:block;}.page[style*="flex-direction:column"].active{display:flex;}
@@ -90,7 +108,7 @@ body::after{display:none;}
 .page-land.active{display:flex!important;flex-direction:column!important;}
 @keyframes up{from{opacity:0;transform:translateY(7px);}to{opacity:1;transform:translateY(0);}}
 
-/* â”€â”€ HOME PAGE â”€â”€ */
+/* Ã¢ââ¬Ã¢ââ¬ HOME PAGE Ã¢ââ¬Ã¢ââ¬ */
 .home-greeting{font-size:.95rem;color:var(--text3);margin-bottom:3px;font-weight:500;}
 .home-name{font-size:1.4rem;font-weight:700;color:var(--text);letter-spacing:-.5px;margin-bottom:14px;}
 
@@ -142,7 +160,7 @@ body::after{display:none;}
 .home-asset-change{font-size:.95rem;color:var(--text3);text-align:right;margin-top:1px;font-family:'Inter var','Inter',sans-serif;font-variant-numeric:tabular-nums;}
 .home-asset-change.neutral{color:var(--text3);}
 
-/* â”€â”€ Cards â”€â”€ */
+/* Ã¢ââ¬Ã¢ââ¬ Cards Ã¢ââ¬Ã¢ââ¬ */
 .card{background:rgba(255,255,255,0.04);border:1px solid rgba(168,85,247,0.18);border-radius:var(--radius);padding:20px;margin-bottom:14px;box-shadow:0 8px 32px rgba(0,0,0,0.3),inset 0 1px 0 rgba(168,85,247,0.12),inset 0 0 0 0.5px rgba(255,255,255,0.03);}
 .card-title{font-size:1rem;font-weight:700;letter-spacing:.08em;margin-bottom:14px;display:flex;align-items:center;gap:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent3);opacity:0.85;}
 .cticon{width:20px;height:20px;border-radius:6px;background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.25);display:flex;align-items:center;justify-content:center;font-size:1rem;}
@@ -161,13 +179,13 @@ body::after{display:none;}
 .wal-addr{font-family:'Inter var','Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:var(--text2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;}
 .wal-addr:hover{color:var(--text);}
 
-/* â”€â”€ Skeleton â”€â”€ */
+/* Ã¢ââ¬Ã¢ââ¬ Skeleton Ã¢ââ¬Ã¢ââ¬ */
 .skel{display:inline-block;background:linear-gradient(90deg,rgba(168,85,247,.08) 25%,rgba(168,85,247,.18) 50%,rgba(168,85,247,.08) 75%);background-size:200% 100%;animation:shimmer 1.4s ease infinite;border-radius:4px;}
 @keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
 .skel-bal{width:80px;height:28px;border-radius:6px;}
 .skel-small{width:50px;height:14px;border-radius:4px;}
 
-/* â”€â”€ Wallet Modal â”€â”€ */
+/* Ã¢ââ¬Ã¢ââ¬ Wallet Modal Ã¢ââ¬Ã¢ââ¬ */
 .wallet-modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9000;align-items:flex-end;justify-content:center;backdrop-filter:blur(8px);}
 .wallet-modal-overlay.show{display:flex;}
 .wallet-modal{background:var(--bg);border:1px solid var(--border2);border-radius:20px 20px 0 0;padding:20px 16px 32px;width:100%;max-width:480px;animation:up .3s ease both;}
@@ -186,7 +204,7 @@ body::after{display:none;}
 .wallet-divider::before,.wallet-divider::after{content:'';flex:1;height:1px;background:var(--border);}
 .wallet-divider span{font-size:1rem;color:var(--text3);}
 
-/* â”€â”€ Send / Forms â”€â”€ */
+/* Ã¢ââ¬Ã¢ââ¬ Send / Forms Ã¢ââ¬Ã¢ââ¬ */
 .send-tabs{display:flex;gap:6px;margin-bottom:10px;}
 .stab{flex:1;padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:transparent;color:var(--text3);font-family:'Inter',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:4px;}
 .stab.active{background:var(--card2);border-color:var(--accent);color:var(--accent3);}
@@ -213,7 +231,7 @@ input:disabled{opacity:.5;cursor:not-allowed;}
 .gas-row{display:flex;align-items:center;gap:7px;font-family:'Inter var','Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:var(--success);margin-bottom:8px;padding:10px 13px;background:rgba(112,0,255,0.05);border:1px solid rgba(112,0,255,0.15);border-radius:10px;}
 .gas-row .gas-icon{font-size:.95rem;}
 
-/* â”€â”€ Buttons â”€â”€ */
+/* Ã¢ââ¬Ã¢ââ¬ Buttons Ã¢ââ¬Ã¢ââ¬ */
 .btn{width:100%;padding:15px;background:#7000ff;border:none;border-radius:var(--radius-sm);color:#f0f0f0;font-family:'Inter',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 4px 20px rgba(168,85,247,0.45),inset 0 1px 0 rgba(255,255,255,0.15);letter-spacing:.03em;}
 .btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 28px rgba(168,85,247,0.55);}
 .btn:disabled{opacity:.35;cursor:not-allowed;transform:none;background:var(--surface);box-shadow:none;color:var(--text3);border:1px solid var(--border);}
@@ -229,7 +247,7 @@ input:disabled{opacity:.5;cursor:not-allowed;}
 .ibtn.red{color:var(--danger);border-color:rgba(248,113,113,.22);}
 .ibtn.red:hover{background:rgba(248,113,113,.06);}
 
-/* â”€â”€ Confirm / Success â”€â”€ */
+/* Ã¢ââ¬Ã¢ââ¬ Confirm / Success Ã¢ââ¬Ã¢ââ¬ */
 .confirm-wrap{display:none;background:var(--card);border:1px solid var(--border2);border-radius:var(--radius);padding:15px;margin-bottom:7px;animation:up .25s ease both;}
 .confirm-wrap.show{display:block;}
 .confirm-title{font-size:1rem;font-weight:700;margin-bottom:3px;display:flex;align-items:center;gap:6px;}
@@ -258,16 +276,16 @@ input:disabled{opacity:.5;cursor:not-allowed;}
 .success-hash{font-family:'Inter var','Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:.875rem;color:var(--accent3);margin-bottom:18px;word-break:break-all;}
 .success-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 
-/* â”€â”€ QR / Receive â”€â”€ */
+/* Ã¢ââ¬Ã¢ââ¬ QR / Receive Ã¢ââ¬Ã¢ââ¬ */
 .qr-wrap{display:flex;flex-direction:row;align-items:center;gap:11px;padding:5px 0;}
 .qr-frame{background:#fff;border-radius:10px;padding:7px;flex-shrink:0;}
 .recv-addr{font-family:'Inter var','Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:var(--text2);word-break:break-all;padding:7px 9px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);flex:1;line-height:1.65;}
 
-/* â”€â”€ Swap â”€â”€ */
+/* Ã¢ââ¬Ã¢ââ¬ Swap Ã¢ââ¬Ã¢ââ¬ */
 .swap-input{width:100%;background:transparent;border:none;color:var(--text);font-family:'Inter var','Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1.6rem;font-weight:600;outline:none;padding:0;}
 .swap-input::placeholder{color:var(--text3);opacity:.5;}
 
-/* â”€â”€ Earn / Lend â”€â”€ */
+/* Ã¢ââ¬Ã¢ââ¬ Earn / Lend Ã¢ââ¬Ã¢ââ¬ */
 .earn-apy-hero{background:linear-gradient(135deg,rgba(112,0,255,.08),rgba(112,0,255,.04));border:1px solid rgba(112,0,255,.25);border-radius:var(--radius);padding:22px;text-align:center;margin-bottom:14px;}
 .earn-apy-num{font-size:3.2rem;font-weight:700;color:var(--success);letter-spacing:-2px;line-height:1;margin-bottom:4px;}
 .earn-apy-label{font-size:1rem;color:rgba(112,0,255,.7);margin-bottom:2px;}
@@ -286,7 +304,7 @@ input:disabled{opacity:.5;cursor:not-allowed;}
 .stake-panel{display:none;}
 .stake-panel.active{display:block;}
 
-/* â”€â”€ More page â”€â”€ */
+/* Ã¢ââ¬Ã¢ââ¬ More page Ã¢ââ¬Ã¢ââ¬ */
 .more-item{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:rgba(255,255,255,0.04);border:1px solid rgba(168,85,247,.15);border-radius:14px;cursor:pointer;transition:all .2s;margin-bottom:8px;}
 .more-item:hover{border-color:rgba(168,85,247,.35);background:rgba(168,85,247,.06);}
 .more-item-left{display:flex;align-items:center;gap:12px;}
@@ -298,7 +316,7 @@ input:disabled{opacity:.5;cursor:not-allowed;}
 .more-item.danger:hover{border-color:rgba(248,113,113,.35);background:rgba(248,113,113,.05);}
 .more-item.danger .more-item-title{color:var(--danger);}
 
-/* â”€â”€ Arc Name â”€â”€ */
+/* Ã¢ââ¬Ã¢ââ¬ Arc Name Ã¢ââ¬Ã¢ââ¬ */
 .arcname-card{background:var(--surface);border:1px solid var(--border);border-top:2px solid var(--accent);border-radius:var(--radius-sm);padding:10px;margin-bottom:8px;}
 .arcname-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);}
 .arcname-row:last-child{border-bottom:none;}
@@ -315,8 +333,8 @@ input:disabled{opacity:.5;cursor:not-allowed;}
 .dir-handle{font-size:.95rem;font-weight:600;margin-bottom:2px;}
 .dir-addr{font-family:'Inter var','Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:var(--text3);}
 
-/* â”€â”€ Tx History â”€â”€ */
-/* â”€â”€ History / Activity â”€â”€ */
+/* Ã¢ââ¬Ã¢ââ¬ Tx History Ã¢ââ¬Ã¢ââ¬ */
+/* Ã¢ââ¬Ã¢ââ¬ History / Activity Ã¢ââ¬Ã¢ââ¬ */
 .tx-item{display:flex;align-items:center;gap:12px;background:var(--card);border-bottom:1px solid var(--border);padding:14px 16px;cursor:pointer;transition:background .15s;}
 .tx-item:first-child{border-radius:14px 14px 0 0;}
 .tx-item:last-child{border-radius:0 0 14px 14px;border-bottom:none;}
@@ -355,7 +373,7 @@ input:disabled{opacity:.5;cursor:not-allowed;}
 .clear-hist-btn{background:transparent;border:1px solid rgba(248,113,113,.22);border-radius:6px;color:var(--danger);font-family:'Inter',sans-serif;font-size:1rem;padding:3px 9px;cursor:pointer;opacity:.7;}
 .clear-hist-btn:hover{opacity:1;background:rgba(248,113,113,.06);}
 
-/* â”€â”€ Bridge / Naira â”€â”€ */
+/* Ã¢ââ¬Ã¢ââ¬ Bridge / Naira Ã¢ââ¬Ã¢ââ¬ */
 .chain-badge{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 11px;font-family:'Inter var','Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:var(--text2);text-align:center;}
 .live-badge{background:rgba(112,0,255,.06);border:1px solid rgba(112,0,255,.25);border-radius:var(--radius-sm);padding:8px 11px;margin-bottom:8px;font-size:1rem;color:var(--success);line-height:1.55;display:flex;align-items:center;gap:7px;}
 .live-dot{width:7px;height:7px;border-radius:50%;background:var(--success);animation:pulse 1.5s ease infinite;flex-shrink:0;}
@@ -364,7 +382,7 @@ input:disabled{opacity:.5;cursor:not-allowed;}
 .wrong-net.show{display:flex;}
 .switch-net-btn{margin-left:auto;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);border-radius:6px;color:var(--warning);font-family:'Inter',sans-serif;font-size:1rem;padding:3px 9px;cursor:pointer;}
 
-/* â”€â”€ Misc â”€â”€ */
+/* Ã¢ââ¬Ã¢ââ¬ Misc Ã¢ââ¬Ã¢ââ¬ */
 .empty{text-align:center;padding:22px 16px;color:var(--text3);}
 /* Skeleton shimmer */
 .skeleton{background:linear-gradient(90deg,rgba(255,255,255,.05) 25%,rgba(255,255,255,.1) 50%,rgba(255,255,255,.05) 75%);background-size:200% 100%;animation:shimmer 1.6s infinite;border-radius:8px;}
@@ -383,7 +401,7 @@ input:disabled{opacity:.5;cursor:not-allowed;}
 a{color:var(--accent3);text-decoration:none;}
 a:hover{color:var(--text);}
 
-/* â”€â”€ Toast â”€â”€ */
+/* Ã¢ââ¬Ã¢ââ¬ Toast Ã¢ââ¬Ã¢ââ¬ */
 #toast{
   position:fixed;
   top:16px;
@@ -448,17 +466,17 @@ a:hover{color:var(--text);}
   }
 }
 
-/* â”€â”€ Spinner â”€â”€ */
+/* Ã¢ââ¬Ã¢ââ¬ Spinner Ã¢ââ¬Ã¢ââ¬ */
 .spinner{display:inline-block;width:11px;height:11px;border:2px solid rgba(237,233,254,.3);border-top-color:#f3e8ff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:5px;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
-/* â”€â”€ Swap page specific â”€â”€ */
+/* Ã¢ââ¬Ã¢ââ¬ Swap page specific Ã¢ââ¬Ã¢ââ¬ */
 .swap-box-wrap{background:rgba(255,255,255,0.02);border:1px solid rgba(168,85,247,0.18);border-radius:var(--radius);padding:4px;margin-bottom:14px;}
 .swap-inner{background:var(--surface);padding:14px 16px 10px;}
 .swap-inner.top{border-radius:14px 14px 4px 4px;}
 .swap-inner.bottom{border-radius:4px 4px 14px 14px;padding:10px 16px 14px;}
 
-/* â”€â”€ Mobile â”€â”€ */
+/* Ã¢ââ¬Ã¢ââ¬ Mobile Ã¢ââ¬Ã¢ââ¬ */
 @media(max-width:480px){
   /* Full width, no side shadows */
   #app-root{left:0;transform:none;max-width:100%;box-shadow:none;height:100dvh;}
@@ -471,7 +489,7 @@ a:hover{color:var(--text);}
   .page{top:54px;bottom:68px!important;padding:10px 12px 90px!important;}
   .page-land{top:0!important;bottom:0!important;overflow:hidden!important;}
 
-  /* Nav â€” bigger touch targets */
+  /* Nav Ã¢â¬â bigger touch targets */
   .bottom-nav{height:72px!important;padding-bottom:max(env(safe-area-inset-bottom),8px)!important;}
   .nav-btn{font-size:1rem!important;gap:4px!important;padding:8px 4px!important;font-weight:600!important;}
   .nav-btn .ni svg{width:22px!important;height:22px!important;}
@@ -495,7 +513,7 @@ a:hover{color:var(--text);}
   .naira-wide-title{font-size:1rem!important;}
   .naira-wide-sub{font-size:1rem!important;}
 
-  /* Unified page cards â€” tighter on mobile */
+  /* Unified page cards Ã¢â¬â tighter on mobile */
   .page > div[style*="border-radius:22px"]{
     border-radius:16px!important;
     padding:14px!important;
@@ -522,7 +540,7 @@ a:hover{color:var(--text);}
   .card{padding:14px!important;border-radius:16px!important;margin-bottom:10px!important;}
   .bal-card{padding:14px!important;border-radius:16px!important;}
 
-  /* Inputs â€” prevent iOS zoom */
+  /* Inputs Ã¢â¬â prevent iOS zoom */
   input,select{font-size:16px!important;}
   .swap-input{font-size:1.4rem!important;}
 
@@ -629,7 +647,7 @@ a:hover{color:var(--text);}
 
 
 
-/* â•â• LIGHT MODE â•â• */
+/* Ã¢â¢ÂÃ¢â¢Â LIGHT MODE Ã¢â¢ÂÃ¢â¢Â */
 [data-theme="light"] body,[data-theme="light"] #app-root,[data-theme="light"] .page,[data-theme="light"] .page-land{background:var(--bg)!important;}
 [data-theme="light"] body::before{background-image:linear-gradient(rgba(85,0,204,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(85,0,204,.05) 1px,transparent 1px)!important;}
 [data-theme="light"] body::after{background:radial-gradient(ellipse 700px 500px at 90% -10%,rgba(168,85,247,.1) 0%,transparent 60%),radial-gradient(ellipse 400px 400px at -5% 80%,rgba(85,0,204,.06) 0%,transparent 60%)!important;}
@@ -732,7 +750,7 @@ a:hover{color:var(--text);}
 [data-theme="light"] .price-opt{background:#ffffff!important;border-color:rgba(85,0,204,.15)!important;}
 [data-theme="light"] .price-opt.active{background:rgba(85,0,204,.09)!important;border-color:#7000ff!important;}
 
-/* â•â• MOBILE IMPROVEMENTS â•â• */
+/* Ã¢â¢ÂÃ¢â¢Â MOBILE IMPROVEMENTS Ã¢â¢ÂÃ¢â¢Â */
 /* AI Chat panel - full mobile friendly */
 #agentPanel {
   border-radius: 0 !important;
@@ -869,7 +887,7 @@ a:hover{color:var(--text);}
   #aiBtn { bottom: 76px !important; }
 }
 
-/* â•â• TABLET (481px â€“ 768px) â•â• */
+/* Ã¢â¢ÂÃ¢â¢Â TABLET (481px Ã¢â¬â 768px) Ã¢â¢ÂÃ¢â¢Â */
 @media(min-width:481px) and (max-width:768px){
   #app-root{
     max-width:560px;
@@ -884,11 +902,11 @@ a:hover{color:var(--text);}
   .card{padding:22px;}
 }
 
-/* â•â• DESKTOP (769px+) â•â• */
+/* Ã¢â¢ÂÃ¢â¢Â DESKTOP (769px+) Ã¢â¢ÂÃ¢â¢Â */
 @media(min-width:769px){
   html,body{overflow:hidden;height:100%;background:var(--bg);}
 
-  /* â”€â”€ Landing page: full screen, no sidebar â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ Landing page: full screen, no sidebar Ã¢ââ¬Ã¢ââ¬ */
   .page-land.active{
     position:fixed !important;
     top:0 !important;left:0 !important;right:0 !important;bottom:0 !important;
@@ -902,7 +920,7 @@ a:hover{color:var(--text);}
   .page-land.active > div:first-child{
     width:100% !important;max-width:100% !important;flex-shrink:0 !important;
   }
-  /* Content area â€” two column layout on desktop */
+  /* Content area Ã¢â¬â two column layout on desktop */
   .page-land.active > div:last-child{
     flex:1 !important;display:flex !important;
     align-items:center !important;justify-content:center !important;
@@ -918,7 +936,7 @@ a:hover{color:var(--text);}
   /* Hide mobile-only trust bar on desktop */
 
 
-  /* â”€â”€ App root â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ App root Ã¢ââ¬Ã¢ââ¬ */
   #app-root{
     position:fixed;top:0;left:0;right:0;bottom:0;
     width:100%;max-width:100%;height:100vh;
@@ -930,7 +948,7 @@ a:hover{color:var(--text);}
   #globalTopBar{display:none !important;}
   .bottom-nav{display:none !important;}
 
-  /* â”€â”€ Sidebar â€” starts below topbar â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ Sidebar Ã¢â¬â starts below topbar Ã¢ââ¬Ã¢ââ¬ */
   #desktopNav{
     flex-direction:column;
     position:fixed;top:64px;left:0;
@@ -991,7 +1009,7 @@ a:hover{color:var(--text);}
   #desktopNav .dnav-divider{height:1px;background:var(--border);margin:10px 16px;}
   #desktopNav > button, #desktopNav .dnav-btn{margin-left:8px;margin-right:8px;width:calc(100% - 16px);}
 
-  /* â”€â”€ Desktop topbar â€” full width with logo on left like Relay â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ Desktop topbar Ã¢â¬â full width with logo on left like Relay Ã¢ââ¬Ã¢ââ¬ */
   #globalTopBar{
     display:none;
     position:fixed;top:0;left:0;right:0;height:64px;
@@ -1004,7 +1022,7 @@ a:hover{color:var(--text);}
   #globalTopBar .brand{display:flex !important;align-items:center;gap:10px;flex-shrink:0;}
   #globalTopBar #topbarPageInfo{display:flex !important;}
 
-  /* â”€â”€ Pages: full width below topbar â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ Pages: full width below topbar Ã¢ââ¬Ã¢ââ¬ */
   .page{
     position:fixed !important;
     top:64px !important;
@@ -1026,7 +1044,7 @@ a:hover{color:var(--text);}
     flex-shrink:0 !important;box-sizing:border-box !important;
     padding-left:24px !important;padding-right:24px !important;
   }
-  /* Elements that already have their own padding â€” don't double-pad */
+  /* Elements that already have their own padding Ã¢â¬â don't double-pad */
   .page > .card,
   .page > .send-card{
     padding-left:22px !important;padding-right:22px !important;
@@ -1038,7 +1056,7 @@ a:hover{color:var(--text);}
   .home-bal-num{font-size:2.6rem;}
   .home-bal-card{padding:22px;margin-bottom:12px;}
 
-  /* Ensure ALL page content respects 600px â€” catch nested containers */
+  /* Ensure ALL page content respects 600px Ã¢â¬â catch nested containers */
   #page-home > *,#page-send > *,#page-lend > *,
   #page-swap > *,#page-bridge > *,#page-history > *,
   #page-more > *,#page-arcname > *,#page-naira > *,
@@ -1089,7 +1107,7 @@ a:hover{color:var(--text);}
   .page::-webkit-scrollbar-thumb{background:rgba(168,85,247,.2);border-radius:3px;}
 }
 
-/* â•â• WIDE DESKTOP (1200px+) â•â• */
+/* Ã¢â¢ÂÃ¢â¢Â WIDE DESKTOP (1200px+) Ã¢â¢ÂÃ¢â¢Â */
 @media(min-width:1200px){
   #desktopNav{width:240px;}
   .page{left:240px !important;}
@@ -1099,7 +1117,7 @@ a:hover{color:var(--text);}
 }
 
 
-/* â”€â”€ Mobile polish (max-width:480px) â”€â”€ */
+/* Ã¢ââ¬Ã¢ââ¬ Mobile polish (max-width:480px) Ã¢ââ¬Ã¢ââ¬ */
 @media(max-width:480px){
 
   /* Prevent horizontal scroll */
@@ -1107,17 +1125,17 @@ a:hover{color:var(--text);}
 
   /* Fix NaN text showing during balance load */
   #homeBalAmt:empty::before,
-  #homeBalAmt[data-loading]::before{content:'â€”';color:rgba(255,255,255,.3);}
+  #homeBalAmt[data-loading]::before{content:'Ã¢â¬â';color:rgba(255,255,255,.3);}
 
   /* Better touch targets for all buttons */
   button{min-height:44px;}
 
-  /* Send/swap/bridge amount inputs â€” no iOS zoom */
+  /* Send/swap/bridge amount inputs Ã¢â¬â no iOS zoom */
   input[type="text"],input[type="number"],input[type="email"]{
     font-size:16px !important;
   }
 
-  /* Balance card â€” tighter but readable */
+  /* Balance card Ã¢â¬â tighter but readable */
   .home-bal-card{
     padding:16px 14px !important;
     border-radius:18px !important;
@@ -1129,38 +1147,38 @@ a:hover{color:var(--text);}
     gap:6px !important;
   }
 
-  /* Action buttons â€” even spacing */
+  /* Action buttons Ã¢â¬â even spacing */
   .home-actions-top{
     display:grid !important;
     grid-template-columns:repeat(3,1fr) !important;
     gap:8px !important;
   }
 
-  /* Asset rows â€” proper padding */
+  /* Asset rows Ã¢â¬â proper padding */
   .home-asset-row{
     padding:12px 10px !important;
     border-radius:12px !important;
   }
 
-  /* Swap page â€” full width inputs */
+  /* Swap page Ã¢â¬â full width inputs */
   .swap-from-card,.swap-to-card{
     border-radius:16px !important;
     padding:14px !important;
   }
 
-  /* Send page â€” recipient input */
+  /* Send page Ã¢â¬â recipient input */
   #sendAddr{
     font-size:13px !important;
     word-break:break-all !important;
   }
 
-  /* Bridge page â€” chain selector */
+  /* Bridge page Ã¢â¬â chain selector */
   #bridgeChainSel{
     font-size:14px !important;
     width:100% !important;
   }
 
-  /* History items â€” readable on small screen */
+  /* History items Ã¢â¬â readable on small screen */
   .tx-row{
     padding:10px 12px !important;
     gap:10px !important;
@@ -1172,7 +1190,7 @@ a:hover{color:var(--text);}
     text-overflow:ellipsis !important;
   }
 
-  /* Toast â€” full width on mobile */
+  /* Toast Ã¢â¬â full width on mobile */
   #toast{
     left:12px !important;
     right:12px !important;
@@ -1183,13 +1201,13 @@ a:hover{color:var(--text);}
     text-align:center !important;
   }
 
-  /* Modal / confirm sheets â€” full width */
+  /* Modal / confirm sheets Ã¢â¬â full width */
   .conf-sheet,.modal-sheet{
     border-radius:20px 20px 0 0 !important;
     padding:20px 16px !important;
   }
 
-  /* Earn page â€” pool stats stack */
+  /* Earn page Ã¢â¬â pool stats stack */
   .earn-stats{
     grid-template-columns:1fr 1fr !important;
     gap:8px !important;
@@ -1201,11 +1219,11 @@ a:hover{color:var(--text);}
     gap:8px !important;
   }
 
-  /* Right panel â€” hidden on mobile */
+  /* Right panel Ã¢â¬â hidden on mobile */
   #desktopRightPanel{display:none !important;}
 }
 
-/* â”€â”€ Very small phones (360px) â”€â”€ */
+/* Ã¢ââ¬Ã¢ââ¬ Very small phones (360px) Ã¢ââ¬Ã¢ââ¬ */
 @media(max-width:360px){
   .home-bal-num{font-size:2rem !important;}
   .home-action-label{font-size:.95rem !important;}
@@ -1214,21 +1232,21 @@ a:hover{color:var(--text);}
   .home-actions-top{grid-template-columns:repeat(3,1fr) !important;gap:5px !important;}
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   MOBILE â€” TARGETED (max-width: 480px)
+/* Ã¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢Â
+   MOBILE Ã¢â¬â TARGETED (max-width: 480px)
    Only targets real classes/IDs in HTML
    Does NOT affect desktop (min-width:481px)
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+Ã¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢Â */
 @media(max-width:480px){
 
-  /* â”€â”€ Core page sizing â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ Core page sizing Ã¢ââ¬Ã¢ââ¬ */
   .page{
     top:54px !important;
     bottom:70px !important;
     padding:12px 12px 24px !important;
   }
 
-  /* â”€â”€ Actions grid on home â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ Actions grid on home Ã¢ââ¬Ã¢ââ¬ */
   .mob-actions{
     padding:12px 4px !important;
   }
@@ -1253,7 +1271,7 @@ a:hover{color:var(--text);}
     height:20px !important;
   }
 
-  /* â”€â”€ Asset rows â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ Asset rows Ã¢ââ¬Ã¢ââ¬ */
   .mob-asset-row{
     padding:12px 14px !important;
     gap:10px !important;
@@ -1263,20 +1281,20 @@ a:hover{color:var(--text);}
     height:34px !important;
   }
 
-  /* â”€â”€ More page menu items â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ More page menu items Ã¢ââ¬Ã¢ââ¬ */
   .mob-menu-item{
     padding:14px 14px !important;
     gap:12px !important;
     min-height:56px !important;
   }
 
-  /* â”€â”€ All page cards â€” comfortable padding â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ All page cards Ã¢â¬â comfortable padding Ã¢ââ¬Ã¢ââ¬ */
   .mob-card{
     padding:14px !important;
     border-radius:16px !important;
   }
 
-  /* â”€â”€ Bottom nav â€” taller tap targets â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ Bottom nav Ã¢â¬â taller tap targets Ã¢ââ¬Ã¢ââ¬ */
   .bottom-nav{
     height:70px !important;
     padding:6px 8px max(env(safe-area-inset-bottom),10px) !important;
@@ -1301,13 +1319,13 @@ a:hover{color:var(--text);}
     border-radius:14px !important;
   }
 
-  /* â”€â”€ Top bar â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ Top bar Ã¢ââ¬Ã¢ââ¬ */
   #globalTopBar{
     padding:8px 12px !important;
     min-height:54px !important;
   }
 
-  /* â”€â”€ All inputs â€” prevent iOS zoom â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ All inputs Ã¢â¬â prevent iOS zoom Ã¢ââ¬Ã¢ââ¬ */
   input,select,textarea{
     font-size:16px !important;
     min-height:46px !important;
@@ -1321,7 +1339,7 @@ a:hover{color:var(--text);}
     min-height:auto !important;
   }
 
-  /* â”€â”€ Buttons â€” easy to tap â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ Buttons Ã¢â¬â easy to tap Ã¢ââ¬Ã¢ââ¬ */
   .btn{
     min-height:50px !important;
     padding:14px 16px !important;
@@ -1329,14 +1347,14 @@ a:hover{color:var(--text);}
     border-radius:13px !important;
   }
 
-  /* â”€â”€ Back button â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ Back button Ã¢ââ¬Ã¢ââ¬ */
   .back-btn{
     min-height:auto !important;
     padding:0 0 12px !important;
     font-size:.9rem !important;
   }
 
-  /* â”€â”€ Earn tabs â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ Earn tabs Ã¢ââ¬Ã¢ââ¬ */
   .send-tabs{
     gap:2px !important;
     padding:3px !important;
@@ -1347,7 +1365,7 @@ a:hover{color:var(--text);}
     min-height:36px !important;
   }
 
-  /* â”€â”€ Token selector buttons â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ Token selector buttons Ã¢ââ¬Ã¢ââ¬ */
   .topt{
     padding:10px 6px !important;
     font-size:.875rem !important;
@@ -1355,7 +1373,7 @@ a:hover{color:var(--text);}
     gap:5px !important;
   }
 
-  /* â”€â”€ Confirm card â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ Confirm card Ã¢ââ¬Ã¢ââ¬ */
   .confirm-wrap{
     padding:16px !important;
     border-radius:16px !important;
@@ -1370,7 +1388,7 @@ a:hover{color:var(--text);}
     margin-top:14px !important;
   }
 
-  /* â”€â”€ Success card â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ Success card Ã¢ââ¬Ã¢ââ¬ */
   .success-wrap{padding:24px 16px 20px !important;}
   .success-circle{
     width:64px !important;
@@ -1380,7 +1398,7 @@ a:hover{color:var(--text);}
   .success-amount{font-size:1.8rem !important;}
   .success-actions{gap:8px !important;}
 
-  /* â”€â”€ History tx rows â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ History tx rows Ã¢ââ¬Ã¢ââ¬ */
   .tx-item{
     padding:12px 12px !important;
     gap:10px !important;
@@ -1396,12 +1414,12 @@ a:hover{color:var(--text);}
   .tx-amt{font-size:.875rem !important;}
   .tx-time{font-size:.75rem !important;}
 
-  /* â”€â”€ History stats â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ History stats Ã¢ââ¬Ã¢ââ¬ */
   .hist-stat{padding:10px 6px !important;}
   .hist-stat-num{font-size:1.2rem !important;}
   .hist-stat-lbl{font-size:.72rem !important;}
 
-  /* â”€â”€ Toast on mobile â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ Toast on mobile Ã¢ââ¬Ã¢ââ¬ */
   #toast{
     left:12px !important;
     right:12px !important;
@@ -1414,7 +1432,7 @@ a:hover{color:var(--text);}
     transform:translateY(0) !important;
   }
 
-  /* â”€â”€ Wallet modal slides up â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ Wallet modal slides up Ã¢ââ¬Ã¢ââ¬ */
   .wallet-modal{
     border-radius:20px 20px 0 0 !important;
     padding:16px 14px max(env(safe-area-inset-bottom),24px) !important;
@@ -1428,7 +1446,7 @@ a:hover{color:var(--text);}
     border-radius:12px !important;
   }
 
-  /* â”€â”€ AI floating button â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ AI floating button Ã¢ââ¬Ã¢ââ¬ */
   #aiBtn{
     bottom:82px !important;
     right:12px !important;
@@ -1436,25 +1454,25 @@ a:hover{color:var(--text);}
     height:42px !important;
   }
 
-  /* â”€â”€ Balance on home â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ Balance on home Ã¢ââ¬Ã¢ââ¬ */
   #homeBalAmt{font-size:2.4rem !important;}
   #homeBalNgn{font-size:.875rem !important;}
 
-  /* â”€â”€ Earn APY â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ Earn APY Ã¢ââ¬Ã¢ââ¬ */
   div[style*="font-size:2.8rem"]{font-size:2rem !important;}
 
-  /* â”€â”€ Bridge select â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ Bridge select Ã¢ââ¬Ã¢ââ¬ */
   #bridgeChainSelect{
     font-size:16px !important;
     min-height:46px !important;
   }
 
-  /* â”€â”€ Prevent any horizontal overflow â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ Prevent any horizontal overflow Ã¢ââ¬Ã¢ââ¬ */
   .page,#app-root{overflow-x:hidden !important;}
 
 }
 
-/* â”€â”€ Tiny phones (iPhone SE, small Androids) â”€â”€ */
+/* Ã¢ââ¬Ã¢ââ¬ Tiny phones (iPhone SE, small Androids) Ã¢ââ¬Ã¢ââ¬ */
 @media(max-width:360px){
   #homeBalAmt{font-size:2rem !important;}
   .nav-btn .nl{font-size:.7rem !important;}
@@ -1464,7 +1482,7 @@ a:hover{color:var(--text);}
   .send-tabs .stab{font-size:.75rem !important;padding:7px 3px !important;}
 }
 
-/* â”€â”€ Relay Light Mode â€” Text & Color Fixes â”€â”€ */
+/* Ã¢ââ¬Ã¢ââ¬ Relay Light Mode Ã¢â¬â Text & Color Fixes Ã¢ââ¬Ã¢ââ¬ */
 [data-theme="light"] body,
 [data-theme="light"] #app-root,
 [data-theme="light"] .page{
@@ -1629,10 +1647,10 @@ a:hover{color:var(--text);}
 
 
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   MOBILE â€” Remove outer card wrappers on feature pages
+/* Ã¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢Â
+   MOBILE Ã¢â¬â Remove outer card wrappers on feature pages
    Cards still show on desktop (min-width:481px+)
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+Ã¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢Â */
 @media(max-width:480px){
 
   /* Remove outer card look from all .card elements inside pages */
@@ -1661,7 +1679,7 @@ a:hover{color:var(--text);}
     padding-right: 0 !important;
   }
 
-  /* Keep inner cards (nested ones) â€” they still show */
+  /* Keep inner cards (nested ones) Ã¢â¬â they still show */
   .page > .card .card,
   .page > div > .card,
   .page > div > .send-card,
@@ -1697,7 +1715,7 @@ a:hover{color:var(--text);}
   }
 }
 
-/* â•â• TOPBAR & DISCONNECT FIX â•â• */
+/* Ã¢â¢ÂÃ¢â¢Â TOPBAR & DISCONNECT FIX Ã¢â¢ÂÃ¢â¢Â */
 [data-theme="light"] #disconnectTopBtn { color: #dc2626 !important; }
 [data-theme="light"] #moreArcName { color: #4c1d95 !important; }
 
@@ -1841,7 +1859,7 @@ a:hover{color:var(--text);}
     font-weight: 700 !important;
   }
 
-  /* 3. Fix "Withdraw anytime · No lockup" wrapping */
+  /* 3. Fix "Withdraw anytime Â· No lockup" wrapping */
   .save-earn-sub, [class*="lockup"], [class*="withdraw"] {
     white-space: nowrap !important;
     font-size: 12px !important;
@@ -1887,7 +1905,7 @@ a:hover{color:var(--text);}
     display: none !important;
   }
 
-  /* 2. Fix "Withdraw anytime · No lockup" wrapping */
+  /* 2. Fix "Withdraw anytime Â· No lockup" wrapping */
   .earn-sub, .save-sub, [class*="earn"] p, [class*="save"] p {
     white-space: nowrap !important;
     font-size: 11px !important;
@@ -1941,7 +1959,7 @@ a:hover{color:var(--text);}
     letter-spacing: -0.02em !important;
   }
 
-  /* FIX "Withdraw anytime · No lockup" wrapping */
+  /* FIX "Withdraw anytime Â· No lockup" wrapping */
   .earn-meta, .save-meta, [class*="earn-sub"], [class*="no-lock"] {
     white-space: nowrap !important;
     font-size: 11px !important;
@@ -1986,12 +2004,12 @@ a:hover{color:var(--text);}
   #disconnectTopBtn { display:none !important; }
   #disconnectTopBtnMobile { display:flex !important; }
   #topbarPageInfo { display:none !important; }
-  /* Hide net pill, theme toggle on mobile â€” saves space */
+  /* Hide net pill, theme toggle on mobile Ã¢â¬â saves space */
   .net-pill { display:none !important; }
   .theme-toggle-btn { display:none !important; }
   /* Tighter topbar on mobile */
   #globalTopBar { padding:0 12px !important; height:52px !important; }
-  /* Wallet address pill â€” smaller */
+  /* Wallet address pill Ã¢â¬â smaller */
   #connectTopBtn, #landConnectBtn {
     font-size:.75rem !important;
     padding:5px 10px !important;
@@ -2000,16 +2018,16 @@ a:hover{color:var(--text);}
   /* Brand tighter */
   
   
-  /* Remove all blur effects on mobile â€” kills blurriness/lag */
+  /* Remove all blur effects on mobile Ã¢â¬â kills blurriness/lag */
   *, *::before, *::after {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
   }
 
-  /* â”€â”€ Strip ALL grey backgrounds on mobile â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ Strip ALL grey backgrounds on mobile Ã¢ââ¬Ã¢ââ¬ */
   /* Must be on :root for CSS custom properties to cascade */
 
-  /* All inline grey/surface backgrounds â†’ transparent */
+  /* All inline grey/surface backgrounds Ã¢â â transparent */
   *[style*="background:var(--card)"],
   *[style*="background:var(--surface)"],
   *[style*="background:#1a1a1a"],
@@ -2027,7 +2045,7 @@ a:hover{color:var(--text);}
     border-color: rgba(168,85,247,.12) !important;
   }
 
-  /* â”€â”€ Strip ALL card/container wrappers on mobile â€” plain black â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ Strip ALL card/container wrappers on mobile Ã¢â¬â plain black Ã¢ââ¬Ã¢ââ¬ */
   .card, .send-card, .mob-actions,
   .page > div, .page > section,
   [style*="border-radius:22px"],
@@ -2080,7 +2098,7 @@ a:hover{color:var(--text);}
     box-shadow: none !important;
   }
 
-  /* â”€â”€ Smaller fonts throughout app â”€â”€ */
+  /* Ã¢ââ¬Ã¢ââ¬ Smaller fonts throughout app Ã¢ââ¬Ã¢ââ¬ */
   .card { padding:14px !important; }
   .bal-amt, #homeBalAmt { font-size:1.9rem !important; }
   .bal-sub { font-size:.75rem !important; }
