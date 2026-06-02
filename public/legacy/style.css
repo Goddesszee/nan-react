@@ -1,3 +1,6 @@
+
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.88) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
 :root{
   --bg:#111111;--surface:#1a1a1a;--card:#1a1a1a;--card2:#222222;
   --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.12);
