@@ -462,15 +462,13 @@ a:hover{color:var(--text);}
 
   /* Nav Ã¢â¬â bigger touch targets */
   .bottom-nav{height:72px!important;padding-bottom:max(env(safe-area-inset-bottom),8px)!important;}
-  .nav-btn{font-size:1rem!important;gap:4px!important;padding:8px 4px!important;font-weight:600!important;}
+  .nav-btn{gap:4px!important;padding:8px 4px!important;}
   .nav-btn .ni svg{width:22px!important;height:22px!important;}
   .nav-btn.active{color:var(--accent3)!important;}
 
   /* Top bar */
   #globalTopBar{padding:10px 14px!important;}
   
-  .net-pill{font-size:1rem!important;padding:3px 7px!important;}
-  #connectTopBtn{font-size:1rem!important;padding:6px 12px!important;}
 
   /* Home page */
   .home-bal-num{font-size:2.3rem!important;letter-spacing:-2px!important;}
@@ -1098,8 +1096,6 @@ a:hover{color:var(--text);}
   #homeBalAmt:empty::before,
   #homeBalAmt[data-loading]::before{content:'Ã¢â¬â';color:rgba(255,255,255,.3);}
 
-  /* Better touch targets for all buttons */
-  button{min-height:44px;}
 
   /* Send/swap/bridge amount inputs Ã¢â¬â no iOS zoom */
   input[type="text"],input[type="number"],input[type="email"]{

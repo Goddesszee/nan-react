@@ -129,9 +129,20 @@ html, body { background: var(--bg); }
 
 /* On mobile: hide full disconnect, show icon */
 @media (max-width: 480px) {
+  /* Hide logo entirely on mobile */
+  #globalTopBar .brand { display: none !important; }
   #disconnectTopBtn { display: none !important; }
   #disconnectTopBtnMobile.show-disc { display: flex !important; }
   .topbar-wordmark { display: none; }
+
+  /* Force desktop colours on mobile — no overrides */
+  #globalTopBar { background: var(--topbar-bg) !important; }
+  .nav-pill-wrap { background: var(--surface) !important; border-color: var(--border) !important; }
+  .page { background: var(--bg) !important; }
+  body, #app-root { background: var(--bg) !important; }
+
+  /* Consistent purple accent on nav active */
+  .nav-btn.active { background: rgba(112,0,255,.12) !important; color: #7000ff !important; }
 }
 @media (min-width: 481px) {
   #disconnectTopBtnMobile { display: none !important; }
