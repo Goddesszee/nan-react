@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import './App.css'
 import { useDynamicContext, DynamicWidget } from '@dynamic-labs/sdk-react-core'
 import { useWallet } from './hooks/useWallet'
 import { useTheme } from './hooks/useTheme'

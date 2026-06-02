@@ -8,7 +8,8 @@ import { DynamicWagmiConnector } from '@dynamic-labs/wagmi-connector'
 import { createConfig, http } from 'wagmi'
 import { defineChain } from 'viem'
 import App from './App'
-import './nan.css'
+import './index.css'
+import './App.css'
 
 // Arc Testnet custom chain
 export const arcTestnet = defineChain({
