@@ -1845,6 +1845,10 @@ window.addEventListener('load', function() {
   var addr = window._nanDynamicAddr || localStorage.getItem('nan_dynamic_address');
   if (!addr) return;
 
+  // Set wp from injected wallet if available
+  if (window.ethereum && !window.wp) {
+    window.wp = window.ethereum;
+  }
   // Set globals app.js needs
   window.userAddr = addr;
   window.userEmail = localStorage.getItem('nan_dynamic_email') || '';
