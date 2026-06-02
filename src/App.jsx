@@ -7,33 +7,46 @@ import './App.css'
 
 export default function App() {
   const { isAuthenticated, primaryWallet, sdkHasLoaded, user } = useDynamicContext()
-  const { address } = useAccount()
+  const { address: wagmiAddress } = useAccount()
   const { theme } = useTheme()
   const [timedOut, setTimedOut] = useState(false)
 
-  // Timeout fallback — if SDK doesn't load in 4s, show landing anyway
+  // Get address from wagmi or from primaryWallet directly
+  const address = wagmiAddress || primaryWallet?.address
+
   useEffect(() => {
     const t = setTimeout(() => setTimedOut(true), 4000)
     return () => clearTimeout(t)
   }, [])
 
-  const connected = isAuthenticated || !!primaryWallet
-
   useEffect(() => {
-    if (connected && address) {
-      localStorage.setItem('nan_dynamic_address', address)
+    if (!isAuthenticated && !primaryWallet) return
+    // Get address - try multiple sources
+    const addr = wagmiAddress || primaryWallet?.address
+    if (addr) {
+      localStorage.setItem('nan_dynamic_address', addr)
       localStorage.setItem('nan_dynamic_email', user?.email || '')
       localStorage.setItem('nan_dynamic_token', 'dynamic_authenticated')
       window.location.replace('/legacy/app.html')
+    } else {
+      // No address yet but authenticated - wait a moment and try again
+      setTimeout(() => {
+        const a = primaryWallet?.address
+        if (a) {
+          localStorage.setItem('nan_dynamic_address', a)
+          localStorage.setItem('nan_dynamic_email', user?.email || '')
+          localStorage.setItem('nan_dynamic_token', 'dynamic_authenticated')
+          window.location.replace('/legacy/app.html')
+        }
+      }, 1000)
     }
-  }, [connected, address])
+  }, [isAuthenticated, primaryWallet, wagmiAddress])
 
-  // Show landing once SDK loads or times out
   if (!sdkHasLoaded && !timedOut) {
     return <div style={{minHeight:'100vh', background:'#111'}} />
   }
 
-  if (connected) {
+  if (isAuthenticated || primaryWallet) {
     return <div style={{minHeight:'100vh', background:'#111'}} />
   }
 
