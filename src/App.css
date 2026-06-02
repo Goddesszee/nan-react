@@ -205,6 +205,95 @@ a { color: inherit; text-decoration: none; }
 .l-banner-inner { max-width: 600px; margin: 0 auto; }
 .l-banner h2 { font-size: 2.4rem; font-weight: 800; color: #fff; letter-spacing: -1.5px; margin-bottom: 10px; }
 .l-banner p { color: var(--text3); font-size: 1rem; margin-bottom: 28px; }
+
+/* ══ LANDING ANIMATIONS ══ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes blink {
+  0%,100% { opacity: 1; }
+  50%      { opacity: 0; }
+}
+@keyframes gradShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.l-fade-in {
+  opacity: 0;
+  animation: fadeUp 0.7s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+
+.l-typewriter {
+  display: inline-block;
+  min-width: 6ch;
+  background: linear-gradient(90deg, #7000ff, #a855f7, #7000ff);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradShift 3s linear infinite;
+}
+
+.l-cursor {
+  display: inline-block;
+  margin-left: 2px;
+  -webkit-text-fill-color: #7000ff;
+  animation: blink 1s step-end infinite;
+}
+
+/* Feature cards scroll-in */
+.l-feature-card {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.2s;
+}
+.l-feature-card.l-card-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.l-feature-card:hover {
+  border-color: rgba(112,0,255,.4) !important;
+  transform: translateY(-4px) !important;
+}
+
+/* Glow ring on badge */
+.l-badge {
+  position: relative;
+  overflow: hidden;
+}
+.l-badge::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, transparent, rgba(112,0,255,.08), transparent);
+  animation: gradShift 4s linear infinite;
+  background-size: 200% auto;
+}
+
+/* Stat counter hover */
+.l-stat {
+  transition: transform 0.2s;
+}
+.l-stat:hover {
+  transform: translateY(-3px);
+}
+.l-stat-val {
+  background: linear-gradient(135deg, #fff 60%, #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+[data-theme="light"] .l-stat-val {
+  background: linear-gradient(135deg, #111 60%, #7000ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 .l-footer { display: flex; align-items: center; justify-content: space-between; padding: 24px 40px; border-top: 1px solid var(--border); flex-wrap: wrap; gap: 12px; background: #000; }
 .l-footer-txt { font-size: .78rem; color: var(--text3); }
 .l-footer-links { display: flex; gap: 16px; }
