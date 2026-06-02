@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head><script>
-// Dynamic bridge
+// Dynamic bridge - set userAddr IMMEDIATELY before any other script runs
 (function() {
   var addr = localStorage.getItem('nan_dynamic_address');
   if (!addr) { window.location.href = '/'; return; }
+  // Set as global variable AND window property so all scripts see it
+  window.userAddr = addr;
   window._nanDynamicAddr = addr;
-  // Set sessionStorage flag so original app guard doesn't redirect back to /
+  userAddr = addr; // bare variable for scripts that check without window.
   sessionStorage.setItem('nan_from_landing', '1');
 })();
 </script>
