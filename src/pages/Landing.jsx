@@ -17,7 +17,7 @@ const stats = [
   { value: 'CCTP V2',label: 'Bridge tech' },
 ]
 
-const CYCLE_WORDS = ['Send.', 'Swap.', 'Bridge.', 'Earn.']
+const CYCLE_WORDS = ['Borders.', 'Limits.', 'Barriers.', 'Borders.']
 
 function ParticleCanvas({ theme }) {
   const canvasRef = useRef(null)
@@ -32,7 +32,7 @@ function ParticleCanvas({ theme }) {
     const isDark = theme !== 'light'
     const colors = isDark
       ? ['rgba(112,0,255,', 'rgba(139,0,255,', 'rgba(168,85,247,', 'rgba(88,28,135,']
-      : ['rgba(112,0,255,', 'rgba(139,0,255,', 'rgba(168,85,247,', 'rgba(196,132,252,']
+      : ['rgba(112,0,255,', 'rgba(139,0,255,', 'rgba(147,51,234,', 'rgba(109,40,217,']
 
     function resize() {
       w = canvas.width = canvas.offsetWidth
@@ -46,7 +46,7 @@ function ParticleCanvas({ theme }) {
         r: Math.random() * 80 + 20,
         dx: (Math.random() - 0.5) * 0.4,
         dy: (Math.random() - 0.5) * 0.4,
-        alpha: Math.random() * 0.12 + 0.03,
+        alpha: isDark ? Math.random() * 0.12 + 0.03 : Math.random() * 0.18 + 0.06,
         dAlpha: (Math.random() - 0.5) * 0.0008,
         color: colors[Math.floor(Math.random() * colors.length)],
         pulse: Math.random() * Math.PI * 2,
@@ -65,8 +65,10 @@ function ParticleCanvas({ theme }) {
         p.x += p.dx
         p.y += p.dy
         p.alpha += p.dAlpha
-        if (p.alpha > 0.18) p.dAlpha = -Math.abs(p.dAlpha)
-        if (p.alpha < 0.02) p.dAlpha = Math.abs(p.dAlpha)
+        const maxA = isDark ? 0.18 : 0.28
+        const minA = isDark ? 0.02 : 0.05
+        if (p.alpha > maxA) p.dAlpha = -Math.abs(p.dAlpha)
+        if (p.alpha < minA) p.dAlpha = Math.abs(p.dAlpha)
         if (p.x < -p.r) p.x = w + p.r
         if (p.x > w + p.r) p.x = -p.r
         if (p.y < -p.r) p.y = h + p.r
@@ -178,8 +180,8 @@ export function Landing() {
             NOW LIVE ON ARC TESTNET
           </div>
           <h1 className="l-h1 l-fade-in" style={{ animationDelay: '0.25s' }}>
-            Payments without<br/>
-            <span className="l-h1-purple">borders.</span>
+            Payments Without<br/>
+            <span className="l-h1-purple"><TypewriterCycle /></span>
           </h1>
           <p className="l-sub l-fade-in" style={{ animationDelay: '0.45s' }}>
             Send, swap, and bridge USDC & EURC on Arc — Circle's stablecoin-native blockchain. No gas fees. No borders. For everyone, everywhere.
