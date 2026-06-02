@@ -11,6 +11,7 @@ export default function App() {
   const { theme } = useTheme()
   const [timedOut, setTimedOut] = useState(false)
   const [redirecting, setRedirecting] = useState(false)
+  const [didDisconnect, setDidDisconnect] = useState(false)
 
   useEffect(() => {
     const t = setTimeout(() => setTimedOut(true), 5000)
@@ -20,28 +21,29 @@ export default function App() {
   useEffect(() => {
     const connected = isAuthenticated || !!primaryWallet
     if (!connected) return
+    if (didDisconnect) return
 
-    // Check if user explicitly disconnected (cleared localStorage)
-    const storedAddr = localStorage.getItem('nan_dynamic_address')
-    if (!storedAddr) {
-      // User disconnected from legacy app — sign out of Dynamic too
-      handleLogOut()
-      return
-    }
+    // Get address from any available source
+    const addr = wagmiAddress 
+      || primaryWallet?.address 
+      || localStorage.getItem('nan_dynamic_address')
 
-    const addr = wagmiAddress || primaryWallet?.address || storedAddr
     if (addr) {
       doRedirect(addr)
     } else {
-      setTimeout(() => {
-        const a = primaryWallet?.address
-        if (a) doRedirect(a)
-        else if (storedAddr) doRedirect(storedAddr)
-      }, 1500)
+      // Wait for embedded wallet to be created (social/email login)
+      const attempts = [500, 1000, 2000, 3000]
+      attempts.forEach(delay => {
+        setTimeout(() => {
+          const a = primaryWallet?.address || wagmiAddress
+          if (a && !redirecting) doRedirect(a)
+        }, delay)
+      })
     }
   }, [isAuthenticated, primaryWallet, wagmiAddress])
 
   function doRedirect(addr) {
+    if (redirecting) return
     setRedirecting(true)
     localStorage.setItem('nan_dynamic_address', addr)
     localStorage.setItem('nan_dynamic_email', user?.email || '')
@@ -49,29 +51,29 @@ export default function App() {
     window.location.replace('/legacy/app.html')
   }
 
+  function signOut() {
+    setDidDisconnect(true)
+    localStorage.removeItem('nan_dynamic_address')
+    localStorage.removeItem('nan_dynamic_token')
+    localStorage.removeItem('nan_dynamic_email')
+    handleLogOut()
+    setTimeout(() => window.location.reload(), 500)
+  }
+
   if (!sdkHasLoaded && !timedOut) {
     return <div style={{minHeight:'100vh', background:'#111'}} />
   }
 
-  if ((isAuthenticated || primaryWallet) && !redirecting) {
-    // Check if they disconnected
-    const storedAddr = localStorage.getItem('nan_dynamic_address')
-    if (!storedAddr) return <Landing />
-  }
+  if (didDisconnect) return <Landing />
 
-  if (redirecting || ((isAuthenticated || primaryWallet) && localStorage.getItem('nan_dynamic_address'))) {
+  if ((isAuthenticated || primaryWallet) || redirecting) {
     return (
       <div style={{minHeight:'100vh',background:'#111',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:16,fontFamily:'Inter,sans-serif'}}>
-        <div style={{color:'#7000ff',fontSize:'2rem'}}>∞</div>
-        <div style={{color:'#fff',fontSize:'1rem'}}>Loading NAN...</div>
-        <button onClick={() => {
-          localStorage.removeItem('nan_dynamic_address')
-          localStorage.removeItem('nan_dynamic_token')
-          localStorage.removeItem('nan_dynamic_email')
-          handleLogOut()
-          window.location.reload()
-        }} style={{marginTop:20,color:'#666',background:'none',border:'none',cursor:'pointer',fontSize:'.8rem'}}>
-          Not you? Sign out
+        <div style={{color:'#7000ff',fontSize:'2.5rem'}}>∞</div>
+        <div style={{color:'#fff',fontSize:'1rem',fontWeight:600}}>Loading NAN Wallet...</div>
+        <div style={{color:'#555',fontSize:'.8rem'}}>Setting up your wallet</div>
+        <button onClick={signOut} style={{marginTop:24,color:'#555',background:'none',border:'1px solid #333',borderRadius:8,cursor:'pointer',fontSize:'.8rem',padding:'6px 14px'}}>
+          Sign out
         </button>
       </div>
     )
