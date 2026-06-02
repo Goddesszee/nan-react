@@ -32,7 +32,7 @@ const config = createConfig({
 
 const queryClient = new QueryClient()
 
-const DYNAMIC_ENV_ID = '63eed889-9673-4cfc-a9b5-4c8e54ee67dc'
+const DYNAMIC_ENV_ID = import.meta.env.VITE_DYNAMIC_ENV_ID || '63eed889-9673-4cfc-a9b5-4c8e54ee67dc'
 
 const evmNetworks = [
   {
