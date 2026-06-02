@@ -112,8 +112,31 @@ html, body { background: var(--bg); }
 #globalTopBar {
   background: var(--topbar-bg) !important;
   border-bottom: 1px solid var(--border) !important;
+  padding: 10px 14px !important;
+  min-height: 52px;
 }
 [data-theme="light"] #globalTopBar { box-shadow: 0 1px 0 rgba(0,0,0,.06); }
+
+/* Address pill — truncate on mobile */
+#connectTopBtn.connected {
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: .72rem !important;
+  padding: 4px 9px !important;
+}
+
+/* On mobile: hide full disconnect, show icon */
+@media (max-width: 480px) {
+  #disconnectTopBtn { display: none !important; }
+  #disconnectTopBtnMobile.show-disc { display: flex !important; }
+  .topbar-wordmark { display: none; }
+}
+@media (min-width: 481px) {
+  #disconnectTopBtnMobile { display: none !important; }
+  .topbar-wordmark { display: inline; }
+}
 
 /* ── Bottom nav ── */
 .bottom-nav {
@@ -249,56 +272,53 @@ input:focus, select:focus, textarea:focus {
 
   <!-- ══ TOP BAR ══ -->
   <div id="globalTopBar">
+
+    <!-- Logo — icon + wordmark, compact for mobile -->
     <div class="brand">
-      <div class="brand-logo" id="secretTapZone" onclick="handleSecretTap()" style="display:flex;align-items:center;cursor:pointer;">
-  <span class="logo-light"><svg width="280" height="70" viewBox="0 0 280 70" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <g transform="translate(35,35)">
-    <path d="M16,0 C16,-15 0,-15 0,0 C0,15 16,15 25,0 C34,-15 50,-15 50,0 C50,15 34,15 25,0 Z" fill="none" stroke="#7000ff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-    <line x1="65" y1="-13" x2="65" y2="13" stroke="#111111" stroke-width="5.5" stroke-linecap="round"/>
-    <line x1="65" y1="-13" x2="83" y2="13" stroke="#111111" stroke-width="5.5" stroke-linecap="round"/>
-    <line x1="83" y1="-13" x2="83" y2="13" stroke="#111111" stroke-width="5.5" stroke-linecap="round"/>
-    <line x1="91" y1="13" x2="100" y2="-13" stroke="#111111" stroke-width="5.5" stroke-linecap="round"/>
-    <line x1="109" y1="13" x2="100" y2="-13" stroke="#111111" stroke-width="5.5" stroke-linecap="round"/>
-    <line x1="94" y1="3" x2="106" y2="3" stroke="#111111" stroke-width="5.5" stroke-linecap="round"/>
-    <line x1="117" y1="-13" x2="117" y2="13" stroke="#111111" stroke-width="5.5" stroke-linecap="round"/>
-    <line x1="117" y1="-13" x2="135" y2="13" stroke="#111111" stroke-width="5.5" stroke-linecap="round"/>
-    <line x1="135" y1="-13" x2="135" y2="13" stroke="#111111" stroke-width="5.5" stroke-linecap="round"/>
-  </g>
-</svg></span>
-  <span class="logo-dark" style="display:none;"><svg width="280" height="70" viewBox="0 0 280 70" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <g transform="translate(35,35)">
-    <path d="M16,0 C16,-15 0,-15 0,0 C0,15 16,15 25,0 C34,-15 50,-15 50,0 C50,15 34,15 25,0 Z" fill="none" stroke="#7000ff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-    <line x1="65" y1="-13" x2="65" y2="13" stroke="#ffffff" stroke-width="5.5" stroke-linecap="round"/>
-    <line x1="65" y1="-13" x2="83" y2="13" stroke="#ffffff" stroke-width="5.5" stroke-linecap="round"/>
-    <line x1="83" y1="-13" x2="83" y2="13" stroke="#ffffff" stroke-width="5.5" stroke-linecap="round"/>
-    <line x1="91" y1="13" x2="100" y2="-13" stroke="#ffffff" stroke-width="5.5" stroke-linecap="round"/>
-    <line x1="109" y1="13" x2="100" y2="-13" stroke="#ffffff" stroke-width="5.5" stroke-linecap="round"/>
-    <line x1="94" y1="3" x2="106" y2="3" stroke="#ffffff" stroke-width="5.5" stroke-linecap="round"/>
-    <line x1="117" y1="-13" x2="117" y2="13" stroke="#ffffff" stroke-width="5.5" stroke-linecap="round"/>
-    <line x1="117" y1="-13" x2="135" y2="13" stroke="#ffffff" stroke-width="5.5" stroke-linecap="round"/>
-    <line x1="135" y1="-13" x2="135" y2="13" stroke="#ffffff" stroke-width="5.5" stroke-linecap="round"/>
-  </g>
-</svg></span>
-</div>
-      
+      <div class="brand-logo" id="secretTapZone" onclick="handleSecretTap()" style="display:flex;align-items:center;gap:7px;cursor:pointer;">
+        <!-- Icon only (both themes — stroke changes) -->
+        <span class="logo-dark" style="display:none;">
+          <svg width="26" height="14" viewBox="0 0 50 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16,0 C16,-10 0,-10 0,0 C0,10 16,10 25,0 C34,-10 50,-10 50,0 C50,10 34,10 25,0 Z" fill="none" stroke="#7000ff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="logo-light">
+          <svg width="26" height="14" viewBox="0 0 50 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16,0 C16,-10 0,-10 0,0 C0,10 16,10 25,0 C34,-10 50,-10 50,0 C50,10 34,10 25,0 Z" fill="none" stroke="#7000ff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <!-- Wordmark — hidden on very small screens via CSS -->
+        <span class="topbar-wordmark" style="font-family:'Inter',sans-serif;font-size:.95rem;font-weight:800;letter-spacing:-.02em;color:var(--text);">NAN</span>
+      </div>
     </div>
-    <!-- Desktop: nav links -->
-    <div id="topbarPageInfo" style="display:none;align-items:center;gap:2px;">
+
+    <!-- Desktop nav -->
+    <div id="topbarPageInfo" style="display:none;align-items:center;gap:2px;"></div>
     <div id="topbarNav" style="display:none;align-items:center;gap:2px;">
       <button onclick="goPage('home')" id="tnav-home" class="tnav-btn">Home</button>
       <button onclick="goPage('earn')" id="tnav-earn" class="tnav-btn">Earn</button>
       <button onclick="goPage('more')" id="tnav-more" class="tnav-btn">More</button>
     </div>
-    </div>
-    <div style="display:flex;align-items:center;gap:8px;">
+
+    <!-- Right side — tight, mobile-first -->
+    <div style="display:flex;align-items:center;gap:5px;min-width:0;">
       <span id="devBadge" class="dev-badge" style="display:none;"></span>
-      <button id="themeToggle" onclick="toggleTheme()" class="theme-toggle-btn">🌙</button>
-      <div class="net-pill" id="netPill">Arc Testnet</div>
-      <button id="connectTopBtn" onclick="showWalletPicker()">Connect</button>
-      <button id="landConnectBtn" style="display:none;" onclick="showWalletPicker()">Connect</button>
-      <button id="disconnectTopBtn" onclick="disconnect()" style="display:none;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);border-radius:100px;padding:6px 12px;font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;color:var(--danger);cursor:pointer;white-space:nowrap;transition:all .2s;">⏏ Disconnect</button>
-      <!-- Mobile-only icon disconnect -->
-      <button id="disconnectTopBtnMobile" onclick="disconnect()" style="display:none;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);border-radius:50%;width:32px;height:32px;font-size:1rem;color:var(--danger);cursor:pointer;align-items:center;justify-content:center;flex-shrink:0;">⏏</button>
+
+      <!-- Theme toggle — small -->
+      <button id="themeToggle" onclick="toggleTheme()" class="theme-toggle-btn" style="width:28px;height:28px;padding:0;display:flex;align-items:center;justify-content:center;font-size:.85rem;border-radius:8px;background:var(--surface);border:1px solid var(--border);color:var(--text2);flex-shrink:0;">🌙</button>
+
+      <!-- Arc pill — compact -->
+      <div class="net-pill" id="netPill" style="font-size:.7rem;padding:3px 8px;white-space:nowrap;flex-shrink:0;">Arc</div>
+
+      <!-- Wallet address pill — truncated, flex-shrink -->
+      <button id="connectTopBtn" onclick="showWalletPicker()" style="flex-shrink:0;">Connect</button>
+      <button id="landConnectBtn" style="display:none;flex-shrink:0;" onclick="showWalletPicker()">Connect</button>
+
+      <!-- Desktop disconnect (hidden on mobile via CSS) -->
+      <button id="disconnectTopBtn" onclick="disconnect()" style="display:none;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);border-radius:20px;padding:4px 10px;font-family:'Inter',sans-serif;font-size:.78rem;font-weight:700;color:var(--danger);cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0;">⏏ Out</button>
+
+      <!-- Mobile disconnect — always visible icon button -->
+      <button id="disconnectTopBtnMobile" onclick="disconnect()" style="display:none;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);border-radius:8px;width:30px;height:30px;font-size:.85rem;color:var(--danger);cursor:pointer;align-items:center;justify-content:center;flex-shrink:0;">⏏</button>
     </div>
   </div>
 

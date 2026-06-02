@@ -653,16 +653,16 @@ function updateTopBar(connected){
       });
     };
     const discBtn=document.getElementById('disconnectTopBtn');
-    if(discBtn)discBtn.style.display='block';
+    if(discBtn){discBtn.style.display='block';}
     const discBtnMobile=document.getElementById('disconnectTopBtnMobile');
-    if(discBtnMobile)discBtnMobile.style.display='flex';
+    if(discBtnMobile){discBtnMobile.classList.add('show-disc');}
     if(landBtn) landBtn.style.display='none';
   }else{
     bar.style.display='none';
     if(dNav) dNav.style.display='none';
     btn.style.display='none';
     const discBtnMobile=document.getElementById('disconnectTopBtnMobile');
-    if(discBtnMobile)discBtnMobile.style.display='none';
+    if(discBtnMobile){discBtnMobile.classList.remove('show-disc');discBtnMobile.style.display='';}
     if(landBtn) landBtn.style.display='block';
   }
 }
