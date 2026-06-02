@@ -1841,30 +1841,48 @@ window.addEventListener('load', function() {
 </script><script>
 // Auto-connect with Dynamic address after everything loads
 (function() {
-  var addr = window._nanDynamicAddr;
+  var addr = window._nanDynamicAddr || localStorage.getItem('nan_dynamic_address');
   if (!addr) return;
-  // Set globals that app.js expects
+  
+  // Set ALL globals that app.js expects
   window.userAddr = addr;
   window.userEmail = localStorage.getItem('nan_dynamic_email') || '';
   window.userToken = 'dynamic_auth';
   window.walletType = 'dynamic';
-  // Remove any connect loader
+  window.isEmailUser = false;
+  
+  // Also set the provider so ethers.js works
+  if (window.ethereum) {
+    window._provider = window.ethereum;
+  }
+
+  // Remove connect loader if present
   var loader = document.getElementById('connectLoader');
-  if (loader) loader.remove();
+  if (loader) loader.style.display = 'none';
+
   // Hide page-land
-  document.querySelectorAll('.page-land').forEach(function(el) {
+  document.querySelectorAll('.page-land, #page-land').forEach(function(el) {
     el.classList.remove('active');
     el.style.display = 'none';
   });
-  // Call onConnected
+
+  // Show bottom nav
+  var bn = document.getElementById('bottomNav');
+  if (bn) bn.classList.add('show');
+
+  // Call onConnected with the address set
   if (typeof onConnected === 'function') {
-    onConnected(false, false);
+    try {
+      onConnected(false, false);
+    } catch(e) {
+      console.log('onConnected error:', e);
+      // Fallback
+      if (typeof showPage === 'function') showPage('home');
+      if (typeof updateTopBar === 'function') updateTopBar(true);
+    }
   } else {
-    // Fallback: directly show home
     if (typeof showPage === 'function') showPage('home');
     if (typeof updateTopBar === 'function') updateTopBar(true);
-    var bn = document.getElementById('bottomNav');
-    if (bn) bn.classList.add('show');
   }
 })();
 </script>
