@@ -54,214 +54,121 @@
 <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="stylesheet" href="/legacy/style.css"/>
 <style>
-/* ══ THEME TOKENS ══ */
-:root, [data-theme="dark"] {
-  --bg: #111111;
-  --surface: #1a1a1a;
-  --card: #1a1a1a;
-  --card2: #222222;
-  --border: rgba(255,255,255,.07);
-  --border2: rgba(255,255,255,.12);
-  --accent: #7000ff;
-  --accent3: #7000ff;
-  --accent4: #c084fc;
-  --text: #ffffff;
-  --text2: #a0a0a0;
-  --text3: #555555;
-  --success: #7000ff;
-  --topbar-bg: #111111;
-  --nav-bg: #111111;
+/* ══ THEME TOKENS — scoped per theme so neither fights the other ══ */
+:root,[data-theme="dark"]{
+  --bg:#111111;
+  --surface:#1a1a1a;
+  --card:#1a1a1a;
+  --card2:#222222;
+  --border:rgba(255,255,255,.07);
+  --border2:rgba(255,255,255,.12);
+  --accent:#7000ff;
+  --accent3:#7000ff;
+  --accent4:#c084fc;
+  --text:#ffffff;
+  --text2:#a0a0a0;
+  --text3:#555555;
+  --success:#7000ff;
+  --topbar-bg:#111111;
+  --nav-bg:#111111;
 }
-[data-theme="light"] {
-  --bg: #ffffff;
-  --surface: #f5f5f5;
-  --card: #f5f5f5;
-  --card2: #ebebeb;
-  --border: #e0e0e0;
-  --border2: #cccccc;
-  --accent: #7000ff;
-  --accent3: #7000ff;
-  --accent4: #9333ea;
-  --text: #111111;
-  --text2: #444444;
-  --text3: #888888;
-  --success: #7000ff;
-  --topbar-bg: #ffffff;
-  --nav-bg: #ffffff;
+[data-theme="light"]{
+  --bg:#ffffff;
+  --surface:#f5f5f5;
+  --card:#f5f5f5;
+  --card2:#ebebeb;
+  --border:#e0e0e0;
+  --border2:#cccccc;
+  --accent:#7000ff;
+  --accent3:#7000ff;
+  --accent4:#9333ea;
+  --text:#111111;
+  --text2:#444444;
+  --text3:#888888;
+  --success:#7000ff;
+  --topbar-bg:#ffffff;
+  --nav-bg:#ffffff;
 }
+html,body{background:var(--bg);}
+#app-root{background:var(--bg);}
+.bottom-nav{background:var(--nav-bg) !important;border-top:1px solid var(--border) !important;}
 
-/* ── Shell ── */
-html, body { background: var(--bg); }
-#app-root   { background: var(--bg); }
+/* Dark nav */
+:root .nav-pill-wrap,[data-theme="dark"] .nav-pill-wrap{background:rgba(255,255,255,.04) !important;border:1px solid rgba(255,255,255,.07) !important;}
+:root .nav-btn,[data-theme="dark"] .nav-btn{color:#555555 !important;}
+:root .nav-btn.active,[data-theme="dark"] .nav-btn.active{background:rgba(112,0,255,.15) !important;color:#7000ff !important;border:1px solid rgba(112,0,255,.2) !important;}
 
-/* ── Top bar ── */
-#globalTopBar {
-  background: var(--topbar-bg) !important;
-  border-bottom: 1px solid var(--border) !important;
-  padding: 10px 14px !important;
-  min-height: 52px;
-}
-[data-theme="light"] #globalTopBar { box-shadow: 0 1px 0 rgba(0,0,0,.06); }
+/* Light nav */
+[data-theme="light"] .nav-pill-wrap{background:rgba(0,0,0,.04) !important;border:1px solid rgba(0,0,0,.08) !important;}
+[data-theme="light"] .nav-btn{color:#888 !important;}
+[data-theme="light"] .nav-btn.active{background:rgba(112,0,255,.08) !important;color:#7000ff !important;border:1px solid rgba(112,0,255,.15) !important;}
 
-/* Address pill — truncate on mobile */
-#connectTopBtn.connected {
-  max-width: 90px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: .72rem !important;
-  padding: 4px 9px !important;
-}
+/* Primary button — same in both themes */
+.btn{background:#7000ff !important;box-shadow:0 4px 14px rgba(112,0,255,.35) !important;color:#fff !important;}
 
-/* On mobile: hide full disconnect, show icon */
-@media (max-width: 480px) {
-  /* Hide logo entirely on mobile */
-  #globalTopBar .brand { display: none !important; }
-  #disconnectTopBtn { display: none !important; }
-  #disconnectTopBtnMobile.show-disc { display: flex !important; }
-  .topbar-wordmark { display: none; }
-
-  /* Force desktop colours on mobile — no overrides */
-  #globalTopBar { background: var(--topbar-bg) !important; }
-  .nav-pill-wrap { background: var(--surface) !important; border-color: var(--border) !important; }
-  .page { background: var(--bg) !important; }
-  body, #app-root { background: var(--bg) !important; }
-
-  /* Consistent purple accent on nav active */
-  .nav-btn.active { background: rgba(112,0,255,.12) !important; color: #7000ff !important; }
-}
-@media (min-width: 481px) {
-  #disconnectTopBtnMobile { display: none !important; }
-  .topbar-wordmark { display: inline; }
-}
-
-/* ── Bottom nav ── */
-.bottom-nav {
-  background: var(--nav-bg) !important;
-  border-top: 1px solid var(--border) !important;
-}
-.nav-pill-wrap {
-  background: var(--surface) !important;
-  border: 1px solid var(--border) !important;
-}
-.nav-btn { color: var(--text3) !important; }
-.nav-btn.active {
-  background: rgba(112,0,255,.12) !important;
-  color: #7000ff !important;
-  border-color: rgba(112,0,255,.2) !important;
-}
-.nav-btn.active .ni { filter: drop-shadow(0 0 4px rgba(112,0,255,.4)); }
-
-/* ── Primary action btn ── */
-.btn {
-  background: #7000ff !important;
-  color: #fff !important;
-  box-shadow: 0 4px 14px rgba(112,0,255,.3) !important;
-}
-.btn:hover { background: #8a00ff !important; }
-.btn:disabled { opacity: .45 !important; }
-.btn-outline {
-  background: transparent !important;
-  color: var(--text) !important;
-  border: 1px solid var(--border2) !important;
-  box-shadow: none !important;
-}
-
-/* ── Cards ── */
-.card { background: var(--card) !important; border-color: var(--border) !important; }
-.tx-item { background: var(--card) !important; border-color: var(--border) !important; }
-.more-item { background: var(--card) !important; border-color: var(--border) !important; }
-
-/* ── Inputs ── */
-input, select, textarea {
-  background: var(--surface) !important;
-  color: var(--text) !important;
-  border-color: var(--border2) !important;
-}
-input::placeholder, textarea::placeholder { color: var(--text3) !important; }
-input:focus, select:focus, textarea:focus {
-  border-color: rgba(112,0,255,.5) !important;
-  outline: none !important;
-}
-
-/* ── Light mode: fix ALL hardcoded dark inline colours ── */
-[data-theme="light"] *[style*="background:#0d0d0d"],
-[data-theme="light"] *[style*="background:#111111"],
-[data-theme="light"] *[style*="background:#111"],
-[data-theme="light"] *[style*="background:#1a1a1a"],
-[data-theme="light"] *[style*="background:#141414"],
-[data-theme="light"] *[style*="background:#181818"],
-[data-theme="light"] *[style*="background:#0a0a0a"] {
-  background: var(--card) !important;
-  border-color: var(--border) !important;
-}
-
-[data-theme="light"] *[style*="background:rgba(255,255,255,.0"],
-[data-theme="light"] *[style*="background:rgba(255,255,255,.03)"],
-[data-theme="light"] *[style*="background:rgba(255,255,255,.04)"],
-[data-theme="light"] *[style*="background:rgba(255,255,255,.05)"],
-[data-theme="light"] *[style*="background:rgba(255,255,255,.06)"],
-[data-theme="light"] *[style*="background:rgba(255,255,255,.07)"],
-[data-theme="light"] *[style*="background:rgba(255,255,255,.08)"] {
-  background: rgba(0,0,0,.03) !important;
-}
-
-[data-theme="light"] *[style*="background:rgba(255,255,255,.1"],
-[data-theme="light"] *[style*="background:rgba(255,255,255,.12"],
-[data-theme="light"] *[style*="background:rgba(255,255,255,.15"] {
-  background: rgba(0,0,0,.05) !important;
-}
-
-/* Fix hardcoded white text on light bg */
+/* Light mode: fix inline-styled white text */
+[data-theme="light"] *[style*="color:rgba(255,255,255,.5)"],
+[data-theme="light"] *[style*="color:rgba(255,255,255,.45)"],
+[data-theme="light"] *[style*="color:rgba(255,255,255,.4)"]{color:#888 !important;}
+[data-theme="light"] *[style*="color:rgba(255,255,255,.7)"],
+[data-theme="light"] *[style*="color:rgba(255,255,255,.75)"]{color:#555 !important;}
+[data-theme="light"] *[style*="color:rgba(255,255,255,.8)"],
+[data-theme="light"] *[style*="color:rgba(255,255,255,.85)"],
+[data-theme="light"] *[style*="color:rgba(255,255,255,.9)"],
 [data-theme="light"] *[style*="color:#ffffff"],
-[data-theme="light"] *[style*="color:#f0f0f0"],
-[data-theme="light"] *[style*="color:#fff"] { color: var(--text) !important; }
-[data-theme="light"] *[style*="color:rgba(255,255,255,.9"],
-[data-theme="light"] *[style*="color:rgba(255,255,255,.85"],
-[data-theme="light"] *[style*="color:rgba(255,255,255,.8"] { color: var(--text) !important; }
-[data-theme="light"] *[style*="color:rgba(255,255,255,.7"],
-[data-theme="light"] *[style*="color:rgba(255,255,255,.75"] { color: var(--text2) !important; }
-[data-theme="light"] *[style*="color:rgba(255,255,255,.5"],
-[data-theme="light"] *[style*="color:rgba(255,255,255,.4"],
-[data-theme="light"] *[style*="color:rgba(255,255,255,.3"] { color: var(--text3) !important; }
+[data-theme="light"] *[style*="color:#f0f0f0"]{color:#111 !important;}
 
-/* Fix hardcoded dark borders */
-[data-theme="light"] *[style*="border-color:rgba(255,255,255,.07)"],
-[data-theme="light"] *[style*="border-color:rgba(255,255,255,.08)"],
-[data-theme="light"] *[style*="border-color:rgba(255,255,255,.1"] {
-  border-color: var(--border) !important;
-}
-[data-theme="light"] *[style*="border:1px solid rgba(255,255,255,.07)"],
-[data-theme="light"] *[style*="border:1px solid rgba(255,255,255,.08)"],
-[data-theme="light"] *[style*="border:1px solid rgba(255,255,255,.06)"] {
-  border-color: var(--border) !important;
-}
+/* Light mode: fix inline dark backgrounds */
+[data-theme="light"] *[style*="background:#1a1a1a"],
+[data-theme="light"] *[style*="background:#111111"],
+[data-theme="light"] *[style*="background:#0a0a0a"]{background:#f5f5f5 !important;border-color:#e0e0e0 !important;}
+[data-theme="light"] *[style*="background:rgba(255,255,255,.0"]{background:rgba(0,0,0,.02) !important;}
+[data-theme="light"] *[style*="background:rgba(255,255,255,.03)"]{background:rgba(0,0,0,.02) !important;}
+[data-theme="light"] *[style*="background:rgba(255,255,255,.04)"]{background:rgba(0,0,0,.03) !important;}
+[data-theme="light"] *[style*="background:rgba(255,255,255,.06)"]{background:rgba(0,0,0,.04) !important;}
 
-/* ── Light mode: page bg ── */
-[data-theme="light"] .page,
-[data-theme="light"] #app-root,
-[data-theme="light"] body { background: var(--bg) !important; }
+/* Light mode: inputs */
+[data-theme="light"] input,
+[data-theme="light"] select{background:#fff !important;color:#111 !important;border-color:#e0e0e0 !important;}
 
-/* ── Balance card — purple gradient in both themes ── */
-.bal-card, .home-bal-card {
-  background: linear-gradient(135deg, #3b0764 0%, #7000ff 60%, #4c1d95 100%) !important;
-  border: none !important;
-}
-.bal-card *, .home-bal-card * { color: #fff !important; }
+/* Light mode: balance card */
+[data-theme="light"] .home-bal-card{background:linear-gradient(135deg,#7000ff,#9333ea) !important;}
+[data-theme="light"] .home-bal-card .home-bal-num,[data-theme="light"] .home-bal-card .home-bal-ngn,[data-theme="light"] .home-bal-card .home-bal-lbl{color:#fff !important;}
+[data-theme="light"] .bal-card{background:linear-gradient(135deg,#7000ff,#9333ea) !important;}
+[data-theme="light"] .bal-card *{color:#fff !important;}
 
-/* ── Logo visibility ── */
-[data-theme="dark"] .logo-light { display: none !important; }
-[data-theme="dark"] .logo-dark  { display: inline !important; }
-[data-theme="light"] .logo-light { display: inline !important; }
-[data-theme="light"] .logo-dark  { display: none !important; }
+/* Light mode: action buttons */
+[data-theme="light"] .home-action{background:#f5f5f5 !important;border-color:#e0e0e0 !important;}
+[data-theme="light"] .home-action:first-child{background:linear-gradient(135deg,rgba(112,0,255,.15),rgba(112,0,255,.08)) !important;border-color:rgba(112,0,255,.3) !important;}
 
-/* ── Brand logo ── */
-.brand-logo { display: flex !important; align-items: center; flex-shrink: 0; background: none !important; box-shadow: none !important; }
-.brand { display: flex; align-items: center; }
-.dnav-brand { font-size: 2.5rem !important; font-weight: 900 !important; color: var(--text); letter-spacing: -.03em; line-height: 1; text-transform: uppercase; }
+/* Light mode: topbar */
+[data-theme="light"] #globalTopBar{background:#ffffff !important;border-bottom:1px solid #e0e0e0 !important;}
 
-/* ── Desktop responsive ── */
-@media(min-width:768px) { #topbarNav { display: flex !important; } #desktopNav { display: none !important; } }
+/* Light mode: more page items */
+[data-theme="light"] .more-item{background:#fff !important;border-color:#e8e8e8 !important;}
+[data-theme="light"] .more-item:hover{background:#f5f5f5 !important;}
+
+/* Light mode: cards */
+[data-theme="light"] .card{background:#fff !important;border-color:#e8e8e8 !important;}
+[data-theme="light"] .tx-item{background:#fff !important;border-color:#e8e8e8 !important;}
+
+@media(min-width:768px){#topbarNav{display:flex!important;}#desktopNav{display:none!important;}}
+.dnav-brand{font-size:2.5rem!important;font-weight:900!important;color:var(--text);letter-spacing:-.03em;line-height:1;text-transform:uppercase;}
+[data-theme="dark"] .logo-light { display:none !important; }
+[data-theme="dark"] .logo-dark { display:inline !important; }
+[data-theme="light"] .logo-light { display:inline !important; }
+[data-theme="light"] .logo-dark { display:none !important; }
+.logo-dark { display:none; }
+.logo-light { display:inline; }
+
+.logo-dark{display:none;}
+.logo-light{display:inline;}
+[data-theme="dark"] .logo-light{display:none!important;}
+[data-theme="dark"] .logo-dark{display:inline!important;}
+[data-theme="light"] .logo-light{display:inline!important;}
+[data-theme="light"] .logo-dark{display:none!important;}
+.brand-logo{display:flex!important;align-items:center;flex-shrink:0;background:none!important;box-shadow:none!important;}
+.brand{display:flex;align-items:center;gap:0;}
 </style>
 </head>
 <body>
@@ -269,53 +176,56 @@ input:focus, select:focus, textarea:focus {
 
   <!-- ══ TOP BAR ══ -->
   <div id="globalTopBar">
-
-    <!-- Logo — icon + wordmark, compact for mobile -->
     <div class="brand">
-      <div class="brand-logo" id="secretTapZone" onclick="handleSecretTap()" style="display:flex;align-items:center;gap:7px;cursor:pointer;">
-        <!-- Icon only (both themes — stroke changes) -->
-        <span class="logo-dark" style="display:none;">
-          <svg width="26" height="14" viewBox="0 0 50 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M16,0 C16,-10 0,-10 0,0 C0,10 16,10 25,0 C34,-10 50,-10 50,0 C50,10 34,10 25,0 Z" fill="none" stroke="#7000ff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </span>
-        <span class="logo-light">
-          <svg width="26" height="14" viewBox="0 0 50 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M16,0 C16,-10 0,-10 0,0 C0,10 16,10 25,0 C34,-10 50,-10 50,0 C50,10 34,10 25,0 Z" fill="none" stroke="#7000ff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </span>
-        <!-- Wordmark — hidden on very small screens via CSS -->
-        <span class="topbar-wordmark" style="font-family:'Inter',sans-serif;font-size:.95rem;font-weight:800;letter-spacing:-.02em;color:var(--text);">NAN</span>
-      </div>
+      <div class="brand-logo" id="secretTapZone" onclick="handleSecretTap()" style="display:flex;align-items:center;cursor:pointer;">
+  <span class="logo-light"><svg width="280" height="70" viewBox="0 0 280 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(35,35)">
+    <path d="M16,0 C16,-15 0,-15 0,0 C0,15 16,15 25,0 C34,-15 50,-15 50,0 C50,15 34,15 25,0 Z" fill="none" stroke="#7000ff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="65" y1="-13" x2="65" y2="13" stroke="#111111" stroke-width="5.5" stroke-linecap="round"/>
+    <line x1="65" y1="-13" x2="83" y2="13" stroke="#111111" stroke-width="5.5" stroke-linecap="round"/>
+    <line x1="83" y1="-13" x2="83" y2="13" stroke="#111111" stroke-width="5.5" stroke-linecap="round"/>
+    <line x1="91" y1="13" x2="100" y2="-13" stroke="#111111" stroke-width="5.5" stroke-linecap="round"/>
+    <line x1="109" y1="13" x2="100" y2="-13" stroke="#111111" stroke-width="5.5" stroke-linecap="round"/>
+    <line x1="94" y1="3" x2="106" y2="3" stroke="#111111" stroke-width="5.5" stroke-linecap="round"/>
+    <line x1="117" y1="-13" x2="117" y2="13" stroke="#111111" stroke-width="5.5" stroke-linecap="round"/>
+    <line x1="117" y1="-13" x2="135" y2="13" stroke="#111111" stroke-width="5.5" stroke-linecap="round"/>
+    <line x1="135" y1="-13" x2="135" y2="13" stroke="#111111" stroke-width="5.5" stroke-linecap="round"/>
+  </g>
+</svg></span>
+  <span class="logo-dark" style="display:none;"><svg width="280" height="70" viewBox="0 0 280 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(35,35)">
+    <path d="M16,0 C16,-15 0,-15 0,0 C0,15 16,15 25,0 C34,-15 50,-15 50,0 C50,15 34,15 25,0 Z" fill="none" stroke="#7000ff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="65" y1="-13" x2="65" y2="13" stroke="#ffffff" stroke-width="5.5" stroke-linecap="round"/>
+    <line x1="65" y1="-13" x2="83" y2="13" stroke="#ffffff" stroke-width="5.5" stroke-linecap="round"/>
+    <line x1="83" y1="-13" x2="83" y2="13" stroke="#ffffff" stroke-width="5.5" stroke-linecap="round"/>
+    <line x1="91" y1="13" x2="100" y2="-13" stroke="#ffffff" stroke-width="5.5" stroke-linecap="round"/>
+    <line x1="109" y1="13" x2="100" y2="-13" stroke="#ffffff" stroke-width="5.5" stroke-linecap="round"/>
+    <line x1="94" y1="3" x2="106" y2="3" stroke="#ffffff" stroke-width="5.5" stroke-linecap="round"/>
+    <line x1="117" y1="-13" x2="117" y2="13" stroke="#ffffff" stroke-width="5.5" stroke-linecap="round"/>
+    <line x1="117" y1="-13" x2="135" y2="13" stroke="#ffffff" stroke-width="5.5" stroke-linecap="round"/>
+    <line x1="135" y1="-13" x2="135" y2="13" stroke="#ffffff" stroke-width="5.5" stroke-linecap="round"/>
+  </g>
+</svg></span>
+</div>
+      
     </div>
-
-    <!-- Desktop nav -->
-    <div id="topbarPageInfo" style="display:none;align-items:center;gap:2px;"></div>
+    <!-- Desktop: nav links -->
+    <div id="topbarPageInfo" style="display:none;align-items:center;gap:2px;">
     <div id="topbarNav" style="display:none;align-items:center;gap:2px;">
       <button onclick="goPage('home')" id="tnav-home" class="tnav-btn">Home</button>
       <button onclick="goPage('earn')" id="tnav-earn" class="tnav-btn">Earn</button>
       <button onclick="goPage('more')" id="tnav-more" class="tnav-btn">More</button>
     </div>
-
-    <!-- Right side — tight, mobile-first -->
-    <div style="display:flex;align-items:center;gap:5px;min-width:0;">
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
       <span id="devBadge" class="dev-badge" style="display:none;"></span>
-
-      <!-- Theme toggle — small -->
-      <button id="themeToggle" onclick="toggleTheme()" class="theme-toggle-btn" style="width:28px;height:28px;padding:0;display:flex;align-items:center;justify-content:center;font-size:.85rem;border-radius:8px;background:var(--surface);border:1px solid var(--border);color:var(--text2);flex-shrink:0;">🌙</button>
-
-      <!-- Arc pill — compact -->
-      <div class="net-pill" id="netPill" style="font-size:.7rem;padding:3px 8px;white-space:nowrap;flex-shrink:0;">Arc</div>
-
-      <!-- Wallet address pill — truncated, flex-shrink -->
-      <button id="connectTopBtn" onclick="showWalletPicker()" style="flex-shrink:0;">Connect</button>
-      <button id="landConnectBtn" style="display:none;flex-shrink:0;" onclick="showWalletPicker()">Connect</button>
-
-      <!-- Desktop disconnect (hidden on mobile via CSS) -->
-      <button id="disconnectTopBtn" onclick="disconnect()" style="display:none;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);border-radius:20px;padding:4px 10px;font-family:'Inter',sans-serif;font-size:.78rem;font-weight:700;color:var(--danger);cursor:pointer;white-space:nowrap;transition:all .2s;flex-shrink:0;">⏏ Out</button>
-
-      <!-- Mobile disconnect — always visible icon button -->
-      <button id="disconnectTopBtnMobile" onclick="disconnect()" style="display:none;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);border-radius:8px;width:30px;height:30px;font-size:.85rem;color:var(--danger);cursor:pointer;align-items:center;justify-content:center;flex-shrink:0;">⏏</button>
+      <button id="themeToggle" onclick="toggleTheme()" class="theme-toggle-btn">🌙</button>
+      <div class="net-pill" id="netPill">Arc Testnet</div>
+      <button id="connectTopBtn" onclick="showWalletPicker()">Connect</button>
+      <button id="landConnectBtn" style="display:none;" onclick="showWalletPicker()">Connect</button>
+      <button id="disconnectTopBtn" onclick="disconnect()" style="display:none;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);border-radius:100px;padding:6px 12px;font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;color:var(--danger);cursor:pointer;white-space:nowrap;transition:all .2s;">⏏ Disconnect</button>
+      <!-- Mobile-only icon disconnect -->
+      <button id="disconnectTopBtnMobile" onclick="disconnect()" style="display:none;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);border-radius:50%;width:32px;height:32px;font-size:1rem;color:var(--danger);cursor:pointer;align-items:center;justify-content:center;flex-shrink:0;">⏏</button>
     </div>
   </div>
 

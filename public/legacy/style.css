@@ -475,13 +475,15 @@ a:hover{color:var(--text);}
 
   /* Nav Ã¢â¬â bigger touch targets */
   .bottom-nav{height:72px!important;padding-bottom:max(env(safe-area-inset-bottom),8px)!important;}
-  .nav-btn{gap:4px!important;padding:8px 4px!important;}
+  .nav-btn{font-size:1rem!important;gap:4px!important;padding:8px 4px!important;font-weight:600!important;}
   .nav-btn .ni svg{width:22px!important;height:22px!important;}
   .nav-btn.active{color:var(--accent3)!important;}
 
   /* Top bar */
   #globalTopBar{padding:10px 14px!important;}
   
+  .net-pill{font-size:1rem!important;padding:3px 7px!important;}
+  #connectTopBtn{font-size:1rem!important;padding:6px 12px!important;}
 
   /* Home page */
   .home-bal-num{font-size:2.3rem!important;letter-spacing:-2px!important;}
@@ -1109,6 +1111,8 @@ a:hover{color:var(--text);}
   #homeBalAmt:empty::before,
   #homeBalAmt[data-loading]::before{content:'Ã¢â¬â';color:rgba(255,255,255,.3);}
 
+  /* Better touch targets for all buttons */
+  button{min-height:44px;}
 
   /* Send/swap/bridge amount inputs Ã¢â¬â no iOS zoom */
   input[type="text"],input[type="number"],input[type="email"]{
@@ -1631,7 +1635,69 @@ a:hover{color:var(--text);}
    MOBILE Ã¢â¬â Remove outer card wrappers on feature pages
    Cards still show on desktop (min-width:481px+)
 Ã¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢Â */
+@media(max-width:480px){
 
+  /* Remove outer card look from all .card elements inside pages */
+  .page > .card,
+  .page > .send-card,
+  .page > .swap-box,
+  .page > .arcname-card,
+  .page > [class*="card"]{
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* Remove outer wrapper divs that use inline card styles */
+  /* These are the first direct child divs of pages with card styling */
+  .page > div:first-child:not(.page-title):not(.page-sub):not(.type-sel):not(.bottom-bar){
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  /* Keep inner cards (nested ones) Ã¢â¬â they still show */
+  .page > .card .card,
+  .page > div > .card,
+  .page > div > .send-card,
+  .page > div > .position-card,
+  .page > div > .swap-box,
+  .page > div > [class*="card"]{
+    background: rgba(255,255,255,0.04) !important;
+    border: 1px solid rgba(168,85,247,0.18) !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3) !important;
+    border-radius: var(--radius) !important;
+    padding: 14px !important;
+  }
+
+  /* Keep home balance card styled */
+  .home-bal-card,
+  .bal-card{
+    background: linear-gradient(135deg,rgba(139,92,246,.18),rgba(109,40,217,.12)) !important;
+    border: 1px solid rgba(139,92,246,.3) !important;
+    border-radius: 18px !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,.3) !important;
+  }
+
+  /* Reduce page padding on mobile since no outer card */
+  .page{
+    padding: 12px 14px 20px !important;
+  }
+
+  /* Page titles stay visible */
+  .page-title{
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+}
 
 /* Ã¢â¢ÂÃ¢â¢Â TOPBAR & DISCONNECT FIX Ã¢â¢ÂÃ¢â¢Â */
 [data-theme="light"] #disconnectTopBtn { color: #dc2626 !important; }
