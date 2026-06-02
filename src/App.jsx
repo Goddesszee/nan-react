@@ -16,13 +16,14 @@ import { More } from './pages/More'
 import { Toast } from './components/Toast'
 
 export default function App() {
-  const { isAuthenticated } = useDynamicContext()
+  const { isAuthenticated, primaryWallet, sdkHasLoaded } = useDynamicContext()
   const { address, usdcBal, eurcBal, totalUSD, totalNGN, disconnect, fetchBalances, apiFetch } = useWallet()
   const { theme, toggleTheme } = useTheme()
   const { toasts, toast } = useToast()
   const [page, setPage] = useState('home')
 
-  if (!isAuthenticated) return <Landing />
+  if (!sdkHasLoaded) return <div style={{minHeight:'100vh',background:'var(--bg)'}}/>
+  if (!isAuthenticated && !primaryWallet) return <Landing />
 
   const navItems = [
     { id: 'home', label: 'Home' },
