@@ -4552,9 +4552,7 @@ let currentPRExpiry=0;
 let activePRId=null;
 
 function loadPaymentRequests(){
-  // Wait for userAddr to be set before loading
-  const key = userAddr ? 'nan_payreqs_'+userAddr : null;
-  try{paymentRequests=key ? JSON.parse(localStorage.getItem(key)||'[]') : [];}catch{paymentRequests=[];}
+  try{paymentRequests=JSON.parse(localStorage.getItem('nan_payreqs_'+(userAddr||''))||'[]');}catch{paymentRequests=[];}
   checkPendingPaymentRequests();
 }
 async function checkPendingPaymentRequests(){
