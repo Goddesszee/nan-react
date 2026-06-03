@@ -128,7 +128,7 @@ export default function App() {
         alignItems:'center',justifyContent:'center',gap:16,fontFamily:'Inter,sans-serif'}}>
         <svg width="60" height="30" viewBox="0 0 50 20" fill="none">
           <path d="M16,0 C16,-8 0,-8 0,0 C0,8 16,8 25,0 C34,-8 50,-8 50,0 C50,8 34,8 25,0 Z"
-            fill="none" stroke="#7000ff" strokeWidth="3" strokeLinecap="round"/>
+            fill="none" stroke="#8b5cf6" strokeWidth="3" strokeLinecap="round"/>
         </svg>
         <div style={{color:'#fff',fontSize:'1rem',fontWeight:600}}>{status}</div>
         <button onClick={() => {
