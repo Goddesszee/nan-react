@@ -49,6 +49,16 @@ export default function App() {
     const connected = isAuthenticated || !!primaryWallet
     if (!connected) return
 
+    // Don't redirect if storage was just wiped (user disconnected)
+    // nan_dynamic_token is always set before redirect to app, so if it's missing
+    // we know this is a fresh load after disconnect — stay on landing
+    const hasSession = localStorage.getItem('nan_dynamic_token') ||
+                       localStorage.getItem('circleWalletId')
+    if (!hasSession && !didRedirect.current) {
+      // No session — user just disconnected, stay on landing
+      return
+    }
+
     const email = user?.email ||
       user?.verifiedCredentials?.find(c => c.email)?.email || null
     const addr = wagmiAddress || primaryWallet?.address
