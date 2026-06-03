@@ -1001,7 +1001,7 @@ async function _autoSeedLiquidity(){
   }catch(e){console.warn('[pool] Liquidity seed skipped:',e.message);}
 }
 
-async function onConnected(isEmail=false, isDev=false){
+async async function onConnected(isEmail=false, isDev=false){
   const land = document.getElementById('page-land');
   if(land){
     land.classList.remove('active');
@@ -4399,6 +4399,11 @@ window.addEventListener('load',()=>{
       provider            = getArcProvider();
       onArcNetwork        = true;
       onConnected(true, false);
+      // Force show AI button in case onConnected async issues
+      setTimeout(()=>{
+        const ai=document.getElementById('aiBtn');
+        if(ai) ai.style.display='flex';
+      }, 500);
     } else if (_dynEmail) {
       // Have email but no Circle wallet yet — fetch/create it
       otpEmail = _dynEmail;
@@ -4551,12 +4556,7 @@ let currentPRToken='USDC';
 let currentPRExpiry=0;
 let activePRId=null;
 
-function loadPaymentRequests(){
-  // Wait for userAddr to be set before loading
-  const key = userAddr ? 'nan_payreqs_'+userAddr : null;
-  try{paymentRequests=key ? JSON.parse(localStorage.getItem(key)||'[]') : [];}catch{paymentRequests=[];}
-  checkPendingPaymentRequests();
-}
+
 async function checkPendingPaymentRequests(){
   if(!userAddr)return;
   const pending=paymentRequests.filter(p=>p.status==='pending'&&p.to===userAddr);
@@ -4576,7 +4576,12 @@ async function checkPendingPaymentRequests(){
   renderPaymentRequests();
 }
 function savePaymentRequests(){
-  localStorage.setItem('nan_payreqs_'+(userAddr||''),JSON.stringify(paymentRequests));
+  if(userAddr) localStorage.setItem('nan_payreqs_'+userAddr, JSON.stringify(paymentRequests));
+}
+function loadPaymentRequests(){
+  const key = userAddr ? 'nan_payreqs_'+userAddr : null;
+  try{ paymentRequests = key ? JSON.parse(localStorage.getItem(key)||'[]') : []; }catch{ paymentRequests=[]; }
+  checkPendingPaymentRequests();
 }
 function genPRId(){
   return 'pr_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
