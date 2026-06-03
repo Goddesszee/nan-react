@@ -6,14 +6,12 @@ import './App.css'
 
 const API = 'https://nan-production.up.railway.app'
 
-// ── Wipe storage at module load — before React or Dynamic initialises ─────────
+// Wipe storage at module load — before React or Dynamic initialises
 const _params = new URLSearchParams(window.location.search)
 const _disconnecting = _params.get('__nan_disconnected') === '1'
 
 if (_disconnecting) {
-  // Clean URL immediately
   window.history.replaceState({}, '', '/')
-  // Wipe everything
   try {
     const keys = []
     for (let i = 0; i < localStorage.length; i++) {
@@ -33,25 +31,17 @@ export default function App() {
   const [status, setStatus]           = useState('Loading NAN...')
   const didRedirect = useRef(false)
 
-  // ── Disconnecting — show landing, sign out of Dynamic quietly ────────────
-  useEffect(() => {
-    if (!_disconnecting) return
-    // Call Dynamic logout AFTER landing renders — fire and forget, don't await
-    const t = setTimeout(() => {
-      try { handleLogOut().catch(() => {}) } catch(e) {}
-    }, 500)
-    return () => clearTimeout(t)
-  }, [])
-
+  // Disconnecting — show landing immediately, NO handleLogOut call
+  // handleLogOut triggers Dynamic/Wagmi which auto-opens Rabby picker
   if (_disconnecting) return <Landing />
 
-  // ── SDK timeout ───────────────────────────────────────────────────────────
+  // SDK timeout
   useEffect(() => {
     const t = setTimeout(() => setTimedOut(true), 1500)
     return () => clearTimeout(t)
   }, [])
 
-  // ── Redirect when authenticated ──────────────────────────────────────────
+  // Redirect when authenticated
   useEffect(() => {
     if (_disconnecting) return
     if (didRedirect.current) return
@@ -85,7 +75,6 @@ export default function App() {
     didRedirect.current = true
     setRedirecting(true)
 
-    // Returning user — instant redirect
     const cachedId    = localStorage.getItem('circleWalletId')
     const cachedAddr  = localStorage.getItem('circleWalletAddr')
     const cachedEmail = localStorage.getItem('nan_dynamic_email')
@@ -139,7 +128,6 @@ export default function App() {
             for (let i = 0; i < localStorage.length; i++) keys.push(localStorage.key(i))
             keys.forEach(k => k && localStorage.removeItem(k))
           } catch(e) {}
-          handleLogOut().catch(() => {})
         }} style={{marginTop:24,color:'#555',background:'none',border:'1px solid #222',
           borderRadius:8,cursor:'pointer',fontSize:'.8rem',padding:'6px 14px'}}>
           Sign out
