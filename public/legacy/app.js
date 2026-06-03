@@ -4591,89 +4591,23 @@ window.addEventListener('load',()=>{
 // ═══════════════════════════════════════════
 // PAYMENT REQUESTS ENGINE
 // ═══════════════════════════════════════════
-let paymentRequests=[];
-let currentPRToken='USDC';
-let currentPRExpiry=0;
-let activePRId=null;
+// paymentRequests removed
+// currentPRToken removed
+// currentPRExpiry removed
+// activePRId removed
 
-function loadPaymentRequests(){
-  try{
-    let saved=localStorage.getItem('nan_payreqs_'+(userAddr||''));
-    if(!saved||saved==='[]'){
-      const fallback=localStorage.getItem('circleWalletAddr')||localStorage.getItem('nan_dynamic_address')||'';
-      if(fallback)saved=localStorage.getItem('nan_payreqs_'+fallback);
-      if(!saved||saved==='[]'){
-        for(let i=0;i<localStorage.length;i++){
-          const k=localStorage.key(i);
-          if(k&&k.startsWith('nan_payreqs_')&&k!=='nan_payreqs_'){
-            const v=localStorage.getItem(k);
-            if(v&&v!=='[]'){saved=v;break;}
-          }
-        }
-      }
-    }
-    paymentRequests=JSON.parse(saved||'[]');
-  }catch{paymentRequests=[];}
-  checkPendingPaymentRequests();
-}
-async function checkPendingPaymentRequests(){
-  if(!userAddr)return;
-  const pending=paymentRequests.filter(p=>p.status==='pending'&&p.to===userAddr);
-  if(!pending.length)return;
-  const readProvider=getArcProvider();
-  const usdc=new ethers.Contract(USDC_ADDR,ERC20_ABI,readProvider);
-  const currentBal=await usdc.balanceOf(userAddr);
-  const current=parseFloat(ethers.formatUnits(currentBal,6));
-  for(const pr of pending){
-    if(pr.expiresAt&&Date.now()>pr.expiresAt){pr.status='expired';continue;}
-    if(pr.amount&&current>=parseFloat(pr.amount)){
-      pr.status='paid';pr.paidAt=Date.now();
-      toast('✓ Payment received for: '+pr.label,'success',5000);
-    }
-  }
-  savePaymentRequests();
-  renderPaymentRequests();
-}
-function savePaymentRequests(){
-  localStorage.setItem('nan_payreqs_'+(userAddr||''),JSON.stringify(paymentRequests));
-}
+
+// [removed: function loadPaymentRequests]
+
+
+// [removed: function savePaymentRequests]
+
 function genPRId(){
   return 'pr_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 }
-function buildPRLink(pr){
-  const base=window.location.origin+'/';
-  const id=pr.onChainId||pr.id;
-  const p=new URLSearchParams({pay:id,to:pr.to,amt:pr.amount||'',tok:pr.token,lbl:pr.label,note:pr.note||''});
-  return base+'?'+p.toString();
-}
-function setPRToken(token,el){
-  currentPRToken=token;
-  document.querySelectorAll('#page-payreq-new .topt').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('prTokenLabel').textContent=token;
-  updatePRPreview();
-}
-function setPRExpiry(hours,el){
-  currentPRExpiry=hours;
-  document.querySelectorAll('#prExpiryGrid .topt').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');
-}
-function updatePRPreview(){
-  const amt=document.getElementById('prAmount').value;
-  const label=document.getElementById('prLabel').value.trim();
-  const btn=document.getElementById('prCreateBtn');
-  const wrap=document.getElementById('prPreviewWrap');
-  if(label){
-    wrap.style.display='block';
-    document.getElementById('prPreviewAmt').textContent=amt?parseFloat(amt).toFixed(2)+' '+currentPRToken:'Open amount · '+currentPRToken;
-    document.getElementById('prPreviewLabel').textContent=label;
-    document.getElementById('prPreviewAddr').textContent=userAddr?short(userAddr):'—';
-    btn.disabled=false;
-  }else{
-    wrap.style.display='none';
-    btn.disabled=true;
-  }
-}
+
+// [removed: function buildPRLink]
+
 function initNewPRForm(){
   document.getElementById('prAmount').value='';
   document.getElementById('prLabel').value='';
@@ -4686,143 +4620,15 @@ function initNewPRForm(){
   document.getElementById('prPreviewWrap').style.display='none';
   document.getElementById('prCreateBtn').disabled=true;
 }
-async function createPaymentRequest(){
-  const label=document.getElementById('prLabel').value.trim();
-  const amt=parseFloat(document.getElementById('prAmount').value)||null;
-  const note=document.getElementById('prNote').value.trim();
-  const email=document.getElementById('prEmail')?.value.trim()||otpEmail||'';
-  if(!label){toast('Enter a label','error');return;}
-  if(!userAddr){toast('Connect wallet first','error');return;}
-  const btn=document.getElementById('prCreateBtn');
-  btn.innerHTML='<span class="spinner"></span>Creating…';btn.disabled=true;
-  _createPaymentRequestAsync(label,amt,note,email,btn).catch(err=>{
-    console.error('[createPaymentRequest]',err);
-    toast('Error: '+(err?.message||'Unknown error').slice(0,120),'error',6000);
-    btn.innerHTML='Create & Share Link';btn.disabled=false;
-  });
-}
-async function _createPaymentRequestAsync(label,amt,note,email,btn){
-  try{
-    const tokenAddr=currentPRToken==='USDC'?USDC_ADDR:EURC_ADDR;
-    const amtAtomic=amt&&amt>0?ethers.parseUnits(amt.toFixed(6),6):BigInt(0);
-    const expiresAt=currentPRExpiry>0?Math.floor(Date.now()/1000)+currentPRExpiry*3600:0;
-    let onChainId=null;
-    if(isCircleWallet&&circleWalletId){
-      // Generate link immediately — don't wait for Circle API or chain confirmation
-      onChainId='circ_'+Date.now();
-      // Submit to chain in background
-      fetch('https://nan-production.up.railway.app/api/circle-wallets',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({action:'contractCall',walletId:circleWalletId,
-          contractAddress:PAYREQ_CONTRACT,
-          functionSignature:'createRequest(address,uint256,string,string,uint256)',
-          params:[tokenAddr,amtAtomic.toString(),label,note||'',String(expiresAt)]})})
-      .then(async r=>{
-        const d=await r.json();
-        if(!d.success){console.warn('PR create failed:',d.error);return;}
-        // After 5s get real on-chain ID and update
-        await new Promise(r=>setTimeout(r,5000));
-        try{
-          const rp=getArcProvider();
-          const c=new ethers.Contract(PAYREQ_CONTRACT,PAYREQ_ABI,rp);
-          const ids=await c.getCreatorRequests(circleWalletAddress||userAddr);
-          if(ids.length>0){
-            const realId=ids[ids.length-1].toString();
-            const idx=paymentRequests.findIndex(p=>p.onChainId===onChainId);
-            if(idx>=0){paymentRequests[idx].onChainId=realId;savePaymentRequests();}
-          }
-        }catch(e){console.warn('PR ID update:',e.message);}
-      })
-      .catch(e=>console.warn('PR submit error:',e.message));
-    }else if(signer){
-      const c=new ethers.Contract(PAYREQ_CONTRACT,PAYREQ_ABI,signer);
-      // Approve USDC/EURC allowance for PAYREQ_CONTRACT if amount > 0
-      if(amtAtomic>0n){
-        const token=new ethers.Contract(tokenAddr,ERC20_ABI,signer);
-        const allowance=await token.allowance(userAddr,PAYREQ_CONTRACT);
-        if(allowance<amtAtomic){
-          btn.innerHTML='<span class="spinner"></span>Approving…';
-          const approveTx=await token.approve(PAYREQ_CONTRACT,ethers.MaxUint256,arcGasOpts());
-          await approveTx.wait(1);
-        }
-      }
-      btn.innerHTML='<span class="spinner"></span>Creating on-chain…';
-      const tx=await c.createRequest(tokenAddr,amtAtomic,label,note||'',expiresAt,arcGasOpts());
-      // wait(1) ensures logs are available — Arc sub-second so still fast
-      const receipt=await tx.wait(1);
-      const event=receipt?.logs?.find(l=>l.fragment?.name==='RequestCreated');
-      onChainId=event?.args?.id?.toString();
-      // Fallback: read ID from chain if event not parsed
-      if(!onChainId){
-        await new Promise(r=>setTimeout(r,1000));
-        const ids=await c.getCreatorRequests(userAddr);
-        onChainId=ids.length>0?ids[ids.length-1].toString():'0';
-      }
-    }else{throw new Error('No wallet connected');}
-    // Store locally with on-chain ID as reference
-    const safeId=onChainId||('local_'+Date.now());
-    const pr={id:'onchain_'+safeId,onChainId:safeId,to:userAddr,token:currentPRToken,amount:amt,label,note,creatorEmail:email,expiresAt:currentPRExpiry>0?Date.now()+currentPRExpiry*3600000:null,status:'pending',createdAt:Date.now()};
-    paymentRequests.unshift(pr);
-    savePaymentRequests();
-    const link=buildPRLink(pr);
-    navigator.clipboard.writeText(link).catch(()=>{});
-    toast('✓ Created! Link copied — share it to get paid','success',4000);
-    try{viewPaymentRequest(pr.id);}catch(e){console.warn('viewPR err:',e.message);}
-  }catch(err){
-    throw err; // bubble up to wrapper
-  }
-}
-function viewPaymentRequest(id){
-  const pr=paymentRequests.find(p=>p.id===id);
-  if(!pr)return;
-  activePRId=id;
-  document.getElementById('prViewTitle').textContent=pr.label;
-  document.getElementById('prViewStatus').textContent=pr.status==='paid'?'✓ Paid':pr.status==='expired'?'⚠ Expired':'⏳ Pending';
-  document.getElementById('prViewStatus').style.color=pr.status==='paid'?'var(--success)':pr.status==='expired'?'var(--warning)':'var(--text3)';
-  document.getElementById('prViewAmt').textContent=pr.amount?parseFloat(pr.amount).toFixed(2)+' '+pr.token:'Open · '+pr.token;
-  document.getElementById('prViewLabel2').textContent=pr.label;
-  document.getElementById('prViewFrom').textContent=short(pr.to);
-  document.getElementById('prViewDate').textContent=new Date(pr.createdAt).toLocaleDateString();
-  document.getElementById('prViewExpiry').textContent=pr.expiresAt?new Date(pr.expiresAt).toLocaleString():'Never';
-  if(pr.note){document.getElementById('prViewNoteRow').style.display='flex';document.getElementById('prViewNote').textContent=pr.note;}
-  else{document.getElementById('prViewNoteRow').style.display='none';}
-  const link=buildPRLink(pr);
-  document.getElementById('prViewLink').textContent=link;
-  const qrBox=document.getElementById('prViewQR');
-  qrBox.innerHTML='';
-  try{new QRCode(qrBox,{text:link,width:120,height:120,colorDark:'#111111',colorLight:'#ffffff'});}catch{}
-  document.getElementById('prMarkPaidBtn').style.display=pr.status==='paid'?'none':'block';
-  goPage('payreq-view');
-}
-function renderPaymentRequests(){
-  loadPaymentRequests();
-  const list=document.getElementById('payreqList');
-  if(!list)return;
-  const total=paymentRequests.length;
-  const paid=paymentRequests.filter(p=>p.status==='paid').length;
-  const pending=paymentRequests.filter(p=>p.status==='pending').length;
-  const el1=document.getElementById('prStatTotal');
-  const el2=document.getElementById('prStatPaid');
-  const el3=document.getElementById('prStatPending');
-  if(el1)el1.textContent=total;
-  if(el2)el2.textContent=paid;
-  if(el3)el3.textContent=pending;
-  if(!paymentRequests.length){
-    list.innerHTML='<div style="text-align:center;padding:32px 16px;"><div style="font-size:2rem;margin-bottom:10px;">🧾</div><div style="font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:5px;">No requests yet</div><div style="font-size:.78rem;color:var(--text3);margin-bottom:16px;">Create one to start getting paid</div><button onclick="goPage(\'payreq-new\')" style="background:#7000ff;border:none;border-radius:10px;color:#f3e8ff;font-family:\'Inter\',sans-serif;font-weight:700;font-size:.82rem;padding:10px 20px;cursor:pointer;">+ Create First Request</button></div>';
-    return;
-  }
-  list.innerHTML=paymentRequests.map(pr=>{
-    const isExpired=pr.expiresAt&&Date.now()>pr.expiresAt&&pr.status==='pending';
-    const status=isExpired?'expired':pr.status;
-    const statusColor=status==='paid'?'var(--success)':status==='expired'?'var(--warning)':'var(--accent3)';
-    const statusLabel=status==='paid'?'✓ Paid':status==='expired'?'Expired':'Pending';
-    const amtText=pr.amount?parseFloat(pr.amount).toFixed(2)+' '+pr.token:'Open · '+pr.token;
-    return `<div onclick="viewPaymentRequest('${pr.id}')" style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--border);cursor:pointer;" onmouseover="this.style.background='rgba(168,85,247,.04)'" onmouseout="this.style.background=''"><div style="display:flex;align-items:center;gap:10px;"><div style="width:36px;height:36px;border-radius:10px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">🧾</div><div><div style="font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:2px;">${pr.label}</div><div style="font-size:.72rem;color:var(--text3);">${new Date(pr.createdAt).toLocaleDateString()}</div></div></div><div style="text-align:right;"><div style="font-size:.88rem;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace;">${amtText}</div><div style="font-size:.68rem;font-weight:600;color:${statusColor};">${statusLabel}</div></div></div>`;
-  }).join('');
-}
-function copyPRLink(){
-  const link=document.getElementById('prViewLink').textContent;
-  navigator.clipboard.writeText(link).then(()=>toast('✓ Link copied!','success',2000));
-}
+async 
+// [removed: function createPaymentRequest]
+
+
+// [removed: function viewPaymentRequest]
+
+
+// [removed: function copyPRLink]
+
 function sharePRLink(){
   const link=document.getElementById('prViewLink').textContent;
   const pr=paymentRequests.find(p=>p.id===activePRId);
@@ -4836,7 +4642,7 @@ function markPRAsPaid(){
   const pr=paymentRequests.find(p=>p.id===activePRId);
   if(!pr)return;
   pr.status='paid';pr.paidAt=Date.now();
-  savePaymentRequests();
+  // savePaymentRequests removed
   document.getElementById('prViewStatus').textContent='✓ Paid';
   document.getElementById('prViewStatus').style.color='var(--success)';
   document.getElementById('prMarkPaidBtn').style.display='none';
@@ -4916,42 +4722,12 @@ async function sendPaymentNotification(pr){
 function deletePR(){
   if(!confirm('Delete this payment request?'))return;
   paymentRequests=paymentRequests.filter(p=>p.id!==activePRId);
-  savePaymentRequests();
+  // savePaymentRequests removed
   toast('Deleted','info',2000);
   goPage('payreq');
 }
-(function handlePRDeepLink(){
-  const params=new URLSearchParams(window.location.search);
-  if(!params.has('pay'))return;
-  const to=params.get('to'),amt=params.get('amt'),tok=params.get('tok')||'USDC',lbl=params.get('lbl')||'',note=params.get('note')||'';
-  window._prDeepLink={to,amt,tok,lbl,note};
-  const orig=window.onConnected;
-  window.onConnected=async function(isEmail,isDev){
-    await orig(isEmail,isDev);
-    const dl=window._prDeepLink;
-    if(!dl)return;
-    setTimeout(()=>{
-      document.getElementById('payNowAmt').textContent=dl.amt?parseFloat(dl.amt).toFixed(2)+' '+dl.tok:'Open amount';
-      document.getElementById('payNowLabel').textContent=dl.lbl||'Payment Request';
-      document.getElementById('payNowNote').textContent=dl.note||'';
-      document.getElementById('payNowTo').textContent=dl.to||'';
-      document.getElementById('payNowToken').textContent=dl.tok||'USDC';
-      const amtInput=document.getElementById('payNowAmtInput');
-      if(amtInput)amtInput.style.display=dl.amt?'none':'block';
-      document.getElementById('payNowAddrDisplay').textContent=dl.to||'';
-      const qrBox=document.getElementById('payNowQR');
-      if(qrBox){qrBox.innerHTML='';try{new QRCode(qrBox,{text:dl.to||'',width:120,height:120,colorDark:'#111111',colorLight:'#ffffff'});}catch{}}
-      goPage('pay-now');
-      if(dl.lbl)toast('💸 Pay: '+dl.lbl,'info',5000);
-      window._prDeepLink=null;
-    },600);
-  };
-})();
-
-
-
-// ══ NAN ADMIN DASHBOARD ══
-let _secretTaps=0,_secretTimer=null,_adminUnlocked=false;
+(
+// [removed: function handlePRDeepLink]
 
 function handleSecretTap(){
   _secretTaps++;
