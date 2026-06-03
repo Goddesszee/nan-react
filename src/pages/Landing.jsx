@@ -30,10 +30,10 @@ function NetworkCanvas({ theme }) {
     let w, h, nodes, edges, pulses, animId
 
     const dark = theme !== 'light'
-    const NODE_COLOR  = 'rgba(112,0,255,'
-    const EDGE_COLOR  = 'rgba(112,0,255,'
-    const PULSE_COLOR = dark ? '#c084fc' : '#7000ff'
-    const GLOW_COLOR  = 'rgba(112,0,255,'
+    const NODE_COLOR  = 'rgba(139,92,246,'
+    const EDGE_COLOR  = 'rgba(139,92,246,'
+    const PULSE_COLOR = dark ? '#c084fc' : '#8b5cf6'
+    const GLOW_COLOR  = 'rgba(139,92,246,'
     const nodeAlpha   = dark ? 0.9 : 0.7
     const edgeAlpha   = dark ? 0.18 : 0.12
     const glowAlpha   = dark ? 0.25 : 0.12
@@ -105,13 +105,13 @@ function NetworkCanvas({ theme }) {
         for (let i = 0; i < p.trail.length; i++) {
           const tp = p.trail[i], ta = (i / p.trail.length) * 0.7
           ctx.beginPath(); ctx.arc(tp.x, tp.y, p.size*(i/p.trail.length)*0.8, 0, Math.PI*2)
-          ctx.fillStyle = dark ? `rgba(192,132,252,${ta})` : `rgba(112,0,255,${ta*0.8})`
+          ctx.fillStyle = dark ? `rgba(192,132,252,${ta})` : `rgba(139,92,246,${ta*0.8})`
           ctx.fill()
         }
         const hg = ctx.createRadialGradient(px, py, 0, px, py, p.size*3)
-        hg.addColorStop(0, dark ? 'rgba(255,255,255,0.95)' : 'rgba(112,0,255,0.95)')
+        hg.addColorStop(0, dark ? 'rgba(255,255,255,0.95)' : 'rgba(139,92,246,0.95)')
         hg.addColorStop(0.4, dark ? 'rgba(192,132,252,0.6)' : 'rgba(147,51,234,0.5)')
-        hg.addColorStop(1, 'rgba(112,0,255,0)')
+        hg.addColorStop(1, 'rgba(139,92,246,0)')
         ctx.beginPath(); ctx.arc(px, py, p.size*3, 0, Math.PI*2); ctx.fillStyle = hg; ctx.fill()
         ctx.beginPath(); ctx.arc(px, py, p.size, 0, Math.PI*2)
         ctx.fillStyle = PULSE_COLOR; ctx.fill()
@@ -240,9 +240,9 @@ function OTPModal({ onClose }) {
     display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16,
   }
   const modal = {
-    background: '#111', border: '1px solid rgba(112,0,255,.3)', borderRadius: 20,
+    background: '#111', border: '1px solid rgba(139,92,246,.3)', borderRadius: 20,
     padding: '28px 24px', width: '100%', maxWidth: 380, position: 'relative',
-    boxShadow: '0 0 60px rgba(112,0,255,.2)',
+    boxShadow: '0 0 60px rgba(139,92,246,.2)',
     animation: 'scaleIn .22s cubic-bezier(.34,1.56,.64,1)',
   }
   const inp = {
@@ -252,10 +252,10 @@ function OTPModal({ onClose }) {
     outline: 'none', boxSizing: 'border-box',
   }
   const btn = {
-    width: '100%', padding: '13px', background: '#7000ff', border: 'none',
+    width: '100%', padding: '13px', background: '#8b5cf6', border: 'none',
     borderRadius: 12, color: '#fff', fontFamily: 'Inter,sans-serif',
     fontSize: '1rem', fontWeight: 700, cursor: 'pointer',
-    boxShadow: '0 0 20px rgba(112,0,255,.4)',
+    boxShadow: '0 0 20px rgba(139,92,246,.4)',
   }
 
   return (
@@ -282,7 +282,7 @@ function OTPModal({ onClose }) {
           </div>
         )}
         {info && (
-          <div style={{ background: 'rgba(112,0,255,.1)', border: '1px solid rgba(112,0,255,.25)',
+          <div style={{ background: 'rgba(139,92,246,.1)', border: '1px solid rgba(139,92,246,.25)',
             borderRadius: 10, padding: '10px 14px', fontSize: '.82rem', color: '#a855f7', marginBottom: 14 }}>
             {info}
           </div>
@@ -291,8 +291,8 @@ function OTPModal({ onClose }) {
         {step === 'loading' && (
           <div style={{ textAlign: 'center', padding: '24px 0' }}>
             <div style={{
-              width: 36, height: 36, border: '3px solid rgba(112,0,255,.2)',
-              borderTopColor: '#7000ff', borderRadius: '50%',
+              width: 36, height: 36, border: '3px solid rgba(139,92,246,.2)',
+              borderTopColor: '#8b5cf6', borderRadius: '50%',
               animation: 'spin .7s linear infinite', margin: '0 auto 12px',
             }} />
             <div style={{ color: '#666', fontSize: '.85rem' }}>Please wait…</div>
@@ -368,7 +368,7 @@ export function Landing() {
           <button
             onClick={() => setShowAuthFlow && setShowAuthFlow(true)}
             style={{
-              background: '#7000ff',
+              background: '#8b5cf6',
               border: 'none',
               borderRadius: 10,
               color: '#fff',
@@ -377,7 +377,7 @@ export function Landing() {
               fontSize: '.85rem',
               fontWeight: 700,
               cursor: 'pointer',
-              boxShadow: '0 0 16px rgba(112,0,255,.35)',
+              boxShadow: '0 0 16px rgba(139,92,246,.35)',
             }}
           >
             Log in
