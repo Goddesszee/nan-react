@@ -1749,11 +1749,43 @@ const hasSwap=()=>typeof PERMIT2_ADDR!=='undefined'&&PERMIT2_ADDR.length===42;
 let _quoteTimer=null,_quoteCache={};
 function calcSwap(){
   const amt=parseFloat(document.getElementById('swapFrom').value)||0;
+  if(!amt||amt<=0){
+    document.getElementById('swapTo').value='';
+    document.getElementById('swapFromUSD').textContent='0.00';
+    document.getElementById('swapToUSD').textContent='0.00';
+    return;
+  }
+  // Show FX estimate immediately while contract quote loads
   const rate=swapFlipped?(1/FX):FX;
-  const out=(amt*rate*0.999).toFixed(6);
-  document.getElementById('swapTo').value=amt>0?out:'';
+  const estOut=(amt*rate*0.999).toFixed(6);
+  document.getElementById('swapTo').value=estOut;
   document.getElementById('swapFromUSD').textContent=swapFlipped?(amt*(1/FX)).toFixed(2):amt.toFixed(2);
-  document.getElementById('swapToUSD').textContent=swapFlipped?parseFloat(out).toFixed(2):(parseFloat(out)*(1/FX)).toFixed(2);
+  document.getElementById('swapToUSD').textContent=swapFlipped?parseFloat(estOut).toFixed(2):(parseFloat(estOut)*(1/FX)).toFixed(2);
+  // Fetch contract quote in background and update
+  _fetchContractQuote(amt);
+}
+let _contractQuoteTimer=null;
+async function _fetchContractQuote(amt){
+  clearTimeout(_contractQuoteTimer);
+  _contractQuoteTimer=setTimeout(async()=>{
+    try{
+      const provider=getArcProvider();
+      const swapContract=new ethers.Contract(SWAP_CONTRACT,SWAP_ABI,provider);
+      const amtIn=ethers.parseUnits(amt.toFixed(6),6);
+      const isUtoE=!swapFlipped;
+      const result=isUtoE?await swapContract.quoteUSDCtoEURC(amtIn):await swapContract.quoteEURCtoUSDC(amtIn);
+      // returns [amountOut, fee]
+      const amtOut=ethers.formatUnits(result[0],6);
+      document.getElementById('swapTo').value=parseFloat(amtOut).toFixed(6);
+      document.getElementById('swapToUSD').textContent=isUtoE?
+        (parseFloat(amtOut)*(1/FX)).toFixed(2):parseFloat(amtOut).toFixed(2);
+      // Store for use in doSwap
+      window._lastContractQuote={amtIn:amt,amtOut:parseFloat(amtOut),isUtoE};
+    }catch(e){
+      console.log('[contract quote]',e.message);
+      // Keep FX estimate shown
+    }
+  },400);
 }
 async function _fetchAppKitQuote(amt){
   const tokenIn=swapFlipped?'EURC':'USDC';
@@ -1833,7 +1865,12 @@ async function doSwap(){
           params:[Math.floor(fromAmt*1_000_000).toString()]})});
       const d=await swapRes.json();
       if(!d.success)throw new Error(d.error||'Swap failed');
-      const amtOut=(fromAmt*(isUSDCtoEURC?FX:(1/FX))*0.999).toFixed(4);
+      // Use contract quote if available, else fall back to FX estimate
+      const _cq=window._lastContractQuote;
+      const amtOut=(_cq&&Math.abs(_cq.amtIn-fromAmt)<0.001)?
+        _cq.amtOut.toFixed(4):
+        (fromAmt*(isUSDCtoEURC?FX:(1/FX))*0.999).toFixed(4);
+      window._lastContractQuote=null; // clear after use
       toast('✓ Swapped '+fromAmt.toFixed(2)+' '+tokenIn+' → '+amtOut+' '+tokenOut+'!','success',6000);
       const _swapTxId=d.txHash||d.transactionId||'pending';
       addTx({hash:_swapTxId,to:SWAP_CONTRACT,toRaw:'NANSwap',amount:fromAmt.toFixed(6),fromToken:tokenIn,toToken:tokenOut,outAmount:amtOut,type:'swap',token:tokenIn,ts:Date.now(),confirmed:true,source:'swap'});
