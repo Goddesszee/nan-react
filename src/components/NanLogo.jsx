@@ -1,7 +1,7 @@
-export function NanLogo({ width = 140, height = 36, theme = 'dark' }) {
+export function NanLogo({ height = 44, theme = 'dark' }) {
   const fill = theme === 'light' ? '#111111' : '#ffffff'
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 736 736" width={height} height={height}>
         <g fill={fill}>
           <path d="M248 215 H312 L490 520 H426 Z"/>
@@ -11,7 +11,7 @@ export function NanLogo({ width = 140, height = 36, theme = 'dark' }) {
       </svg>
       <span style={{
         fontFamily: "'Inter',system-ui,sans-serif",
-        fontSize: `${height * 0.58}px`,
+        fontSize: `${height * 0.6}px`,
         fontWeight: 800,
         letterSpacing: '-0.03em',
         color: fill,
