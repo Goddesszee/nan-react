@@ -87,7 +87,7 @@ function goPage(name) {
   if (name === 'earn' || name === 'lend') initLendUI();
   if (name === 'history') renderHistory();
   if (name === 'arcname') renderArcDirectory();
-  if (name === 'swap') refreshBalances();
+  if (name === 'swap') { refreshBalances(); if(typeof fetchLiveFX==='function') fetchLiveFX(); }
   if (name === 'bulk') { renderBulkRecipients(); updateBulkSummary(); }
   if (name === 'home') updateHomeScreen();
   if (name === 'payreq') renderPaymentRequests();

@@ -48,7 +48,7 @@ const HISTORY_ABI = [
 ];
 
 // CCTP — Circle Cross-Chain Transfer Protocol
-const ARC_CCTP_DOMAIN = 26; const CCTP_TOKEN_MESSENGER = '0x8FE6B999Dc680CcFDD5Bf7EB0974218be2542DAA'; // Arc Testnet TokenMessengerV2 (official)
+const ARC_CCTP_DOMAIN = 7; const CCTP_TOKEN_MESSENGER = '0x8FE6B999Dc680CcFDD5Bf7EB0974218be2542DAA'; // Arc Testnet TokenMessengerV2 (official)
 const CCTP_MESSAGE_TRANSMITTER = '0xE737e5cEBEEBa77EFE34D4aa090756590b1CE275'; // Arc Testnet MessageTransmitterV2
 // Arc Testnet CCTP Domain = 26 (official from docs.arc.io)
 const CCTP_DEST_DOMAIN = {
@@ -1057,6 +1057,10 @@ async function onConnected(isEmail=false, isDev=false){
   document.getElementById('aiBtn').style.display='flex';
   var deskAI=document.getElementById('aiBtnDesktop');
   if(deskAI)deskAI.style.display='flex';
+  var navF=document.getElementById('navFaucetBtn');
+  if(navF)navF.style.display='flex';
+  var tnavAI=document.getElementById('tnav-ai');
+  if(tnavAI)tnavAI.style.display='flex';
   setTimeout(attachAIListeners, 100); // re-attach after button is visible
   startOrderEngine();
   // Pre-approve all contracts once so users never see repeated approve popups
@@ -2171,7 +2175,7 @@ async function pollIrisAttestation(txHash, destChain) {
       try {
         const pr = await fetch('https://nan-production.up.railway.app/api/cctp-attest', {
           method: 'POST', headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({action:'getAttestation', txHash, sourceDomain:26}),
+          body: JSON.stringify({action:'getAttestation', txHash, sourceDomain:7}),
         });
         if (pr.ok) {
           const pd = await pr.json();
