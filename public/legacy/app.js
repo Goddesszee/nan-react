@@ -48,7 +48,7 @@ const HISTORY_ABI = [
 ];
 
 // CCTP — Circle Cross-Chain Transfer Protocol
-const ARC_CCTP_DOMAIN = 26; const CCTP_TOKEN_MESSENGER = '0x8FE6B999Dc680CcFDD5Bf7EB0974218be2542DAA'; // Arc Testnet TokenMessengerV2 (official)
+const ARC_CCTP_DOMAIN = 7; const CCTP_TOKEN_MESSENGER = '0x8FE6B999Dc680CcFDD5Bf7EB0974218be2542DAA'; // Arc Testnet TokenMessengerV2 (official)
 const CCTP_MESSAGE_TRANSMITTER = '0xE737e5cEBEEBa77EFE34D4aa090756590b1CE275'; // Arc Testnet MessageTransmitterV2
 // Arc Testnet CCTP Domain = 26 (official from docs.arc.io)
 const CCTP_DEST_DOMAIN = {
@@ -724,6 +724,7 @@ async function fetchLiveFX(){
   updateSwapRateDisplay();
 }
 function updateSwapRateDisplay(){
+  if(document.getElementById('swapFrom')?.value>0) calcSwap();
   const time=fxLastUpdated?fxLastUpdated.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'fallback';
   const el=document.getElementById('swapRate');if(!el)return;
   el.innerHTML=swapFlipped
@@ -1054,6 +1055,12 @@ async function onConnected(isEmail=false, isDev=false){
   renderArcDirectory();
   initLendUI();
   document.getElementById('aiBtn').style.display='flex';
+  var deskAI=document.getElementById('aiBtnDesktop');
+  if(deskAI)deskAI.style.display='flex';
+  var navF=document.getElementById('navFaucetBtn');
+  if(navF)navF.style.display='flex';
+  var tnavAI=document.getElementById('tnav-ai');
+  if(tnavAI)tnavAI.style.display='flex';
   setTimeout(attachAIListeners, 100); // re-attach after button is visible
   startOrderEngine();
   // Pre-approve all contracts once so users never see repeated approve popups
@@ -1749,11 +1756,43 @@ const hasSwap=()=>typeof PERMIT2_ADDR!=='undefined'&&PERMIT2_ADDR.length===42;
 let _quoteTimer=null,_quoteCache={};
 function calcSwap(){
   const amt=parseFloat(document.getElementById('swapFrom').value)||0;
+  if(!amt||amt<=0){
+    document.getElementById('swapTo').value='';
+    document.getElementById('swapFromUSD').textContent='0.00';
+    document.getElementById('swapToUSD').textContent='0.00';
+    return;
+  }
+  // Show FX estimate immediately while contract quote loads
   const rate=swapFlipped?(1/FX):FX;
-  const out=(amt*rate*0.999).toFixed(6);
-  document.getElementById('swapTo').value=amt>0?out:'';
+  const estOut=(amt*rate*0.999).toFixed(6);
+  document.getElementById('swapTo').value=estOut;
   document.getElementById('swapFromUSD').textContent=swapFlipped?(amt*(1/FX)).toFixed(2):amt.toFixed(2);
-  document.getElementById('swapToUSD').textContent=swapFlipped?parseFloat(out).toFixed(2):(parseFloat(out)*(1/FX)).toFixed(2);
+  document.getElementById('swapToUSD').textContent=swapFlipped?parseFloat(estOut).toFixed(2):(parseFloat(estOut)*(1/FX)).toFixed(2);
+  // Fetch contract quote in background and update
+  _fetchContractQuote(amt);
+}
+let _contractQuoteTimer=null;
+async function _fetchContractQuote(amt){
+  clearTimeout(_contractQuoteTimer);
+  _contractQuoteTimer=setTimeout(async()=>{
+    try{
+      const provider=getArcProvider();
+      const swapContract=new ethers.Contract(SWAP_CONTRACT,SWAP_ABI,provider);
+      const amtIn=ethers.parseUnits(amt.toFixed(6),6);
+      const isUtoE=!swapFlipped;
+      const result=isUtoE?await swapContract.quoteUSDCtoEURC(amtIn):await swapContract.quoteEURCtoUSDC(amtIn);
+      // returns [amountOut, fee]
+      const amtOut=ethers.formatUnits(result[0],6);
+      document.getElementById('swapTo').value=parseFloat(amtOut).toFixed(6);
+      document.getElementById('swapToUSD').textContent=isUtoE?
+        (parseFloat(amtOut)*(1/FX)).toFixed(2):parseFloat(amtOut).toFixed(2);
+      // Store for use in doSwap
+      window._lastContractQuote={amtIn:amt,amtOut:parseFloat(amtOut),isUtoE};
+    }catch(e){
+      console.log('[contract quote]',e.message);
+      // Keep FX estimate shown
+    }
+  },400);
 }
 async function _fetchAppKitQuote(amt){
   const tokenIn=swapFlipped?'EURC':'USDC';
@@ -1833,7 +1872,12 @@ async function doSwap(){
           params:[Math.floor(fromAmt*1_000_000).toString()]})});
       const d=await swapRes.json();
       if(!d.success)throw new Error(d.error||'Swap failed');
-      const amtOut=(fromAmt*(isUSDCtoEURC?FX:(1/FX))*0.999).toFixed(4);
+      // Use contract quote if available, else fall back to FX estimate
+      const _cq=window._lastContractQuote;
+      const amtOut=(_cq&&Math.abs(_cq.amtIn-fromAmt)<0.001)?
+        _cq.amtOut.toFixed(4):
+        (fromAmt*(isUSDCtoEURC?FX:(1/FX))*0.999).toFixed(4);
+      window._lastContractQuote=null; // clear after use
       toast('✓ Swapped '+fromAmt.toFixed(2)+' '+tokenIn+' → '+amtOut+' '+tokenOut+'!','success',6000);
       const _swapTxId=d.txHash||d.transactionId||'pending';
       addTx({hash:_swapTxId,to:SWAP_CONTRACT,toRaw:'NANSwap',amount:fromAmt.toFixed(6),fromToken:tokenIn,toToken:tokenOut,outAmount:amtOut,type:'swap',token:tokenIn,ts:Date.now(),confirmed:true,source:'swap'});
@@ -2131,7 +2175,7 @@ async function pollIrisAttestation(txHash, destChain) {
       try {
         const pr = await fetch('https://nan-production.up.railway.app/api/cctp-attest', {
           method: 'POST', headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({action:'getAttestation', txHash, sourceDomain:26}),
+          body: JSON.stringify({action:'getAttestation', txHash, sourceDomain:7}),
         });
         if (pr.ok) {
           const pd = await pr.json();
@@ -2467,10 +2511,11 @@ function renderHistory(){
 // ═══════════════════════════════════════════
 // FAUCET
 // ═══════════════════════════════════════════
-async function claimFaucet(){
+async function claimFaucet(btnEl){
   if(!userAddr){toast('Connect wallet first','error');return;}
-  const btn=document.getElementById('faucetBtn');
-  btn.innerHTML='<span class="spinner"></span>Claiming…';btn.disabled=true;
+  const btn=btnEl||document.getElementById('faucetBtn')||document.querySelector('[onclick*="claimFaucet"]');
+  const origText=btn?btn.innerHTML:'💧 Get Free Tokens';
+  if(btn){btn.innerHTML='<span class="spinner"></span>Claiming…';btn.disabled=true;}
   try{
     const res=await fetch('https://nan-production.up.railway.app/api/faucet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({address:userAddr})});
     const data=await res.json();
@@ -2484,7 +2529,7 @@ async function claimFaucet(){
       else{toast('Opening faucet website…','info',3000);window.open('https://faucet.circle.com','_blank');}
     }
   }catch{toast('Opening faucet website…','info',3000);window.open('https://faucet.circle.com','_blank');}
-  btn.innerHTML='💧 Get Free Tokens';btn.disabled=false;
+  if(btn){btn.innerHTML=origText;btn.disabled=false;}
 }
 
 // ═══════════════════════════════════════════
@@ -4552,7 +4597,23 @@ let currentPRExpiry=0;
 let activePRId=null;
 
 function loadPaymentRequests(){
-  try{paymentRequests=JSON.parse(localStorage.getItem('nan_payreqs_'+(userAddr||''))||'[]');}catch{paymentRequests=[];}
+  try{
+    let saved=localStorage.getItem('nan_payreqs_'+(userAddr||''));
+    if(!saved||saved==='[]'){
+      const fallback=localStorage.getItem('circleWalletAddr')||localStorage.getItem('nan_dynamic_address')||'';
+      if(fallback)saved=localStorage.getItem('nan_payreqs_'+fallback);
+      if(!saved||saved==='[]'){
+        for(let i=0;i<localStorage.length;i++){
+          const k=localStorage.key(i);
+          if(k&&k.startsWith('nan_payreqs_')&&k!=='nan_payreqs_'){
+            const v=localStorage.getItem(k);
+            if(v&&v!=='[]'){saved=v;break;}
+          }
+        }
+      }
+    }
+    paymentRequests=JSON.parse(saved||'[]');
+  }catch{paymentRequests=[];}
   checkPendingPaymentRequests();
 }
 async function checkPendingPaymentRequests(){
