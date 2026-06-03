@@ -4694,7 +4694,14 @@ async function createPaymentRequest(){
   if(!label){toast('Enter a label','error');return;}
   if(!userAddr){toast('Connect wallet first','error');return;}
   const btn=document.getElementById('prCreateBtn');
-  btn.innerHTML='<span class="spinner"></span>Creating on-chain…';btn.disabled=true;
+  btn.innerHTML='<span class="spinner"></span>Creating…';btn.disabled=true;
+  _createPaymentRequestAsync(label,amt,note,email,btn).catch(err=>{
+    console.error('[createPaymentRequest]',err);
+    toast('Error: '+(err?.message||'Unknown error').slice(0,120),'error',6000);
+    btn.innerHTML='Create & Share Link';btn.disabled=false;
+  });
+}
+async function _createPaymentRequestAsync(label,amt,note,email,btn){
   try{
     const tokenAddr=currentPRToken==='USDC'?USDC_ADDR:EURC_ADDR;
     const amtAtomic=amt&&amt>0?ethers.parseUnits(amt.toFixed(6),6):BigInt(0);
@@ -4728,6 +4735,17 @@ async function createPaymentRequest(){
       .catch(e=>console.warn('PR submit error:',e.message));
     }else if(signer){
       const c=new ethers.Contract(PAYREQ_CONTRACT,PAYREQ_ABI,signer);
+      // Approve USDC/EURC allowance for PAYREQ_CONTRACT if amount > 0
+      if(amtAtomic>0n){
+        const token=new ethers.Contract(tokenAddr,ERC20_ABI,signer);
+        const allowance=await token.allowance(userAddr,PAYREQ_CONTRACT);
+        if(allowance<amtAtomic){
+          btn.innerHTML='<span class="spinner"></span>Approving…';
+          const approveTx=await token.approve(PAYREQ_CONTRACT,ethers.MaxUint256,arcGasOpts());
+          await approveTx.wait(1);
+        }
+      }
+      btn.innerHTML='<span class="spinner"></span>Creating on-chain…';
       const tx=await c.createRequest(tokenAddr,amtAtomic,label,note||'',expiresAt,arcGasOpts());
       // wait(1) ensures logs are available — Arc sub-second so still fast
       const receipt=await tx.wait(1);
@@ -4750,9 +4768,7 @@ async function createPaymentRequest(){
     toast('✓ Created! Link copied — share it to get paid','success',4000);
     try{viewPaymentRequest(pr.id);}catch(e){console.warn('viewPR err:',e.message);}
   }catch(err){
-    console.error('[createPaymentRequest] error:', err);
-    toast('Create failed: '+err.message.slice(0,150),'error',7000);
-    btn.innerHTML='Create & Share Link';btn.disabled=false;
+    throw err; // bubble up to wrapper
   }
 }
 function viewPaymentRequest(id){
