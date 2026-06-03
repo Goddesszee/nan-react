@@ -177,21 +177,28 @@ function LoginModal({ onClose, onEmailConnect, onWalletConnect }) {
     } catch(e) { setError(e.message); setStep('options') }
   }
 
+  const { theme: modalTheme } = useTheme()
+  const dark = modalTheme !== 'light'
   const overlay = {
-    position:'fixed',inset:0,background:'rgba(0,0,0,.8)',backdropFilter:'blur(12px)',
-    zIndex:9999,display:'flex',alignItems:'center',justifyContent:'center',padding:16,
+    position:'fixed',inset:0,background: dark ? 'rgba(0,0,0,.85)' : 'rgba(0,0,0,.5)',
+    backdropFilter:'blur(12px)',zIndex:9999,
+    display:'flex',alignItems:'center',justifyContent:'center',padding:16,
     animation:'fadeIn .2s ease',
   }
   const modal = {
-    background:'#111',border:'1px solid rgba(255,255,255,.1)',borderRadius:24,
-    padding:'28px 24px',width:'100%',maxWidth:400,position:'relative',
-    boxShadow:'0 0 60px rgba(112,0,255,.15)',animation:'scaleIn .25s cubic-bezier(.34,1.56,.64,1)',
-    fontFamily:'Inter,sans-serif',
+    background: dark ? '#111' : '#ffffff',
+    border: dark ? '1px solid rgba(255,255,255,.1)' : '1px solid rgba(0,0,0,.1)',
+    borderRadius:24,padding:'28px 24px',width:'100%',maxWidth:400,position:'relative',
+    boxShadow:'0 0 60px rgba(112,0,255,.15)',
+    animation:'scaleIn .25s cubic-bezier(.34,1.56,.64,1)',fontFamily:'Inter,sans-serif',
   }
+  const textColor = dark ? '#ffffff' : '#111111'
+  const subColor  = dark ? '#aaaaaa' : '#555555'
   const inp = {
-    width:'100%',padding:'13px 14px',background:'rgba(255,255,255,.06)',
-    border:'1px solid rgba(255,255,255,.12)',borderRadius:12,
-    color:'#fff',fontFamily:'Inter,sans-serif',fontSize:'1rem',
+    width:'100%',padding:'13px 14px',
+    background: dark ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.05)',
+    border: dark ? '1px solid rgba(255,255,255,.15)' : '1px solid rgba(0,0,0,.15)',
+    borderRadius:12,color:textColor,fontFamily:'Inter,sans-serif',fontSize:'1rem',
     outline:'none',boxSizing:'border-box',
   }
   const primaryBtn = {
@@ -200,25 +207,26 @@ function LoginModal({ onClose, onEmailConnect, onWalletConnect }) {
     cursor:'pointer',boxShadow:'0 0 20px rgba(112,0,255,.35)',
   }
   const secondaryBtn = {
-    width:'100%',padding:13,background:'rgba(255,255,255,.06)',
-    border:'1px solid rgba(255,255,255,.1)',borderRadius:12,
-    color:'#fff',fontFamily:'Inter,sans-serif',fontSize:'1rem',fontWeight:600,cursor:'pointer',
+    width:'100%',padding:13,
+    background: dark ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.05)',
+    border: dark ? '1px solid rgba(255,255,255,.15)' : '1px solid rgba(0,0,0,.15)',
+    borderRadius:12,color:textColor,fontFamily:'Inter,sans-serif',fontSize:'1rem',fontWeight:600,cursor:'pointer',
   }
 
   return (
     <div style={overlay} onClick={e=>e.target===e.currentTarget&&onClose()}>
       <div style={modal}>
-        <button onClick={onClose} style={{position:'absolute',top:14,right:16,background:'none',border:'none',color:'#555',fontSize:'1.3rem',cursor:'pointer',lineHeight:1}}>×</button>
+        <button onClick={onClose} style={{position:'absolute',top:14,right:16,background:'none',border:'none',color:subColor,fontSize:'1.3rem',cursor:'pointer',lineHeight:1}}>×</button>
 
         {/* Header */}
         <div style={{textAlign:'center',marginBottom:24}}>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="235 205 265 325" width="32" height="40" style={{margin:'0 auto 10px',display:'block'}}>
             <g fill="#7000ff"><path d="M248 215 H312 L490 520 H426 Z"/><rect x="426" y="215" width="64" height="155"/><rect x="248" y="365" width="64" height="155"/></g>
           </svg>
-          <div style={{fontSize:'1.2rem',fontWeight:800,color:'#fff',letterSpacing:'-.02em'}}>
+          <div style={{fontSize:'1.2rem',fontWeight:800,color:textColor,letterSpacing:'-.02em'}}>
             {step==='options' ? 'Sign in to NAN' : step==='email' ? 'Continue with Email' : step==='otp' ? 'Check your inbox' : 'Please wait…'}
           </div>
-          <div style={{fontSize:'.82rem',color:'#555',marginTop:4}}>
+          <div style={{fontSize:'.82rem',color:subColor,marginTop:4}}>
             {step==='options' ? 'Payments Without Borders' : step==='otp' ? `Code sent to ${email}` : ''}
           </div>
         </div>
@@ -231,7 +239,7 @@ function LoginModal({ onClose, onEmailConnect, onWalletConnect }) {
         {step==='loading' && (
           <div style={{textAlign:'center',padding:'24px 0'}}>
             <div style={{width:36,height:36,border:'3px solid rgba(112,0,255,.2)',borderTopColor:'#7000ff',borderRadius:'50%',animation:'spin .7s linear infinite',margin:'0 auto 12px'}}/>
-            <div style={{color:'#666',fontSize:'.85rem'}}>{loadMsg}</div>
+            <div style={{color:subColor,fontSize:'.85rem'}}>{loadMsg}</div>
             <style>{`@keyframes spin{to{transform:rotate(360deg)}}@keyframes fadeIn{from{opacity:0}}@keyframes scaleIn{from{opacity:0;transform:scale(.9)}}`}</style>
           </div>
         )}
@@ -252,13 +260,13 @@ function LoginModal({ onClose, onEmailConnect, onWalletConnect }) {
               </button>
             )}
             <div style={{textAlign:'center',margin:'8px 0',fontSize:'.75rem',color:'#444'}}>— or —</div>
-            <div style={{background:'rgba(255,255,255,.03)',border:'1px solid rgba(255,255,255,.07)',borderRadius:12,padding:'12px 14px'}}>
-              <div style={{fontSize:'.78rem',color:'#666',marginBottom:8}}>Don't have a wallet?</div>
-              <div style={{fontSize:'.82rem',color:'#888',lineHeight:1.6}}>
+            <div style={{background: dark ? 'rgba(255,255,255,.04)' : 'rgba(0,0,0,.03)',border: dark ? '1px solid rgba(255,255,255,.08)' : '1px solid rgba(0,0,0,.08)',borderRadius:12,padding:'12px 14px'}}>
+              <div style={{fontSize:'.78rem',color:subColor,marginBottom:8}}>Don't have a wallet?</div>
+              <div style={{fontSize:'.82rem',color: dark ? '#aaa' : '#555',lineHeight:1.6}}>
                 Use <strong style={{color:'#a855f7'}}>Continue with Email</strong> — we create a secure wallet for you automatically. No downloads, no seed phrases.
               </div>
             </div>
-            <div style={{textAlign:'center',fontSize:'.72rem',color:'#444',marginTop:4}}>
+            <div style={{textAlign:'center',fontSize:'.72rem',color:subColor,marginTop:4}}>
               Powered by Circle · Arc Testnet
             </div>
           </div>
@@ -270,7 +278,7 @@ function LoginModal({ onClose, onEmailConnect, onWalletConnect }) {
             <input style={inp} type="email" placeholder="your@email.com" value={email}
               onChange={e=>setEmail(e.target.value)} onKeyDown={e=>e.key==='Enter'&&sendOTP()} autoFocus/>
             <button style={primaryBtn} onClick={sendOTP}>Send Code →</button>
-            <button onClick={()=>{setStep('options');setError('')}} style={{background:'none',border:'none',color:'#555',fontSize:'.82rem',cursor:'pointer'}}>← Back</button>
+            <button onClick={()=>{setStep('options');setError('')}} style={{background:'none',border:'none',color:subColor,fontSize:'.82rem',cursor:'pointer'}}>← Back</button>
           </div>
         )}
 
@@ -282,7 +290,7 @@ function LoginModal({ onClose, onEmailConnect, onWalletConnect }) {
               onChange={e=>setOtp(e.target.value.replace(/\D/g,''))}
               onKeyDown={e=>e.key==='Enter'&&verifyOTP()} autoFocus/>
             <button style={primaryBtn} onClick={verifyOTP}>Verify & Enter →</button>
-            <button onClick={()=>{setStep('email');setOtp('');setError('')}} style={{background:'none',border:'none',color:'#555',fontSize:'.82rem',cursor:'pointer'}}>← Use different email</button>
+            <button onClick={()=>{setStep('email');setOtp('');setError('')}} style={{background:'none',border:'none',color:subColor,fontSize:'.82rem',cursor:'pointer'}}>← Use different email</button>
           </div>
         )}
       </div>
