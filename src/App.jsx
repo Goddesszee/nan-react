@@ -15,7 +15,7 @@ export default function App() {
   const didRedirect = useRef(false)
 
   useEffect(() => {
-    const t = setTimeout(() => setTimedOut(true), 5000)
+    const t = setTimeout(() => setTimedOut(true), 1500)
     return () => clearTimeout(t)
   }, [])
 
@@ -70,8 +70,18 @@ export default function App() {
     if (didRedirect.current) return
     didRedirect.current = true
     setRedirecting(true)
-    setStatus('Setting up your wallet…')
 
+    // If wallet already cached for this email — redirect instantly, no API call
+    const cachedId   = localStorage.getItem('circleWalletId')
+    const cachedAddr = localStorage.getItem('circleWalletAddr')
+    const cachedEmail = localStorage.getItem('nan_dynamic_email')
+    if (cachedId && cachedAddr && cachedEmail === email) {
+      doRedirect(cachedAddr, email)
+      return
+    }
+
+    // First time or different email — fetch/create Circle wallet
+    setStatus('Setting up your wallet…')
     try {
       const r = await fetch(`${API}/api/circle-wallets`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -80,17 +90,14 @@ export default function App() {
       const d = await r.json()
       const wallet = d.wallet || d
       if (wallet?.id && wallet?.address) {
-        // Store Circle wallet — same keys used by OTP path
         localStorage.setItem('circleWalletId',   wallet.id)
         localStorage.setItem('circleWalletAddr', wallet.address)
         doRedirect(wallet.address, email)
       } else {
-        // Circle wallet failed — fall back to Dynamic address
         const addr = wagmiAddress || primaryWallet?.address
         doRedirect(addr, email)
       }
     } catch(e) {
-      // Network error — fall back to Dynamic address
       const addr = wagmiAddress || primaryWallet?.address
       doRedirect(addr, email)
     }
