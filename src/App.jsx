@@ -73,7 +73,7 @@ export default function App() {
       <div style={{minHeight:'100vh',background:'#000',display:'flex',flexDirection:'column',
         alignItems:'center',justifyContent:'center',gap:16,fontFamily:'Inter,sans-serif'}}>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="235 205 265 325" width="48" height="60">
-          <g fill="#6d28d9">
+          <g fill="#7000ff">
             <path d="M248 215 H312 L490 520 H426 Z"/>
             <rect x="426" y="215" width="64" height="155"/>
             <rect x="248" y="365" width="64" height="155"/>
@@ -81,7 +81,7 @@ export default function App() {
         </svg>
         <div style={{color:'#fff',fontSize:'1rem',fontWeight:600}}>{status}</div>
         <div style={{display:'flex',gap:6}}>
-          <div style={{width:6,height:6,borderRadius:'50%',background:'#6d28d9',animation:'pulse 1s ease-in-out infinite'}}/>
+          <div style={{width:6,height:6,borderRadius:'50%',background:'#7000ff',animation:'pulse 1s ease-in-out infinite'}}/>
           <div style={{width:6,height:6,borderRadius:'50%',background:'#9333ea',animation:'pulse 1s ease-in-out .2s infinite'}}/>
           <div style={{width:6,height:6,borderRadius:'50%',background:'#c084fc',animation:'pulse 1s ease-in-out .4s infinite'}}/>
         </div>
