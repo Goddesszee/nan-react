@@ -1085,7 +1085,7 @@ function disconnect(){
   // Stop all timers
   if(txPollTimer){clearInterval(txPollTimer);txPollTimer=null;}
   // Clear in-memory state
-  txHistory=[];paymentRequests=[];arcNames=[];
+  txHistory=[];arcNames=[];
   provider=signer=userAddr=wp=null;
   onArcNetwork=false;lastTxHash=lastTxId=null;
   circleWalletId=circleWalletAddress=circleWalletBlockchain=null;
@@ -4613,7 +4613,7 @@ function initNewPRForm(){
   document.getElementById('prLabel').value='';
   document.getElementById('prNote').value='';
   currentPRToken='USDC';currentPRExpiry=0;
-  document.querySelectorAll('#page-payreq-new .topt').forEach(b=>b.classList.remove('active'));
+  
   document.getElementById('pr-usdc').classList.add('active');
   document.querySelectorAll('#prExpiryGrid .topt')[0].classList.add('active');
   document.getElementById('prTokenLabel').textContent='USDC';
@@ -4631,16 +4631,14 @@ async
 
 function sharePRLink(){
   const link=document.getElementById('prViewLink').textContent;
-  const pr=paymentRequests.find(p=>p.id===activePRId);
-  if(!pr)return;
+  // paymentRequests removed
   const amt=pr.amount?pr.amount+' '+pr.token:pr.token;
   const text='Pay me '+amt+' — '+pr.label+'\n\n'+link+'\n\nPowered by NAN Wallet on Arc Testnet';
   if(navigator.share){navigator.share({title:'Payment Request — '+pr.label,text,url:link}).catch(()=>{});}
   else{navigator.clipboard.writeText(text).then(()=>toast('✓ Copied — paste to share!','success',3000));}
 }
 function markPRAsPaid(){
-  const pr=paymentRequests.find(p=>p.id===activePRId);
-  if(!pr)return;
+  // paymentRequests removed
   pr.status='paid';pr.paidAt=Date.now();
   // savePaymentRequests removed
   document.getElementById('prViewStatus').textContent='✓ Paid';
@@ -4721,7 +4719,7 @@ async function sendPaymentNotification(pr){
 
 function deletePR(){
   if(!confirm('Delete this payment request?'))return;
-  paymentRequests=paymentRequests.filter(p=>p.id!==activePRId);
+  // paymentRequests removed
   // savePaymentRequests removed
   toast('Deleted','info',2000);
   goPage('payreq');
