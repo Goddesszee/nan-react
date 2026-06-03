@@ -681,7 +681,7 @@ async function fetchLiveFX(){
   try{
     const cached=localStorage.getItem('nan_fx_rate');
     const cachedTime=localStorage.getItem('nan_fx_time');
-    if(cached&&cachedTime&&Date.now()-parseInt(cachedTime)<3600000){
+    if(cached&&cachedTime&&Date.now()-parseInt(cachedTime)<1800000){ // 30min cache
       const rate=parseFloat(cached);
       if(rate>0.5&&rate<2){FX=rate;fxLastUpdated=new Date(parseInt(cachedTime));updateSwapRateDisplay();return;}
     }
@@ -1006,10 +1006,15 @@ async function onConnected(isEmail=false, isDev=false){
   // Show AI button
   try{
     const ai=document.getElementById('aiBtn');
-    if(ai) ai.style.display='flex';
+    if(ai){ ai.style.display='flex'; ai.style.visibility='visible'; ai.style.opacity='1'; }
     const aiD=document.getElementById('aiBtnDesktop');
-    if(aiD) aiD.style.display='flex';
+    if(aiD){ aiD.style.display='flex'; aiD.style.visibility='visible'; aiD.style.opacity='1'; }
   }catch(e){}
+  // Force show after delay in case of render timing
+  setTimeout(()=>{
+    const ai=document.getElementById('aiBtn');
+    if(ai){ ai.style.display='flex'; ai.style.visibility='visible'; }
+  },1000);
   const land = document.getElementById('page-land');
   if(land){
     land.classList.remove('active');
@@ -3089,7 +3094,15 @@ function startOrderEngine(){
 }
 
 async function checkLimitOrder(order){
-  await fetchLiveFX();
+  await // Clear FX cache older than 30 mins on startup
+try{
+  const fxt=localStorage.getItem('nan_fx_time');
+  if(fxt&&Date.now()-parseInt(fxt)>1800000){
+    localStorage.removeItem('nan_fx_rate');
+    localStorage.removeItem('nan_fx_time');
+  }
+}catch(e){}
+fetchLiveFX();
   const rate = order.sellToken==='USDC' ? FX : 1/FX;
   const targetMet = order.condition==='gte' ? rate>=order.targetRate : rate<=order.targetRate;
   if(!targetMet)return;
