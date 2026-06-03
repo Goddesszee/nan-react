@@ -64,8 +64,12 @@ export default function App() {
     const addr = wagmiAddress || primaryWallet?.address
 
     if (email) {
+      // Email login — use Circle wallet tied to email
       doRedirectWithEmail(email)
     } else if (addr) {
+      // External wallet (MetaMask/Rabby) — use wallet address directly, clear any cached Circle wallet
+      localStorage.removeItem('circleWalletId')
+      localStorage.removeItem('circleWalletAddr')
       doRedirect(addr, null)
     } else {
       ;[300, 700, 1500, 3000].forEach(delay =>
