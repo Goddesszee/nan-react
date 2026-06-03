@@ -1,44 +1,30 @@
-import { useEffect, useState } from 'react'
-
 export function NanLogo({ height = 42, theme = 'auto' }) {
-  const [resolvedTheme, setResolvedTheme] = useState(theme)
-
-  useEffect(() => {
-    if (theme !== 'auto') { setResolvedTheme(theme); return; }
-    const t = document.documentElement.getAttribute('data-theme') || 'dark'
-    setResolvedTheme(t)
-    const obs = new MutationObserver(() => {
-      setResolvedTheme(document.documentElement.getAttribute('data-theme') || 'dark')
-    })
-    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
-    return () => obs.disconnect()
-  }, [theme])
-
-  // Always purple N mark — brand identity regardless of theme
-  const nFill = '#8b5cf6'
-  const textColor = resolvedTheme === 'light' ? '#111111' : '#ffffff'
+  const nFill = '#6d28d9'
+  const textColor = theme === 'light' ? '#1a1a1a' : '#ffffff'
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-      {/* Geometric N mark — bold, clean, instantly recognizable */}
+    <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 100 100"
-        width={Math.round(height * 0.82)}
+        viewBox="235 205 265 325"
+        width={Math.round(height * 0.75)}
         height={height}
         style={{ display: 'block', flexShrink: 0 }}
       >
-        <polygon points="10,90 10,10 30,10 58,62 58,10 78,10 78,90 58,90 30,38 30,90" fill={nFill}/>
-        <rect x="78" y="10" width="14" height="80" fill={nFill}/>
+        <g fill={nFill}>
+          <path d="M248 215 H312 L490 520 H426 Z"/>
+          <rect x="426" y="215" width="64" height="155"/>
+          <rect x="248" y="365" width="64" height="155"/>
+        </g>
       </svg>
       <span style={{
         fontFamily: "'Oswald', 'Inter', sans-serif",
-        fontSize: `${height * 0.82}px`,
+        fontSize: `${height * 0.78}px`,
         fontWeight: 700,
-        color: textColor,
-        letterSpacing: '.06em',
+        color: nFill,
+        letterSpacing: '.04em',
         lineHeight: 1,
-        marginLeft: 2,
+        marginLeft: 0,
       }}>AN</span>
     </div>
   )
