@@ -361,7 +361,7 @@ export function Landing() {
 
       {/* Nav */}
       <nav className="l-nav" style={{ position: 'relative', zIndex: 10 }}>
-        <NanLogo width={160} height={40} />
+        <NanLogo height={36} theme={theme} />
         <div className="l-nav-right">
           <button className="l-theme-btn" onClick={toggleTheme}>{theme==='light'?'🌙':'☀️'}</button>
           <span className="l-net-pill">• Arc Testnet</span>
@@ -424,7 +424,7 @@ export function Landing() {
 
       {/* Footer */}
       <footer className="l-footer" style={{ position: 'relative', zIndex: 1 }}>
-        <NanLogo width={120} height={30} />
+        <NanLogo height={28} theme={theme} />
         <span className="l-footer-txt">Built on Arc · Powered by Circle · © 2025 NAN</span>
         <div className="l-footer-links">
           <a href="https://twitter.com/nanarc_xyz" target="_blank" rel="noreferrer">X/Twitter</a>
