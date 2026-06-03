@@ -52,7 +52,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20width%3D%2232%22%20height%3D%2232%22%20viewBox%3D%220%200%2032%2032%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M10%2C16%20C10%2C9%202%2C9%202%2C16%20C2%2C23%2010%2C23%2014%2C16%20C18%2C9%2026%2C9%2026%2C16%20C26%2C23%2018%2C23%2014%2C16%20Z%22%20fill%3D%22none%22%20stroke%3D%22%237000ff%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E"/>
 <link rel="preconnect" href="https://rsms.me/">
 <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
-<link rel="stylesheet" href="/legacy/style.css"/>
+<link rel="stylesheet" href="/legacy/style.css?v=1780518224"/>
 <style>
 /* ══ THEME TOKENS — scoped per theme so neither fights the other ══ */
 :root,[data-theme="dark"]{
@@ -175,14 +175,12 @@ html,body{background:var(--bg);}
     <div class="brand">
       <div class="brand-logo" id="secretTapZone" onclick="handleSecretTap()" style="display:flex;align-items:center;gap:1px;cursor:pointer;">
         <!-- Purple N + white AN (dark) -->
-        <span class="logo-dark" style="gap:4px;">
+        <span class="logo-dark">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="235 205 265 325" width="42" height="52"><g fill="#6d28d9"><path d="M248 215 H312 L490 520 H426 Z"/><rect x="426" y="215" width="64" height="155"/><rect x="248" y="365" width="64" height="155"/></g></svg>
-          <span style="font-family:'Oswald',sans-serif;font-size:46px;font-weight:700;color:#ffffff;letter-spacing:.04em;line-height:1;">an</span>
         </span>
         <!-- Purple N + dark AN (light) -->
-        <span class="logo-light" style="gap:4px;">
+        <span class="logo-light">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="235 205 265 325" width="42" height="52"><g fill="#6d28d9"><path d="M248 215 H312 L490 520 H426 Z"/><rect x="426" y="215" width="64" height="155"/><rect x="248" y="365" width="64" height="155"/></g></svg>
-          <span style="font-family:'Oswald',sans-serif;font-size:46px;font-weight:700;color:#111111;letter-spacing:.04em;line-height:1;">an</span>
         </span>
       </div>
       
@@ -193,11 +191,13 @@ html,body{background:var(--bg);}
       <button onclick="goPage('home')" id="tnav-home" class="tnav-btn">Home</button>
       <button onclick="goPage('earn')" id="tnav-earn" class="tnav-btn">Earn</button>
       <button onclick="goPage('more')" id="tnav-more" class="tnav-btn">More</button>
+      <button id="tnav-ai" onclick="toggleAgent()" style="display:none;align-items:center;gap:5px;background:rgba(109,40,217,.15);border:1px solid rgba(109,40,217,.3);border-radius:100px;padding:6px 12px;font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;color:#c084fc;cursor:pointer;white-space:nowrap;">✦ AI</button>
     </div>
     </div>
     <div style="display:flex;align-items:center;gap:8px;">
       <span id="devBadge" class="dev-badge" style="display:none;"></span>
       <button id="themeToggle" onclick="toggleTheme()" class="theme-toggle-btn">🌙</button>
+      <button id="navFaucetBtn" onclick="claimFaucet(this)" style="display:none;align-items:center;gap:5px;background:rgba(109,40,217,.12);border:1px solid rgba(109,40,217,.25);border-radius:100px;padding:5px 12px;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:700;color:#c084fc;cursor:pointer;white-space:nowrap;transition:all .2s;" title="Get free USDC tokens">💧 Faucet</button>
       <div class="net-pill" id="netPill">Arc Testnet</div>
       <button id="connectTopBtn" onclick="showWalletPicker()">Connect</button>
       <button id="landConnectBtn" style="display:none;" onclick="showWalletPicker()">Connect</button>
@@ -456,7 +456,7 @@ html,body{background:var(--bg);}
         <div style="font-size:1rem;font-weight:700;color:#f0f0f0;margin-bottom:3px;">Welcome to NAN 👋</div>
         <div style="font-size:.875rem;color:var(--text3);">Get free USDC to get started</div>
       </div>
-      <button onclick="claimFaucet()" style="background:#7000ff;border:none;border-radius:10px;color:#f0f0f0;font-size:.875rem;font-weight:700;padding:10px 16px;cursor:pointer;white-space:nowrap;flex-shrink:0;">Get Tokens 💧</button>
+      <button onclick="claimFaucet(this)" style="background:#7000ff;border:none;border-radius:10px;color:#f0f0f0;font-size:.875rem;font-weight:700;padding:10px 16px;cursor:pointer;white-space:nowrap;flex-shrink:0;">Get Tokens 💧</button>
     </div>
     <div id="walletSourceBadge" style="display:none;"></div>
     <div style="display:none;"></div>
@@ -791,7 +791,7 @@ html,body{background:var(--bg);}
     <div style="font-size:.875rem;color:var(--text);letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px;padding:0 2px;">Account</div>
     <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:14px;">
 
-      <div id="nanAiMoreBtn" style="display:flex;align-items:center;gap:14px;padding:13px 15px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;" onmouseover="this.style.background='rgba(109,40,217,.08)'" onmouseout="this.style.background='transparent'">
+      <div id="nanAiMoreBtn" onclick="toggleAgent()" style="display:flex;align-items:center;gap:14px;padding:13px 15px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;" onmouseover="this.style.background='rgba(109,40,217,.08)'" onmouseout="this.style.background='transparent'">
         <div style="width:36px;height:36px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
         </div>
@@ -998,7 +998,7 @@ html,body{background:var(--bg);}
 
       <!-- Address input — hidden by default -->
       <div id="bridgeAddrWrap" style="display:none;margin-top:12px;position:relative;">
-        <input id="bridgeDestAddr" type="text" placeholder="0x... address on destination network"
+        <input id="bridgeDestAddr" type="text" placeholder="0x... address on destination network" onfocus="if(isCircleWallet&&!this.value&&userAddr)this.value=userAddr;"
           style="width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:12px 54px 12px 14px;color:var(--text);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;outline:none;"/>
         <button onclick="navigator.clipboard.readText().then(t=>{document.getElementById('bridgeDestAddr').value=t}).catch(()=>document.getElementById('bridgeDestAddr').focus())"
           style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(112,0,255,.15);border:1px solid rgba(112,0,255,.2);border-radius:7px;color:var(--accent3);font-size:1rem;padding:4px 8px;cursor:pointer;font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;">Paste</button>
@@ -1401,8 +1401,6 @@ html,body{background:var(--bg);}
       <div id="payreqList" style="display:flex;flex-direction:column;"></div>
     </div>
   </div>
-
-    </div><!-- end payreq unified card -->
   <!-- ══ PAY REQUEST PAGE (for payer) ══ -->
   <div class="page" id="page-pay-now" style="flex-direction:column;">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
@@ -1669,8 +1667,8 @@ document.addEventListener('DOMContentLoaded',function(){
   }
 })();
 </script>
-<script src="/legacy/app.js"></script>
-<script src="/legacy/ui.js"></script>
+<script src="/legacy/app.js?v=1780518224"></script>
+<script src="/legacy/ui.js?v=1780518224"></script>
 
 <!-- ══ BANK PICKER MODAL ══ -->
 <div id="bankPickerOverlay" onclick="closeBankPicker()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:99990;backdrop-filter:blur(4px);"></div>
@@ -1867,9 +1865,12 @@ function pickBank(name){
     </div>
   </div>
 
-<button id="aiBtn" style="position:fixed;bottom:80px;right:16px;z-index:2147483647;width:52px;height:52px;border-radius:16px;background:#6d28d9;border:2px solid rgba(196,181,253,.2);color:#f3e8ff;font-size:1rem;cursor:pointer;box-shadow:0 4px 24px rgba(168,85,247,.55),0 0 0 1px rgba(168,85,247,.3);display:none;align-items:center;justify-content:center;flex-direction:column;gap:2px;transition:all .2s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;">
+<button id="aiBtn" onclick="toggleAgent()" style="position:fixed;bottom:24px;right:24px;z-index:2147483647;width:48px;height:48px;border-radius:50%;background:#6d28d9;border:2px solid rgba(196,181,253,.2);color:#f3e8ff;font-size:1rem;cursor:pointer;box-shadow:0 4px 24px rgba(168,85,247,.55),0 0 0 1px rgba(168,85,247,.3);display:none;align-items:center;justify-content:center;flex-direction:column;gap:2px;transition:all .2s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;">
   <span>✦</span>
   <span style="font-size:1rem;font-family:'Inter',sans-serif;font-weight:700;letter-spacing:.05em;">AI</span>
+</button>
+<button id="aiBtnDesktop" onclick="toggleAgent()" style="display:none;position:fixed;top:80px;right:28px;z-index:2147483647;align-items:center;gap:8px;background:#6d28d9;border:none;border-radius:14px;color:#f3e8ff;font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;padding:10px 16px;cursor:pointer;box-shadow:0 4px 20px rgba(109,40,217,.4);touch-action:manipulation;">
+  <span>✦</span> NAN AI
 </button>
 <div id="agentPanel" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid #1a1a1a;border-radius:24px 24px 0 0;z-index:2147483647;font-family:'Inter',sans-serif;overflow:hidden;">
   <div style="position:absolute;top:0;left:0;right:0;background:var(--bg);border-bottom:1px solid rgba(168,85,247,.15);z-index:2;">
