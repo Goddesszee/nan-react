@@ -1,4 +1,4 @@
-export function NanLogo({ height = 56, theme = 'dark' }) {
+export function NanLogo({ height = 72, theme = 'dark' }) {
   const fill = theme === 'light' ? '#111111' : '#ffffff'
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
