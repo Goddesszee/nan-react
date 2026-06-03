@@ -1003,6 +1003,13 @@ async function _autoSeedLiquidity(){
 }
 
 async function onConnected(isEmail=false, isDev=false){
+  // Show AI button
+  try{
+    const ai=document.getElementById('aiBtn');
+    if(ai) ai.style.display='flex';
+    const aiD=document.getElementById('aiBtnDesktop');
+    if(aiD) aiD.style.display='flex';
+  }catch(e){}
   const land = document.getElementById('page-land');
   if(land){
     land.classList.remove('active');
@@ -4778,6 +4785,7 @@ function viewPaymentRequest(id){
   goPage('payreq-view');
 }
 function renderPaymentRequests(){
+  if(!userAddr){ setTimeout(renderPaymentRequests, 300); return; }
   loadPaymentRequests();
   const list=document.getElementById('payreqList');
   if(!list)return;
