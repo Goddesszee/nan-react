@@ -7,7 +7,7 @@ export function NanLogo({ height = 42, theme = 'auto' }) {
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="235 205 265 325"
-        width={Math.round(height * 0.75)}
+        width={Math.round(height * 0.85)}
         height={height}
         style={{ display: 'block', flexShrink: 0 }}
       >
@@ -19,13 +19,14 @@ export function NanLogo({ height = 42, theme = 'auto' }) {
       </svg>
       <span style={{
         fontFamily: "'Oswald', 'Inter', sans-serif",
-        fontSize: `${height * 0.78}px`,
-        fontWeight: 700,
+        fontSize: `${height * 0.52}px`,
+        fontWeight: 600,
         color: nFill,
-        letterSpacing: '.04em',
+        letterSpacing: '.06em',
         lineHeight: 1,
-        marginLeft: 0,
-      }}>AN</span>
+        marginLeft: 1,
+        marginTop: `${height * 0.22}px`,
+      }}>an</span>
     </div>
   )
 }
