@@ -4777,6 +4777,7 @@ function viewPaymentRequest(id){
   document.getElementById('prMarkPaidBtn').style.display=pr.status==='paid'?'none':'block';
   goPage('payreq-view');
 }
+function openNewRequest(){ goPage('payreq-new'); }
 function renderPaymentRequests(){
   loadPaymentRequests();
   const list=document.getElementById('payreqList');
