@@ -724,6 +724,7 @@ async function fetchLiveFX(){
   updateSwapRateDisplay();
 }
 function updateSwapRateDisplay(){
+  if(document.getElementById('swapFrom')?.value>0) calcSwap();
   const time=fxLastUpdated?fxLastUpdated.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'fallback';
   const el=document.getElementById('swapRate');if(!el)return;
   el.innerHTML=swapFlipped
@@ -1054,6 +1055,8 @@ async function onConnected(isEmail=false, isDev=false){
   renderArcDirectory();
   initLendUI();
   document.getElementById('aiBtn').style.display='flex';
+  var deskAI=document.getElementById('aiBtnDesktop');
+  if(deskAI)deskAI.style.display='flex';
   setTimeout(attachAIListeners, 100); // re-attach after button is visible
   startOrderEngine();
   // Pre-approve all contracts once so users never see repeated approve popups
@@ -2504,10 +2507,11 @@ function renderHistory(){
 // ═══════════════════════════════════════════
 // FAUCET
 // ═══════════════════════════════════════════
-async function claimFaucet(){
+async function claimFaucet(btnEl){
   if(!userAddr){toast('Connect wallet first','error');return;}
-  const btn=document.getElementById('faucetBtn');
-  btn.innerHTML='<span class="spinner"></span>Claiming…';btn.disabled=true;
+  const btn=btnEl||document.getElementById('faucetBtn')||document.querySelector('[onclick*="claimFaucet"]');
+  const origText=btn?btn.innerHTML:'💧 Get Free Tokens';
+  if(btn){btn.innerHTML='<span class="spinner"></span>Claiming…';btn.disabled=true;}
   try{
     const res=await fetch('https://nan-production.up.railway.app/api/faucet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({address:userAddr})});
     const data=await res.json();
@@ -2521,7 +2525,7 @@ async function claimFaucet(){
       else{toast('Opening faucet website…','info',3000);window.open('https://faucet.circle.com','_blank');}
     }
   }catch{toast('Opening faucet website…','info',3000);window.open('https://faucet.circle.com','_blank');}
-  btn.innerHTML='💧 Get Free Tokens';btn.disabled=false;
+  if(btn){btn.innerHTML=origText;btn.disabled=false;}
 }
 
 // ═══════════════════════════════════════════
@@ -4589,7 +4593,23 @@ let currentPRExpiry=0;
 let activePRId=null;
 
 function loadPaymentRequests(){
-  try{paymentRequests=JSON.parse(localStorage.getItem('nan_payreqs_'+(userAddr||''))||'[]');}catch{paymentRequests=[];}
+  try{
+    let saved=localStorage.getItem('nan_payreqs_'+(userAddr||''));
+    if(!saved||saved==='[]'){
+      const fallback=localStorage.getItem('circleWalletAddr')||localStorage.getItem('nan_dynamic_address')||'';
+      if(fallback)saved=localStorage.getItem('nan_payreqs_'+fallback);
+      if(!saved||saved==='[]'){
+        for(let i=0;i<localStorage.length;i++){
+          const k=localStorage.key(i);
+          if(k&&k.startsWith('nan_payreqs_')&&k!=='nan_payreqs_'){
+            const v=localStorage.getItem(k);
+            if(v&&v!=='[]'){saved=v;break;}
+          }
+        }
+      }
+    }
+    paymentRequests=JSON.parse(saved||'[]');
+  }catch{paymentRequests=[];}
   checkPendingPaymentRequests();
 }
 async function checkPendingPaymentRequests(){
