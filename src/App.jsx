@@ -25,12 +25,15 @@ export default function App() {
   useEffect(() => {
     if (!isDisconnecting) return
     window.history.replaceState({}, '', '/')
-    localStorage.removeItem('nan_dynamic_address')
-    localStorage.removeItem('nan_dynamic_token')
-    localStorage.removeItem('nan_dynamic_email')
-    localStorage.removeItem('circleWalletId')
-    localStorage.removeItem('circleWalletAddr')
-    sessionStorage.removeItem('nan_from_landing')
+    // Wipe ALL localStorage keys — no history of former account
+    const toRemove = []
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i)
+      if (k) toRemove.push(k)
+    }
+    toRemove.forEach(k => localStorage.removeItem(k))
+    sessionStorage.clear()
+    // Sign out of Dynamic completely
     try { handleLogOut().catch(() => {}) } catch(e) {}
   }, [isDisconnecting])
 
