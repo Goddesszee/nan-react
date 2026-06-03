@@ -6,32 +6,35 @@ import './App.css'
 
 const API = 'https://nan-production.up.railway.app'
 
+// Check disconnect BEFORE React even mounts
+const _params = new URLSearchParams(window.location.search)
+const _isDisconnecting = _params.get('disconnected') === '1'
+
+// If disconnecting — wipe storage immediately at module load time
+if (_isDisconnecting) {
+  window.history.replaceState({}, '', '/')
+  try {
+    const keys = []
+    for (let i = 0; i < localStorage.length; i++) keys.push(localStorage.key(i))
+    keys.forEach(k => k && localStorage.removeItem(k))
+    sessionStorage.clear()
+  } catch(e) {}
+}
+
 export default function App() {
   const { isAuthenticated, primaryWallet, sdkHasLoaded, user, handleLogOut } = useDynamicContext()
   const { address: wagmiAddress } = useAccount()
-  const [timedOut, setTimedOut]     = useState(false)
+  const [timedOut, setTimedOut]       = useState(false)
   const [redirecting, setRedirecting] = useState(false)
-  const [status, setStatus]         = useState('Loading NAN...')
+  const [status, setStatus]           = useState('Loading NAN...')
   const didRedirect = useRef(false)
 
-  // Check for disconnect FIRST — before anything else
-  const params        = new URLSearchParams(window.location.search)
-  const isDisconnecting = params.get('disconnected') === '1'
-
-  // If disconnecting — wipe everything immediately and show landing
-  // Do this synchronously so there's zero chance of the redirect useEffect firing
-  if (isDisconnecting && !didRedirect.current) {
-    window.history.replaceState({}, '', '/')
-    // Wipe all localStorage
-    try {
-      const keys = []
-      for (let i = 0; i < localStorage.length; i++) keys.push(localStorage.key(i))
-      keys.forEach(k => k && localStorage.removeItem(k))
-      sessionStorage.clear()
-    } catch(e) {}
-    // Sign out of Dynamic (fire and forget)
-    try { handleLogOut().catch(() => {}) } catch(e) {}
-    // Show landing immediately — no loading, no delay
+  // If disconnecting — show landing immediately, call logout once
+  if (_isDisconnecting) {
+    // Fire Dynamic logout once (don't await — don't let it trigger re-renders)
+    useEffect(() => {
+      try { handleLogOut().catch(() => {}) } catch(e) {}
+    }, [])
     return <Landing />
   }
 
@@ -40,9 +43,8 @@ export default function App() {
     return () => clearTimeout(t)
   }, [])
 
-  // Redirect when connected
   useEffect(() => {
-    if (isDisconnecting) return
+    if (_isDisconnecting) return
     if (didRedirect.current) return
 
     const connected = isAuthenticated || !!primaryWallet
@@ -50,7 +52,7 @@ export default function App() {
 
     const email = user?.email ||
       user?.verifiedCredentials?.find(c => c.email)?.email || null
-    const addr  = wagmiAddress || primaryWallet?.address
+    const addr = wagmiAddress || primaryWallet?.address
 
     if (email) {
       doRedirectWithEmail(email)
@@ -68,14 +70,13 @@ export default function App() {
         }, delay)
       })
     }
-  }, [isAuthenticated, primaryWallet, wagmiAddress, user, isDisconnecting])
+  }, [isAuthenticated, primaryWallet, wagmiAddress, user])
 
   async function doRedirectWithEmail(email) {
     if (didRedirect.current) return
     didRedirect.current = true
     setRedirecting(true)
 
-    // Cached wallet — instant redirect
     const cachedId    = localStorage.getItem('circleWalletId')
     const cachedAddr  = localStorage.getItem('circleWalletAddr')
     const cachedEmail = localStorage.getItem('nan_dynamic_email')
@@ -84,7 +85,6 @@ export default function App() {
       return
     }
 
-    // First login — create Circle wallet
     setStatus('Setting up your wallet…')
     try {
       const r = await fetch(`${API}/api/circle-wallets`, {
@@ -107,19 +107,16 @@ export default function App() {
 
   function doRedirect(addr, email) {
     if (!addr) return
-    setStatus('Loading NAN...')
     localStorage.setItem('nan_dynamic_address', addr)
     localStorage.setItem('nan_dynamic_email',   email || user?.email || '')
     localStorage.setItem('nan_dynamic_token',   'dynamic_authenticated')
     window.location.replace('/legacy/app.html')
   }
 
-  // SDK loading
   if (!sdkHasLoaded && !timedOut) {
     return <div style={{minHeight:'100vh', background:'#000'}} />
   }
 
-  // Redirecting to app
   if (redirecting) {
     return (
       <div style={{minHeight:'100vh',background:'#000',display:'flex',flexDirection:'column',
