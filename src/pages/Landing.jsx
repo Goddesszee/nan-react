@@ -335,7 +335,7 @@ function OTPModal({ onClose }) {
 // ── Landing ───────────────────────────────────────────────────────────────────
 export function Landing() {
   const { theme, toggleTheme } = useTheme()
-  const { setShowAuthFlow } = useDynamicContext()
+  const { setShowAuthFlow, handleLogIn } = useDynamicContext()
   const featuresRef = useRef(null)
   const [cardsVisible, setCardsVisible] = useState(false)
   const [showOTP, setShowOTP] = useState(false)
@@ -366,7 +366,7 @@ export function Landing() {
           <button className="l-theme-btn" onClick={toggleTheme}>{theme==='light'?'🌙':'☀️'}</button>
           <span className="l-net-pill">• Arc Testnet</span>
           <button
-            onClick={() => setShowAuthFlow && setShowAuthFlow(true)}
+            onClick={() => { if(typeof handleLogIn === 'function') handleLogIn(); else if(setShowAuthFlow) setShowAuthFlow(true); }}
             style={{
               background: '#8b5cf6',
               border: 'none',
@@ -401,7 +401,7 @@ export function Landing() {
           </p>
           <div className="l-cta-row l-fade-in" style={{ animationDelay: '0.6s' }}>
             <button className="btn-primary" style={{ padding: '13px 32px', fontSize: '1rem' }}
-              onClick={() => setShowAuthFlow && setShowAuthFlow(true)}>
+              onClick={() => { if(typeof handleLogIn === 'function') handleLogIn(); else if(setShowAuthFlow) setShowAuthFlow(true); }}>
               Get Started →
             </button>
             <button className="l-btn-ghost" onClick={() => setShowOTP(true)}>
