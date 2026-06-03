@@ -6,17 +6,21 @@ import './App.css'
 
 const API = 'https://nan-production.up.railway.app'
 
-// Check disconnect BEFORE React even mounts
+// ── Wipe storage at module load — before React or Dynamic initialises ─────────
 const _params = new URLSearchParams(window.location.search)
-const _isDisconnecting = _params.get('disconnected') === '1'
+const _disconnecting = _params.get('__nan_disconnected') === '1'
 
-// If disconnecting — wipe storage immediately at module load time
-if (_isDisconnecting) {
+if (_disconnecting) {
+  // Clean URL immediately
   window.history.replaceState({}, '', '/')
+  // Wipe everything
   try {
     const keys = []
-    for (let i = 0; i < localStorage.length; i++) keys.push(localStorage.key(i))
-    keys.forEach(k => k && localStorage.removeItem(k))
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i)
+      if (k) keys.push(k)
+    }
+    keys.forEach(k => localStorage.removeItem(k))
     sessionStorage.clear()
   } catch(e) {}
 }
@@ -29,22 +33,27 @@ export default function App() {
   const [status, setStatus]           = useState('Loading NAN...')
   const didRedirect = useRef(false)
 
-  // If disconnecting — show landing immediately, call logout once
-  if (_isDisconnecting) {
-    // Fire Dynamic logout once (don't await — don't let it trigger re-renders)
-    useEffect(() => {
+  // ── Disconnecting — show landing, sign out of Dynamic quietly ────────────
+  useEffect(() => {
+    if (!_disconnecting) return
+    // Call Dynamic logout AFTER landing renders — fire and forget, don't await
+    const t = setTimeout(() => {
       try { handleLogOut().catch(() => {}) } catch(e) {}
-    }, [])
-    return <Landing />
-  }
+    }, 500)
+    return () => clearTimeout(t)
+  }, [])
 
+  if (_disconnecting) return <Landing />
+
+  // ── SDK timeout ───────────────────────────────────────────────────────────
   useEffect(() => {
     const t = setTimeout(() => setTimedOut(true), 1500)
     return () => clearTimeout(t)
   }, [])
 
+  // ── Redirect when authenticated ──────────────────────────────────────────
   useEffect(() => {
-    if (_isDisconnecting) return
+    if (_disconnecting) return
     if (didRedirect.current) return
 
     const connected = isAuthenticated || !!primaryWallet
@@ -59,8 +68,7 @@ export default function App() {
     } else if (addr) {
       doRedirect(addr, null)
     } else {
-      const retries = [300, 700, 1500, 3000]
-      retries.forEach(delay => {
+      ;[300, 700, 1500, 3000].forEach(delay =>
         setTimeout(() => {
           if (didRedirect.current) return
           const e = user?.email
@@ -68,7 +76,7 @@ export default function App() {
           if (e) doRedirectWithEmail(e)
           else if (a) doRedirect(a, null)
         }, delay)
-      })
+      )
     }
   }, [isAuthenticated, primaryWallet, wagmiAddress, user])
 
@@ -77,12 +85,12 @@ export default function App() {
     didRedirect.current = true
     setRedirecting(true)
 
+    // Returning user — instant redirect
     const cachedId    = localStorage.getItem('circleWalletId')
     const cachedAddr  = localStorage.getItem('circleWalletAddr')
     const cachedEmail = localStorage.getItem('nan_dynamic_email')
     if (cachedId && cachedAddr && cachedEmail === email) {
-      doRedirect(cachedAddr, email)
-      return
+      doRedirect(cachedAddr, email); return
     }
 
     setStatus('Setting up your wallet…')
@@ -92,11 +100,11 @@ export default function App() {
         body: JSON.stringify({ action: 'getWallet', email }),
       })
       const d = await r.json()
-      const wallet = d.wallet || d
-      if (wallet?.id && wallet?.address) {
-        localStorage.setItem('circleWalletId',   wallet.id)
-        localStorage.setItem('circleWalletAddr', wallet.address)
-        doRedirect(wallet.address, email)
+      const w = d.wallet || d
+      if (w?.id && w?.address) {
+        localStorage.setItem('circleWalletId',   w.id)
+        localStorage.setItem('circleWalletAddr', w.address)
+        doRedirect(w.address, email)
       } else {
         doRedirect(wagmiAddress || primaryWallet?.address, email)
       }
@@ -113,9 +121,7 @@ export default function App() {
     window.location.replace('/legacy/app.html')
   }
 
-  if (!sdkHasLoaded && !timedOut) {
-    return <div style={{minHeight:'100vh', background:'#000'}} />
-  }
+  if (!sdkHasLoaded && !timedOut) return <div style={{minHeight:'100vh',background:'#000'}} />
 
   if (redirecting) {
     return (
@@ -127,8 +133,7 @@ export default function App() {
         </svg>
         <div style={{color:'#fff',fontSize:'1rem',fontWeight:600}}>{status}</div>
         <button onClick={() => {
-          didRedirect.current = false
-          setRedirecting(false)
+          didRedirect.current = false; setRedirecting(false)
           try {
             const keys = []
             for (let i = 0; i < localStorage.length; i++) keys.push(localStorage.key(i))
