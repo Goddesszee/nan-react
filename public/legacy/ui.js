@@ -38,8 +38,6 @@ function goPage(name) {
     lend:       'page-lend',
     payreq:     'page-payreq',
     'payreq-new': 'page-payreq-new',
-    'payreq-view': 'page-payreq-view',
-    'pay-now':  'page-pay-now',
   };
 
   const navMap = {
@@ -87,7 +85,7 @@ function goPage(name) {
   if (name === 'earn' || name === 'lend') initLendUI();
   if (name === 'history') renderHistory();
   if (name === 'arcname') renderArcDirectory();
-  if (name === 'swap') { refreshBalances(); if(typeof fetchLiveFX==='function') fetchLiveFX(); }
+  if (name === 'swap') refreshBalances();
   if (name === 'bulk') { renderBulkRecipients(); updateBulkSummary(); }
   if (name === 'home') updateHomeScreen();
   if (name === 'payreq') renderPaymentRequests();
