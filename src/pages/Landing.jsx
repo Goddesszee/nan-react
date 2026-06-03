@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { DynamicWidget, useDynamicContext } from '@dynamic-labs/sdk-react-core'
+import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
 import { NanLogo } from '../components/NanLogo'
 import { useTheme } from '../hooks/useTheme'
 
@@ -365,7 +365,23 @@ export function Landing() {
         <div className="l-nav-right">
           <button className="l-theme-btn" onClick={toggleTheme}>{theme==='light'?'🌙':'☀️'}</button>
           <span className="l-net-pill">• Arc Testnet</span>
-          <DynamicWidget />
+          <button
+            onClick={() => setShowAuthFlow && setShowAuthFlow(true)}
+            style={{
+              background: '#7000ff',
+              border: 'none',
+              borderRadius: 10,
+              color: '#fff',
+              padding: '8px 18px',
+              fontFamily: 'Inter,sans-serif',
+              fontSize: '.85rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              boxShadow: '0 0 16px rgba(112,0,255,.35)',
+            }}
+          >
+            Log in
+          </button>
         </div>
       </nav>
 
