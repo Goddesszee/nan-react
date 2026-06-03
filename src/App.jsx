@@ -4,11 +4,14 @@ import { useAccount } from 'wagmi'
 import { Landing } from './pages/Landing'
 import './App.css'
 
+const API = 'https://nan-production.up.railway.app'
+
 export default function App() {
   const { isAuthenticated, primaryWallet, sdkHasLoaded, user, handleLogOut } = useDynamicContext()
   const { address: wagmiAddress } = useAccount()
   const [timedOut, setTimedOut] = useState(false)
   const [redirecting, setRedirecting] = useState(false)
+  const [status, setStatus] = useState('Loading NAN...')
   const didRedirect = useRef(false)
 
   useEffect(() => {
@@ -16,7 +19,6 @@ export default function App() {
     return () => clearTimeout(t)
   }, [])
 
-  // Disconnect param — wipe everything, show landing
   const params = new URLSearchParams(window.location.search)
   const isDisconnecting = params.get('disconnected') === '1'
 
@@ -26,11 +28,12 @@ export default function App() {
     localStorage.removeItem('nan_dynamic_address')
     localStorage.removeItem('nan_dynamic_token')
     localStorage.removeItem('nan_dynamic_email')
+    localStorage.removeItem('circleWalletId')
+    localStorage.removeItem('circleWalletAddr')
     sessionStorage.removeItem('nan_from_landing')
     try { handleLogOut().catch(() => {}) } catch(e) {}
   }, [isDisconnecting])
 
-  // Redirect when connected — handles BOTH fresh login AND returning sessions
   useEffect(() => {
     if (isDisconnecting) return
     if (didRedirect.current) return
@@ -38,57 +41,89 @@ export default function App() {
     const connected = isAuthenticated || !!primaryWallet
     if (!connected) return
 
-    const addr = wagmiAddress || primaryWallet?.address
-    if (addr) {
-      doRedirect(addr)
+    const email = user?.email || user?.verifiedCredentials?.find(c => c.email)?.email || null
+    const addr  = wagmiAddress || primaryWallet?.address
+
+    if (email) {
+      // Email-based login (email OTP, Google, Discord etc) 
+      // Always use Circle wallet tied to email — consistent across all social logins
+      doRedirectWithEmail(email)
+    } else if (addr) {
+      // Pure wallet login (MetaMask, Rabby etc) — no email, use wallet address directly
+      doRedirect(addr, null)
     } else {
-      // Address might arrive slightly later (wagmi sync delay)
+      // Address not ready yet — retry
       const retries = [300, 700, 1500, 3000]
       retries.forEach(delay => {
         setTimeout(() => {
           if (didRedirect.current) return
+          const e = user?.email
           const a = wagmiAddress || primaryWallet?.address
-          if (a) doRedirect(a)
+          if (e) doRedirectWithEmail(e)
+          else if (a) doRedirect(a, null)
         }, delay)
       })
     }
-  }, [isAuthenticated, primaryWallet, wagmiAddress, isDisconnecting])
+  }, [isAuthenticated, primaryWallet, wagmiAddress, user, isDisconnecting])
 
-  function doRedirect(addr) {
+  async function doRedirectWithEmail(email) {
     if (didRedirect.current) return
     didRedirect.current = true
     setRedirecting(true)
+    setStatus('Setting up your wallet…')
+
+    try {
+      const r = await fetch(`${API}/api/circle-wallets`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'getWallet', email }),
+      })
+      const d = await r.json()
+      const wallet = d.wallet || d
+      if (wallet?.id && wallet?.address) {
+        // Store Circle wallet — same keys used by OTP path
+        localStorage.setItem('circleWalletId',   wallet.id)
+        localStorage.setItem('circleWalletAddr', wallet.address)
+        doRedirect(wallet.address, email)
+      } else {
+        // Circle wallet failed — fall back to Dynamic address
+        const addr = wagmiAddress || primaryWallet?.address
+        doRedirect(addr, email)
+      }
+    } catch(e) {
+      // Network error — fall back to Dynamic address
+      const addr = wagmiAddress || primaryWallet?.address
+      doRedirect(addr, email)
+    }
+  }
+
+  function doRedirect(addr, email) {
+    if (!addr) return
+    setStatus('Loading NAN...')
     localStorage.setItem('nan_dynamic_address', addr)
-    localStorage.setItem('nan_dynamic_email', user?.email || '')
-    localStorage.setItem('nan_dynamic_token', 'dynamic_authenticated')
+    localStorage.setItem('nan_dynamic_email',   email || user?.email || '')
+    localStorage.setItem('nan_dynamic_token',   'dynamic_authenticated')
     window.location.replace('/legacy/app.html')
   }
 
-  // Show landing while disconnecting
   if (isDisconnecting) return <Landing />
+  if (!sdkHasLoaded && !timedOut) return <div style={{minHeight:'100vh', background:'#000'}} />
 
-  // Wait for SDK (max 5s)
-  if (!sdkHasLoaded && !timedOut) {
-    return <div style={{minHeight:'100vh', background:'#000'}} />
-  }
-
-  // Redirecting loader
   if (redirecting) {
     return (
-      <div style={{minHeight:'100vh',background:'#000',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:16,fontFamily:'Inter,sans-serif'}}>
+      <div style={{minHeight:'100vh',background:'#000',display:'flex',flexDirection:'column',
+        alignItems:'center',justifyContent:'center',gap:16,fontFamily:'Inter,sans-serif'}}>
         <svg width="60" height="30" viewBox="0 0 50 20" fill="none">
           <path d="M16,0 C16,-8 0,-8 0,0 C0,8 16,8 25,0 C34,-8 50,-8 50,0 C50,8 34,8 25,0 Z"
-            fill="none" stroke="#ffffff" strokeWidth="3" strokeLinecap="round"/>
+            fill="none" stroke="#7000ff" strokeWidth="3" strokeLinecap="round"/>
         </svg>
-        <div style={{color:'#fff',fontSize:'1rem',fontWeight:600}}>Loading NAN...</div>
+        <div style={{color:'#fff',fontSize:'1rem',fontWeight:600}}>{status}</div>
         <button onClick={() => {
           didRedirect.current = false
           setRedirecting(false)
-          localStorage.removeItem('nan_dynamic_address')
-          localStorage.removeItem('nan_dynamic_token')
-          localStorage.removeItem('nan_dynamic_email')
+          localStorage.clear()
           handleLogOut().catch(() => {})
-        }} style={{marginTop:24,color:'#555',background:'none',border:'1px solid #222',borderRadius:8,cursor:'pointer',fontSize:'.8rem',padding:'6px 14px'}}>
+        }} style={{marginTop:24,color:'#555',background:'none',border:'1px solid #222',
+          borderRadius:8,cursor:'pointer',fontSize:'.8rem',padding:'6px 14px'}}>
           Sign out
         </button>
       </div>
