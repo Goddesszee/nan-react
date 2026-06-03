@@ -1,11 +1,9 @@
-export function NanLogo({ height = 72, theme = 'dark' }) {
+export function NanLogo({ height = 42, theme = 'dark' }) {
   const fill = theme === 'light' ? '#111111' : '#ffffff'
-  // Tight viewBox crops empty space so N fills the render size
-  const viewBox = "235 205 265 325"
-  const svgW = Math.round(height * 0.8)
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox={viewBox} width={svgW} height={height}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="235 205 265 325"
+        width={Math.round(height * 0.76)} height={height} style={{ display: 'block', flexShrink: 0 }}>
         <g fill={fill}>
           <path d="M248 215 H312 L490 520 H426 Z"/>
           <rect x="426" y="215" width="64" height="155"/>
@@ -13,13 +11,13 @@ export function NanLogo({ height = 72, theme = 'dark' }) {
         </g>
       </svg>
       <span style={{
-        fontFamily: "'Inter',system-ui,sans-serif",
-        fontSize: `${height * 0.62}px`,
-        fontWeight: 800,
-        letterSpacing: '-0.04em',
+        fontFamily: "'Oswald',sans-serif",
+        fontSize: `${height * 0.81}px`,
+        fontWeight: 700,
         color: fill,
+        letterSpacing: '.04em',
         lineHeight: 1,
-      }}>NAN</span>
+      }}>AN</span>
     </div>
   )
 }
