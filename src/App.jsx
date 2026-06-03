@@ -124,6 +124,10 @@ export default function App() {
     window.location.replace('/legacy/app.html')
   }
 
+  // No session = just disconnected or fresh visit — show landing immediately, no SDK wait
+  const _hasSession = localStorage.getItem('nan_dynamic_token') || localStorage.getItem('circleWalletId')
+  if (!_hasSession) return <Landing />
+
   if (!sdkHasLoaded && !timedOut) return <div style={{minHeight:'100vh',background:'#000'}} />
 
   if (redirecting) {
