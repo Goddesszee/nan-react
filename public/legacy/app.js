@@ -595,6 +595,7 @@ function showPage(name){
   // Extra page init
   try{ if(name==='lend') initLendUI(); } catch(e){}
   try{ if(name==='history') renderHistory(); } catch(e){}
+  try{ if(name==='payreq') nprRender(); } catch(e){}
   try{ if(name==='bulk'){renderPayrollGroups();renderPayrollHistory();} } catch(e){}
   try{ if(name==='arcname') renderArcDirectory(); } catch(e){}
   try{ if(name==='swap') refreshBalances(); } catch(e){}
@@ -5015,3 +5016,152 @@ async function adminSeedPool(){
   }
 }
 // Railway redeploy trigger Sun May 31 08:32:21 UTC 2026
+
+
+// ═══════════════════════════════════════════
+// PAYMENT REQUEST — localStorage only, no on-chain
+// ═══════════════════════════════════════════
+let nprList = [];
+let nprToken = 'USDC';
+let nprActiveId = null;
+
+function nprLoad(){
+  if(!userAddr){ nprList=[]; return; }
+  try{ nprList=JSON.parse(localStorage.getItem('nan_npr_'+userAddr)||'[]'); }catch{ nprList=[]; }
+}
+
+function nprSave(){
+  if(!userAddr) return;
+  localStorage.setItem('nan_npr_'+userAddr, JSON.stringify(nprList));
+}
+
+function nprSetToken(tok, el){
+  nprToken=tok;
+  document.querySelectorAll('#nprUsdc,#nprEurc').forEach(b=>b.classList.remove('active'));
+  if(el) el.classList.add('active');
+}
+
+function nprRender(){
+  nprLoad();
+  const list=document.getElementById('prList');
+  if(!list) return;
+  const t=nprList.length;
+  const paid=nprList.filter(p=>p.status==='paid').length;
+  const pending=nprList.filter(p=>p.status==='pending').length;
+  const el1=document.getElementById('prStatTotal');
+  const el2=document.getElementById('prStatPaid');
+  const el3=document.getElementById('prStatPending');
+  if(el1) el1.textContent=t;
+  if(el2) el2.textContent=paid;
+  if(el3) el3.textContent=pending;
+  if(!t){
+    list.innerHTML='<div style="text-align:center;padding:40px 16px;">'+
+      '<div style="font-size:2.5rem;margin-bottom:10px;">🧾</div>'+
+      '<div style="font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:6px;">No requests yet</div>'+
+      '<div style="font-size:.78rem;color:var(--text3);margin-bottom:16px;">Create one and get paid instantly</div>'+
+      '<button onclick="goPage('payreq-new')" style="background:#6d28d9;border:none;border-radius:10px;color:#fff;font-family:'Inter',sans-serif;font-weight:700;font-size:.82rem;padding:10px 20px;cursor:pointer;">+ Create Request</button>'+
+      '</div>';
+    return;
+  }
+  list.innerHTML = nprList.map(pr=>{
+    const statusColor = pr.status==='paid' ? '#34d399' : '#fbbf24';
+    const statusLabel = pr.status==='paid' ? '✓ Paid' : '⏳ Pending';
+    const amtText = pr.amount ? parseFloat(pr.amount).toFixed(2)+' '+pr.token : 'Open · '+pr.token;
+    return '<div onclick="nprView(''+pr.id+'')" style="display:flex;align-items:center;gap:12px;padding:13px 14px;background:var(--surface);border:1px solid var(--border);border-radius:12px;cursor:pointer;" onmouseover="this.style.background='rgba(109,40,217,.06)'" onmouseout="this.style.background='var(--surface)'">'+
+      '<div style="width:40px;height:40px;border-radius:10px;background:rgba(109,40,217,.1);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">🧾</div>'+
+      '<div style="flex:1;min-width:0;">'+
+        '<div style="font-size:.88rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+pr.label+'</div>'+
+        '<div style="font-size:.72rem;color:var(--text3);">'+new Date(pr.createdAt).toLocaleDateString()+'</div>'+
+      '</div>'+
+      '<div style="text-align:right;flex-shrink:0;">'+
+        '<div style="font-size:.88rem;font-weight:700;color:var(--text);">'+amtText+'</div>'+
+        '<div style="font-size:.68rem;font-weight:600;color:'+statusColor+';">'+statusLabel+'</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+function nprCreate(){
+  const label=(document.getElementById('nprLabel').value||'').trim();
+  const amt=parseFloat(document.getElementById('nprAmount').value)||null;
+  const note=(document.getElementById('nprNote').value||'').trim();
+  if(!label){ toast('Enter a description','error'); return; }
+  if(!userAddr){ toast('Connect wallet first','error'); return; }
+  const id='npr_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  const pr={ id, to:userAddr, token:nprToken, amount:amt, label, note, status:'pending', createdAt:Date.now() };
+  nprLoad();
+  nprList.unshift(pr);
+  nprSave();
+  toast('✓ Request created!','success',3000);
+  // Clear form
+  document.getElementById('nprLabel').value='';
+  document.getElementById('nprAmount').value='';
+  document.getElementById('nprNote').value='';
+  goPage('payreq');
+  nprRender();
+}
+
+function nprBuildLink(pr){
+  const base=window.location.origin+'/legacy/app.html';
+  const p=new URLSearchParams({ pay:pr.id, to:pr.to, amt:pr.amount||'', tok:pr.token, lbl:pr.label, note:pr.note||'' });
+  return base+'?'+p.toString();
+}
+
+function nprView(id){
+  nprLoad();
+  const pr=nprList.find(p=>p.id===id);
+  if(!pr) return;
+  nprActiveId=id;
+  const link=nprBuildLink(pr);
+  document.getElementById('nprViewLabel').textContent=pr.label;
+  document.getElementById('nprViewAmt').textContent=pr.amount?parseFloat(pr.amount).toFixed(2)+' '+pr.token:'Open · '+pr.token;
+  document.getElementById('nprViewNote').textContent=pr.note||pr.label;
+  document.getElementById('nprViewStatus').textContent=pr.status==='paid'?'✓ Paid':'⏳ Pending';
+  document.getElementById('nprViewStatusDot').style.background=pr.status==='paid'?'#34d399':'#fbbf24';
+  document.getElementById('nprViewTo').textContent=short(pr.to);
+  document.getElementById('nprViewToken').textContent=pr.token;
+  document.getElementById('nprViewDate').textContent=new Date(pr.createdAt).toLocaleDateString();
+  document.getElementById('nprViewLink').textContent=link;
+  // QR code
+  const qrBox=document.getElementById('nprQR');
+  qrBox.innerHTML='';
+  try{ new QRCode(qrBox,{text:link,width:140,height:140,colorDark:'#111',colorLight:'#fff'}); }catch(e){}
+  goPage('payreq-view');
+}
+
+function nprCopyLink(){
+  nprLoad();
+  const pr=nprList.find(p=>p.id===nprActiveId);
+  if(!pr) return;
+  const link=nprBuildLink(pr);
+  navigator.clipboard.writeText(link).then(()=>toast('✓ Link copied!','success',2500)).catch(()=>{
+    toast('Link: '+link,'info',6000);
+  });
+}
+
+function nprShare(platform){
+  nprLoad();
+  const pr=nprList.find(p=>p.id===nprActiveId);
+  if(!pr) return;
+  const link=nprBuildLink(pr);
+  const text='Please pay '+( pr.amount?pr.amount+' '+pr.token:''+pr.token )+' for "'+pr.label+'" via NAN Wallet: '+link;
+  const urls={
+    whatsapp:'https://wa.me/?text='+encodeURIComponent(text),
+    twitter:'https://twitter.com/intent/tweet?text='+encodeURIComponent(text),
+    telegram:'https://t.me/share/url?url='+encodeURIComponent(link)+'&text='+encodeURIComponent('Pay '+pr.label+' via NAN Wallet'),
+    email:'mailto:?subject='+encodeURIComponent('Payment Request: '+pr.label)+'&body='+encodeURIComponent(text),
+  };
+  if(urls[platform]) window.open(urls[platform],'_blank');
+}
+
+function nprDelete(){
+  if(!nprActiveId) return;
+  nprLoad();
+  nprList=nprList.filter(p=>p.id!==nprActiveId);
+  nprSave();
+  nprActiveId=null;
+  toast('Deleted','info',2000);
+  goPage('payreq');
+  nprRender();
+}
+
