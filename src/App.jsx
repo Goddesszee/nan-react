@@ -9,34 +9,38 @@ const API = 'https://nan-production.up.railway.app'
 export default function App() {
   const { isAuthenticated, primaryWallet, sdkHasLoaded, user, handleLogOut } = useDynamicContext()
   const { address: wagmiAddress } = useAccount()
-  const [timedOut, setTimedOut] = useState(false)
+  const [timedOut, setTimedOut]     = useState(false)
   const [redirecting, setRedirecting] = useState(false)
-  const [status, setStatus] = useState('Loading NAN...')
+  const [status, setStatus]         = useState('Loading NAN...')
   const didRedirect = useRef(false)
+
+  // Check for disconnect FIRST — before anything else
+  const params        = new URLSearchParams(window.location.search)
+  const isDisconnecting = params.get('disconnected') === '1'
+
+  // If disconnecting — wipe everything immediately and show landing
+  // Do this synchronously so there's zero chance of the redirect useEffect firing
+  if (isDisconnecting && !didRedirect.current) {
+    window.history.replaceState({}, '', '/')
+    // Wipe all localStorage
+    try {
+      const keys = []
+      for (let i = 0; i < localStorage.length; i++) keys.push(localStorage.key(i))
+      keys.forEach(k => k && localStorage.removeItem(k))
+      sessionStorage.clear()
+    } catch(e) {}
+    // Sign out of Dynamic (fire and forget)
+    try { handleLogOut().catch(() => {}) } catch(e) {}
+    // Show landing immediately — no loading, no delay
+    return <Landing />
+  }
 
   useEffect(() => {
     const t = setTimeout(() => setTimedOut(true), 1500)
     return () => clearTimeout(t)
   }, [])
 
-  const params = new URLSearchParams(window.location.search)
-  const isDisconnecting = params.get('disconnected') === '1'
-
-  useEffect(() => {
-    if (!isDisconnecting) return
-    window.history.replaceState({}, '', '/')
-    // Wipe ALL localStorage keys — no history of former account
-    const toRemove = []
-    for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i)
-      if (k) toRemove.push(k)
-    }
-    toRemove.forEach(k => localStorage.removeItem(k))
-    sessionStorage.clear()
-    // Sign out of Dynamic completely
-    try { handleLogOut().catch(() => {}) } catch(e) {}
-  }, [isDisconnecting])
-
+  // Redirect when connected
   useEffect(() => {
     if (isDisconnecting) return
     if (didRedirect.current) return
@@ -44,18 +48,15 @@ export default function App() {
     const connected = isAuthenticated || !!primaryWallet
     if (!connected) return
 
-    const email = user?.email || user?.verifiedCredentials?.find(c => c.email)?.email || null
+    const email = user?.email ||
+      user?.verifiedCredentials?.find(c => c.email)?.email || null
     const addr  = wagmiAddress || primaryWallet?.address
 
     if (email) {
-      // Email-based login (email OTP, Google, Discord etc) 
-      // Always use Circle wallet tied to email — consistent across all social logins
       doRedirectWithEmail(email)
     } else if (addr) {
-      // Pure wallet login (MetaMask, Rabby etc) — no email, use wallet address directly
       doRedirect(addr, null)
     } else {
-      // Address not ready yet — retry
       const retries = [300, 700, 1500, 3000]
       retries.forEach(delay => {
         setTimeout(() => {
@@ -74,16 +75,16 @@ export default function App() {
     didRedirect.current = true
     setRedirecting(true)
 
-    // If wallet already cached for this email — redirect instantly, no API call
-    const cachedId   = localStorage.getItem('circleWalletId')
-    const cachedAddr = localStorage.getItem('circleWalletAddr')
+    // Cached wallet — instant redirect
+    const cachedId    = localStorage.getItem('circleWalletId')
+    const cachedAddr  = localStorage.getItem('circleWalletAddr')
     const cachedEmail = localStorage.getItem('nan_dynamic_email')
     if (cachedId && cachedAddr && cachedEmail === email) {
       doRedirect(cachedAddr, email)
       return
     }
 
-    // First time or different email — fetch/create Circle wallet
+    // First login — create Circle wallet
     setStatus('Setting up your wallet…')
     try {
       const r = await fetch(`${API}/api/circle-wallets`, {
@@ -97,12 +98,10 @@ export default function App() {
         localStorage.setItem('circleWalletAddr', wallet.address)
         doRedirect(wallet.address, email)
       } else {
-        const addr = wagmiAddress || primaryWallet?.address
-        doRedirect(addr, email)
+        doRedirect(wagmiAddress || primaryWallet?.address, email)
       }
     } catch(e) {
-      const addr = wagmiAddress || primaryWallet?.address
-      doRedirect(addr, email)
+      doRedirect(wagmiAddress || primaryWallet?.address, email)
     }
   }
 
@@ -115,9 +114,12 @@ export default function App() {
     window.location.replace('/legacy/app.html')
   }
 
-  if (isDisconnecting) return <Landing />
-  if (!sdkHasLoaded && !timedOut) return <div style={{minHeight:'100vh', background:'#000'}} />
+  // SDK loading
+  if (!sdkHasLoaded && !timedOut) {
+    return <div style={{minHeight:'100vh', background:'#000'}} />
+  }
 
+  // Redirecting to app
   if (redirecting) {
     return (
       <div style={{minHeight:'100vh',background:'#000',display:'flex',flexDirection:'column',
@@ -130,7 +132,11 @@ export default function App() {
         <button onClick={() => {
           didRedirect.current = false
           setRedirecting(false)
-          localStorage.clear()
+          try {
+            const keys = []
+            for (let i = 0; i < localStorage.length; i++) keys.push(localStorage.key(i))
+            keys.forEach(k => k && localStorage.removeItem(k))
+          } catch(e) {}
           handleLogOut().catch(() => {})
         }} style={{marginTop:24,color:'#555',background:'none',border:'1px solid #222',
           borderRadius:8,cursor:'pointer',fontSize:'.8rem',padding:'6px 14px'}}>
