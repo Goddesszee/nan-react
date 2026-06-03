@@ -1,101 +1,28 @@
-import { useEffect, useState, useRef } from 'react'
-import { useDynamicContext } from '@dynamic-labs/sdk-react-core'
-import { useAccount } from 'wagmi'
+import { useState } from 'react'
 import { Landing } from './pages/Landing'
 import './App.css'
 
 const API = 'https://nan-production.up.railway.app'
 
-// Wipe storage at module load — before React or Dynamic initialises
+// Handle disconnect at module load — before anything renders
 const _params = new URLSearchParams(window.location.search)
-const _disconnecting = _params.get('__nan_disconnected') === '1'
-
-if (_disconnecting) {
+if (_params.get('__nan_disconnected') === '1') {
   window.history.replaceState({}, '', '/')
-  try {
-    const keys = []
-    for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i)
-      if (k) keys.push(k)
-    }
-    keys.forEach(k => localStorage.removeItem(k))
-    sessionStorage.clear()
-  } catch(e) {}
+  try { localStorage.clear(); sessionStorage.clear(); } catch(e) {}
+}
+
+// If already have a session — redirect immediately, no React needed
+const _token = localStorage.getItem('nan_dynamic_token')
+const _addr  = localStorage.getItem('nan_dynamic_address')
+const _cId   = localStorage.getItem('circleWalletId')
+if (_token && _addr) {
+  window.location.replace('/legacy/app.html')
 }
 
 export default function App() {
-  const { isAuthenticated, primaryWallet, sdkHasLoaded, user, handleLogOut } = useDynamicContext()
-  const { address: wagmiAddress } = useAccount()
-  const [timedOut, setTimedOut]       = useState(false)
-  const [redirecting, setRedirecting] = useState(false)
-  const [status, setStatus]           = useState('Loading NAN...')
-  const didRedirect = useRef(false)
+  const [status, setStatus] = useState('')
 
-  // Disconnecting — show landing immediately, NO handleLogOut call
-  // handleLogOut triggers Dynamic/Wagmi which auto-opens Rabby picker
-  if (_disconnecting) return <Landing />
-
-  // SDK timeout
-  useEffect(() => {
-    const t = setTimeout(() => setTimedOut(true), 1500)
-    return () => clearTimeout(t)
-  }, [])
-
-  // Redirect when authenticated
-  useEffect(() => {
-    if (_disconnecting) return
-    if (didRedirect.current) return
-
-    const connected = isAuthenticated || !!primaryWallet
-    if (!connected) return
-
-    // Don't redirect if storage was just wiped (user disconnected)
-    // nan_dynamic_token is always set before redirect to app, so if it's missing
-    // we know this is a fresh load after disconnect — stay on landing
-    const hasSession = localStorage.getItem('nan_dynamic_token') ||
-                       localStorage.getItem('circleWalletId')
-    if (!hasSession && !didRedirect.current) {
-      // No session — user just disconnected, stay on landing
-      return
-    }
-
-    const email = user?.email ||
-      user?.verifiedCredentials?.find(c => c.email)?.email || null
-    const addr = wagmiAddress || primaryWallet?.address
-
-    if (email) {
-      // Email login — use Circle wallet tied to email
-      doRedirectWithEmail(email)
-    } else if (addr) {
-      // External wallet (MetaMask/Rabby) — use wallet address directly, clear any cached Circle wallet
-      localStorage.removeItem('circleWalletId')
-      localStorage.removeItem('circleWalletAddr')
-      doRedirect(addr, null)
-    } else {
-      ;[300, 700, 1500, 3000].forEach(delay =>
-        setTimeout(() => {
-          if (didRedirect.current) return
-          const e = user?.email
-          const a = wagmiAddress || primaryWallet?.address
-          if (e) doRedirectWithEmail(e)
-          else if (a) doRedirect(a, null)
-        }, delay)
-      )
-    }
-  }, [isAuthenticated, primaryWallet, wagmiAddress, user])
-
-  async function doRedirectWithEmail(email) {
-    if (didRedirect.current) return
-    didRedirect.current = true
-    setRedirecting(true)
-
-    const cachedId    = localStorage.getItem('circleWalletId')
-    const cachedAddr  = localStorage.getItem('circleWalletAddr')
-    const cachedEmail = localStorage.getItem('nan_dynamic_email')
-    if (cachedId && cachedAddr && cachedEmail === email) {
-      doRedirect(cachedAddr, email); return
-    }
-
+  async function connectWithEmail(email) {
     setStatus('Setting up your wallet…')
     try {
       const r = await fetch(`${API}/api/circle-wallets`, {
@@ -105,50 +32,63 @@ export default function App() {
       const d = await r.json()
       const w = d.wallet || d
       if (w?.id && w?.address) {
-        localStorage.setItem('circleWalletId',   w.id)
-        localStorage.setItem('circleWalletAddr', w.address)
-        doRedirect(w.address, email)
+        localStorage.setItem('circleWalletId',    w.id)
+        localStorage.setItem('circleWalletAddr',  w.address)
+        localStorage.setItem('nan_dynamic_address', w.address)
+        localStorage.setItem('nan_dynamic_email',   email)
+        localStorage.setItem('nan_dynamic_token',   'dynamic_authenticated')
+        window.location.replace('/legacy/app.html')
       } else {
-        doRedirect(wagmiAddress || primaryWallet?.address, email)
+        setStatus('')
+        throw new Error(d.error || 'Wallet setup failed')
       }
     } catch(e) {
-      doRedirect(wagmiAddress || primaryWallet?.address, email)
+      setStatus('')
+      throw e
     }
   }
 
-  function doRedirect(addr, email) {
-    if (!addr) return
+  async function connectWithWallet() {
+    const provider = window.ethereum || 
+      (window.evmproviders && Object.values(window.evmproviders)[0])
+    
+    if (!provider) {
+      throw new Error('No wallet found. Install MetaMask or Rabby.')
+    }
+
+    const accounts = await provider.request({ method: 'eth_requestAccounts' })
+    if (!accounts?.length) throw new Error('No accounts found')
+
+    const addr = accounts[0]
+    localStorage.removeItem('circleWalletId')
+    localStorage.removeItem('circleWalletAddr')
     localStorage.setItem('nan_dynamic_address', addr)
-    localStorage.setItem('nan_dynamic_email',   email || user?.email || '')
+    localStorage.setItem('nan_dynamic_email',   '')
     localStorage.setItem('nan_dynamic_token',   'dynamic_authenticated')
     window.location.replace('/legacy/app.html')
   }
 
-  if (!sdkHasLoaded && !timedOut) return <div style={{minHeight:'100vh',background:'#000'}} />
-
-  if (redirecting) {
+  if (status) {
     return (
       <div style={{minHeight:'100vh',background:'#000',display:'flex',flexDirection:'column',
         alignItems:'center',justifyContent:'center',gap:16,fontFamily:'Inter,sans-serif'}}>
-        <svg width="60" height="30" viewBox="0 0 50 20" fill="none">
-          <path d="M16,0 C16,-8 0,-8 0,0 C0,8 16,8 25,0 C34,-8 50,-8 50,0 C50,8 34,8 25,0 Z"
-            fill="none" stroke="#8b5cf6" strokeWidth="3" strokeLinecap="round"/>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="235 205 265 325" width="48" height="60">
+          <g fill="#7000ff">
+            <path d="M248 215 H312 L490 520 H426 Z"/>
+            <rect x="426" y="215" width="64" height="155"/>
+            <rect x="248" y="365" width="64" height="155"/>
+          </g>
         </svg>
         <div style={{color:'#fff',fontSize:'1rem',fontWeight:600}}>{status}</div>
-        <button onClick={() => {
-          didRedirect.current = false; setRedirecting(false)
-          try {
-            const keys = []
-            for (let i = 0; i < localStorage.length; i++) keys.push(localStorage.key(i))
-            keys.forEach(k => k && localStorage.removeItem(k))
-          } catch(e) {}
-        }} style={{marginTop:24,color:'#555',background:'none',border:'1px solid #222',
-          borderRadius:8,cursor:'pointer',fontSize:'.8rem',padding:'6px 14px'}}>
-          Sign out
-        </button>
+        <div style={{display:'flex',gap:6}}>
+          <div style={{width:6,height:6,borderRadius:'50%',background:'#7000ff',animation:'pulse 1s ease-in-out infinite'}}/>
+          <div style={{width:6,height:6,borderRadius:'50%',background:'#9333ea',animation:'pulse 1s ease-in-out .2s infinite'}}/>
+          <div style={{width:6,height:6,borderRadius:'50%',background:'#c084fc',animation:'pulse 1s ease-in-out .4s infinite'}}/>
+        </div>
+        <style>{`@keyframes pulse{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}`}</style>
       </div>
     )
   }
 
-  return <Landing />
+  return <Landing onEmailConnect={connectWithEmail} onWalletConnect={connectWithWallet} />
 }
