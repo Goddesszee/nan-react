@@ -1,9 +1,10 @@
 export function NanLogo({ height = 42, theme = 'auto' }) {
   const nFill = '#6d28d9'
+  // "an" is white on dark, dark on light
   const textColor = theme === 'light' ? '#1a1a1a' : '#ffffff'
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
+    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 2, paddingBottom: 4 }}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="235 205 265 325"
@@ -19,13 +20,12 @@ export function NanLogo({ height = 42, theme = 'auto' }) {
       </svg>
       <span style={{
         fontFamily: "'Oswald', 'Inter', sans-serif",
-        fontSize: `${height * 0.52}px`,
-        fontWeight: 600,
-        color: nFill,
-        letterSpacing: '.06em',
+        fontSize: `${height * 0.65}px`,
+        fontWeight: 700,
+        color: textColor,
+        letterSpacing: '.04em',
         lineHeight: 1,
-        marginLeft: 1,
-        marginTop: `${height * 0.22}px`,
+        marginBottom: 2,
       }}>an</span>
     </div>
   )
