@@ -48,7 +48,7 @@ const HISTORY_ABI = [
 ];
 
 // CCTP — Circle Cross-Chain Transfer Protocol
-const ARC_CCTP_DOMAIN = 7; const CCTP_TOKEN_MESSENGER = '0x8FE6B999Dc680CcFDD5Bf7EB0974218be2542DAA'; // Arc Testnet TokenMessengerV2 (official)
+const ARC_CCTP_DOMAIN = 26; const CCTP_TOKEN_MESSENGER = '0x8FE6B999Dc680CcFDD5Bf7EB0974218be2542DAA'; // Arc Testnet TokenMessengerV2 (official)
 const CCTP_MESSAGE_TRANSMITTER = '0xE737e5cEBEEBa77EFE34D4aa090756590b1CE275'; // Arc Testnet MessageTransmitterV2
 // Arc Testnet CCTP Domain = 26 (official from docs.arc.io)
 const CCTP_DEST_DOMAIN = {
@@ -681,7 +681,7 @@ async function fetchLiveFX(){
   try{
     const cached=localStorage.getItem('nan_fx_rate');
     const cachedTime=localStorage.getItem('nan_fx_time');
-    if(cached&&cachedTime&&Date.now()-parseInt(cachedTime)<1800000){ // 30min cache
+    if(cached&&cachedTime&&Date.now()-parseInt(cachedTime)<3600000){
       const rate=parseFloat(cached);
       if(rate>0.5&&rate<2){FX=rate;fxLastUpdated=new Date(parseInt(cachedTime));updateSwapRateDisplay();return;}
     }
@@ -724,7 +724,6 @@ async function fetchLiveFX(){
   updateSwapRateDisplay();
 }
 function updateSwapRateDisplay(){
-  if(document.getElementById('swapFrom')?.value>0) calcSwap();
   const time=fxLastUpdated?fxLastUpdated.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'fallback';
   const el=document.getElementById('swapRate');if(!el)return;
   el.innerHTML=swapFlipped
@@ -1003,18 +1002,6 @@ async function _autoSeedLiquidity(){
 }
 
 async function onConnected(isEmail=false, isDev=false){
-  // Show AI button
-  try{
-    const ai=document.getElementById('aiBtn');
-    if(ai){ ai.style.display='flex'; ai.style.visibility='visible'; ai.style.opacity='1'; }
-    const aiD=document.getElementById('aiBtnDesktop');
-    if(aiD){ aiD.style.display='flex'; aiD.style.visibility='visible'; aiD.style.opacity='1'; }
-  }catch(e){}
-  // Force show after delay in case of render timing
-  setTimeout(()=>{
-    const ai=document.getElementById('aiBtn');
-    if(ai){ ai.style.display='flex'; ai.style.visibility='visible'; }
-  },1000);
   const land = document.getElementById('page-land');
   if(land){
     land.classList.remove('active');
@@ -1067,12 +1054,6 @@ async function onConnected(isEmail=false, isDev=false){
   renderArcDirectory();
   initLendUI();
   document.getElementById('aiBtn').style.display='flex';
-  var deskAI=document.getElementById('aiBtnDesktop');
-  if(deskAI)deskAI.style.display='flex';
-  var navF=document.getElementById('navFaucetBtn');
-  if(navF)navF.style.display='flex';
-  var tnavAI=document.getElementById('tnav-ai');
-  if(tnavAI)tnavAI.style.display='flex';
   setTimeout(attachAIListeners, 100); // re-attach after button is visible
   startOrderEngine();
   // Pre-approve all contracts once so users never see repeated approve popups
@@ -2187,7 +2168,7 @@ async function pollIrisAttestation(txHash, destChain) {
       try {
         const pr = await fetch('https://nan-production.up.railway.app/api/cctp-attest', {
           method: 'POST', headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({action:'getAttestation', txHash, sourceDomain:7}),
+          body: JSON.stringify({action:'getAttestation', txHash, sourceDomain:26}),
         });
         if (pr.ok) {
           const pd = await pr.json();
@@ -2523,11 +2504,10 @@ function renderHistory(){
 // ═══════════════════════════════════════════
 // FAUCET
 // ═══════════════════════════════════════════
-async function claimFaucet(btnEl){
+async function claimFaucet(){
   if(!userAddr){toast('Connect wallet first','error');return;}
-  const btn=btnEl||document.getElementById('faucetBtn')||document.querySelector('[onclick*="claimFaucet"]');
-  const origText=btn?btn.innerHTML:'💧 Get Free Tokens';
-  if(btn){btn.innerHTML='<span class="spinner"></span>Claiming…';btn.disabled=true;}
+  const btn=document.getElementById('faucetBtn');
+  btn.innerHTML='<span class="spinner"></span>Claiming…';btn.disabled=true;
   try{
     const res=await fetch('https://nan-production.up.railway.app/api/faucet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({address:userAddr})});
     const data=await res.json();
@@ -2541,7 +2521,7 @@ async function claimFaucet(btnEl){
       else{toast('Opening faucet website…','info',3000);window.open('https://faucet.circle.com','_blank');}
     }
   }catch{toast('Opening faucet website…','info',3000);window.open('https://faucet.circle.com','_blank');}
-  if(btn){btn.innerHTML=origText;btn.disabled=false;}
+  btn.innerHTML='💧 Get Free Tokens';btn.disabled=false;
 }
 
 // ═══════════════════════════════════════════
@@ -3094,15 +3074,7 @@ function startOrderEngine(){
 }
 
 async function checkLimitOrder(order){
-  await // Clear FX cache older than 30 mins on startup
-try{
-  const fxt=localStorage.getItem('nan_fx_time');
-  if(fxt&&Date.now()-parseInt(fxt)>1800000){
-    localStorage.removeItem('nan_fx_rate');
-    localStorage.removeItem('nan_fx_time');
-  }
-}catch(e){}
-fetchLiveFX();
+  await fetchLiveFX();
   const rate = order.sellToken==='USDC' ? FX : 1/FX;
   const targetMet = order.condition==='gte' ? rate>=order.targetRate : rate<=order.targetRate;
   if(!targetMet)return;
@@ -4617,23 +4589,7 @@ let currentPRExpiry=0;
 let activePRId=null;
 
 function loadPaymentRequests(){
-  try{
-    let saved=localStorage.getItem('nan_payreqs_'+(userAddr||''));
-    if(!saved||saved==='[]'){
-      const fallback=localStorage.getItem('circleWalletAddr')||localStorage.getItem('nan_dynamic_address')||'';
-      if(fallback)saved=localStorage.getItem('nan_payreqs_'+fallback);
-      if(!saved||saved==='[]'){
-        for(let i=0;i<localStorage.length;i++){
-          const k=localStorage.key(i);
-          if(k&&k.startsWith('nan_payreqs_')&&k!=='nan_payreqs_'){
-            const v=localStorage.getItem(k);
-            if(v&&v!=='[]'){saved=v;break;}
-          }
-        }
-      }
-    }
-    paymentRequests=JSON.parse(saved||'[]');
-  }catch{paymentRequests=[];}
+  try{paymentRequests=JSON.parse(localStorage.getItem('nan_payreqs_'+(userAddr||''))||'[]');}catch{paymentRequests=[];}
   checkPendingPaymentRequests();
 }
 async function checkPendingPaymentRequests(){
@@ -4798,7 +4754,6 @@ function viewPaymentRequest(id){
   goPage('payreq-view');
 }
 function renderPaymentRequests(){
-  if(!userAddr){ setTimeout(renderPaymentRequests, 300); return; }
   loadPaymentRequests();
   const list=document.getElementById('payreqList');
   if(!list)return;
