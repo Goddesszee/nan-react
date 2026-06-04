@@ -3297,8 +3297,16 @@ function toggleAgent(){
     const panel=document.getElementById('agentPanel');
     if(!panel)return;
     if(agentOpen){
-      // Force open — override all CSS conflicts
-      panel.style.cssText='display:flex !important;flex-direction:column !important;position:fixed !important;top:0 !important;left:0 !important;right:0 !important;bottom:0 !important;z-index:999999999 !important;transform:none !important;';
+      // Set each property individually — !important invalid in style.cssText
+      panel.style.display='flex';
+      panel.style.flexDirection='column';
+      panel.style.position='fixed';
+      panel.style.top='0';
+      panel.style.left='0';
+      panel.style.right='0';
+      panel.style.bottom='0';
+      panel.style.zIndex='2147483647';
+      panel.style.transform='none';
       panel.classList.add('open');
       try{renderAgentMsgs();}catch(e){}
       try{renderAgentChips();}catch(e){}
