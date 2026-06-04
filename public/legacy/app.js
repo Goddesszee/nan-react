@@ -3298,12 +3298,6 @@ function toggleAgent(){
     console.log('[NAN AI] toggleAgent called, agentOpen='+agentOpen+', panel='+!!panel);
     if(!panel){console.error('agentPanel not found!');return;}
     panel.style.display=agentOpen?'flex':'none';
-    panel.style.flexDirection='column';
-    panel.style.position='fixed';
-    panel.style.top='0';
-    panel.style.left='0';
-    panel.style.right='0';
-    panel.style.bottom='0';
     panel.style.zIndex='999999999';
     if(agentOpen){
       try{renderAgentMsgs();}catch(e){console.error('renderAgentMsgs error:',e);}
@@ -3318,17 +3312,11 @@ function attachAIListeners(){
   function addToggle(el){
     if(!el||el._aiListenerAdded)return;
     el._aiListenerAdded=true;
-    // Use click for desktop, touchend for mobile (prevents double-fire)
     el.addEventListener('click',function(e){
       e.preventDefault();
       e.stopPropagation();
       toggleAgent();
     });
-    el.addEventListener('touchend',function(e){
-      e.preventDefault();
-      e.stopPropagation();
-      toggleAgent();
-    },{passive:false});
   }
   addToggle(document.getElementById('aiBtn'));
   addToggle(document.getElementById('nanAiMoreBtn'));
