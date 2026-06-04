@@ -2265,7 +2265,7 @@ a:hover{color:var(--text);}
     bottom:0 !important;top:0 !important;
     width:100% !important;max-width:100% !important;
     border-radius:0 !important;
-    transform:none !important;
+    transform:none !important !important;
   }
 
   /* ── Wallet modal: slides up from bottom ── */
