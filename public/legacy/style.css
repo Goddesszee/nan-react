@@ -473,7 +473,7 @@ a:hover{color:var(--text);}
   .page{top:54px;bottom:68px!important;padding:10px 12px 90px!important;}
   /* == MOBILE TOPBAR LOGO FIX == */
   #globalTopBar{
-    height:48px !important;
+    height:68px !important;
     padding:0 12px !important;
     display:flex !important;
     align-items:center !important;
@@ -482,7 +482,7 @@ a:hover{color:var(--text);}
   .brand{
     display:flex !important;
     align-items:center !important;
-    height:48px !important;
+    height:68px !important;
     overflow:visible !important;
   }
   .brand-logo{
