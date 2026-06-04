@@ -384,12 +384,7 @@ html,body{background:var(--bg);}
         </div>
       </div>
 
-      <div onclick="goPage('payreq')" style="display:flex;align-items:center;gap:14px;padding:13px 15px;cursor:pointer;border-radius:12px;border:1px solid var(--border);margin-bottom:8px;background:var(--surface);" onmouseover="this.style.background='rgba(109,40,217,.08)'" onmouseout="this.style.background='var(--surface)'">
-          <div style="width:38px;height:38px;border-radius:10px;background:rgba(109,40,217,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6d28d9" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
-          <div style="flex:1;"><div style="font-size:.9rem;font-weight:600;color:var(--text);">Payment Request</div><div style="font-size:.75rem;color:var(--text3);">Create & share payment links</div></div>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-        </div>
-        <div onclick="goPage('naira')" style="display:flex;align-items:center;gap:13px;padding:13px 16px;cursor:pointer;" onmouseover="this.style.background='rgba(112,0,255,.04)'" onmouseout="this.style.background='transparent'">
+      <div onclick="goPage('naira')" style="display:flex;align-items:center;gap:13px;padding:13px 16px;cursor:pointer;" onmouseover="this.style.background='rgba(112,0,255,.04)'" onmouseout="this.style.background='transparent'">
         <div style="width:40px;height:40px;border-radius:50%;background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.25);display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:#fbbf24;flex-shrink:0;">₦</div>
         <div style="flex:1;">
           <div style="font-size:1rem;font-weight:700;color:var(--text);">Naira</div>
@@ -746,7 +741,10 @@ html,body{background:var(--bg);}
     <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:14px;">
 
       <div onclick="goPage('history')" style="display:flex;align-items:center;gap:14px;padding:13px 15px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;" onmouseover="this.style.background='rgba(109,40,217,.08)'" onmouseout="this.style.background='transparent'"><div style="width:36px;height:36px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7000ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div style="flex:1;"><div style="font-size:1rem;font-weight:600;color:var(--text);">History</div><div style="font-size:1rem;color:var(--text);margin-top:2px;">View your transaction activity</div></div><span style="color:var(--text);font-size:1rem;">�</span></div>
-        
+        <div onclick="goPage('payreq')" style="display:flex;align-items:center;gap:14px;padding:13px 15px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;" onmouseover="this.style.background='rgba(109,40,217,.08)'" onmouseout="this.style.background='transparent'">
+        <div style="width:36px;height:36px;border-radius:11px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
         <div style="flex:1;">
           <div style="font-size:1rem;font-weight:600;color:var(--text);">Pay Requests</div>
           <div style="font-size:1rem;color:var(--text);margin-top:2px;">Create & share payment links</div>
@@ -1375,7 +1373,207 @@ html,body{background:var(--bg);}
   </div>
 
   <!-- ══ PAYMENT REQUESTS PAGE ══ -->
-  <!-- ══ FLOATING EMAIL OTP MODAL (shown when page-land hidden) ══ -->
+  <div class="page" id="page-payreq">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
+    <button class="back-btn" onclick="goBack()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg> Back</button>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <div>
+        <div style="font-size:1.125rem;font-weight:700;color:var(--text);letter-spacing:-.02em;">Pay Requests</div>
+        <div style="font-size:.82rem;color:var(--text2);margin-top:2px;">Create & share payment links</div>
+      </div>
+      <button onclick="goPage('payreq-new')" style="background:#7000ff;border:none;border-radius:10px;color:#f3e8ff;font-family:'Inter',sans-serif;font-weight:700;font-size:.875rem;padding:8px 14px;cursor:pointer;">+ New</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
+      <div style="text-align:center;padding:10px 8px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
+        <div style="font-size:1.1rem;font-weight:700;color:var(--accent3);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;" id="prStatTotal">0</div>
+        <div style="font-size:1rem;color:var(--text);">Total</div>
+      </div>
+      <div style="text-align:center;padding:10px 8px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
+        <div style="font-size:1.1rem;font-weight:700;color:var(--success);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;" id="prStatPaid">0</div>
+        <div style="font-size:1rem;color:var(--text);">Paid</div>
+      </div>
+      <div style="text-align:center;padding:10px 8px;background:var(--card);border:1px solid var(--border);border-radius:12px;">
+        <div style="font-size:1.1rem;font-weight:700;color:var(--warning);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;" id="prStatPending">0</div>
+        <div style="font-size:1rem;color:var(--text);">Pending</div>
+      </div>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <div id="payreqList" style="display:flex;flex-direction:column;"></div>
+    </div>
+  </div>
+  <!-- ══ PAY REQUEST PAGE (for payer) ══ -->
+  <div class="page" id="page-pay-now" style="flex-direction:column;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+      <div style="width:32px;height:32px;border-radius:9px;background:#7000ff;display:flex;align-items:center;justify-content:center;font-size:1rem;color:#f3e8ff;">N</div>
+      <div class="page-title" style="margin-bottom:0;">NAN Payment Request</div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:14px;text-align:center;">
+      <div style="font-size:2rem;font-weight:800;color:var(--text);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;margin-bottom:6px;" id="payNowAmt">—</div>
+      <div style="font-size:1rem;font-weight:600;color:var(--text);margin-bottom:4px;" id="payNowLabel">—</div>
+      <div style="font-size:1rem;color:var(--text);" id="payNowNote"></div>
+    </div>
+    <div class="card" style="margin-bottom:12px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="font-size:1rem;color:var(--text);">Pay to</span><span style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:var(--text);" id="payNowTo">—</span></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="font-size:1rem;color:var(--text);">Token</span><span style="font-size:1rem;font-weight:700;color:var(--accent3);" id="payNowToken">USDC</span></div>
+      <div style="display:flex;justify-content:space-between;"><span style="font-size:1rem;color:var(--text);">Network</span><span style="font-size:1rem;color:var(--success);">● Arc Testnet</span></div>
+    </div>
+    <div id="payNowAmtInput" style="display:none;margin-bottom:12px;">
+      <div class="flbl">Enter amount</div>
+      <input id="payNowCustomAmt" type="number" min="0.01" step="0.01" placeholder="0.00" style="width:100%;padding:12px;border-radius:12px;font-size:1.2rem;text-align:center;font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;"/>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:12px;">
+      <div style="font-size:.875rem;color:var(--text);margin-bottom:8px;text-align:center;font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;">Send USDC to this address on Arc Testnet</div>
+      <div id="payNowQR" style="display:flex;justify-content:center;margin-bottom:10px;"></div>
+      <div style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:.8rem;color:var(--text);word-break:break-all;text-align:center;padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:10px;" id="payNowAddrDisplay">—</div>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('payNowTo').textContent).then(()=>toast('✓ Address copied!','success',2000))" style="width:100%;padding:10px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.3);border-radius:10px;color:var(--accent3);font-family:'Inter',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;">📋 Copy Address</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+      <div style="flex:1;height:1px;background:var(--border);"></div>
+      <div style="font-size:.8rem;color:var(--text2);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;">or pay with NAN wallet</div>
+      <div style="flex:1;height:1px;background:var(--border);"></div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;text-align:center;">
+      <div style="font-size:.875rem;font-weight:700;color:var(--success);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;letter-spacing:.05em;margin-bottom:10px;">Step 1 — Scan or copy address</div>
+      <div id="payNowQR" style="display:flex;justify-content:center;margin-bottom:10px;"></div>
+      <div style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:var(--accent3);word-break:break-all;text-align:center;padding:8px;background:rgba(168,85,247,.06);border-radius:8px;margin-bottom:10px;" id="payNowAddrDisplay">—</div>
+      <button onclick="navigator.clipboard.writeText(document.getElementById('payNowTo').textContent).then(()=>toast('✓ Address copied!','success',2000))" style="width:100%;padding:11px;background:#7000ff;border:none;border-radius:10px;color:#f3e8ff;font-family:'Inter',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;">📋 Copy Address</button>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:12px;">
+      <div style="font-size:.8rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;margin-bottom:8px;">Step 2 — Send from your wallet</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;align-items:center;gap:8px;font-size:.875rem;color:var(--text2);"><span>1.</span> Open MetaMask, Trust Wallet, or any wallet</div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:.875rem;color:var(--text2);"><span>2.</span> Switch to <strong style="color:var(--text);">Arc Testnet</strong> (Chain ID: 5042002)</div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:.875rem;color:var(--text2);"><span>3.</span> Send <strong style="color:var(--accent3);" id="payNowAmtStep">the amount</strong> of USDC to the address above</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+      <div style="flex:1;height:1px;background:var(--border);"></div>
+      <div style="font-size:.8rem;color:var(--text2);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;">Already have a NAN Wallet?</div>
+      <div style="flex:1;height:1px;background:var(--border);"></div>
+    </div>
+    <button class="btn" onclick="doPayNow()" id="payNowBtn" style="margin-bottom:8px;">⚡ Pay instantly via NAN</button>
+    <div style="text-align:center;font-size:.875rem;color:var(--text);">Powered by NAN Wallet · Arc Testnet · Circle USDC</div>
+  </div>
+
+<!-- ══ PAYMENT REQUEST VIEW PAGE ══ -->
+  <div class="page" id="page-payreq-view" style="flex-direction:column;">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+      <button onclick="goPage('payreq')" style="width:32px;height:32px;border-radius:9px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">←</button>
+      <div>
+        <div class="page-title" style="margin-bottom:0;" id="prViewTitle">Request</div>
+        <div style="font-size:1rem;font-weight:600;" id="prViewStatus">⏳ Pending</div>
+      </div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:14px;text-align:center;">
+      <div style="font-size:2rem;font-weight:800;color:var(--text);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;margin-bottom:6px;" id="prViewAmt">—</div>
+      <div style="font-size:1rem;font-weight:600;color:var(--text);" id="prViewLabel2">—</div>
+    </div>
+    <div class="card" style="margin-bottom:12px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="font-size:1rem;color:var(--text);">Your address</span><span style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:var(--text);" id="prViewFrom">—</span></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="font-size:1rem;color:var(--text);">Created</span><span style="font-size:1rem;color:var(--text);" id="prViewDate">—</span></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;" id="prViewNoteRow"><span style="font-size:1rem;color:var(--text);">Note</span><span style="font-size:1rem;color:var(--text);" id="prViewNote">—</span></div>
+      <div style="display:flex;justify-content:space-between;"><span style="font-size:1rem;color:var(--text);">Expires</span><span style="font-size:1rem;color:var(--text);" id="prViewExpiry">Never</span></div>
+    </div>
+    <div class="card" style="margin-bottom:12px;">
+      <div style="font-size:.875rem;color:var(--text);margin-bottom:8px;font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;">SHAREABLE LINK</div>
+      <div style="font-size:.78rem;color:var(--text);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;word-break:break-all;margin-bottom:10px;padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:8px;" id="prViewLink"></div>
+      <div style="display:flex;justify-content:center;margin-bottom:10px;" id="prViewQR"></div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="copyPRLink()" style="flex:1;padding:10px;background:#7000ff;border:none;border-radius:10px;color:#f3e8ff;font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;cursor:pointer;">📋 Copy Link</button>
+        <button onclick="sharePRLink()" style="flex:1;padding:10px;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.25);border-radius:10px;color:var(--success);font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;cursor:pointer;">↗ Share</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button id="prMarkPaidBtn" onclick="markPRAsPaid()" style="flex:1;padding:10px;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.25);border-radius:10px;color:var(--success);font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;cursor:pointer;">✓ Mark as Paid</button>
+      <button onclick="deletePR()" style="padding:9px 12px;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:10px;color:var(--danger);font-family:'Inter',sans-serif;font-size:.875rem;cursor:pointer;">🗑</button>
+    </div>
+  </div>
+
+<!-- ══ NEW PAYMENT REQUEST PAGE ══ -->
+  <div class="page" id="page-payreq-new">
+    <button class="back-btn" onclick="goPage('payreq')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg> Back</button>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <div>
+        <div style="font-size:1.125rem;font-weight:700;color:var(--text);letter-spacing:-.02em;">New Request</div>
+        <div style="font-size:.875rem;color:var(--text3);margin-top:2px;">Fill in details · Share the link</div>
+      </div>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;gap:0;min-height:200px;">
+      <div class="field">
+        <div class="flbl">Currency</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+          <button class="topt active" id="pr-usdc" onclick="setPRToken('USDC',this)" style="display:flex;align-items:center;justify-content:center;gap:7px;padding:10px;"><span style="font-size:1rem;">💵</span><span>USDC</span></button>
+          <button class="topt" id="pr-eurc" onclick="setPRToken('EURC',this)" style="display:flex;align-items:center;justify-content:center;gap:7px;padding:10px;"><span style="font-size:1rem;">💶</span><span>EURC</span></button>
+        </div>
+      </div>
+      <div class="field">
+        <div class="flbl" style="display:flex;align-items:center;justify-content:space-between;"><span>Amount</span><span style="font-size:.875rem;color:var(--text);">Leave blank to let payer choose</span></div>
+        <div class="amt-row">
+          <div class="field" style="margin-bottom:0;flex:1;"><input id="prAmount" type="number" min="0.01" step="0.01" placeholder="0.00 (optional)" oninput="updatePRPreview()"/></div>
+          <span style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:.875rem;color:var(--text);padding:0 8px;" id="prTokenLabel">USDC</span>
+        </div>
+      </div>
+      <div class="field">
+        <div class="flbl">Label <span style="color:var(--text);font-weight:400;">(required)</span></div>
+        <input id="prLabel" type="text" placeholder="e.g. Freelance design · Invoice #001 · Rent April" oninput="updatePRPreview()" maxlength="80"/>
+      </div>
+      <div class="field">
+        <div class="flbl">Note <span style="color:var(--text);font-weight:400;">(optional)</span></div>
+        <input id="prNote" type="text" placeholder="Add extra details for the payer" maxlength="160"/>
+      </div>
+      <div class="field">
+        <div class="flbl">Notify me when paid <span style="color:var(--text);font-weight:400;">(optional)</span></div>
+        <input id="prEmail" type="email" placeholder="your@email.com — get an email when paid"/>
+      </div>
+      <div class="field">
+        <div class="flbl">Expires</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;" id="prExpiryGrid">
+          <button class="topt active" onclick="setPRExpiry(0,this)" style="font-size:1rem;padding:8px 4px;text-align:center;">Never</button>
+          <button class="topt" onclick="setPRExpiry(24,this)" style="font-size:1rem;padding:8px 4px;text-align:center;">24h</button>
+          <button class="topt" onclick="setPRExpiry(168,this)" style="font-size:1rem;padding:8px 4px;text-align:center;">7 days</button>
+          <button class="topt" onclick="setPRExpiry(720,this)" style="font-size:1rem;padding:8px 4px;text-align:center;">30 days</button>
+        </div>
+      </div>
+      <div id="prPreviewWrap" style="display:none;margin-bottom:12px;">
+        <div style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:var(--text);letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px;">Preview</div>
+        <div style="background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.2);border-radius:12px;padding:14px;">
+          <div style="font-size:1.1rem;font-weight:700;color:var(--accent3);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;margin-bottom:4px;" id="prPreviewAmt">—</div>
+          <div style="font-size:1rem;font-weight:600;color:var(--text);margin-bottom:6px;" id="prPreviewLabel">—</div>
+          <div style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:.875rem;color:var(--text);">To: <span id="prPreviewAddr">—</span></div>
+        </div>
+      </div>
+      <button class="btn" id="prCreateBtn" onclick="createPaymentRequest()" disabled>Create & Share Link</button>
+    </div>
+  </div>
+
+<!-- ══ WALLET PICKER MODAL ══ -->
+<div class="wallet-modal-overlay" id="walletModalOverlay" onclick="hideWalletPicker(event)">
+  <div class="wallet-modal">
+    <div class="wallet-modal-title">Connect Wallet</div>
+    <div class="wallet-modal-sub">Choose your preferred wallet to connect to Arc Testnet</div>
+    <div class="wallet-logos-row">
+      <div class="wallet-logo-icon" style="background:#7000ff;" onclick="connectSpecific('metamask')" title="MetaMask">🦊</div>
+      <div class="wallet-logo-icon" style="background:#7000ff;" onclick="connectSpecific('walletconnect')" title="WalletConnect">🔗</div>
+      <div class="wallet-logo-icon" style="background:#7000ff;" onclick="connectSpecific('coinbase')" title="Coinbase Wallet">🔵</div>
+      <div class="wallet-logo-icon" style="background:#f87171;" onclick="connectSpecific('rabby')" title="Rabby">🐰</div>
+      <div class="wallet-logo-icon" style="background:#7000ff;" onclick="connectSpecific('circle')" title="Circle Wallet">⭕</div>
+    </div>
+    <div class="wallet-opt" onclick="hideWalletPicker();document.getElementById('emailInput').focus()" style="border:1.5px solid rgba(168,85,247,.5);background:rgba(168,85,247,.06);margin-bottom:10px;">
+      <div class="wallet-opt-icon" style="background:rgba(168,85,247,.15);">⚡</div>
+      <div><div class="wallet-opt-name">Email — instant wallet</div><div class="wallet-opt-desc">Fastest · No extension · Free</div></div>
+      <span class="wallet-opt-badge" style="background:rgba(168,85,247,.15);color:var(--accent3);border:1px solid rgba(168,85,247,.3);">Recommended</span>
+    </div>
+    <div class="wallet-opt" onclick="connectSpecific('metamask')"><div class="wallet-opt-icon" style="background:#7000ff20;">🦊</div><div><div class="wallet-opt-name">MetaMask</div><div class="wallet-opt-desc">Browser extension wallet</div></div><span class="wallet-opt-badge" style="background:rgba(168,85,247,.1);color:var(--accent3);border:1px solid rgba(168,85,247,.2);">Popular</span></div>
+    <div class="wallet-opt" onclick="connectSpecific('walletconnect')"><div class="wallet-opt-icon" style="background:#7000ff20;">🔗</div><div><div class="wallet-opt-name">WalletConnect</div><div class="wallet-opt-desc">Scan QR with mobile wallet</div></div></div>
+    <div class="wallet-opt" onclick="connectSpecific('coinbase')"><div class="wallet-opt-icon" style="background:#7000ff20;">🔵</div><div><div class="wallet-opt-name">Coinbase Wallet</div><div class="wallet-opt-desc">Mobile & browser extension</div></div></div>
+    <div class="wallet-opt" onclick="connectSpecific('circle')"><div class="wallet-opt-icon" style="background:rgba(168,85,247,.1);">⭕</div><div><div class="wallet-opt-name">Circle Programmable Wallet</div><div class="wallet-opt-desc">Embedded wallet via Circle</div></div><span class="wallet-opt-badge" style="background:rgba(112,0,255,.08);color:var(--success);border:1px solid rgba(112,0,255,.2);">New</span></div>
+    <div class="wallet-divider"><span>or sign in with email</span></div>
+    <div class="wallet-opt" onclick="hideWalletPicker();document.getElementById('emailInput').focus()"><div class="wallet-opt-icon" style="background:rgba(168,85,247,.1);">✉</div><div><div class="wallet-opt-name">Email Login</div><div class="wallet-opt-desc">Creates a secure wallet in your browser</div></div></div>
+  </div>
+</div>
+
+<!-- ══ FLOATING EMAIL OTP MODAL (shown when page-land hidden) ══ -->
 <div id="floatingOtpModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);z-index:99999;align-items:center;justify-content:center;flex-direction:column;">
   <div style="background:#111111;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:28px 24px;width:340px;max-width:90vw;box-shadow:0 24px 60px rgba(0,0,0,.8);">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
@@ -1801,116 +1999,4 @@ window.addEventListener('load', function() {
   }
 })();
 </script>
-
-  <!-- ══ PAYMENT REQUEST PAGE ══ -->
-  <div class="page" id="page-payreq">
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-        <div>
-          <button class="back-btn" onclick="goBack()" style="margin-bottom:8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg> Back</button>
-          <div style="font-size:1.1rem;font-weight:700;color:var(--text);">Payment Request</div>
-          <div style="font-size:.78rem;color:var(--text3);margin-top:2px;">Create · Share · Get paid</div>
-        </div>
-        <button onclick="goPage('payreq-new')" style="background:#6d28d9;border:none;border-radius:10px;color:#fff;font-family:'Inter',sans-serif;font-weight:700;font-size:.82rem;padding:9px 16px;cursor:pointer;">+ New</button>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px;">
-        <div style="text-align:center;padding:12px 8px;background:var(--surface);border:1px solid var(--border);border-radius:12px;">
-          <div style="font-size:1.3rem;font-weight:700;color:var(--accent3);" id="nprStatTotal">0</div>
-          <div style="font-size:.7rem;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.06em;">Total</div>
-        </div>
-        <div style="text-align:center;padding:12px 8px;background:var(--surface);border:1px solid var(--border);border-radius:12px;">
-          <div style="font-size:1.3rem;font-weight:700;color:#34d399;" id="nprStatPaid">0</div>
-          <div style="font-size:.7rem;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.06em;">Paid</div>
-        </div>
-        <div style="text-align:center;padding:12px 8px;background:var(--surface);border:1px solid var(--border);border-radius:12px;">
-          <div style="font-size:1.3rem;font-weight:700;color:#fbbf24;" id="nprStatPending">0</div>
-          <div style="font-size:.7rem;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.06em;">Pending</div>
-        </div>
-      </div>
-      <div id="nprList"></div>
-    </div>
-  </div>
-
-  <!-- ══ NEW PAYMENT REQUEST PAGE ══ -->
-  <div class="page" id="page-payreq-new">
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
-      <button class="back-btn" onclick="goPage('payreq')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg> Back</button>
-      <div style="margin-bottom:20px;">
-        <div style="font-size:1.1rem;font-weight:700;color:var(--text);">New Request</div>
-        <div style="font-size:.78rem;color:var(--text3);margin-top:2px;">Fill in · Share · Get paid</div>
-      </div>
-      <div class="field">
-        <div class="flbl">Token</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
-          <button class="topt active" id="nprBtnUsdc" onclick="nprSetTok('USDC',this)" style="display:flex;align-items:center;justify-content:center;gap:7px;padding:10px;">💵 USDC</button>
-          <button class="topt" id="nprBtnEurc" onclick="nprSetTok('EURC',this)" style="display:flex;align-items:center;justify-content:center;gap:7px;padding:10px;">💶 EURC</button>
-        </div>
-      </div>
-      <div class="field">
-        <div class="flbl" style="display:flex;justify-content:space-between;"><span>Amount</span><span style="font-size:.72rem;color:var(--text3);">Leave blank — payer chooses</span></div>
-        <input id="nprAmt" type="number" min="0.01" step="0.01" placeholder="0.00" style="width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-size:1rem;font-family:'Inter',sans-serif;outline:none;"/>
-      </div>
-      <div class="field">
-        <div class="flbl">What's it for? <span style="color:var(--danger);">*</span></div>
-        <input id="nprLbl" type="text" placeholder="e.g. Invoice #001, Rent, Freelance" style="width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-size:.9rem;font-family:'Inter',sans-serif;outline:none;"/>
-      </div>
-      <div class="field">
-        <div class="flbl">Note <span style="font-weight:400;color:var(--text3);">(optional)</span></div>
-        <input id="nprNte" type="text" placeholder="Additional details..." style="width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-size:.9rem;font-family:'Inter',sans-serif;outline:none;"/>
-      </div>
-      <button onclick="nprCreate()" id="nprCreateBtn" style="width:100%;background:#6d28d9;border:none;border-radius:12px;color:#fff;font-family:'Inter',sans-serif;font-weight:700;font-size:1rem;padding:14px;cursor:pointer;margin-top:8px;">Create Request →</button>
-    </div>
-  </div>
-
-  <!-- ══ VIEW PAYMENT REQUEST ══ -->
-  <div class="page" id="page-payreq-view">
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
-        <button onclick="goPage('payreq')" style="width:32px;height:32px;border-radius:9px;background:var(--surface);border:1px solid var(--border);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;">←</button>
-        <div style="font-size:1rem;font-weight:700;color:var(--text);" id="nprViewLbl">Request</div>
-      </div>
-      <div style="background:linear-gradient(135deg,#3b1fa3,#6d28d9);border-radius:16px;padding:24px;text-align:center;margin-bottom:16px;position:relative;overflow:hidden;">
-        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:.06;pointer-events:none;">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="235 205 265 325" width="120" height="150"><g fill="#fff"><path d="M248 215 H312 L490 520 H426 Z"/><rect x="426" y="215" width="64" height="155"/><rect x="248" y="365" width="64" height="155"/></g></svg>
-        </div>
-        <div style="font-size:.7rem;color:rgba(255,255,255,.6);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">Payment Request</div>
-        <div style="font-size:2.4rem;font-weight:800;color:#fff;letter-spacing:-.02em;" id="nprViewAmt">—</div>
-        <div style="font-size:.9rem;color:rgba(255,255,255,.65);margin-top:4px;" id="nprViewNote">—</div>
-        <div style="margin-top:12px;display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border-radius:20px;padding:5px 12px;">
-          <div id="nprViewDot" style="width:6px;height:6px;border-radius:50%;background:#34d399;"></div>
-          <span style="font-size:.75rem;color:#fff;font-weight:600;" id="nprViewStatus">Pending</span>
-        </div>
-      </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px;">
-        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);">
-          <span style="font-size:.82rem;color:var(--text3);">To</span>
-          <span style="font-size:.82rem;color:var(--text);font-family:'JetBrains Mono',monospace;" id="nprViewTo">—</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);">
-          <span style="font-size:.82rem;color:var(--text3);">Token</span>
-          <span style="font-size:.82rem;color:var(--text);font-weight:600;" id="nprViewTok">—</span>
-        </div>
-        <div style="display:flex;justify-content:space-between;padding:6px 0;">
-          <span style="font-size:.82rem;color:var(--text3);">Created</span>
-          <span style="font-size:.82rem;color:var(--text);" id="nprViewDate">—</span>
-        </div>
-      </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px;">
-        <div style="font-size:.7rem;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Shareable Link</div>
-        <div id="nprViewLink" style="font-size:.72rem;color:var(--text2);word-break:break-all;font-family:'JetBrains Mono',monospace;margin-bottom:10px;line-height:1.5;">—</div>
-        <button onclick="nprCopy()" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;padding:9px;cursor:pointer;">📋 Copy Link</button>
-      </div>
-      <div style="margin-bottom:14px;">
-        <div style="font-size:.7rem;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;">Share via</div>
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
-          <button onclick="nprShare('whatsapp')" style="background:#25D366;border:none;border-radius:10px;padding:10px 6px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg><span style="font-size:.65rem;color:#fff;font-weight:600;">WhatsApp</span></button>
-          <button onclick="nprShare('twitter')" style="background:#000;border:none;border-radius:10px;padding:10px 6px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg><span style="font-size:.65rem;color:#fff;font-weight:600;">X</span></button>
-          <button onclick="nprShare('telegram')" style="background:#2CA5E0;border:none;border-radius:10px;padding:10px 6px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.96 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg><span style="font-size:.65rem;color:#fff;font-weight:600;">Telegram</span></button>
-          <button onclick="nprShare('email')" style="background:#6d28d9;border:none;border-radius:10px;padding:10px 6px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,4 12,13 2,4"/></svg><span style="font-size:.65rem;color:#fff;font-weight:600;">Email</span></button>
-        </div>
-      </div>
-      <button onclick="nprDelete()" style="width:100%;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:10px;color:#f87171;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;padding:10px;cursor:pointer;">🗑 Delete Request</button>
-    </div>
-  </div>
-
 </body>
