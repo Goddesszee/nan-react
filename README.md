@@ -2,4 +2,4 @@
 
 Stablecoin-native DeFi wallet on Arc Testnet.
 
-<!-- mobile fix -->
+<!-- 3-layer logo -->
