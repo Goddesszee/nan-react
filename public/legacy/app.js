@@ -3299,6 +3299,8 @@ function toggleAgent(){
     if(!panel){console.error('agentPanel not found!');return;}
     panel.style.display=agentOpen?'flex':'none';
     panel.style.zIndex='999999999';
+    if(agentOpen){ panel.classList.add('open'); }
+    else{ panel.classList.remove('open'); }
     if(agentOpen){
       try{renderAgentMsgs();}catch(e){console.error('renderAgentMsgs error:',e);}
       try{renderAgentChips();}catch(e){console.error('renderAgentChips error:',e);}
