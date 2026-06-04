@@ -2217,7 +2217,7 @@ async function pollIrisAttestation(txHash, destChain) {
       const destConfig = CCTP_DEST_CONFIG[destChain];
 
       // 5. Circle email wallet — can't sign on other chains, show manual instructions
-      if (isCircleWallet || !wp) {
+      if (isCircleWallet) {
         const mintEl = document.getElementById('mintStatus');
         if (mintEl) {
           mintEl.style.display = 'block';
@@ -3714,7 +3714,7 @@ async function refreshGatewayBalance(){
   try{
     const res=await fetch('https://nan-production.up.railway.app/api/gateway',{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'getBalance',address:userAddr}),
+      body:JSON.stringify({action:'getBalance',address:circleWalletAddress||userAddr}),
     });
     if(!res.ok) throw new Error('Gateway API returned '+res.status);
     const data=await res.json();
@@ -5254,14 +5254,22 @@ const MC_BAL_ABI = ['function balanceOf(address) view returns (uint256)'];
 
 async function mcFetchBalance(chain, address) {
   try {
-    const provider = new ethers.JsonRpcProvider(chain.rpc);
-    const contract = new ethers.Contract(chain.usdc, MC_BAL_ABI, provider);
-    const bal = await Promise.race([
-      contract.balanceOf(address),
-      new Promise((_,r) => setTimeout(() => r(new Error('timeout')), 8000))
+    // Use raw eth_call instead of ethers provider — more compatible with UMD bundle
+    const callData = '0x70a08231' + address.slice(2).padStart(64,'0');
+    const body = JSON.stringify({
+      jsonrpc:'2.0', id:1, method:'eth_call',
+      params:[{to:chain.usdc, data:callData},'latest']
+    });
+    const res = await Promise.race([
+      fetch(chain.rpc, {method:'POST',headers:{'Content-Type':'application/json'},body}),
+      new Promise((_,r) => setTimeout(()=>r(new Error('timeout')),8000))
     ]);
+    const data = await res.json();
+    if(!data.result || data.result==='0x') return 0;
+    const bal = BigInt(data.result);
     return parseFloat(ethers.formatUnits(bal, chain.decimals));
   } catch(e) {
+    console.log('[mc balance '+chain.id+']', e.message);
     return null;
   }
 }
