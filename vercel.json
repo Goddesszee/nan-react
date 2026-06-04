@@ -2,6 +2,16 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
+  "headers": [
+    {
+      "source": "/legacy/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
+        { "key": "Pragma", "value": "no-cache" },
+        { "key": "Expires", "value": "0" }
+      ]
+    }
+  ],
   "rewrites": [
     { "source": "/legacy/app.js", "destination": "/legacy/app.js" },
     { "source": "/legacy/ui.js", "destination": "/legacy/ui.js" },
