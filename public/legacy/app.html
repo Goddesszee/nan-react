@@ -1893,29 +1893,7 @@ function pickBank(name){
 <button id="aiBtnDesktop" style="display:none;position:fixed;top:80px;right:28px;z-index:2147483647;align-items:center;gap:8px;background:#6d28d9;border:none;border-radius:14px;color:#f3e8ff;font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;padding:10px 16px;cursor:pointer;box-shadow:0 4px 20px rgba(109,40,217,.4);touch-action:manipulation;">
   <span>✦</span> NAN AI
 </button>
-<div id="agentPanel" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid #1a1a1a;border-radius:24px 24px 0 0;z-index:2147483647;font-family:'Inter',sans-serif;overflow:hidden;">
-  <div style="position:absolute;top:0;left:0;right:0;background:var(--bg);border-bottom:1px solid rgba(168,85,247,.15);z-index:2;">
-    <div style="display:flex;justify-content:center;padding:10px 0 4px;"><div style="width:36px;height:4px;border-radius:2px;background:rgba(168,85,247,.3);"></div></div>
-    <div style="padding:8px 16px 12px;display:flex;align-items:center;justify-content:space-between;">
-      <div>
-        <div style="font-size:1rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;"><span style="width:8px;height:8px;border-radius:50%;background:#7000ff;display:inline-block;animation:pulse 2s infinite;"></span>✦ NAN AI</div>
-        <div style="font-size:.875rem;color:var(--text);margin-top:2px;">Live wallet data · Groq AI powered</div>
-      </div>
-      <button id="agentCloseBtn" style="width:32px;height:32px;border-radius:9px;background:rgba(255,255,255,0.05);border:1px solid rgba(168,85,247,.2);color:var(--text);cursor:pointer;font-size:15px;">✕</button>
-    </div>
-  </div>
-  <div id="agentMessages" style="position:absolute;top:72px;bottom:128px;left:0;right:0;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin;scrollbar-color:rgba(168,85,247,.3) transparent;"></div>
-  <div style="position:absolute;bottom:0;left:0;right:0;padding:10px 14px 16px;border-top:1px solid rgba(168,85,247,.12);background:var(--bg);">
-    <div style="display:flex;gap:6px;margin-bottom:9px;flex-wrap:wrap;" id="agentChips"></div>
-    <div style="display:flex;gap:8px;align-items:center;">
-      <button id="voiceBtn" onclick="toggleVoice()" title="Speak to NAN AI" style="width:42px;height:42px;border-radius:11px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.3);color:var(--accent3);font-size:1.1rem;cursor:pointer;flex-shrink:0;transition:all .2s;">🎤</button>
-      <input id="agentInput" placeholder="Ask anything or tap 🎤 to speak…" onkeydown="if(event.key==='Enter')sendAgentMsg()" style="flex:1;background:var(--surface);border:1px solid rgba(168,85,247,.25);border-radius:12px;padding:11px 14px;color:var(--text);font-size:16px;font-family:'Inter',sans-serif;outline:none;"/>
-      <button onclick="sendAgentMsg()" style="width:42px;height:42px;border-radius:11px;background:#7000ff;border:none;color:#f3e8ff;font-size:1.1rem;cursor:pointer;flex-shrink:0;">↑</button>
-    </div>
-    <div id="voiceStatus" style="display:none;text-align:center;font-size:.875rem;color:var(--accent3);margin-top:6px;animation:pulse 1s ease infinite;">🎤 Listening… speak now</div>
-    <div style="font-size:.875rem;color:var(--text);text-align:center;margin-top:6px;">Powered by Groq · Live on-chain data · 🎤 Voice enabled</div>
-  </div>
-</div>
+
 </div>
 
 <div id="toast" onclick="this.classlist.remove('show')">
@@ -2057,4 +2035,28 @@ window.addEventListener('load', function() {
     </div>
   </div>
 
+
+<div id="agentPanel" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid #1a1a1a;border-radius:24px 24px 0 0;z-index:2147483647;font-family:'Inter',sans-serif;overflow:hidden;">
+  <div style="position:absolute;top:0;left:0;right:0;background:var(--bg);border-bottom:1px solid rgba(168,85,247,.15);z-index:2;">
+    <div style="display:flex;justify-content:center;padding:10px 0 4px;"><div style="width:36px;height:4px;border-radius:2px;background:rgba(168,85,247,.3);"></div></div>
+    <div style="padding:8px 16px 12px;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-size:1rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;"><span style="width:8px;height:8px;border-radius:50%;background:#7000ff;display:inline-block;animation:pulse 2s infinite;"></span>✦ NAN AI</div>
+        <div style="font-size:.875rem;color:var(--text);margin-top:2px;">Live wallet data · Groq AI powered</div>
+      </div>
+      <button id="agentCloseBtn" style="width:32px;height:32px;border-radius:9px;background:rgba(255,255,255,0.05);border:1px solid rgba(168,85,247,.2);color:var(--text);cursor:pointer;font-size:15px;">✕</button>
+    </div>
+  </div>
+  <div id="agentMessages" style="position:absolute;top:72px;bottom:128px;left:0;right:0;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin;scrollbar-color:rgba(168,85,247,.3) transparent;"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;padding:10px 14px 16px;border-top:1px solid rgba(168,85,247,.12);background:var(--bg);">
+    <div style="display:flex;gap:6px;margin-bottom:9px;flex-wrap:wrap;" id="agentChips"></div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button id="voiceBtn" onclick="toggleVoice()" title="Speak to NAN AI" style="width:42px;height:42px;border-radius:11px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.3);color:var(--accent3);font-size:1.1rem;cursor:pointer;flex-shrink:0;transition:all .2s;">🎤</button>
+      <input id="agentInput" placeholder="Ask anything or tap 🎤 to speak…" onkeydown="if(event.key==='Enter')sendAgentMsg()" style="flex:1;background:var(--surface);border:1px solid rgba(168,85,247,.25);border-radius:12px;padding:11px 14px;color:var(--text);font-size:16px;font-family:'Inter',sans-serif;outline:none;"/>
+      <button onclick="sendAgentMsg()" style="width:42px;height:42px;border-radius:11px;background:#7000ff;border:none;color:#f3e8ff;font-size:1.1rem;cursor:pointer;flex-shrink:0;">↑</button>
+    </div>
+    <div id="voiceStatus" style="display:none;text-align:center;font-size:.875rem;color:var(--accent3);margin-top:6px;animation:pulse 1s ease infinite;">🎤 Listening… speak now</div>
+    <div style="font-size:.875rem;color:var(--text);text-align:center;margin-top:6px;">Powered by Groq · Live on-chain data · 🎤 Voice enabled</div>
+  </div>
+</div>
 </body>
