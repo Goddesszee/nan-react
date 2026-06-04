@@ -2848,3 +2848,59 @@ a:hover{color:var(--text);}
     border-color:rgba(255,255,255,.07) !important;
   }
 }
+
+/* ════════════════════════════════════════════
+   MOBILE TRANSACTION FIXES
+   ════════════════════════════════════════════ */
+@media(max-width:768px){
+  /* Prevent iOS zoom on ALL inputs — must be 16px minimum */
+  input,select,textarea{
+    font-size:16px !important;
+    -webkit-text-size-adjust:100% !important;
+  }
+
+  /* Page content padding: 16px sides so nothing touches screen edge */
+  .page > div[style*="border-radius:22px"] > *{
+    padding-left:16px !important;
+    padding-right:16px !important;
+    box-sizing:border-box !important;
+  }
+
+  /* Confirm card and success card need side padding too */
+  .page .confirm-wrap{
+    margin:0 16px 8px !important;
+  }
+  .page .success-wrap{
+    padding-left:16px !important;
+    padding-right:16px !important;
+  }
+
+  /* Send button: large tap target */
+  #sendBtn,.btn{
+    min-height:50px !important;
+    font-size:16px !important;
+    touch-action:manipulation !important;
+  }
+
+  /* Swap inputs: prevent iOS zoom */
+  .swap-input{
+    font-size:24px !important;
+  }
+
+  /* Bridge amount input */
+  #bridgeAmt{
+    font-size:16px !important;
+  }
+
+  /* Ensure all buttons are tappable */
+  button{
+    -webkit-tap-highlight-color:transparent !important;
+    touch-action:manipulation !important;
+  }
+
+  /* Amount input on send page */
+  #amtInput{
+    font-size:18px !important;
+    padding:14px !important;
+  }
+}

@@ -52,7 +52,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20width%3D%2232%22%20height%3D%2232%22%20viewBox%3D%220%200%2032%2032%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M10%2C16%20C10%2C9%202%2C9%202%2C16%20C2%2C23%2010%2C23%2014%2C16%20C18%2C9%2026%2C9%2026%2C16%20C26%2C23%2018%2C23%2014%2C16%20Z%22%20fill%3D%22none%22%20stroke%3D%22%237000ff%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E"/>
 <link rel="preconnect" href="https://rsms.me/">
 <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
-<link rel="stylesheet" href="/legacy/style.css?v=1780563804"/>
+<link rel="stylesheet" href="/legacy/style.css?v=1780563972"/>
 <style>
 /* ══ THEME TOKENS — scoped per theme so neither fights the other ══ */
 :root,[data-theme="dark"]{
@@ -485,7 +485,7 @@ html,body{background:var(--bg);}
       <div style="position:relative;margin-bottom:12px;">
         <input id="recipInput" type="text" placeholder="Wallet address or .arc name"
           oninput="onRecipInput()"
-          style="width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:14px 54px 14px 14px;color:var(--text);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:.875rem;outline:none;transition:border-color .15s;"/>
+          style="width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:14px 54px 14px 14px;color:var(--text);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:16px;outline:none;transition:border-color .15s;"/>
         <button onclick="navigator.clipboard.readText().then(t=>{document.getElementById('recipInput').value=t;onRecipInput()}).catch(()=>document.getElementById('recipInput').focus())"
           style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:rgba(112,0,255,.15);border:1px solid rgba(112,0,255,.2);border-radius:8px;color:var(--accent3);font-size:1rem;padding:5px 9px;cursor:pointer;font-family:'Inter',sans-serif;">Paste</button>
       </div>
@@ -970,7 +970,7 @@ html,body{background:var(--bg);}
           <div style="font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:8px;">Deposit USDC to Gateway</div>
           <div style="display:flex;gap:8px;">
             <input id="gatewayDepositAmt" type="number" inputmode="decimal" min="1" step="1" placeholder="Amount (min 1)"
-              style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:.9rem;outline:none;"/>
+              style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:16px;outline:none;"/>
             <button onclick="depositToGateway()" style="background:#7000ff;border:none;border-radius:10px;color:#fff;font-size:.85rem;font-weight:700;padding:10px 14px;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;">Deposit →</button>
           </div>
           <div style="font-size:.7rem;color:rgba(168,85,247,.7);margin-top:6px;">Balance updates in ~20 minutes per Circle protocol</div>
@@ -1019,7 +1019,7 @@ html,body{background:var(--bg);}
       <!-- Address input — hidden by default -->
       <div id="bridgeAddrWrap" style="display:none;margin-top:12px;position:relative;">
         <input id="bridgeDestAddr" type="text" placeholder="0x... address on destination network" onfocus="if(!this.value&&userAddr)this.value=userAddr;" onclick="if(!this.value&&userAddr)this.value=userAddr;"
-          style="width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:12px 54px 12px 14px;color:var(--text);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;outline:none;"/>
+          style="width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:12px 54px 12px 14px;color:var(--text);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:16px;outline:none;"/>
         <button onclick="navigator.clipboard.readText().then(t=>{document.getElementById('bridgeDestAddr').value=t}).catch(()=>document.getElementById('bridgeDestAddr').focus())"
           style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(112,0,255,.15);border:1px solid rgba(112,0,255,.2);border-radius:7px;color:var(--accent3);font-size:1rem;padding:4px 8px;cursor:pointer;font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;">Paste</button>
         <div style="font-size:.82rem;color:#f87171;margin-top:6px;">⚠️ Double-check — wrong address = lost funds</div>
@@ -1032,7 +1032,7 @@ html,body{background:var(--bg);}
       <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:14px;">
         <div style="display:flex;align-items:center;gap:10px;">
           <input id="bridgeAmt" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="0"
-            style="flex:1;background:none;border:none;outline:none;font-size:1rem;font-weight:600;color:var(--text);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;width:0;"/>
+            style="flex:1;background:none;border:none;outline:none;font-size:16px;font-weight:600;color:var(--text);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;width:0;"/>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;">
             <div style="background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);border-radius:8px;padding:4px 10px;font-size:1rem;color:#f0f0f0;">USDC</div>
             <button onclick="setBridgeMax()" style="background:none;border:none;font-size:1rem;color:var(--accent3);cursor:pointer;font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;">MAX</button>
@@ -1183,7 +1183,7 @@ html,body{background:var(--bg);}
 <div style="background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.2);border-radius:12px;padding:13px;margin-bottom:4px;">
   <div style="font-size:1rem;color:var(--text);margin-bottom:9px;">Simulate an incoming NGN transfer</div>
   <div style="display:flex;gap:7px;">
-    <input id="ngnSimAmt" type="number" placeholder="Amount in NGN" style="flex:1;padding:9px 12px;border-radius:9px;font-size:1rem;"/>
+    <input id="ngnSimAmt" type="number" placeholder="Amount in NGN" style="flex:1;padding:9px 12px;border-radius:9px;font-size:16px;"/>
     <button onclick="simulateNgnDeposit()" style="background:#7000ff;border:none;border-radius:9px;color:#f3e8ff;font-family:'Inter',sans-serif;font-weight:700;font-size:1rem;padding:9px 14px;cursor:pointer;white-space:nowrap;">+ Deposit</button>
   </div>
 </div>
@@ -1289,7 +1289,7 @@ html,body{background:var(--bg);}
         <button onclick="setBulkDefaultAmt(20)" class="ibtn" style="flex:1;padding:8px;text-align:center;font-size:.875rem;">20</button>
         <button onclick="setBulkDefaultAmt(50)" class="ibtn" style="flex:1;padding:8px;text-align:center;font-size:.875rem;">50</button>
         <button onclick="setBulkDefaultAmt(100)" class="ibtn" style="flex:1;padding:8px;text-align:center;font-size:.875rem;">100</button>
-        <input id="bulkDefaultAmt" type="number" placeholder="Custom" style="flex:1.5;padding:8px;border-radius:8px;font-size:.875rem;text-align:center;" oninput="updateBulkAmounts()"/>
+        <input id="bulkDefaultAmt" type="number" placeholder="Custom" style="flex:1.5;padding:8px;border-radius:8px;font-size:16px;text-align:center;" oninput="updateBulkAmounts()"/>
       </div>
     </div>
 
@@ -1300,7 +1300,7 @@ html,body{background:var(--bg);}
     <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;">
       <input id="bulkNameInput" type="text" placeholder="Name or role (e.g. Chidi · Lead Dev)" style="width:100%;padding:10px 12px;border-radius:10px;font-size:16px;font-family:'Inter',sans-serif;"/>
       <div style="display:flex;gap:6px;">
-        <input id="bulkAddrInput" type="text" placeholder="Wallet address or .arc name" style="flex:1;padding:10px 12px;border-radius:10px;font-size:.875rem;font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;" onkeydown="if(event.key==='Enter')addBulkRecipient()"/>
+        <input id="bulkAddrInput" type="text" placeholder="Wallet address or .arc name" style="flex:1;padding:10px 12px;border-radius:10px;font-size:16px;font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;" onkeydown="if(event.key==='Enter')addBulkRecipient()"/>
         <button onclick="addBulkRecipient()" style="background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.3);border-radius:10px;color:var(--accent3);font-size:1.2rem;padding:10px 14px;cursor:pointer;font-weight:700;">+</button>
       </div>
     </div>
@@ -1603,7 +1603,7 @@ html,body{background:var(--bg);}
     <div id="floatingEmailStep">
       <div style="font-size:.875rem;color:#9ca3af;margin-bottom:8px;">Enter your email address</div>
       <input id="floatingEmailInput" type="email" placeholder="your@email.com"
-        style="width:100%;background:#1a1a1a;border:1.5px solid rgba(255,255,255,.1);border-radius:11px;padding:12px 14px;color:#f0f0f0;font-size:1rem;outline:none;font-family:'Inter',sans-serif;margin-bottom:12px;"
+        style="width:100%;background:#1a1a1a;border:1.5px solid rgba(255,255,255,.1);border-radius:11px;padding:12px 14px;color:#f0f0f0;font-size:16px;outline:none;font-family:'Inter',sans-serif;margin-bottom:12px;"
         onfocus="this.style.borderColor='#7000ff'" onblur="this.style.borderColor='rgba(255,255,255,.1)'"
         onkeydown="if(event.key==='Enter')sendFloatingOTP()"/>
       <button onclick="sendFloatingOTP()" style="width:100%;background:#7000ff;border:none;color:#f0f0f0;padding:13px;border-radius:11px;font-size:1rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">
@@ -1687,7 +1687,7 @@ document.addEventListener('DOMContentLoaded',function(){
   }
 })();
 </script>
-<script src="/legacy/app.js?v=1780560363"></script>
+<script src="/legacy/app.js?v=1780563972"></script>
 <script src="/legacy/ui.js?v=1780556461"></script>
 
 <!-- ══ BANK PICKER MODAL ══ -->
@@ -1804,7 +1804,7 @@ function pickBank(name){
     </div>
     <div style="font-size:1.125rem;font-weight:700;color:var(--text);margin-bottom:4px;">Admin Access</div>
     <div style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:var(--text);margin-bottom:24px;">NAN Dashboard · Restricted</div>
-    <input id="adminPwInput" type="password" placeholder="Enter password" onkeydown="if(event.key==='Enter')checkAdminPw()" style="width:100%;max-width:300px;background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.3);border-radius:14px;padding:13px 16px;color:var(--text);font-family:'Inter',sans-serif;font-size:1rem;outline:none;text-align:center;margin-bottom:10px;"/>
+    <input id="adminPwInput" type="password" placeholder="Enter password" onkeydown="if(event.key==='Enter')checkAdminPw()" style="width:100%;max-width:300px;background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.3);border-radius:14px;padding:13px 16px;color:var(--text);font-family:'Inter',sans-serif;font-size:16px;outline:none;text-align:center;margin-bottom:10px;"/>
     <div id="adminPwErr" style="font-size:1rem;color:#f87171;margin-bottom:10px;display:none;">Incorrect password</div>
     <button onclick="checkAdminPw()" style="width:100%;max-width:300px;background:#7000ff;border:none;border-radius:14px;color:#ffffff;font-family:'Inter',sans-serif;font-weight:700;font-size:1rem;padding:13px;cursor:pointer;box-shadow:0 4px 20px rgba(168,85,247,.4);">Unlock →</button>
     <button onclick="closeAdmin()" style="margin-top:12px;background:transparent;border:none;color:var(--text);font-size:1rem;cursor:pointer;font-family:'Inter',sans-serif;">Cancel</button>
