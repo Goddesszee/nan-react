@@ -1067,7 +1067,7 @@ async function onConnected(isEmail=false, isDev=false){
   if(_aiEl){ _aiEl.style.display='flex'; _aiEl._aiListenerAdded=false; }
   setTimeout(attachAIListeners,100);
   var deskAI=document.getElementById('aiBtnDesktop');
-  if(deskAI)deskAI.style.display='flex';
+  if(deskAI)deskAI.style.display='none'; // hidden — desktop AI button not used
   var navF=document.getElementById('navFaucetBtn');
   if(navF)navF.style.display='flex';
   var tnavAI=document.getElementById('tnav-ai');
