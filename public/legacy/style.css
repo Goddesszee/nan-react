@@ -499,8 +499,11 @@ a:hover{color:var(--text);}
 
   /* Unified page cards Ã¢â¬â tighter on mobile */
   .page > div[style*="border-radius:22px"]{
-    border-radius:16px!important;
-    padding:14px!important;
+    background:transparent!important;
+    border:none!important;
+    border-radius:0!important;
+    padding:0!important;
+    box-shadow:none!important;
   }
   /* Balance amount inside unified card */
   .page > div[style*="border-radius:22px"] [style*="2.6rem"]{font-size:2rem!important;}
@@ -2310,4 +2313,29 @@ a:hover{color:var(--text);}
   .nav-btn{ font-size:.55rem !important; }
   .home-action-label{ font-size:.6rem !important; }
   #globalTopBar{ padding:8px 10px !important; }
+}
+
+@media(max-width:480px){
+  /* Remove outer card wrapper on all pages — content sits directly on bg */
+  .page > div[style*="border-radius:22px"]{
+    background:transparent!important;
+    border:none!important;
+    border-radius:0!important;
+    padding:0!important;
+    box-shadow:none!important;
+  }
+  /* Inner content sections keep their card style */
+  .page > div[style*="border-radius:22px"] > div[style*="border-radius"],
+  .page > div[style*="border-radius:22px"] > div[style*="background:var(--surface)"],
+  .page > div[style*="border-radius:22px"] > div[style*="background:#"],
+  .page > div[style*="border-radius:22px"] > div.field-group,
+  .page > div[style*="border-radius:22px"] > div.swap-card{
+    border-radius:14px!important;
+  }
+  /* Bridge specific */
+  #page-bridge > div{
+    padding:0!important;
+    background:transparent!important;
+    border:none!important;
+  }
 }
