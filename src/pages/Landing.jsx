@@ -267,7 +267,7 @@ function LoginModal({ onClose, onEmailConnect, onWalletConnect }) {
               </div>
             </div>
             <div style={{textAlign:'center',fontSize:'.72rem',color:subColor,marginTop:4}}>
-              Powered by Circle · Arc Testnet
+              Powered by Circle · <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" style={{verticalAlign:"middle",marginRight:"4px",display:"inline-block",flexShrink:0,borderRadius:"3px",background:"#0d1b2e",padding:"1px"}}><path fill="url(#arc_land)" d="M3.5 20.999c.146-4.407.893-8.519 2.142-11.717C7.223 5.231 9.513 3 12.088 3s4.865 2.231 6.447 6.283c.822 2.107 1.427 4.61 1.786 7.334q.048.366.087.737.015.024.013.041s.21 1.317.256 3.604h-.024c-.313-.256-4-3.153-10.112-2.314.093-1.035.22-2.04.383-3.005l.027-.146a24.5 24.5 0 0 1 6.104.57q-.007-.056-.017-.115c-.33-2.06-.819-3.945-1.448-5.556-1.029-2.635-2.371-4.271-3.502-4.271-1.132 0-2.474 1.636-3.503 4.271q-.375.958-.679 2.034a30 30 0 0 0-.718 3.213A40 40 0 0 0 6.662 21H3.5z"/><defs><linearGradient id="arc_land" x1="12" x2="12" y1="3" y2="21" gradientUnits="userSpaceOnUse"><stop stopColor="#d0d8e8"/><stop offset="1" stopColor="#7a8faa"/></linearGradient></defs></svg>Testnet
             </div>
           </div>
         )}
@@ -324,7 +324,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
         <NanLogo height={36} theme={theme}/>
         <div className="l-nav-right">
           <button className="l-theme-btn" onClick={toggleTheme}>{theme==='light'?'🌙':'☀️'}</button>
-          <span className="l-net-pill">• Arc Testnet</span>
+          <span className="l-net-pill">• <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" style={{verticalAlign:"middle",marginRight:"4px",display:"inline-block",flexShrink:0,borderRadius:"3px",background:"#0d1b2e",padding:"1px"}}><path fill="url(#arc_land)" d="M3.5 20.999c.146-4.407.893-8.519 2.142-11.717C7.223 5.231 9.513 3 12.088 3s4.865 2.231 6.447 6.283c.822 2.107 1.427 4.61 1.786 7.334q.048.366.087.737.015.024.013.041s.21 1.317.256 3.604h-.024c-.313-.256-4-3.153-10.112-2.314.093-1.035.22-2.04.383-3.005l.027-.146a24.5 24.5 0 0 1 6.104.57q-.007-.056-.017-.115c-.33-2.06-.819-3.945-1.448-5.556-1.029-2.635-2.371-4.271-3.502-4.271-1.132 0-2.474 1.636-3.503 4.271q-.375.958-.679 2.034a30 30 0 0 0-.718 3.213A40 40 0 0 0 6.662 21H3.5z"/><defs><linearGradient id="arc_land" x1="12" x2="12" y1="3" y2="21" gradientUnits="userSpaceOnUse"><stop stopColor="#d0d8e8"/><stop offset="1" stopColor="#7a8faa"/></linearGradient></defs></svg>Testnet</span>
           <button onClick={openLogin} style={{background:'#7000ff',border:'none',borderRadius:10,color:'#fff',padding:'8px 18px',fontFamily:'Inter,sans-serif',fontSize:'.85rem',fontWeight:700,cursor:'pointer',boxShadow:'0 0 16px rgba(112,0,255,.35)'}}>
             Log in
           </button>
@@ -335,7 +335,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
       <section className="l-hero l-hero-full" style={{position:'relative',zIndex:1}}>
         <div className="l-hero-inner">
           <div className="l-badge l-fade-in" style={{animationDelay:'.1s'}}>
-            <span className="l-badge-dot"/>NOW LIVE ON ARC TESTNET
+            <span className="l-badge-dot"/>NOW LIVE ON <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" style={{verticalAlign:"middle",marginRight:"4px",display:"inline-block",flexShrink:0,borderRadius:"3px",background:"#0d1b2e",padding:"1px"}}><path fill="url(#arc_land)" d="M3.5 20.999c.146-4.407.893-8.519 2.142-11.717C7.223 5.231 9.513 3 12.088 3s4.865 2.231 6.447 6.283c.822 2.107 1.427 4.61 1.786 7.334q.048.366.087.737.015.024.013.041s.21 1.317.256 3.604h-.024c-.313-.256-4-3.153-10.112-2.314.093-1.035.22-2.04.383-3.005l.027-.146a24.5 24.5 0 0 1 6.104.57q-.007-.056-.017-.115c-.33-2.06-.819-3.945-1.448-5.556-1.029-2.635-2.371-4.271-3.502-4.271-1.132 0-2.474 1.636-3.503 4.271q-.375.958-.679 2.034a30 30 0 0 0-.718 3.213A40 40 0 0 0 6.662 21H3.5z"/><defs><linearGradient id="arc_land" x1="12" x2="12" y1="3" y2="21" gradientUnits="userSpaceOnUse"><stop stopColor="#d0d8e8"/><stop offset="1" stopColor="#7a8faa"/></linearGradient></defs></svg>ARC TESTNET
           </div>
           <h1 className="l-h1 l-fade-in" style={{animationDelay:'.25s'}}>
             Payments Without<br/>
