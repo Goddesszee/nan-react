@@ -2701,3 +2701,150 @@ a:hover{color:var(--text);}
   [data-theme="light"] .flbl{color:#555 !important;}
   [data-theme="light"] .card-title{color:#7000ff !important;}
 }
+
+/* ════════════════════════════════════════════
+   SPENDA-STYLE MOBILE — Clean, cardless, friendly
+   Light mode: pure white, no outer cards
+   Dark mode: pure dark, no outer cards
+   ════════════════════════════════════════════ */
+@media(max-width:768px){
+
+  /* ── Hide net pill entirely on mobile (saves space) ── */
+  #netPill{display:none !important;}
+
+  /* ── Page base: clean background, no card wrappers ── */
+  .page{
+    background:var(--bg) !important;
+    padding:0 0 80px !important;
+  }
+
+  /* ── Remove ALL outer card wrappers on every page ── */
+  /* These are the first direct child of each .page */
+  .page > div[style*="border-radius:22px"],
+  .page > div[style*="border-radius: 22px"]{
+    background:transparent !important;
+    border:none !important;
+    box-shadow:none !important;
+    border-radius:0 !important;
+    padding:0 !important;
+    margin:0 !important;
+  }
+
+  /* ── Inner sections get clean padding ── */
+  .page > div[style*="border-radius:22px"] > div,
+  .page > div[style*="border-radius:22px"] > button{
+    margin-left:0 !important;
+    margin-right:0 !important;
+  }
+
+  /* ── Home balance card: full-width, no rounded top corners ── */
+  #page-home > div:first-child > div:first-child{
+    border-radius:0 !important;
+    margin-bottom:0 !important;
+  }
+
+  /* ── .card elements: clean with subtle border ── */
+  .page .card{
+    border-radius:16px !important;
+    margin:12px 16px !important;
+  }
+
+  /* ── Swap page: no outer card, inner boxes clean ── */
+  #page-swap > div[style*="border-radius:22px"] .swap-box-wrap,
+  #page-swap .swap-box-wrap{
+    margin:16px !important;
+    border-radius:16px !important;
+  }
+
+  /* ── History page: no outer card ── */
+  #page-history > div[style*="border-radius:22px"] > div{
+    padding:16px !important;
+  }
+  #page-history .tx-group-wrap{
+    margin:0 16px 8px !important;
+  }
+  #page-history .tx-item{
+    padding:12px 16px !important;
+  }
+
+  /* ── All inner section padding: 16px sides ── */
+  .page > div[style*="border-radius:22px"] > div[style*="padding:20px"],
+  .page > div[style*="border-radius:22px"] > div[style*="padding:22px"],
+  .page > div[style*="border-radius:22px"] > div[style*="padding:18px"],
+  .page > div[style*="border-radius:22px"] > div[style*="padding:16px"]{
+    padding-left:16px !important;
+    padding-right:16px !important;
+  }
+
+  /* ── Back button: proper padding ── */
+  .page .back-btn{
+    padding:16px 16px 8px !important;
+    display:block !important;
+  }
+}
+
+/* ── LIGHT MODE: clean white Spenda style ── */
+@media(max-width:768px){
+  [data-theme="light"] .page{
+    background:#f5f5f5 !important;
+  }
+  [data-theme="light"] .page .card,
+  [data-theme="light"] .page .send-card,
+  [data-theme="light"] .page .swap-box-wrap,
+  [data-theme="light"] .page .swap-inner{
+    background:#ffffff !important;
+    border-color:#ebebeb !important;
+    box-shadow:0 1px 4px rgba(0,0,0,.06) !important;
+  }
+  [data-theme="light"] .page .hist-stat{
+    background:#ffffff !important;
+    border-color:#ebebeb !important;
+  }
+  /* Swap inner boxes */
+  [data-theme="light"] #page-swap [style*="background:var(--card)"][style*="border-radius:20px"]{
+    background:#ffffff !important;
+    border-color:#ebebeb !important;
+  }
+  /* History stats and items */
+  [data-theme="light"] #page-history > div[style*="border-radius:22px"]{
+    background:#f5f5f5 !important;
+  }
+  [data-theme="light"] #page-history [style*="background:var(--surface)"]{
+    background:#ffffff !important;
+    border-color:#ebebeb !important;
+  }
+  /* Input fields in light mode */
+  [data-theme="light"] .page .swap-input{
+    color:#111111 !important;
+  }
+  [data-theme="light"] .page [style*="background:var(--surface)"],
+  [data-theme="light"] .page [style*="background: var(--surface)"]{
+    background:#ffffff !important;
+    border-color:#e8e8e8 !important;
+  }
+  /* Text colors in light mode swap/history */
+  [data-theme="light"] .page [style*="color:var(--text3)"]{
+    color:#999 !important;
+  }
+  [data-theme="light"] .page [style*="color:var(--text2)"]{
+    color:#555 !important;
+  }
+  [data-theme="light"] .page [style*="color:var(--text);"]{
+    color:#111 !important;
+  }
+}
+
+/* ── DARK MODE: pure dark Spenda style ── */
+@media(max-width:768px){
+  [data-theme="dark"] .page{
+    background:#111111 !important;
+  }
+  [data-theme="dark"] .page .card{
+    background:#1a1a1a !important;
+    border-color:rgba(255,255,255,.07) !important;
+  }
+  [data-theme="dark"] #page-swap [style*="background:var(--card)"][style*="border-radius:20px"]{
+    background:#1a1a1a !important;
+    border-color:rgba(255,255,255,.07) !important;
+  }
+}
