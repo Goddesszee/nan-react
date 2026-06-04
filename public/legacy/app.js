@@ -4686,7 +4686,7 @@ function initNewPRForm(){
   document.getElementById('prPreviewWrap').style.display='none';
   document.getElementById('prCreateBtn').disabled=true;
 }
-async async function createPaymentRequest(){
+async function createPaymentRequest(){
   const label=document.getElementById('prLabel').value.trim();
   const amt=parseFloat(document.getElementById('prAmount').value)||null;
   const note=document.getElementById('prNote').value.trim();
@@ -4751,7 +4751,7 @@ async async function createPaymentRequest(){
     try{viewPaymentRequest(pr.id);}catch(e){console.warn('viewPR err:',e.message);}
   }catch(err){
     console.error('[createPaymentRequest] error:', err);
-    toast('Create failed: '+((err&&err.message)||String(err)).slice(0,150),'error',7000);
+    toast('Create failed: '+err.message.slice(0,150),'error',7000);
     btn.innerHTML='Create & Share Link';btn.disabled=false;
   }
 }
