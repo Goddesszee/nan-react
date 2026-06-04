@@ -2209,3 +2209,178 @@ a:hover{color:var(--text);}
   /* AI FAB: sit above bottom nav, not behind it */
   #aiBtn{bottom:84px !important;right:14px !important;}
 }
+
+/* ════════════════════════════════════════════
+   MOBILE — Desktop feature parity
+   Appended only. Nothing above touched.
+   Applies at max-width:768px (phones + small tablets)
+   Nav excluded — bottom-nav stays as-is
+   ════════════════════════════════════════════ */
+@media(max-width:768px){
+
+  /* ── Balance card: same gradient glow as desktop ── */
+  .home-bal-card{
+    background:linear-gradient(145deg,#1a1a1a 0%,#111111 50%,#1a1a1a 100%) !important;
+    border:1px solid rgba(255,255,255,0.08) !important;
+    box-shadow:0 8px 32px rgba(0,0,0,0.5) !important;
+  }
+  .home-bal-card::before{
+    content:'' !important;
+    position:absolute !important;
+    top:-20px !important;right:-20px !important;
+    width:140px !important;height:140px !important;
+    border-radius:50% !important;
+    background:radial-gradient(circle,rgba(168,85,247,.22),transparent 70%) !important;
+    pointer-events:none !important;
+    display:block !important;
+  }
+
+  /* ── Cards: same purple-tinted border as desktop ── */
+  .card{
+    background:rgba(255,255,255,0.04) !important;
+    border:1px solid rgba(168,85,247,0.18) !important;
+    box-shadow:0 8px 32px rgba(0,0,0,0.3),inset 0 1px 0 rgba(168,85,247,0.12) !important;
+  }
+
+  /* ── Send balance card: same gradient ── */
+  .bal-card{
+    background:linear-gradient(145deg,#1a1a1a 0%,#111111 50%,#1a1a1a 100%) !important;
+    border:1px solid rgba(255,255,255,0.08) !important;
+    box-shadow:0 8px 32px rgba(0,0,0,0.5) !important;
+  }
+  .bal-card::before{
+    content:'' !important;
+    display:block !important;
+    position:absolute !important;
+    top:-20px !important;right:-20px !important;
+    width:140px !important;height:140px !important;
+    border-radius:50% !important;
+    background:radial-gradient(circle,rgba(168,85,247,.2),transparent 70%) !important;
+    pointer-events:none !important;
+  }
+
+  /* ── Agent panel: full-screen sheet on mobile ── */
+  #agentPanel{
+    left:0 !important;right:0 !important;
+    bottom:0 !important;top:0 !important;
+    width:100% !important;max-width:100% !important;
+    border-radius:0 !important;
+    transform:none !important;
+  }
+
+  /* ── Wallet modal: slides up from bottom ── */
+  .wallet-modal-overlay{align-items:flex-end !important;}
+  .wallet-modal{
+    border-radius:22px 22px 0 0 !important;
+    max-width:100% !important;
+    width:100% !important;
+  }
+
+  /* ── Chain / bank pickers: bottom sheet on mobile ── */
+  #chainPickerSheet,#bankPickerSheet{
+    left:0 !important;right:0 !important;
+    bottom:0 !important;top:auto !important;
+    transform:none !important;
+    width:100% !important;
+    border-radius:20px 20px 0 0 !important;
+    max-height:75vh !important;
+  }
+
+  /* ── Toast: full-width above nav ── */
+  #toast{
+    left:12px !important;
+    right:12px !important;
+    bottom:82px !important;
+    max-width:none !important;
+    min-width:0 !important;
+    transform:translateX(0) translateY(-100px) !important;
+  }
+  #toast.show{
+    transform:translateX(0) translateY(0) !important;
+  }
+
+  /* ── Home action first button: same purple gradient ── */
+  .home-action:first-child{
+    background:linear-gradient(135deg,rgba(168,85,247,.18),rgba(112,0,255,.1)) !important;
+    border-color:rgba(168,85,247,.3) !important;
+    box-shadow:0 4px 20px rgba(168,85,247,.15) !important;
+  }
+
+  /* ── Earn APY hero: same desktop style ── */
+  .earn-apy-num{color:var(--success) !important;}
+
+  /* ── Inputs: prevent iOS zoom, same border focus ── */
+  input:focus,select:focus{
+    border-color:var(--accent) !important;
+    box-shadow:0 0 0 3px rgba(168,85,247,0.18),0 0 0 1px rgba(168,85,247,0.5) !important;
+  }
+}
+
+/* ════════════════════════════════════════════
+   LIGHT MODE ON MOBILE — remove cards, clean look
+   ════════════════════════════════════════════ */
+@media(max-width:768px){
+  /* Light mode: make all page cards transparent so content feels native */
+  [data-theme="light"] .page > .card,
+  [data-theme="light"] .page > .send-card,
+  [data-theme="light"] .page > .swap-box-wrap,
+  [data-theme="light"] .page > [class*="card"]{
+    background:transparent !important;
+    border:none !important;
+    box-shadow:none !important;
+    padding-left:0 !important;
+    padding-right:0 !important;
+  }
+
+  /* Light mode: outer wrapper divs on pages — transparent */
+  [data-theme="light"] .page > div[style*="border-radius"]{
+    background:transparent !important;
+    border:none !important;
+    box-shadow:none !important;
+  }
+
+  /* Light mode: keep inner nested cards visible */
+  [data-theme="light"] .page .card .card,
+  [data-theme="light"] .page > div > .card,
+  [data-theme="light"] .page > div > .send-card{
+    background:#ffffff !important;
+    border:1px solid #ebebeb !important;
+    box-shadow:0 1px 4px rgba(0,0,0,0.06) !important;
+    border-radius:14px !important;
+  }
+
+  /* Light mode: balance card stays purple */
+  [data-theme="light"] .home-bal-card,
+  [data-theme="light"] .bal-card{
+    background:#7000ff !important;
+    border:none !important;
+    box-shadow:0 8px 24px rgba(112,0,255,0.35) !important;
+  }
+  [data-theme="light"] .home-bal-card::before,
+  [data-theme="light"] .bal-card::before{
+    display:none !important;
+  }
+
+  /* Light mode: text on purple balance card stays white */
+  [data-theme="light"] .home-bal-lbl,
+  [data-theme="light"] .home-bal-num,
+  [data-theme="light"] .home-bal-ngn{
+    color:#ffffff !important;
+  }
+  [data-theme="light"] .tok{
+    background:rgba(255,255,255,0.15) !important;
+    border-color:rgba(255,255,255,0.25) !important;
+    color:#ffffff !important;
+  }
+
+  /* Light mode: page background clean white */
+  [data-theme="light"] .page{
+    background:#fafafa !important;
+  }
+
+  /* Light mode: reduce page padding since no outer card */
+  [data-theme="light"] .page{
+    padding-left:14px !important;
+    padding-right:14px !important;
+  }
+}
