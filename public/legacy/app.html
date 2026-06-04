@@ -164,14 +164,24 @@ html,body{background:var(--bg);}
 [data-theme="light"] .logo-light { display:inline-flex !important; align-items:center; }
 [data-theme="light"] .logo-dark { display:none !important; }
 .brand-logo{display:flex!important;align-items:center;flex-shrink:0;background:none!important;box-shadow:none!important;}
-.logo-light svg {
-  background: #7000ff;
-  border-radius: 16px;
-  padding: 8px;
+.logo-light {
+  background: #7000ff !important;
+  border-radius: 16px !important;
   width: 46px !important;
   height: 46px !important;
-  box-shadow: 0 2px 12px rgba(112,0,255,.4);
-  box-sizing: border-box;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 2px 12px rgba(112,0,255,.4) !important;
+  overflow: hidden !important;
+}
+.logo-light svg {
+  width: 28px !important;
+  height: 36px !important;
+  flex-shrink: 0 !important;
+}
+.logo-light svg g, .logo-light svg path, .logo-light svg rect {
+  fill: #ffffff !important;
 }
 .brand{display:flex;align-items:center;gap:0;}
 </style>
