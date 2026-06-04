@@ -3291,22 +3291,23 @@ let _agentToggleLock=false;
 function toggleAgent(){
   if(_agentToggleLock)return;
   _agentToggleLock=true;
-  setTimeout(()=>{_agentToggleLock=false;},400);
+  setTimeout(()=>{_agentToggleLock=false;},600);
   try{
     agentOpen=!agentOpen;
     const panel=document.getElementById('agentPanel');
-    console.log('[NAN AI] toggleAgent called, agentOpen='+agentOpen+', panel='+!!panel);
-    if(!panel){console.error('agentPanel not found!');return;}
-    panel.style.display=agentOpen?'flex':'none';
-    panel.style.zIndex='999999999';
-    if(agentOpen){ panel.classList.add('open'); }
-    else{ panel.classList.remove('open'); }
+    if(!panel)return;
     if(agentOpen){
-      try{renderAgentMsgs();}catch(e){console.error('renderAgentMsgs error:',e);}
-      try{renderAgentChips();}catch(e){console.error('renderAgentChips error:',e);}
+      // Force open — override all CSS conflicts
+      panel.style.cssText='display:flex !important;flex-direction:column !important;position:fixed !important;top:0 !important;left:0 !important;right:0 !important;bottom:0 !important;z-index:999999999 !important;transform:none !important;';
+      panel.classList.add('open');
+      try{renderAgentMsgs();}catch(e){}
+      try{renderAgentChips();}catch(e){}
       try{scrollAgentBottom();}catch(e){}
+    }else{
+      panel.style.display='none';
+      panel.classList.remove('open');
     }
-  }catch(e){console.error('toggleAgent error:',e);}
+  }catch(e){}
 }
 
 // AI button listeners — single source of truth, no onclick in HTML
