@@ -199,7 +199,7 @@ html,body{background:var(--bg);}
     <div style="display:flex;align-items:center;gap:6px;">
       <span id="devBadge" class="dev-badge" style="display:none;"></span>
       <!-- Net pill: shows "Arc Testnet" on desktop, "Arc" on mobile via CSS -->
-      <div class="net-pill" id="netPill"><span class="net-pill-full">Arc Testnet</span><span class="net-pill-short" style="display:none;">Arc</span></div>
+      <div class="net-pill" id="netPill"><span class="net-pill-full"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:4px;display:inline-block;flex-shrink:0;border-radius:3px;background:#0d1b2e;padding:1px;"><path fill="url(#arc_logo)" d="M3.5 20.999c.146-4.407.893-8.519 2.142-11.717C7.223 5.231 9.513 3 12.088 3s4.865 2.231 6.447 6.283c.822 2.107 1.427 4.61 1.786 7.334q.048.366.087.737.015.024.013.041s.21 1.317.256 3.604h-.024c-.313-.256-4-3.153-10.112-2.314.093-1.035.22-2.04.383-3.005l.027-.146a24.5 24.5 0 0 1 6.104.57q-.007-.056-.017-.115c-.33-2.06-.819-3.945-1.448-5.556-1.029-2.635-2.371-4.271-3.502-4.271-1.132 0-2.474 1.636-3.503 4.271q-.375.958-.679 2.034a30 30 0 0 0-.718 3.213A40 40 0 0 0 6.662 21H3.5z"/><defs><linearGradient id="arc_logo" x1="12" x2="12" y1="3" y2="21" gradientUnits="userSpaceOnUse"><stop stop-color="#d0d8e8"/><stop offset="1" stop-color="#7a8faa"/></linearGradient></defs></svg>Testnet</span><span class="net-pill-short" style="display:none;">Arc</span></div>
       <!-- Faucet: text pill on desktop, icon button on mobile -->
       <button id="navFaucetBtn" onclick="claimFaucet(this)" style="display:none;" class="tb-icon-btn tb-faucet" title="Get free USDC tokens">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6M5 12a7 7 0 0 0 14 0"/><path d="M12 22v-4"/><path d="M9 19h6"/></svg>
@@ -316,7 +316,7 @@ html,body{background:var(--bg);}
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
         <div style="font-size:1rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.85);">Total Balance</div>
         <div style="display:flex;align-items:center;gap:4px;background:rgba(112,0,255,.08);border:1px solid rgba(112,0,255,.18);padding:4px 10px;border-radius:100px;font-size:.875rem;color:rgba(255,255,255,.7);font-weight:600;">
-          <span style="width:5px;height:5px;border-radius:50%;background:#7000ff;display:inline-block;"></span>Arc Testnet
+          <span style="width:5px;height:5px;border-radius:50%;background:#7000ff;display:inline-block;"></span><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:4px;display:inline-block;flex-shrink:0;border-radius:3px;background:#0d1b2e;padding:1px;"><path fill="url(#arc_logo)" d="M3.5 20.999c.146-4.407.893-8.519 2.142-11.717C7.223 5.231 9.513 3 12.088 3s4.865 2.231 6.447 6.283c.822 2.107 1.427 4.61 1.786 7.334q.048.366.087.737.015.024.013.041s.21 1.317.256 3.604h-.024c-.313-.256-4-3.153-10.112-2.314.093-1.035.22-2.04.383-3.005l.027-.146a24.5 24.5 0 0 1 6.104.57q-.007-.056-.017-.115c-.33-2.06-.819-3.945-1.448-5.556-1.029-2.635-2.371-4.271-3.502-4.271-1.132 0-2.474 1.636-3.503 4.271q-.375.958-.679 2.034a30 30 0 0 0-.718 3.213A40 40 0 0 0 6.662 21H3.5z"/><defs><linearGradient id="arc_logo" x1="12" x2="12" y1="3" y2="21" gradientUnits="userSpaceOnUse"><stop stop-color="#d0d8e8"/><stop offset="1" stop-color="#7a8faa"/></linearGradient></defs></svg>Testnet
         </div>
       </div>
       <div style="font-family:'Inter',sans-serif;font-size:3rem;font-weight:800;color:#f0f0f0;letter-spacing:-.05em;line-height:1;margin-bottom:5px;">$<span id="homeBalAmt">—</span></div>
@@ -527,7 +527,7 @@ html,body{background:var(--bg);}
     <div id="tab-recv" style="display:none;flex-direction:column;align-items:center;">
       <div style="display:flex;align-items:center;gap:6px;background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:100px;padding:5px 14px;margin-bottom:20px;width:fit-content;align-self:center;">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--success);display:inline-block;"></span>
-        <span style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:var(--accent3);">Arc Testnet</span>
+        <span style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:var(--accent3);display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:4px;display:inline-block;flex-shrink:0;border-radius:3px;background:#0d1b2e;padding:1px;"><path fill="url(#arc_logo)" d="M3.5 20.999c.146-4.407.893-8.519 2.142-11.717C7.223 5.231 9.513 3 12.088 3s4.865 2.231 6.447 6.283c.822 2.107 1.427 4.61 1.786 7.334q.048.366.087.737.015.024.013.041s.21 1.317.256 3.604h-.024c-.313-.256-4-3.153-10.112-2.314.093-1.035.22-2.04.383-3.005l.027-.146a24.5 24.5 0 0 1 6.104.57q-.007-.056-.017-.115c-.33-2.06-.819-3.945-1.448-5.556-1.029-2.635-2.371-4.271-3.502-4.271-1.132 0-2.474 1.636-3.503 4.271q-.375.958-.679 2.034a30 30 0 0 0-.718 3.213A40 40 0 0 0 6.662 21H3.5z"/><defs><linearGradient id="arc_logo" x1="12" x2="12" y1="3" y2="21" gradientUnits="userSpaceOnUse"><stop stop-color="#d0d8e8"/><stop offset="1" stop-color="#7a8faa"/></linearGradient></defs></svg>Testnet</span>
       </div>
       <div style="position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
         <div style="position:absolute;width:180px;height:180px;border-radius:50%;background:transparent;pointer-events:none;"></div>
@@ -980,6 +980,30 @@ html,body{background:var(--bg);}
     </div>
 
 
+
+    <!-- ── Mint Testnet USDC ── -->
+    <div id="mintUsdcSection" style="background:var(--card);border:1px solid rgba(112,0,255,.2);border-radius:18px;overflow:hidden;margin-bottom:14px;">
+      <div style="padding:14px 16px;">
+        <div style="font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:2px;display:flex;align-items:center;gap:8px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;border-radius:3px;background:#0d1b2e;padding:1px;"><path fill="url(#arc_mint)" d="M3.5 20.999c.146-4.407.893-8.519 2.142-11.717C7.223 5.231 9.513 3 12.088 3s4.865 2.231 6.447 6.283c.822 2.107 1.427 4.61 1.786 7.334q.048.366.087.737.015.024.013.041s.21 1.317.256 3.604h-.024c-.313-.256-4-3.153-10.112-2.314.093-1.035.22-2.04.383-3.005l.027-.146a24.5 24.5 0 0 1 6.104.57q-.007-.056-.017-.115c-.33-2.06-.819-3.945-1.448-5.556-1.029-2.635-2.371-4.271-3.502-4.271-1.132 0-2.474 1.636-3.503 4.271q-.375.958-.679 2.034a30 30 0 0 0-.718 3.213A40 40 0 0 0 6.662 21H3.5z"/><defs><linearGradient id="arc_mint" x1="12" x2="12" y1="3" y2="21" gradientUnits="userSpaceOnUse"><stop stop-color="#d0d8e8"/><stop offset="1" stop-color="#7a8faa"/></linearGradient></defs></svg>
+          Mint Testnet USDC
+        </div>
+        <div style="font-size:.75rem;color:rgba(168,85,247,.8);margin-bottom:12px;">Get USDC on any chain to bridge from</div>
+        <select id="mintChainSelect" style="width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:11px 14px;color:var(--text);font-size:15px;outline:none;cursor:pointer;margin-bottom:10px;font-family:'Inter',sans-serif;">
+          <option value="ETH-SEPOLIA" data-rpc="https://rpc.sepolia.org" data-usdc="0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238">⟠ Ethereum Sepolia</option>
+          <option value="BASE-SEPOLIA" data-rpc="https://sepolia.base.org" data-usdc="0x036CbD53842c5426634e7929541eC2318f3dCF7e">🔵 Base Sepolia</option>
+          <option value="ARB-SEPOLIA" data-rpc="https://sepolia-rollup.arbitrum.io/rpc" data-usdc="0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d">🔷 Arbitrum Sepolia</option>
+          <option value="OP-SEPOLIA" data-rpc="https://sepolia.optimism.io" data-usdc="0x5fd84259d66Cd46123540766Be93DFE6D43130D7">🔴 OP Sepolia</option>
+          <option value="AVAX-FUJI" data-rpc="https://api.avax-test.network/ext/bc/C/rpc" data-usdc="0x5425890298aed601595a70AB815c96711a31Bc65">🔺 Avalanche Fuji</option>
+        </select>
+        <div id="mintChainBal" style="font-size:.85rem;color:var(--text2);margin-bottom:10px;min-height:18px;font-family:'Inter',sans-serif;"></div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="checkMintBal()" style="flex:1;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);border-radius:10px;padding:10px;color:#a855f7;font-size:.85rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">Check Balance</button>
+          <button onclick="openMintFaucet()" style="flex:1;background:#7000ff;border:none;border-radius:10px;padding:10px;color:#fff;font-size:.85rem;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">Get USDC →</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Route card -->
     <div class="card" style="margin-bottom:10px;overflow:visible;">
 
@@ -991,7 +1015,7 @@ html,body{background:var(--bg);}
           <path d="M8 32 Q22 8 36 32" stroke="#ffffff" stroke-width="3.5" fill="none" stroke-linecap="round"/>
           <circle cx="22" cy="32" r="2.5" fill="#ffffff"/>
         </svg>
-        <div style="font-size:1rem;font-weight:700;color:var(--text);">Arc Testnet</div>
+        <div style="font-size:1rem;font-weight:700;color:var(--text);display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:4px;display:inline-block;flex-shrink:0;border-radius:3px;background:#0d1b2e;padding:1px;"><path fill="url(#arc_logo)" d="M3.5 20.999c.146-4.407.893-8.519 2.142-11.717C7.223 5.231 9.513 3 12.088 3s4.865 2.231 6.447 6.283c.822 2.107 1.427 4.61 1.786 7.334q.048.366.087.737.015.024.013.041s.21 1.317.256 3.604h-.024c-.313-.256-4-3.153-10.112-2.314.093-1.035.22-2.04.383-3.005l.027-.146a24.5 24.5 0 0 1 6.104.57q-.007-.056-.017-.115c-.33-2.06-.819-3.945-1.448-5.556-1.029-2.635-2.371-4.271-3.502-4.271-1.132 0-2.474 1.636-3.503 4.271q-.375.958-.679 2.034a30 30 0 0 0-.718 3.213A40 40 0 0 0 6.662 21H3.5z"/><defs><linearGradient id="arc_logo" x1="12" x2="12" y1="3" y2="21" gradientUnits="userSpaceOnUse"><stop stop-color="#d0d8e8"/><stop offset="1" stop-color="#7a8faa"/></linearGradient></defs></svg>Testnet</div>
       </div>
 
       <div style="text-align:center;font-size:1rem;color:var(--text);margin:2px 0 10px;">↓</div>
@@ -1436,7 +1460,7 @@ html,body{background:var(--bg);}
     <div class="card" style="margin-bottom:12px;">
       <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="font-size:1rem;color:var(--text);">Pay to</span><span style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:var(--text);" id="payNowTo">—</span></div>
       <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="font-size:1rem;color:var(--text);">Token</span><span style="font-size:1rem;font-weight:700;color:var(--accent3);" id="payNowToken">USDC</span></div>
-      <div style="display:flex;justify-content:space-between;"><span style="font-size:1rem;color:var(--text);">Network</span><span style="font-size:1rem;color:var(--success);">● Arc Testnet</span></div>
+      <div style="display:flex;justify-content:space-between;"><span style="font-size:1rem;color:var(--text);">Network</span><span style="font-size:1rem;color:var(--success);display:inline-flex;align-items:center;">● <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:4px;display:inline-block;flex-shrink:0;border-radius:3px;background:#0d1b2e;padding:1px;"><path fill="url(#arc_logo)" d="M3.5 20.999c.146-4.407.893-8.519 2.142-11.717C7.223 5.231 9.513 3 12.088 3s4.865 2.231 6.447 6.283c.822 2.107 1.427 4.61 1.786 7.334q.048.366.087.737.015.024.013.041s.21 1.317.256 3.604h-.024c-.313-.256-4-3.153-10.112-2.314.093-1.035.22-2.04.383-3.005l.027-.146a24.5 24.5 0 0 1 6.104.57q-.007-.056-.017-.115c-.33-2.06-.819-3.945-1.448-5.556-1.029-2.635-2.371-4.271-3.502-4.271-1.132 0-2.474 1.636-3.503 4.271q-.375.958-.679 2.034a30 30 0 0 0-.718 3.213A40 40 0 0 0 6.662 21H3.5z"/><defs><linearGradient id="arc_logo" x1="12" x2="12" y1="3" y2="21" gradientUnits="userSpaceOnUse"><stop stop-color="#d0d8e8"/><stop offset="1" stop-color="#7a8faa"/></linearGradient></defs></svg>Testnet</span></div>
     </div>
     <div id="payNowAmtInput" style="display:none;margin-bottom:12px;">
       <div class="flbl">Enter amount</div>
