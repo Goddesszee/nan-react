@@ -57,7 +57,7 @@ const CCTP_DEST_DOMAIN = {
   'OP-SEPOLIA':    2,
   'ARB-SEPOLIA':   3,
   'BASE-SEPOLIA':  6,
-  // Polygon Amoy removed — domain 7 conflicts with Arc Testnet source domain
+  'POLYGON-AMOY':  7,
 };
 // Destination chain config for auto-mint after CCTP burn
 // MessageTransmitterV2 address is the same on all EVM testnets (Circle CREATE2)
@@ -595,7 +595,6 @@ function showPage(name){
   // Extra page init
   try{ if(name==='lend') initLendUI(); } catch(e){}
   try{ if(name==='history') renderHistory(); } catch(e){}
-  try{ if(name==='multichain') mcRefresh(); } catch(e){}
   try{ if(name==='bulk'){renderPayrollGroups();renderPayrollHistory();} } catch(e){}
   try{ if(name==='arcname') renderArcDirectory(); } catch(e){}
   try{ if(name==='swap') refreshBalances(); } catch(e){}
@@ -639,11 +638,8 @@ function updateTopBar(connected){
   const landBtn=document.getElementById('landConnectBtn');
   const dNav=document.getElementById('desktopNav');
   if(connected){
-    if(window.innerWidth >= 769){
-      bar.classList.add('desktop-show');
-    } else {
-      bar.style.display='flex';
-    }
+    bar.classList.add('desktop-show');
+    bar.style.display='flex';
     if(dNav) dNav.style.display = window.innerWidth >= 769 ? 'flex' : 'none';
     btn.style.display='block';
     btn.textContent=otpEmail?'⚡ '+otpEmail.split('@')[0].slice(0,10):'0x…'+userAddr.slice(-6);
@@ -678,15 +674,36 @@ function updateTopBar(connected){
 // FX RATE
 // ═══════════════════════════════════════════
 async function fetchLiveFX(){
-  // Use cached FX rate if less than 1 hour old — prevents balance flickering on refresh
+  // Use cached FX rate if less than 5 minutes old
   try{
     const cached=localStorage.getItem('nan_fx_rate');
     const cachedTime=localStorage.getItem('nan_fx_time');
-    if(cached&&cachedTime&&Date.now()-parseInt(cachedTime)<3600000){
+    if(cached&&cachedTime&&Date.now()-parseInt(cachedTime)<300000){
       const rate=parseFloat(cached);
       if(rate>0.5&&rate<2){FX=rate;fxLastUpdated=new Date(parseInt(cachedTime));updateSwapRateDisplay();return;}
     }
   }catch(e){}
+
+  // Primary: Circle StableFX quote API (sandbox) — returns real USDC/EURC rate
+  try{
+    const res=await fetch('https://api-sandbox.circle.com/v1/exchange/stablefx/quotes',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify({from:{currency:'USDC',amount:'100.00'},to:{currency:'EURC'}}),
+    });
+    if(res.ok){
+      const data=await res.json();
+      const rate=parseFloat(data.data?.rate||data.rate||0);
+      if(rate>0.5&&rate<2){
+        FX=rate;fxLastUpdated=new Date();
+        try{localStorage.setItem('nan_fx_rate',FX);localStorage.setItem('nan_fx_time',Date.now());}catch(e){}
+        console.log('FX from Circle StableFX:',FX);
+        updateSwapRateDisplay();return;
+      }
+    }
+  }catch(e){}
+
+  // Fallback 1: Railway proxy (uses Circle or external source)
   try{
     const res=await fetch('https://nan-production.up.railway.app/api/fx-rate');
     if(res.ok){
@@ -694,13 +711,13 @@ async function fetchLiveFX(){
       if(data.rate&&data.rate>0.5&&data.rate<2){
         FX=data.rate;fxLastUpdated=new Date();
         try{localStorage.setItem('nan_fx_rate',FX);localStorage.setItem('nan_fx_time',Date.now());}catch(e){}
-        console.log('FX rate from',data.source,':',FX);
+        console.log('FX from Railway:',data.source,FX);
         updateSwapRateDisplay();return;
       }
     }
   }catch(e){}
 
-  // Try Band Protocol oracle on Arc directly
+  // Fallback 2: Band Protocol oracle on Arc
   try{
     const readProvider=getArcProvider();
     const BAND_REF='0xDA7a001b254CD22e46d3eAB04d937489c93174C3';
@@ -709,19 +726,23 @@ async function fetchLiveFX(){
     const [rate]=await band.getReferenceData('EUR','USD');
     const eur=parseFloat(ethers.formatUnits(rate,18));
     if(!isNaN(eur)&&eur>0.5&&eur<2){
-      FX=eur;fxLastUpdated=new Date();updateSwapRateDisplay();return;
+      FX=eur;fxLastUpdated=new Date();
+      try{localStorage.setItem('nan_fx_rate',FX);localStorage.setItem('nan_fx_time',Date.now());}catch(e){}
+      updateSwapRateDisplay();return;
     }
   }catch(e){}
 
-  // Fallback: Frankfurter (free, no CORS)
+  // Fallback 3: Frankfurter (free, no CORS)
   try{
     const res=await fetch('https://api.frankfurter.app/latest?from=USD&to=EUR');
     const data=await res.json();
     const eur=data.rates?.EUR;
-    if(eur){FX=eur;fxLastUpdated=new Date();updateSwapRateDisplay();return;}
+    if(eur){FX=eur;fxLastUpdated=new Date();
+      try{localStorage.setItem('nan_fx_rate',FX);localStorage.setItem('nan_fx_time',Date.now());}catch(e){}
+      updateSwapRateDisplay();return;}
   }catch(e){}
 
-  console.warn('FX fetch failed, using fallback rate:',FX);
+  console.warn('All FX sources failed, using fallback:',FX);
   updateSwapRateDisplay();
 }
 function updateSwapRateDisplay(){
@@ -1055,15 +1076,12 @@ async function onConnected(isEmail=false, isDev=false){
   renderHistory();
   renderArcDirectory();
   initLendUI();
-  const _aiEl=document.getElementById('aiBtn');
-  if(_aiEl){ _aiEl.style.display='flex'; _aiEl._aiListenerAdded=false; }
-  setTimeout(attachAIListeners,100);
-  var deskAI=document.getElementById('aiBtnDesktop');
-  if(deskAI)deskAI.style.display='flex';
+  document.getElementById('aiBtn').style.display='flex';
   var navF=document.getElementById('navFaucetBtn');
   if(navF)navF.style.display='flex';
   var tnavAI=document.getElementById('tnav-ai');
   if(tnavAI)tnavAI.style.display='flex';
+  setTimeout(attachAIListeners,50);
   setTimeout(attachAIListeners, 100); // re-attach after button is visible
   startOrderEngine();
   // Pre-approve all contracts once so users never see repeated approve popups
@@ -1765,11 +1783,14 @@ function calcSwap(){
     document.getElementById('swapToUSD').textContent='0.00';
     return;
   }
+  // Show FX estimate immediately while contract quote loads
   const rate=swapFlipped?(1/FX):FX;
   const estOut=(amt*rate*0.999).toFixed(6);
   document.getElementById('swapTo').value=estOut;
   document.getElementById('swapFromUSD').textContent=swapFlipped?(amt*(1/FX)).toFixed(2):amt.toFixed(2);
   document.getElementById('swapToUSD').textContent=swapFlipped?parseFloat(estOut).toFixed(2):(parseFloat(estOut)*(1/FX)).toFixed(2);
+  // Fetch contract quote in background and update
+  _fetchContractQuote(amt);
 }
 let _contractQuoteTimer=null;
 async function _fetchContractQuote(amt){
@@ -1947,11 +1968,19 @@ function initBridgeUI(){
     document.getElementById('bridgeDestChain').value=this.value;
     updateBridgeSummary();
   });
-  // Load gateway balance when bridge page is ready
   if(userAddr) refreshGatewayBalance();
-  // Show deposit section only for Circle wallet users
   const depSec=document.getElementById('gatewayDepositSection');
   if(depSec) depSec.style.display=isCircleWallet?'block':'none';
+  // Circle wallet: hide address section, show "sending to your wallet" info
+  const addrSection=document.getElementById('bridgeAddrSection');
+  const circleAddrInfo=document.getElementById('bridgeCircleAddrInfo');
+  if(addrSection) addrSection.style.display=isCircleWallet?'none':'block';
+  if(circleAddrInfo) circleAddrInfo.style.display=isCircleWallet?'block':'none';
+  // MetaMask: show own address pre-filled, toggle for different address
+  if(!isCircleWallet&&userAddr){
+    const addrInpEl=document.getElementById('bridgeDestAddr');
+    if(addrInpEl&&!addrInpEl.value) addrInpEl.value='';
+  }
 }
 function initSwapUI(){
   document.getElementById('swapModeBanner').style.display='none';
@@ -2070,7 +2099,13 @@ function openChainPicker(){
 
 async function doBridge(){
   const destChain=document.getElementById('bridgeDestChain').value;
-  const destAddr=document.getElementById('bridgeDestAddr').value.trim();
+  // For Circle wallet: always use own wallet address as destination (no input needed)
+  // For MetaMask: use the toggle - own address by default, or custom if toggle is on
+  const addrToggleOn=document.getElementById('bridgeAddrToggle')?.checked;
+  const customAddr=document.getElementById('bridgeDestAddr')?.value.trim();
+  let destAddr=isCircleWallet
+    ?circleWalletAddress  // Circle wallet always bridges to itself
+    :(addrToggleOn&&customAddr?customAddr:userAddr); // MetaMask defaults to own addr
   const amt=parseFloat(document.getElementById('bridgeAmt').value);
   if(!userAddr){toast('Connect wallet first','error');return;}
   if(isCircleWallet){
@@ -2143,8 +2178,7 @@ async function doBridge(){
     const messageBytes=receipt.logs?.[0]?.data||'';
 
     statusCard.style.display='block';
-    statusCard.scrollIntoView({behavior:'smooth',block:'center'});
-    statusContent.innerHTML=`<div style="font-family:'Inter',sans-serif;font-size:.82rem;line-height:2;color:var(--text);">
+    statusContent.innerHTML=`<div style="font-family:'JetBrains Mono',monospace;font-size:.72rem;line-height:2;color:var(--text2);">
       <div>✅ Step 1: USDC burned on Arc</div>
       <div id="attestStatus">⏳ Step 2: Waiting for Circle attestation…</div>
       <div id="mintStatus" style="display:none;"></div>
@@ -2217,7 +2251,7 @@ async function pollIrisAttestation(txHash, destChain) {
       const destConfig = CCTP_DEST_CONFIG[destChain];
 
       // 5. Circle email wallet — can't sign on other chains, show manual instructions
-      if (isCircleWallet) {
+      if (isCircleWallet || !wp) {
         const mintEl = document.getElementById('mintStatus');
         if (mintEl) {
           mintEl.style.display = 'block';
@@ -2304,17 +2338,6 @@ async function pollIrisAttestation(txHash, destChain) {
           amount:'0', type:'bridge', token:'USDC',
           ts:Date.now(), confirmed:true, source:'cctp-mint', destChain,
         });
-        // Show destination balance
-        try{
-          const destUSDC=new ethers.Contract(
-            '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238', // USDC on testnets
-            ['function balanceOf(address) view returns (uint256)'],
-            destProvider
-          );
-          const bal=await destUSDC.balanceOf(userAddr);
-          const balFmt=parseFloat(ethers.formatUnits(bal,6)).toFixed(2);
-          if(mintEl) mintEl.innerHTML+='<div style="margin-top:8px;padding:8px;background:rgba(52,211,153,.1);border-radius:8px;font-size:.78rem;color:#34d399;">💰 Your USDC on '+destConfig.chainName+': '+balFmt+' USDC</div>';
-        }catch(e){ console.log('dest balance check:',e.message); }
 
       } catch(mintErr) {
         console.error('[cctp-mint]', mintErr);
@@ -3310,7 +3333,8 @@ function attachAIListeners(){
   function addToggle(el){
     if(!el||el._aiListenerAdded)return;
     el._aiListenerAdded=true;
-    // Use click for desktop, touchend for mobile (prevents double-fire)
+    // Remove onclick to prevent double-fire (onclick + addEventListener both calling toggleAgent)
+    el.removeAttribute('onclick');
     el.addEventListener('click',function(e){
       e.preventDefault();
       e.stopPropagation();
@@ -3325,6 +3349,7 @@ function attachAIListeners(){
   addToggle(document.getElementById('aiBtn'));
   addToggle(document.getElementById('nanAiMoreBtn'));
   addToggle(document.getElementById('agentCloseBtn'));
+  addToggle(document.getElementById('tnav-ai'));
 }
 
 // Attach on load and also expose for after-connect call
@@ -3714,7 +3739,7 @@ async function refreshGatewayBalance(){
   try{
     const res=await fetch('https://nan-production.up.railway.app/api/gateway',{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'getBalance',address:circleWalletAddress||userAddr}),
+      body:JSON.stringify({action:'getBalance',address:userAddr}),
     });
     if(!res.ok) throw new Error('Gateway API returned '+res.status);
     const data=await res.json();
@@ -5237,110 +5262,3 @@ async function adminSeedPool(){
   }
 }
 // Railway redeploy trigger Sun May 31 08:32:21 UTC 2026
-
-
-// ═══════════════════════════════════════════
-// MULTICHAIN BALANCE
-// ═══════════════════════════════════════════
-const MC_CHAINS = [
-  { id:'ARC',          name:'Arc Testnet',      color:'#6d28d9', rpc:'https://rpc.testnet.arc.network',    usdc:'0x3600000000000000000000000000000000000000', decimals:6,  icon:'🟣' },
-  { id:'ETH-SEPOLIA',  name:'Ethereum Sepolia', color:'#627EEA', rpc:'https://rpc.sepolia.org',             usdc:'0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238', decimals:6,  icon:'⟠' },
-  { id:'BASE-SEPOLIA', name:'Base Sepolia',     color:'#0052FF', rpc:'https://sepolia.base.org',            usdc:'0x036CbD53842c5426634e7929541eC2318f3dCF7e', decimals:6,  icon:'🔵' },
-  { id:'ARB-SEPOLIA',  name:'Arbitrum Sepolia', color:'#28A0F0', rpc:'https://sepolia-rollup.arbitrum.io/rpc', usdc:'0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d', decimals:6, icon:'🔷' },
-  { id:'OP-SEPOLIA',   name:'OP Sepolia',       color:'#FF0420', rpc:'https://sepolia.optimism.io',         usdc:'0x5fd84259d66Cd46123540766Be93DFE6D43130D7', decimals:6,  icon:'🔴' },
-  { id:'AVAX-FUJI',    name:'Avalanche Fuji',   color:'#E84142', rpc:'https://api.avax-test.network/ext/bc/C/rpc', usdc:'0x5425890298aed601595a70ab815c96711a31Bc65', decimals:6, icon:'🔺' },
-];
-const MC_BAL_ABI = ['function balanceOf(address) view returns (uint256)'];
-
-async function mcFetchBalance(chain, address) {
-  try {
-    // Use raw eth_call instead of ethers provider — more compatible with UMD bundle
-    const callData = '0x70a08231' + address.slice(2).padStart(64,'0');
-    const body = JSON.stringify({
-      jsonrpc:'2.0', id:1, method:'eth_call',
-      params:[{to:chain.usdc, data:callData},'latest']
-    });
-    const res = await Promise.race([
-      fetch(chain.rpc, {method:'POST',headers:{'Content-Type':'application/json'},body}),
-      new Promise((_,r) => setTimeout(()=>r(new Error('timeout')),8000))
-    ]);
-    const data = await res.json();
-    if(!data.result || data.result==='0x') return 0;
-    const bal = BigInt(data.result);
-    return parseFloat(ethers.formatUnits(bal, chain.decimals));
-  } catch(e) {
-    console.log('[mc balance '+chain.id+']', e.message);
-    return null;
-  }
-}
-
-async function mcRefresh() {
-  const addr = userAddr || circleWalletAddress;
-  if (!addr) { toast('Connect wallet first', 'error'); return; }
-
-  const btn = document.getElementById('mcRefreshBtn');
-  const list = document.getElementById('mcChainList');
-  const totalEl = document.getElementById('mcTotalBal');
-  const chainsEl = document.getElementById('mcTotalChains');
-  const updEl = document.getElementById('mcLastUpdated');
-
-  btn.innerHTML = '<span class="spinner"></span> Loading…';
-  btn.disabled = true;
-  list.innerHTML = '';
-  totalEl.textContent = '...';
-  chainsEl.textContent = 'Fetching balances...';
-
-  // Show skeleton cards
-  list.innerHTML = MC_CHAINS.map(c =>
-    '<div id="mc-row-'+c.id+'" style="display:flex;align-items:center;gap:12px;padding:13px 14px;background:var(--surface);border:1px solid var(--border);border-radius:12px;">' +
-    '<div style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">'+c.icon+'</div>' +
-    '<div style="flex:1;"><div style="font-size:.88rem;font-weight:600;color:var(--text);">'+c.name+'</div>' +
-    '<div style="font-size:.72rem;color:var(--text3);" id="mc-sub-'+c.id+'">Fetching…</div></div>' +
-    '<div style="text-align:right;"><div style="font-size:.88rem;font-weight:700;color:var(--text3);" id="mc-bal-'+c.id+'">—</div>' +
-    '<div style="font-size:.7rem;color:var(--text3);" id="mc-usd-'+c.id+'">$—</div></div></div>'
-  ).join('');
-
-  // Fetch all chains in parallel
-  const results = await Promise.all(MC_CHAINS.map(async c => {
-    const bal = await mcFetchBalance(c, addr);
-    return { chain: c, bal };
-  }));
-
-  let total = 0;
-  let chainsWithBal = 0;
-
-  results.forEach(({ chain, bal }) => {
-    const balEl = document.getElementById('mc-bal-'+chain.id);
-    const usdEl = document.getElementById('mc-usd-'+chain.id);
-    const subEl = document.getElementById('mc-sub-'+chain.id);
-    const rowEl = document.getElementById('mc-row-'+chain.id);
-
-    if (bal === null) {
-      if (balEl) balEl.textContent = 'Error';
-      if (usdEl) usdEl.textContent = '';
-      if (subEl) subEl.textContent = 'Could not fetch';
-      if (rowEl) rowEl.style.opacity = '0.5';
-    } else {
-      if (balEl) {
-        balEl.textContent = bal.toFixed(2) + ' USDC';
-        balEl.style.color = bal > 0 ? 'var(--text)' : 'var(--text3)';
-      }
-      if (usdEl) usdEl.textContent = '$' + bal.toFixed(2);
-      if (subEl) subEl.textContent = chain.id === 'ARC' ? 'Native USDC on Arc' : 'CCTP USDC';
-      if (rowEl && bal > 0) {
-        rowEl.style.borderColor = chain.color + '40';
-        rowEl.style.background = chain.color + '0a';
-      }
-      total += bal;
-      if (bal > 0) chainsWithBal++;
-    }
-  });
-
-  totalEl.textContent = total.toFixed(2) + ' USDC';
-  chainsEl.textContent = chainsWithBal + ' chain' + (chainsWithBal !== 1 ? 's' : '') + ' with balance · $' + total.toFixed(2);
-  updEl.textContent = 'Updated ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-
-  btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Refresh';
-  btn.disabled = false;
-}
-

@@ -5,7 +5,7 @@
   --bg:#111111;--surface:#1a1a1a;--card:#1a1a1a;--card2:#222222;
   --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.12);
   --accent:#7000ff;--accent3:#a855f7;--accent4:#c084fc;
-  --text:#ffffff;--text2:#a0a0a0;--text3:#555555;
+  --text:#ffffff;--text2:#a0a0a0;--text3:#666666;
   --danger:#f87171;--success:#7000ff;--gold:#fbbf24;--warning:#fbbf24;
   --radius:14px;--radius-sm:10px;
   --topbar-bg:#111111;--nav-bg:#111111;
@@ -74,7 +74,7 @@ body::after{display:none;}
 .bottom-nav{position:absolute;bottom:0;left:0;right:0;height:76px;z-index:100;background:var(--nav-bg);backdrop-filter:blur(32px);border-top:1px solid rgba(255,255,255,0.06);padding:6px 10px 10px;display:none;}
 .bottom-nav.show{display:block;}
 .nav-pill-wrap{display:flex;max-width:480px;margin:0 auto;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:4px;gap:2px;}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 4px;border:1px solid transparent;background:transparent;color:var(--text3);font-family:'Inter',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all .18s;text-transform:uppercase;letter-spacing:.04em;border-radius:13px;}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 4px;border:1px solid transparent;background:transparent;color:var(--text2);font-family:'Inter',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all .18s;text-transform:uppercase;letter-spacing:.04em;border-radius:13px;}
 .nav-btn .ni{display:flex;align-items:center;justify-content:center;transition:all .2s;}
 .nav-btn.active{color:#f0f0f0;background:#1a1a1a;border-color:#1a1a1a;box-shadow:none;}
 .nav-btn.active .ni{filter:drop-shadow(0 0 5px rgba(168,85,247,.6));}
@@ -97,11 +97,11 @@ body::after{display:none;}
 .home-name{font-size:1.4rem;font-weight:700;color:var(--text);letter-spacing:-.5px;margin-bottom:14px;}
 
 /* Home balance card */
-.home-bal-card{background:linear-gradient(145deg,#1a1a1a 0%,#111111 50%,#1a1a1a 100%);border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius);padding:20px;margin-bottom:12px;position:relative;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.5);}
-.home-bal-card::before{content:'';position:absolute;top:-20px;right:-20px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(168,85,247,.22),transparent 70%);pointer-events:none;}
-.home-bal-lbl{font-family:'Inter var','Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:rgba(255,255,255,0.38);letter-spacing:.18em;text-transform:uppercase;margin-bottom:6px;}
+.home-bal-card{background:#111;border:1px solid rgba(255,255,255,0.09);border-radius:var(--radius);padding:20px;margin-bottom:12px;position:relative;overflow:hidden;}
+.home-bal-card::before{display:none;}
+.home-bal-lbl{font-family:'Inter var','Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:rgba(255,255,255,0.5);letter-spacing:.18em;text-transform:uppercase;margin-bottom:6px;}
 .home-bal-num{font-size:2.8rem;font-weight:700;letter-spacing:-1.5px;line-height:1;color:#f0f0f0;margin-bottom:4px;}
-.home-bal-ngn{font-family:'Inter var','Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:rgba(196,181,253,0.5);margin-bottom:12px;}
+.home-bal-ngn{font-family:'Inter var','Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:rgba(255,255,255,0.45);margin-bottom:12px;}
 .home-tok-row{display:flex;gap:6px;margin-top:2px;}
 .tok{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:100px;padding:4px 10px;font-family:'Inter var','Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:.95rem;font-weight:500;color:rgba(255,255,255,.75);}
 .tok-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
@@ -150,8 +150,8 @@ body::after{display:none;}
 .cticon{width:20px;height:20px;border-radius:6px;background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.25);display:flex;align-items:center;justify-content:center;font-size:1rem;}
 
 /* Old balance card (send page) */
-.bal-card{background:linear-gradient(145deg,#1a1a1a 0%,#111111 50%,#1a1a1a 100%);border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius);padding:22px;margin-bottom:14px;position:relative;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.5);}
-.bal-card::before{content:'';position:absolute;top:-20px;right:-20px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(168,85,247,.2),transparent 70%);pointer-events:none;}
+.bal-card{background:#111;border:1px solid rgba(255,255,255,0.09);border-radius:var(--radius);padding:22px;margin-bottom:14px;position:relative;overflow:hidden;}
+.bal-card::before{display:none;}
 .bal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
 .bal-lbl{font-family:'Inter var','Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:rgba(255,255,255,0.4);letter-spacing:.18em;text-transform:uppercase;}
 .bal-badge{display:flex;align-items:center;gap:4px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.25);border-radius:100px;padding:3px 8px;font-size:1rem;color:var(--accent3);font-family:'Inter var','Inter',sans-serif;font-variant-numeric:tabular-nums;}
@@ -1021,6 +1021,9 @@ a:hover{color:var(--text);}
     animation:none !important;isolation:auto !important;transform:none !important;
   }
   .page.active{display:flex !important;}
+  /* Payment request new page — must be flex-start not center */
+  #page-payreq-new.active{align-items:flex-start !important;overflow-y:auto !important;}
+  #page-payreq-new.active>*{max-width:600px !important;width:100% !important;margin-left:auto !important;margin-right:auto !important;padding-left:24px !important;padding-right:24px !important;}
 
   /* All direct children centered at 600px */
   .page > *{
@@ -1100,148 +1103,1059 @@ a:hover{color:var(--text);}
   #toast{left:calc(240px + (100vw - 240px) / 2) !important;}
 }
 
-/* ═══════════════════════════════════════════
-   MOBILE (max-width:768px)
-   Desktop layout + colors, only nav differs
-═══════════════════════════════════════════ */
-@media(max-width:768px){
 
-  /* ── Same shell as desktop ── */
-  html,body{ overflow:hidden; height:100%; background:var(--bg); }
-  #app-root{
-    position:fixed; top:0; left:0; right:0; bottom:0;
-    width:100%; max-width:100%; height:100dvh;
-    overflow:visible; box-shadow:none; transform:none; background:transparent;
-  }
-  #app-root::before,#app-root::after{ display:none; }
+/* Ã¢ââ¬Ã¢ââ¬ Mobile polish (max-width:480px) Ã¢ââ¬Ã¢ââ¬ */
+@media(max-width:480px){
 
-  /* ── No desktop sidebar ── */
-  #desktopNav{ display:none !important; }
+  /* Prevent horizontal scroll */
+  body,#app-root{overflow-x:hidden !important;}
 
-  /* ── Mobile topbar — same style as desktop ── */
-  #globalTopBar{
-    display:flex !important;
-    position:fixed; top:0; left:0; right:0; height:54px;
-    background:var(--topbar-bg);
-    border-bottom:1px solid var(--border);
-    align-items:center; justify-content:space-between;
-    padding:0 14px; z-index:200;
-  }
-  #globalTopBar .brand{ display:flex !important; align-items:center; gap:8px; flex-shrink:0; }
+  /* Fix NaN text showing during balance load */
+  #homeBalAmt:empty::before,
+  #homeBalAmt[data-loading]::before{content:'Ã¢â¬â';color:rgba(255,255,255,.3);}
 
-  /* ── Bottom nav — keep it ── */
-  #bottomNav{
-    display:flex !important;
-    position:fixed; bottom:0; left:0; right:0; height:60px;
-    background:var(--topbar-bg);
-    backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
-    border-top:1px solid var(--border);
-    z-index:200;
-  }
-  .nav-pill-wrap{
-    width:100%; padding:0; gap:0;
-    border:none; background:transparent; border-radius:0;
-  }
-  .nav-btn{
-    flex:1; display:flex; flex-direction:column; align-items:center;
-    gap:3px; padding:6px 4px; min-height:unset;
-    font-size:.6rem; letter-spacing:0; border-radius:0;
-    background:transparent; border:none; color:var(--text2);
-    font-family:'Inter',sans-serif; font-weight:600; cursor:pointer;
-    transition:color .15s;
-  }
-  .nav-btn .ni svg{ width:18px; height:18px; }
-  .nav-btn.active{ color:var(--accent3); }
+  /* Better touch targets for all buttons */
+  button{min-height:44px;}
 
-  /* ── Pages — desktop style, offset for mobile nav ── */
-  .page{
-    position:fixed !important;
-    top:54px !important; left:0 !important; right:0 !important;
-    bottom:60px !important;
-    width:100% !important; max-width:100% !important;
-    display:none !important;
-    overflow-y:auto !important; overflow-x:hidden !important;
-    -webkit-overflow-scrolling:touch !important;
-    flex-direction:column !important; align-items:center !important;
-    padding:14px 0 20px !important;
-    animation:none !important;
-    scrollbar-width:none;
-  }
-  .page::-webkit-scrollbar{ display:none; }
-  .page.active{ display:flex !important; }
-
-  /* ── Content width — full width with padding ── */
-  .page > *{
-    width:100% !important; max-width:100% !important;
-    flex-shrink:0 !important; box-sizing:border-box !important;
-    padding-left:14px !important; padding-right:14px !important;
-  }
-  #page-home>*,#page-send>*,#page-lend>*,#page-swap>*,
-  #page-bridge>*,#page-history>*,#page-more>*,#page-arcname>*,
-  #page-naira>*,#page-bulk>*,#page-multichain>*,#page-payreq>*{
-    max-width:100% !important; width:100% !important;
-    box-sizing:border-box !important;
+  /* Send/swap/bridge amount inputs Ã¢â¬â no iOS zoom */
+  input[type="text"],input[type="number"],input[type="email"]{
+    font-size:16px !important;
   }
 
-  /* ── Cards — SAME as desktop, no overrides ── */
-  .card{ padding:18px; border-radius:18px; }
-  .home-bal-card{ padding:18px; margin-bottom:12px; }
+  /* Balance card Ã¢â¬â tighter but readable */
+  .home-bal-card{
+    padding:16px 14px !important;
+    border-radius:18px !important;
+  }
 
-  /* ── Typography — same as desktop ── */
-  .home-bal-num{ font-size:2.2rem !important; }
-  .page-title{ font-size:1.3rem; }
-  .page-sub{ font-size:.88rem; }
-  .flbl{ font-size:.9rem; margin-bottom:7px; }
+  /* Token pills wrap properly */
+  .home-bal-pills{
+    flex-wrap:wrap !important;
+    gap:6px !important;
+  }
 
-  /* ── Action buttons — 4 cols ── */
+  /* Action buttons Ã¢â¬â even spacing */
   .home-actions-top{
     display:grid !important;
-    grid-template-columns:repeat(4,1fr) !important;
-    gap:8px !important; margin-bottom:10px !important;
+    grid-template-columns:repeat(3,1fr) !important;
+    gap:8px !important;
   }
-  .home-action{ padding:12px 6px !important; border-radius:14px !important; }
-  .home-action-icon{ font-size:1.2rem !important; margin-bottom:3px !important; }
-  .home-action-label{ font-size:.72rem !important; }
 
-  /* ── Inputs — 16px prevents iOS zoom ── */
-  input,select,textarea{ font-size:16px !important; }
-  .btn{ padding:13px; font-size:.95rem; border-radius:14px; }
+  /* Asset rows Ã¢â¬â proper padding */
+  .home-asset-row{
+    padding:12px 10px !important;
+    border-radius:12px !important;
+  }
 
-  /* ── AI button above nav ── */
-  #aiBtn{ bottom:70px !important; right:16px !important; width:46px !important; height:46px !important; border-radius:14px !important; }
+  /* Swap page Ã¢â¬â full width inputs */
+  .swap-from-card,.swap-to-card{
+    border-radius:16px !important;
+    padding:14px !important;
+  }
 
-  /* ── Agent panel — bottom sheet ── */
-  #agentPanel{
-    left:0 !important; right:0 !important; bottom:0 !important; top:auto !important;
-    width:100% !important; max-width:100% !important; height:88dvh !important;
+  /* Send page Ã¢â¬â recipient input */
+  #sendAddr{
+    font-size:13px !important;
+    word-break:break-all !important;
+  }
+
+  /* Bridge page Ã¢â¬â chain selector */
+  #bridgeChainSel{
+    font-size:14px !important;
+    width:100% !important;
+  }
+
+  /* History items Ã¢â¬â readable on small screen */
+  .tx-row{
+    padding:10px 12px !important;
+    gap:10px !important;
+  }
+  .tx-row .tx-hash{
+    font-size:1rem !important;
+    max-width:120px !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+  }
+
+  /* Toast Ã¢â¬â full width on mobile */
+  #toast{
+    left:12px !important;
+    right:12px !important;
+    bottom:80px !important;
+    transform:none !important;
+    width:auto !important;
+    max-width:none !important;
+    text-align:center !important;
+  }
+
+  /* Modal / confirm sheets Ã¢â¬â full width */
+  .conf-sheet,.modal-sheet{
     border-radius:20px 20px 0 0 !important;
-    border-left:none !important; border-top:1px solid var(--border) !important;
-    transform:translateY(100%) !important;
-  }
-  #agentPanel.open{ transform:translateY(0) !important; }
-
-  /* ── Toast above nav ── */
-  #toast{ bottom:68px !important; left:14px !important; right:14px !important; max-width:none !important; width:auto !important; }
-
-  /* ── Pickers — bottom sheet ── */
-  #chainPickerSheet,#bankPickerSheet{
-    left:0 !important; right:0 !important; bottom:0 !important; top:auto !important;
-    width:100% !important; transform:none !important;
-    border-radius:20px 20px 0 0 !important; max-height:70dvh !important;
-    border:none !important; border-top:1px solid var(--border2) !important;
+    padding:20px 16px !important;
   }
 
-  /* ── Modals ── */
-  .wallet-modal{ border-radius:22px 22px 0 0 !important; max-width:100% !important; width:100% !important; }
-  .wallet-modal-overlay{ align-items:flex-end !important; padding-bottom:0 !important; }
+  /* Earn page Ã¢â¬â pool stats stack */
+  .earn-stats{
+    grid-template-columns:1fr 1fr !important;
+    gap:8px !important;
+  }
 
-  /* ── No horizontal scroll ── */
-  body{ overflow-x:hidden !important; }
+  /* More page items */
+  .more-grid{
+    grid-template-columns:1fr 1fr !important;
+    gap:8px !important;
+  }
+
+  /* Right panel Ã¢â¬â hidden on mobile */
+  #desktopRightPanel{display:none !important;}
 }
 
-/* ── Very small phones ── */
+/* Ã¢ââ¬Ã¢ââ¬ Very small phones (360px) Ã¢ââ¬Ã¢ââ¬ */
 @media(max-width:360px){
-  .page>*{ padding-left:10px !important; padding-right:10px !important; }
-  .home-bal-num{ font-size:1.9rem !important; }
-  .nav-btn{ font-size:.55rem !important; }
+  .home-bal-num{font-size:2rem !important;}
+  .home-action-label{font-size:.95rem !important;}
+  .nav-btn span{font-size:1rem !important;font-weight:700 !important;}
+  
+  .home-actions-top{grid-template-columns:repeat(3,1fr) !important;gap:5px !important;}
+}
+
+/* Ã¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢Â
+   MOBILE Ã¢â¬â TARGETED (max-width: 480px)
+   Only targets real classes/IDs in HTML
+   Does NOT affect desktop (min-width:481px)
+Ã¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢Â */
+@media(max-width:480px){
+
+  /* Ã¢ââ¬Ã¢ââ¬ Core page sizing Ã¢ââ¬Ã¢ââ¬ */
+  .page{
+    top:54px !important;
+    bottom:70px !important;
+    padding:12px 12px 24px !important;
+  }
+
+  /* Ã¢ââ¬Ã¢ââ¬ Actions grid on home Ã¢ââ¬Ã¢ââ¬ */
+  .mob-actions{
+    padding:12px 4px !important;
+  }
+  .mob-actions > div{
+    /* Each action wrapper */
+    flex:1;
+    padding:6px 4px !important;
+  }
+  .mob-action-item{
+    padding:6px 4px !important;
+    gap:6px !important;
+    min-height:64px;
+    justify-content:center;
+  }
+  .mob-action-ico{
+    width:44px !important;
+    height:44px !important;
+    border-radius:13px !important;
+  }
+  .mob-action-ico svg{
+    width:20px !important;
+    height:20px !important;
+  }
+
+  /* Ã¢ââ¬Ã¢ââ¬ Asset rows Ã¢ââ¬Ã¢ââ¬ */
+  .mob-asset-row{
+    padding:12px 14px !important;
+    gap:10px !important;
+  }
+  .mob-asset-row img{
+    width:34px !important;
+    height:34px !important;
+  }
+
+  /* Ã¢ââ¬Ã¢ââ¬ More page menu items Ã¢ââ¬Ã¢ââ¬ */
+  .mob-menu-item{
+    padding:14px 14px !important;
+    gap:12px !important;
+    min-height:56px !important;
+  }
+
+  /* Ã¢ââ¬Ã¢ââ¬ All page cards Ã¢â¬â comfortable padding Ã¢ââ¬Ã¢ââ¬ */
+  .mob-card{
+    padding:14px !important;
+    border-radius:16px !important;
+  }
+
+  /* Ã¢ââ¬Ã¢ââ¬ Bottom nav Ã¢â¬â taller tap targets Ã¢ââ¬Ã¢ââ¬ */
+  .bottom-nav{
+    height:70px !important;
+    padding:6px 8px max(env(safe-area-inset-bottom),10px) !important;
+  }
+  .nav-btn{
+    min-height:48px !important;
+    padding:6px 8px !important;
+    gap:3px !important;
+    flex:1;
+    border-radius:10px !important;
+  }
+  .nav-btn .nl{
+    font-size:.78rem !important;
+  }
+  .nav-btn .ni svg{
+    width:22px !important;
+    height:22px !important;
+  }
+  .nav-pill-wrap{
+    padding:3px !important;
+    gap:2px !important;
+    border-radius:14px !important;
+  }
+
+  /* Ã¢ââ¬Ã¢ââ¬ Top bar Ã¢ââ¬Ã¢ââ¬ */
+  #globalTopBar{
+    padding:8px 12px !important;
+    min-height:54px !important;
+  }
+
+  /* Ã¢ââ¬Ã¢ââ¬ All inputs Ã¢â¬â prevent iOS zoom Ã¢ââ¬Ã¢ââ¬ */
+  input,select,textarea{
+    font-size:16px !important;
+    min-height:46px !important;
+  }
+  /* Exception: large number inputs */
+  .amt-input,
+  input[style*="font-size:1.6rem"],
+  input[style*="font-size:2rem"],
+  input[style*="font-size:2.2rem"]{
+    font-size:1.5rem !important;
+    min-height:auto !important;
+  }
+
+  /* Ã¢ââ¬Ã¢ââ¬ Buttons Ã¢â¬â easy to tap Ã¢ââ¬Ã¢ââ¬ */
+  .btn{
+    min-height:50px !important;
+    padding:14px 16px !important;
+    font-size:.95rem !important;
+    border-radius:13px !important;
+  }
+
+  /* Ã¢ââ¬Ã¢ââ¬ Back button Ã¢ââ¬Ã¢ââ¬ */
+  .back-btn{
+    min-height:auto !important;
+    padding:0 0 12px !important;
+    font-size:.9rem !important;
+  }
+
+  /* Ã¢ââ¬Ã¢ââ¬ Earn tabs Ã¢ââ¬Ã¢ââ¬ */
+  .send-tabs{
+    gap:2px !important;
+    padding:3px !important;
+  }
+  .send-tabs .stab{
+    font-size:.82rem !important;
+    padding:8px 4px !important;
+    min-height:36px !important;
+  }
+
+  /* Ã¢ââ¬Ã¢ââ¬ Token selector buttons Ã¢ââ¬Ã¢ââ¬ */
+  .topt{
+    padding:10px 6px !important;
+    font-size:.875rem !important;
+    min-height:44px !important;
+    gap:5px !important;
+  }
+
+  /* Ã¢ââ¬Ã¢ââ¬ Confirm card Ã¢ââ¬Ã¢ââ¬ */
+  .confirm-wrap{
+    padding:16px !important;
+    border-radius:16px !important;
+  }
+  .conf-rows{margin-bottom:12px !important;}
+  .conf-row{
+    font-size:.9rem !important;
+    padding:8px 0 !important;
+  }
+  .conf-btns{
+    gap:8px !important;
+    margin-top:14px !important;
+  }
+
+  /* Ã¢ââ¬Ã¢ââ¬ Success card Ã¢ââ¬Ã¢ââ¬ */
+  .success-wrap{padding:24px 16px 20px !important;}
+  .success-circle{
+    width:64px !important;
+    height:64px !important;
+    font-size:1.6rem !important;
+  }
+  .success-amount{font-size:1.8rem !important;}
+  .success-actions{gap:8px !important;}
+
+  /* Ã¢ââ¬Ã¢ââ¬ History tx rows Ã¢ââ¬Ã¢ââ¬ */
+  .tx-item{
+    padding:12px 12px !important;
+    gap:10px !important;
+    border-radius:8px !important;
+  }
+  .tx-ico{
+    width:34px !important;
+    height:34px !important;
+    border-radius:10px !important;
+    flex-shrink:0 !important;
+  }
+  .tx-title{font-size:.875rem !important;}
+  .tx-amt{font-size:.875rem !important;}
+  .tx-time{font-size:.75rem !important;}
+
+  /* Ã¢ââ¬Ã¢ââ¬ History stats Ã¢ââ¬Ã¢ââ¬ */
+  .hist-stat{padding:10px 6px !important;}
+  .hist-stat-num{font-size:1.2rem !important;}
+  .hist-stat-lbl{font-size:.72rem !important;}
+
+  /* Ã¢ââ¬Ã¢ââ¬ Toast on mobile Ã¢ââ¬Ã¢ââ¬ */
+  #toast{
+    left:12px !important;
+    right:12px !important;
+    top:12px !important;
+    width:auto !important;
+    max-width:none !important;
+    transform:translateY(-120px) !important;
+  }
+  #toast.show{
+    transform:translateY(0) !important;
+  }
+
+  /* Ã¢ââ¬Ã¢ââ¬ Wallet modal slides up Ã¢ââ¬Ã¢ââ¬ */
+  .wallet-modal{
+    border-radius:20px 20px 0 0 !important;
+    padding:16px 14px max(env(safe-area-inset-bottom),24px) !important;
+    max-height:85vh !important;
+    overflow-y:auto !important;
+  }
+  .wallet-modal-overlay{align-items:flex-end !important;}
+  .wallet-opt{
+    padding:13px 12px !important;
+    min-height:52px !important;
+    border-radius:12px !important;
+  }
+
+  /* Ã¢ââ¬Ã¢ââ¬ AI floating button Ã¢ââ¬Ã¢ââ¬ */
+  #aiBtn{
+    bottom:82px !important;
+    right:12px !important;
+    width:42px !important;
+    height:42px !important;
+  }
+
+  /* Ã¢ââ¬Ã¢ââ¬ Balance on home Ã¢ââ¬Ã¢ââ¬ */
+  #homeBalAmt{font-size:2.4rem !important;}
+  #homeBalNgn{font-size:.875rem !important;}
+
+  /* Ã¢ââ¬Ã¢ââ¬ Earn APY Ã¢ââ¬Ã¢ââ¬ */
+  div[style*="font-size:2.8rem"]{font-size:2rem !important;}
+
+  /* Ã¢ââ¬Ã¢ââ¬ Bridge select Ã¢ââ¬Ã¢ââ¬ */
+  #bridgeChainSelect{
+    font-size:16px !important;
+    min-height:46px !important;
+  }
+
+  /* Ã¢ââ¬Ã¢ââ¬ Prevent any horizontal overflow Ã¢ââ¬Ã¢ââ¬ */
+  .page,#app-root{overflow-x:hidden !important;}
+
+}
+
+/* Ã¢ââ¬Ã¢ââ¬ Tiny phones (iPhone SE, small Androids) Ã¢ââ¬Ã¢ââ¬ */
+@media(max-width:360px){
+  #homeBalAmt{font-size:2rem !important;}
+  .nav-btn .nl{font-size:.7rem !important;}
+  .btn{padding:12px 14px !important;min-height:46px !important;}
+  .mob-actions{padding:8px 2px !important;}
+  .mob-action-ico{width:40px !important;height:40px !important;}
+  .send-tabs .stab{font-size:.75rem !important;padding:7px 3px !important;}
+}
+
+/* Ã¢ââ¬Ã¢ââ¬ Relay Light Mode Ã¢â¬â Text & Color Fixes Ã¢ââ¬Ã¢ââ¬ */
+[data-theme="light"] body,
+[data-theme="light"] #app-root,
+[data-theme="light"] .page{
+  background:#ffffff;
+  color:#111111;
+}
+
+/* Fix all inline white-on-white text */
+[data-theme="light"] *[style*="color:rgba(255,255,255,.5)"],
+[data-theme="light"] *[style*="color:rgba(255,255,255,.45)"],
+[data-theme="light"] *[style*="color:rgba(255,255,255,.4)"],
+[data-theme="light"] *[style*="color:rgba(255,255,255,.3)"]{
+  color:#888888 !important;
+}
+[data-theme="light"] *[style*="color:rgba(255,255,255,.6)"],
+[data-theme="light"] *[style*="color:rgba(255,255,255,.65)"]{
+  color:#666666 !important;
+}
+[data-theme="light"] *[style*="color:rgba(255,255,255,.7)"],
+[data-theme="light"] *[style*="color:rgba(255,255,255,.75)"]{
+  color:#444444 !important;
+}
+[data-theme="light"] *[style*="color:rgba(255,255,255,.8)"],
+[data-theme="light"] *[style*="color:rgba(255,255,255,.85)"],
+[data-theme="light"] *[style*="color:rgba(255,255,255,.9)"],
+[data-theme="light"] *[style*="color:rgba(255,255,255,.95)"],
+[data-theme="light"] *[style*="color:#ffffff"],
+[data-theme="light"] *[style*="color:#fff"]{
+  color:#1a1a1a !important;
+}
+[data-theme="light"] *[style*="color:#f0f0f0"],
+[data-theme="light"] *[style*="color:#f0f0ff"]{
+  color:#1a1a1a !important;
+}
+[data-theme="light"] *[style*="color:#a0a0a0"],
+[data-theme="light"] *[style*="color:#888899"],
+[data-theme="light"] *[style*="color:#9ca3af"]{
+  color:#666666 !important;
+}
+[data-theme="light"] *[style*="color:#555555"]{
+  color:#888888 !important;
+}
+
+/* Card backgrounds */
+[data-theme="light"] *[style*="background:var(--card)"],
+[data-theme="light"] *[style*="background:var(--surface)"]{
+  background:#f5f5f5 !important;
+  border-color:#e8e8e8 !important;
+}
+[data-theme="light"] *[style*="background:#1a1a1a"],
+[data-theme="light"] *[style*="background:#111111"],
+[data-theme="light"] *[style*="background:#0f0f0f"],
+[data-theme="light"] *[style*="background:#141414"],
+[data-theme="light"] *[style*="background:#222222"],
+[data-theme="light"] *[style*="background:#131313"],
+[data-theme="light"] *[style*="background:#1e1e1e"]{
+  background:#f4f4f4 !important;
+  color:#1a1a1a !important;
+}
+
+/* Input fields */
+[data-theme="light"] input,
+[data-theme="light"] select,
+[data-theme="light"] textarea{
+  background:#ffffff !important;
+  color:#1a1a1a !important;
+  border-color:#e8e8e8 !important;
+}
+[data-theme="light"] input::placeholder,
+[data-theme="light"] textarea::placeholder{
+  color:#aaaaaa !important;
+}
+
+/* Borders */
+[data-theme="light"] *[style*="border:1px solid rgba(255,255,255,.07)"],
+[data-theme="light"] *[style*="border:1px solid rgba(255,255,255,.08)"],
+[data-theme="light"] *[style*="border:1px solid rgba(255,255,255,.09)"],
+[data-theme="light"] *[style*="border:1px solid rgba(255,255,255,.1)"],
+[data-theme="light"] *[style*="border:1px solid var(--border)"]{
+  border-color:#e8e8e8 !important;
+}
+
+/* Balance card inline */
+[data-theme="light"] *[style*="letter-spacing:.18em"]{
+  color:#666666 !important;
+}
+
+/* Chips / pills that use white transparency */
+[data-theme="light"] *[style*="background:rgba(255,255,255,.06)"],
+[data-theme="light"] *[style*="background:rgba(255,255,255,.05)"],
+[data-theme="light"] *[style*="background:rgba(255,255,255,.04)"],
+[data-theme="light"] *[style*="background:rgba(255,255,255,.03)"]{
+  background:#efefef !important;
+  border-color:#e0e0e0 !important;
+  color:#555555 !important;
+}
+
+/* Arc testnet badge in light mode */
+[data-theme="light"] *[style*="background:rgba(112,0,255,.08)"]{
+  background:rgba(112,0,255,.08) !important;
+}
+[data-theme="light"] .net-pill,
+[data-theme="light"] *[style*="color:rgba(255,255,255,.7);"]{
+  color:#7000ff !important;
+}
+
+/* Topbar in light mode */
+[data-theme="light"] #globalTopBar,
+[data-theme="light"] .topbar{
+  background:#ffffff !important;
+  border-bottom:1px solid #e4e4e4 !important;
+}
+[data-theme="light"] .brand-name,
+[data-theme="light"] *[style*="font-weight:800;color:#ffffff"]{
+  color:#1a1a1a !important;
+}
+
+/* Nav */
+[data-theme="light"] .bottom-nav{
+  background:rgba(255,255,255,.96) !important;
+  border-top:1px solid #e8e8e8 !important;
+}
+[data-theme="light"] .nav-pill-wrap{
+  background:#f0f0f0 !important;
+  border:1px solid #e8e8e8 !important;
+}
+
+/* Earn APY big number */
+[data-theme="light"] *[style*="font-size:2.8rem"],
+[data-theme="light"] *[style*="font-size:1.6rem;font-weight:800"]{
+  color:#1a1a1a !important;
+}
+
+/* More page profile card */
+[data-theme="light"] *[style*="background:linear-gradient(145deg"]{
+  background:#f5f5f5 !important;
+}
+
+/* Success card */
+[data-theme="light"] .success-circle{
+  background:#7000ff !important;
+  box-shadow:0 8px 24px rgba(112,0,255,.3) !important;
+  color:#fff !important;
+}
+
+/* Light mode: fix all white text in success card */
+[data-theme="light"] .success-amount{color:#111111 !important;}
+[data-theme="light"] .success-title{color:rgba(0,0,0,.6) !important;}
+[data-theme="light"] .success-recipient{background:rgba(112,0,255,.06) !important;border-color:rgba(112,0,255,.15) !important;}
+[data-theme="light"] .success-rec-label{color:#666 !important;}
+[data-theme="light"] .success-rec-val{color:#111 !important;}
+[data-theme="light"] .success-hash{color:#7000ff !important;}
+[data-theme="light"] .success-time{color:#16a34a !important;}
+[data-theme="light"] .success-sub{color:#666 !important;}
+[data-theme="light"] #successCard{background:#fff !important;}
+[data-theme="light"] #successTo{color:#111 !important;}
+[data-theme="light"] #successTime{color:#16a34a !important;}
+
+/* Buttons stay purple in light mode */
+[data-theme="light"] .btn{
+  color:#ffffff !important;
+}
+[data-theme="light"] .btn-outline{
+  color:#1a1a1a !important;
+  border-color:#e8e8e8 !important;
+  background:transparent !important;
+}
+
+/* Page titles */
+[data-theme="light"] *[style*="color:var(--text)"]{
+  color:#1a1a1a !important;
+}
+[data-theme="light"] *[style*="color:var(--text3)"]{
+  color:#888888 !important;
+}
+
+
+
+/* Ã¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢Â
+   MOBILE Ã¢â¬â Remove outer card wrappers on feature pages
+   Cards still show on desktop (min-width:481px+)
+Ã¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢Â */
+
+
+/* Ã¢â¢ÂÃ¢â¢Â TOPBAR & DISCONNECT FIX Ã¢â¢ÂÃ¢â¢Â */
+[data-theme="light"] #disconnectTopBtn { color: #dc2626 !important; }
+[data-theme="light"] #moreArcName { color: #4c1d95 !important; }
+
+/* == DISCONNECT BUTTON FULL FIX == */
+#disconnectTopBtn {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  background-color: rgba(220,38,38,0.1) !important;
+  border: 1px solid rgba(220,38,38,0.3) !important;
+  border-radius: 100px !important;
+  padding: 6px 14px !important;
+  color: #dc2626 !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+}
+
+#disconnectTopBtn:hover {
+  background-color: rgba(220,38,38,0.2) !important;
+}
+
+[data-theme="light"] #disconnectTopBtn {
+  color: #dc2626 !important;
+  background-color: rgba(220,38,38,0.1) !important;
+  border-color: rgba(220,38,38,0.3) !important;
+}
+
+/* == SIDEBAR NAV LABEL FIX == */
+.nav-btn .nl {
+  font-size: 1rem !important;
+}
+
+.nav-btn span {
+  font-size: 1rem !important;
+}
+
+#desktopNav .nav-btn {
+  font-size: 1rem !important;
+  gap: 10px !important;
+}
+
+/* == SIDEBAR SECTION & NAV LABELS BOLD FIX == */
+.dnav-section-label {
+  font-size: 0.8rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+  opacity: 1 !important;
+}
+
+[data-theme="light"] .dnav-section-label {
+  color: #666 !important;
+  font-weight: 700 !important;
+}
+
+#desktopNav .nav-btn .nl {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+}
+
+[data-theme="light"] #desktopNav .nav-btn .nl {
+  color: #111 !important;
+  font-weight: 600 !important;
+}
+
+/* == NAIRA BALANCE VISIBILITY FIX == */
+#homeBalNgn {
+  color: rgba(225,210,255,1) !important;
+  opacity: 1 !important;
+  font-weight: 500 !important;
+}
+
+[data-theme="light"] #homeBalNgn {
+  color: #444 !important;
+  opacity: 1 !important;
+  font-weight: 500 !important;
+}
+
+/* == NAV BOLD RELAY STYLE FIX == */
+.nav-btn span {
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+}
+#desktopNav .nav-btn .nl {
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+}
+[data-theme="light"] #desktopNav .nav-btn .nl {
+  font-weight: 700 !important;
+}
+.dnav-section-label {
+  font-weight: 700 !important;
+  font-size: 11px !important;
+  letter-spacing: 0.12em !important;
+}
+[data-theme="light"] .dnav-section-label {
+  font-weight: 700 !important;
+}
+
+/* == NAV BOLD FINAL FIX == */
+.nav-btn span,
+.nav-btn .nl,
+#desktopNav .nav-btn .nl,
+[data-theme="light"] #desktopNav .nav-btn .nl {
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.01em !important;
+}
+
+/* == MOBILE LAYOUT FIX (max-width: 768px only) == */
+@media (max-width: 768px) {
+
+  /* 1. Top header - reduce clutter, shrink pills */
+  .topbar, header, .app-header {
+    padding: 8px 12px !important;
+    gap: 6px !important;
+    flex-wrap: nowrap !important;
+    overflow: hidden !important;
+  }
+  .topbar .network-pill, .chain-pill, [class*="testnet"], [class*="network"] {
+    font-size: 11px !important;
+    padding: 4px 8px !important;
+    max-width: 100px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  .wallet-address, [class*="address"] {
+    font-size: 11px !important;
+    padding: 4px 8px !important;
+    max-width: 110px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  /* 2. Bottom nav labels bigger */
+  .bottom-nav .nav-btn .nl,
+  .bottom-nav .nav-btn span {
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+  }
+
+  /* 3. Fix "Withdraw anytime Â· No lockup" wrapping */
+  .save-earn-sub, [class*="lockup"], [class*="withdraw"] {
+    white-space: nowrap !important;
+    font-size: 12px !important;
+  }
+
+  /* 4. Better overall spacing */
+  .home-content, .main-content, [class*="page"] {
+    padding: 12px !important;
+  }
+  .balance-card, [class*="balance"] {
+    padding: 16px !important;
+  }
+}
+
+/* == HISTORY STAT NUMBERS FIX == */
+.hist-stat-num {
+  color: var(--text) !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+
+/* == MOBILE HEADER + NAV + LOCKUP FIX == */
+@media (max-width: 768px) {
+
+  /* 1. Fix top header cramping */
+  #globalTopBar {
+    padding: 6px 10px !important;
+    gap: 4px !important;
+    flex-wrap: nowrap !important;
+    overflow: hidden !important;
+  }
+  .net-pill {
+    font-size: 10px !important;
+    padding: 3px 7px !important;
+    white-space: nowrap !important;
+    max-width: 90px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    line-height: 1.2 !important;
+  }
+  .pulse-dot {
+    display: none !important;
+  }
+
+  /* 2. Fix "Withdraw anytime Â· No lockup" wrapping */
+  .earn-sub, .save-sub, [class*="earn"] p, [class*="save"] p {
+    white-space: nowrap !important;
+    font-size: 11px !important;
+  }
+
+  /* 3. Bottom nav labels bigger + bold */
+  .bottom-nav .nl,
+  .nav-btn .nl {
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+  }
+}
+
+/* == KUDA-STYLE MOBILE OVERHAUL == */
+@media (max-width: 768px) {
+
+  /* HEADER - clean and minimal */
+  #globalTopBar {
+    padding: 8px 14px !important;
+    gap: 6px !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    overflow: hidden !important;
+  }
+  .topbar-page-name {
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+  }
+  .net-pill {
+    font-size: 10px !important;
+    padding: 4px 8px !important;
+    white-space: nowrap !important;
+    line-height: 1 !important;
+    border-radius: 20px !important;
+  }
+  .pulse-dot { display: none !important; }
+
+  /* Hide wallet address on mobile - too cluttered */
+  [class*="wallet-addr"], [class*="address-pill"], [class*="addr-btn"] {
+    display: none !important;
+  }
+
+  /* BALANCE AREA - more breathing room */
+  .home-balance, [class*="balance-card"], [class*="bal-card"] {
+    padding: 20px 16px !important;
+    border-radius: 16px !important;
+  }
+  .home-balance-amt, [class*="balance-amt"] {
+    font-size: 2.4rem !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.02em !important;
+  }
+
+  /* FIX "Withdraw anytime Â· No lockup" wrapping */
+  .earn-meta, .save-meta, [class*="earn-sub"], [class*="no-lock"] {
+    white-space: nowrap !important;
+    font-size: 11px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  /* BOTTOM NAV - Kuda style */
+  .bottom-nav {
+    padding: 8px 0 12px !important;
+    height: auto !important;
+  }
+  .bottom-nav .nav-btn {
+    gap: 4px !important;
+    padding: 4px 8px !important;
+  }
+  .bottom-nav .nav-btn svg,
+  .bottom-nav .nav-btn .ni {
+    width: 24px !important;
+    height: 24px !important;
+  }
+  .bottom-nav .nav-btn .nl {
+    font-size: 0.7rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.02em !important;
+  }
+  .bottom-nav .nav-btn.active .nl {
+    color: #7000ff !important;
+    font-weight: 700 !important;
+  }
+}
+
+/* === MOBILE HEADER FIX === */
+@media(max-width:767px){
+  :root {
+    --card: transparent !important;
+    --card2: transparent !important;
+    --surface: #000000 !important;
+    --bg: #000000 !important;
+    --border: rgba(168,85,247,.15) !important;
+  }
+  #disconnectTopBtn { display:none !important; }
+  #disconnectTopBtnMobile { display:flex !important; }
+  #topbarPageInfo { display:none !important; }
+  /* Hide net pill, theme toggle on mobile Ã¢â¬â saves space */
+  .net-pill { display:none !important; }
+  .theme-toggle-btn { display:none !important; }
+  /* Tighter topbar on mobile */
+  #globalTopBar { padding:0 12px !important; height:52px !important; }
+  /* Wallet address pill Ã¢â¬â smaller */
+  #connectTopBtn, #landConnectBtn {
+    font-size:.75rem !important;
+    padding:5px 10px !important;
+    border-radius:100px !important;
+  }
+  /* Brand tighter */
+  
+  
+  /* Remove all blur effects on mobile Ã¢â¬â kills blurriness/lag */
+  *, *::before, *::after {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* Ã¢ââ¬Ã¢ââ¬ Strip ALL grey backgrounds on mobile Ã¢ââ¬Ã¢ââ¬ */
+  /* Must be on :root for CSS custom properties to cascade */
+
+  /* All inline grey/surface backgrounds Ã¢â â transparent */
+  *[style*="background:var(--card)"],
+  *[style*="background:var(--surface)"],
+  *[style*="background:#1a1a1a"],
+  *[style*="background:#111111"],
+  *[style*="background:#222222"],
+  *[style*="background:rgba(255,255,255,.03)"],
+  *[style*="background:rgba(255,255,255,.04)"],
+  *[style*="background:rgba(255,255,255,.05)"],
+  *[style*="background:rgba(255,255,255,.06)"],
+  *[style*="background:rgba(255,255,255,0.03)"],
+  *[style*="background:rgba(255,255,255,0.04)"],
+  *[style*="background:rgba(255,255,255,0.05)"],
+  *[style*="background:rgba(255,255,255,0.06)"] {
+    background: transparent !important;
+    border-color: rgba(168,85,247,.12) !important;
+  }
+
+  /* Ã¢ââ¬Ã¢ââ¬ Strip ALL card/container wrappers on mobile Ã¢â¬â plain black Ã¢ââ¬Ã¢ââ¬ */
+  .card, .send-card, .mob-actions,
+  .page > div, .page > section,
+  [style*="border-radius:22px"],
+  [style*="border-radius:18px"],
+  [style*="border-radius:16px"],
+  [style*="border-radius:14px"],
+  [style*="overflow:hidden"] {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  .card, .send-card, .mob-actions {
+    padding: 0 !important;
+    margin-bottom: 4px !important;
+  }
+  /* Force bg color on mobile using variable */
+  .page, #app-root, body, html {
+    background: var(--bg) !important;
+  }
+  #globalTopBar, .bottom-nav {
+    background: var(--topbar-bg) !important;
+  }
+  .bottom-nav {
+    height:58px !important;
+    padding:4px 8px 6px !important;
+  }
+  .nav-pill-wrap {
+    padding:2px !important;
+    gap:1px !important;
+    border-radius:12px !important;
+    background: none !important;
+    border: none !important;
+  }
+  .nav-btn {
+    font-size:.6rem !important;
+    font-weight:600 !important;
+    gap:2px !important;
+    padding:5px 2px !important;
+    border-radius:9px !important;
+    letter-spacing:.02em !important;
+  }
+  .nav-btn .ni svg {
+    width:18px !important;
+    height:18px !important;
+  }
+  .nav-btn.active {
+    background: rgba(112,0,255,.12) !important;
+    border-color: transparent !important;
+    color: var(--accent3) !important;
+    box-shadow: none !important;
+  }
+
+  /* Ã¢ââ¬Ã¢ââ¬ Smaller fonts throughout app Ã¢ââ¬Ã¢ââ¬ */
+  .card { padding:14px !important; }
+  .bal-amt, #homeBalAmt { font-size:1.9rem !important; }
+  .bal-sub { font-size:.75rem !important; }
+  .bal-head { font-size:.7rem !important; }
+  .home-action-label { font-size:.72rem !important; }
+  .home-action-icon-box { width:30px !important; height:30px !important; }
+  .asset-name { font-size:.85rem !important; }
+  .asset-sub { font-size:.72rem !important; }
+  .asset-amt { font-size:.85rem !important; }
+  .asset-usd { font-size:.72rem !important; }
+  .section-label, .dnav-section-label { font-size:.65rem !important; }
+  .card-title { font-size:.85rem !important; }
+  h2, .page-title { font-size:1.1rem !important; }
+  .pill-token { font-size:.72rem !important; }
+  button:not(.nav-btn):not(#connectTopBtn):not(#disconnectTopBtnMobile) {
+    font-size:.85rem !important;
+  }
+}
+.theme-toggle-btn{width:30px;height:30px;border-radius:50%;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+/* Mobile disconnect icon only, desktop text only */
+#disconnectTopBtnMobile { display:none !important; }
+/* === RELAY-STYLE TOPBAR === */
+#globalTopBar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  padding: 0 28px !important;
+  gap: 0 !important;
+}
+#globalTopBar > div:last-child {
+  margin-left: auto !important;
+}
+.brand {
+  margin-right: 0 !important;
+  padding-right: 0 !important;
+  flex-shrink: 0 !important;
+}
+#topbarPageInfo {
+  margin-left: 28px !important;
+}
+#topbarNav {
+  flex: unset !important;
+  margin-left: 0 !important;
+}
+.tnav-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 18px;
+  border-radius: 9px;
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  transition: background .15s;
+  white-space: nowrap;
+}
+.tnav-btn:hover { background: rgba(112,0,255,.08); }
+.tnav-btn.active { color: var(--accent); }
+.more-drop-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  background: none;
+  border-radius: 9px;
+  font-family: 'Inter', sans-serif;
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition: background .15s;
+}
+.more-drop-btn:hover { background: rgba(112,0,255,.08); color: var(--accent); }
+.more-drop-btn svg { opacity: .7; flex-shrink: 0; }
+.brand { display:flex !important; align-items:center; gap:8px; }
+
+
+
+
+
+
+
+
+.brand{display:flex;align-items:center;gap:0;}
+
+.brand-logo{display:flex!important;align-items:center;flex-shrink:0;background:none!important;box-shadow:none!important;}
+
+/* ══ MOBILE TOPBAR POLISH — match desktop features on mobile ══ */
+@media(max-width:768px){
+  /* Topbar shows on mobile after connect - compact layout */
+  #globalTopBar{
+    position:fixed !important;
+    top:0 !important;left:0 !important;right:0 !important;
+    height:54px !important;
+    padding:0 12px !important;
+    z-index:200 !important;
+  }
+  /* Scale logo down on mobile */
+  #globalTopBar .brand svg{width:22px !important;height:27px !important;}
+  #globalTopBar .brand .logo-dark span,
+  #globalTopBar .brand .logo-light span{font-size:24px !important;}
+  /* Hide full text disconnect on mobile - use icon version */
+  #disconnectTopBtn{display:none !important;}
+  /* Hide net pill text on mobile - keep just the dot */
+  #netPill{font-size:.7rem !important;padding:3px 7px !important;}
+  /* Theme toggle smaller */
+  .theme-toggle-btn{font-size:.9rem !important;padding:4px 6px !important;min-height:unset !important;}
+  /* Faucet pill smaller on mobile */
+  #navFaucetBtn{font-size:.72rem !important;padding:4px 9px !important;gap:3px !important;}
+  /* Connect button smaller */
+  #connectTopBtn{font-size:.8rem !important;padding:5px 11px !important;}
+  /* Page offset: accounts for 54px topbar on mobile */
+  .page{top:54px !important;}
+  /* AI button: move above bottom nav on mobile */
+  #aiBtn{bottom:84px !important;right:14px !important;width:48px !important;height:48px !important;}
 }
