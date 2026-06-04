@@ -3458,8 +3458,8 @@ function renderAgentMsgs(){
   if(!el)return;
   el.innerHTML=agentMsgs.map(m=>`
     <div style="display:flex;flex-direction:column;align-items:${m.role==='user'?'flex-end':'flex-start'};">
-      <div style="max-width:85%;padding:9px 13px;border-radius:${m.role==='user'?'14px 14px 3px 14px':'14px 14px 14px 3px'};background:${m.role==='user'?'#7000ff':'var(--card)'};border:${m.role==='user'?'none':'1px solid var(--border)'};color:var(--text);font-size:.75rem;line-height:1.55;">${m.content}</div>
-      ${m.action?`<button onclick='executeAgentAction(${JSON.stringify(m.action)})' style="margin-top:6px;padding:7px 14px;border-radius:10px;background:#7000ff;border:none;color:#f3e8ff;font-size:.7rem;font-weight:700;cursor:pointer;">⚡ ${m.action.action.toUpperCase()} ${m.action.amount||''} ${m.action.token||''}</button>`:''}
+      <div style="max-width:85%;padding:11px 15px;border-radius:${m.role==='user'?'14px 14px 3px 14px':'14px 14px 14px 3px'};background:${m.role==='user'?'#7000ff':'var(--card)'};border:${m.role==='user'?'none':'1px solid var(--border)'};color:var(--text);font-size:14px;font-weight:500;line-height:1.65;letter-spacing:.01em;">${m.content}</div>
+      ${m.action?`<button onclick='executeAgentAction(${JSON.stringify(m.action)})' style="margin-top:6px;padding:7px 14px;border-radius:10px;background:#7000ff;border:none;color:#f3e8ff;font-size:13px;font-weight:700;cursor:pointer;">⚡ ${m.action.action.toUpperCase()} ${m.action.amount||''} ${m.action.token||''}</button>`:''}
     </div>
   `).join('');
 }
@@ -3477,7 +3477,7 @@ function renderAgentChips(){
   chips.push("My pending orders");
   if(nanOrders.length>0) chips.push("Cancel all orders");
   chips.push("How does earn work?");
-  document.getElementById('agentChips').innerHTML=chips.slice(0,6).map(c=>`<button onclick="sendAgentMsg('${c}')" style="font-size:.72rem;color:var(--accent3);background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:20px;padding:4px 10px;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;">${c}</button>`).join('');
+  document.getElementById('agentChips').innerHTML=chips.slice(0,6).map(c=>`<button onclick="sendAgentMsg('${c}')" style="font-size:13px;font-weight:600;color:var(--accent3);background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:20px;padding:6px 13px;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;">${c}</button>`).join('');
 }
 function scrollAgentBottom(){const el=document.getElementById('agentMessages');setTimeout(()=>{el.scrollTop=el.scrollHeight;},50);}
 
