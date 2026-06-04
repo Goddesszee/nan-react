@@ -2904,3 +2904,144 @@ a:hover{color:var(--text);}
     padding:14px !important;
   }
 }
+
+/* ════════════════════════════════════════════
+   FINAL MOBILE POLISH
+   ════════════════════════════════════════════ */
+@media(max-width:768px){
+
+  /* ── Action buttons: purple icons on light bg, no border lines ── */
+  .mob-actions{
+    background:transparent !important;
+    border-top:none !important;
+    border-bottom:none !important;
+    padding:20px 8px 4px !important;
+  }
+  .mob-action-ico{
+    background:#7000ff !important;
+    box-shadow:0 4px 16px rgba(112,0,255,.35) !important;
+  }
+  .mob-action-item span,[style*="font-size:.875rem;font-weight:700;color:var(--text);"]{
+    color:var(--text) !important;
+  }
+  [data-theme="light"] .mob-actions{
+    background:transparent !important;
+  }
+  [data-theme="light"] .mob-action-ico{
+    background:#7000ff !important;
+    box-shadow:0 4px 16px rgba(112,0,255,.3) !important;
+  }
+
+  /* ── Remove the thin black divider line between content and nav ── */
+  .bottom-nav{
+    border-top:1px solid var(--border) !important;
+    box-shadow:none !important;
+  }
+  [data-theme="light"] .bottom-nav{
+    border-top:1px solid #e8e8e8 !important;
+    background:#ffffff !important;
+  }
+  /* Remove any extra bottom border on page content */
+  .page > div:last-child{
+    border-bottom:none !important;
+  }
+  /* Home page: remove border between earn section and bottom */
+  #page-home [style*="border-bottom:1px solid var(--border)"][style*="padding:16px 18px"]{
+    border-bottom:none !important;
+  }
+
+  /* ── Swap page: fix dark bg on token buttons ── */
+  #page-swap #fromToken,
+  #page-swap #toToken{
+    background:var(--surface) !important;
+    border-color:var(--border) !important;
+  }
+  [data-theme="light"] #page-swap #fromToken,
+  [data-theme="light"] #page-swap #toToken{
+    background:#f0f0f0 !important;
+    border-color:#e0e0e0 !important;
+  }
+  [data-theme="light"] #page-swap #fromToken span,
+  [data-theme="light"] #page-swap #toToken span{
+    color:#111 !important;
+  }
+  /* Swap sell/buy boxes in light mode */
+  [data-theme="light"] #page-swap [style*="background:var(--card)"][style*="border-radius:20px"]{
+    background:#ffffff !important;
+    border-color:#e8e8e8 !important;
+    box-shadow:0 1px 4px rgba(0,0,0,.05) !important;
+  }
+  /* Swap rate bar */
+  [data-theme="light"] #page-swap [style*="background:var(--card)"][style*="border-radius:12px"]{
+    background:#f8f8f8 !important;
+    border-color:#e8e8e8 !important;
+  }
+  /* Flip button */
+  [data-theme="light"] #page-swap [onclick="flipSwap()"][style*="background:var(--surface)"]{
+    background:#f0f0f0 !important;
+    border-color:#e0e0e0 !important;
+    color:#7000ff !important;
+  }
+  /* Swap input text color */
+  [data-theme="light"] .swap-input{
+    color:#111111 !important;
+  }
+  [data-theme="light"] #swapTo.swap-input{
+    color:#7000ff !important;
+  }
+  /* Swap text labels */
+  [data-theme="light"] #page-swap [style*="color:var(--text);"]{
+    color:#111 !important;
+  }
+  [data-theme="light"] #page-swap [style*="color:var(--text3);"]{
+    color:#999 !important;
+  }
+
+  /* ── Dark mode: swap/send/bridge get purple card style ── */
+  [data-theme="dark"] #page-swap [style*="background:var(--card)"][style*="border-radius:20px"]{
+    background:rgba(112,0,255,.06) !important;
+    border-color:rgba(112,0,255,.18) !important;
+  }
+  [data-theme="dark"] #page-swap [style*="background:var(--card)"][style*="border-radius:12px"]{
+    background:rgba(112,0,255,.04) !important;
+    border-color:rgba(112,0,255,.12) !important;
+  }
+  [data-theme="dark"] #page-send [style*="background:var(--card)"][style*="border-radius:22px"]{
+    background:rgba(112,0,255,.04) !important;
+    border-color:rgba(112,0,255,.12) !important;
+  }
+  [data-theme="dark"] #page-bridge [style*="background:var(--card)"][style*="border-radius:22px"]{
+    background:rgba(112,0,255,.04) !important;
+    border-color:rgba(112,0,255,.12) !important;
+  }
+  [data-theme="dark"] #page-swap #fromToken,
+  [data-theme="dark"] #page-swap #toToken{
+    background:rgba(112,0,255,.1) !important;
+    border-color:rgba(112,0,255,.25) !important;
+  }
+
+  /* ── Topbar: compact, everything fits in 54px ── */
+  #globalTopBar{
+    gap:4px !important;
+    padding:0 10px !important;
+  }
+  #globalTopBar .brand svg{
+    width:18px !important;
+    height:23px !important;
+  }
+  #mobileAddrPill{
+    font-size:.68rem !important;
+    padding:3px 8px !important;
+    max-width:100px !important;
+  }
+  .tb-icon-btn{
+    width:28px !important;
+    height:28px !important;
+    flex-shrink:0 !important;
+  }
+  .tb-icon-btn svg{
+    width:13px !important;
+    height:13px !important;
+  }
+  #netPill{display:none !important;}
+}
