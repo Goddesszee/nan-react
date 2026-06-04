@@ -57,7 +57,7 @@ const CCTP_DEST_DOMAIN = {
   'OP-SEPOLIA':    2,
   'ARB-SEPOLIA':   3,
   'BASE-SEPOLIA':  6,
-  'POLYGON-AMOY':  7,
+  // Polygon Amoy removed — domain 7 conflicts with Arc Testnet source domain
 };
 // Destination chain config for auto-mint after CCTP burn
 // MessageTransmitterV2 address is the same on all EVM testnets (Circle CREATE2)
@@ -2142,7 +2142,8 @@ async function doBridge(){
     const messageBytes=receipt.logs?.[0]?.data||'';
 
     statusCard.style.display='block';
-    statusContent.innerHTML=`<div style="font-family:'JetBrains Mono',monospace;font-size:.72rem;line-height:2;color:var(--text2);">
+    statusCard.scrollIntoView({behavior:'smooth',block:'center'});
+    statusContent.innerHTML=`<div style="font-family:'Inter',sans-serif;font-size:.82rem;line-height:2;color:var(--text);">
       <div>✅ Step 1: USDC burned on Arc</div>
       <div id="attestStatus">⏳ Step 2: Waiting for Circle attestation…</div>
       <div id="mintStatus" style="display:none;"></div>
@@ -2302,6 +2303,17 @@ async function pollIrisAttestation(txHash, destChain) {
           amount:'0', type:'bridge', token:'USDC',
           ts:Date.now(), confirmed:true, source:'cctp-mint', destChain,
         });
+        // Show destination balance
+        try{
+          const destUSDC=new ethers.Contract(
+            '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238', // USDC on testnets
+            ['function balanceOf(address) view returns (uint256)'],
+            destProvider
+          );
+          const bal=await destUSDC.balanceOf(userAddr);
+          const balFmt=parseFloat(ethers.formatUnits(bal,6)).toFixed(2);
+          if(mintEl) mintEl.innerHTML+='<div style="margin-top:8px;padding:8px;background:rgba(52,211,153,.1);border-radius:8px;font-size:.78rem;color:#34d399;">💰 Your USDC on '+destConfig.chainName+': '+balFmt+' USDC</div>';
+        }catch(e){ console.log('dest balance check:',e.message); }
 
       } catch(mintErr) {
         console.error('[cctp-mint]', mintErr);
