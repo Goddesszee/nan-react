@@ -5,7 +5,7 @@
   --bg:#111111;--surface:#1a1a1a;--card:#1a1a1a;--card2:#222222;
   --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.12);
   --accent:#7000ff;--accent3:#a855f7;--accent4:#c084fc;
-  --text:#ffffff;--text2:#a0a0a0;--text3:#666666;
+  --text:#ffffff;--text2:#a0a0a0;--text3:#555555;
   --danger:#f87171;--success:#7000ff;--gold:#fbbf24;--warning:#fbbf24;
   --radius:14px;--radius-sm:10px;
   --topbar-bg:#111111;--nav-bg:#111111;
@@ -74,7 +74,7 @@ body::after{display:none;}
 .bottom-nav{position:absolute;bottom:0;left:0;right:0;height:76px;z-index:100;background:var(--nav-bg);backdrop-filter:blur(32px);border-top:1px solid rgba(255,255,255,0.06);padding:6px 10px 10px;display:none;}
 .bottom-nav.show{display:block;}
 .nav-pill-wrap{display:flex;max-width:480px;margin:0 auto;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:4px;gap:2px;}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 4px;border:1px solid transparent;background:transparent;color:var(--text2);font-family:'Inter',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all .18s;text-transform:uppercase;letter-spacing:.04em;border-radius:13px;}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 4px;border:1px solid transparent;background:transparent;color:var(--text3);font-family:'Inter',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:all .18s;text-transform:uppercase;letter-spacing:.04em;border-radius:13px;}
 .nav-btn .ni{display:flex;align-items:center;justify-content:center;transition:all .2s;}
 .nav-btn.active{color:#f0f0f0;background:#1a1a1a;border-color:#1a1a1a;box-shadow:none;}
 .nav-btn.active .ni{filter:drop-shadow(0 0 5px rgba(168,85,247,.6));}
@@ -97,11 +97,11 @@ body::after{display:none;}
 .home-name{font-size:1.4rem;font-weight:700;color:var(--text);letter-spacing:-.5px;margin-bottom:14px;}
 
 /* Home balance card */
-.home-bal-card{background:#111;border:1px solid rgba(255,255,255,0.09);border-radius:var(--radius);padding:20px;margin-bottom:12px;position:relative;overflow:hidden;}
-.home-bal-card::before{display:none;}
-.home-bal-lbl{font-family:'Inter var','Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:rgba(255,255,255,0.5);letter-spacing:.18em;text-transform:uppercase;margin-bottom:6px;}
+.home-bal-card{background:linear-gradient(145deg,#1a1a1a 0%,#111111 50%,#1a1a1a 100%);border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius);padding:20px;margin-bottom:12px;position:relative;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.5);}
+.home-bal-card::before{content:'';position:absolute;top:-20px;right:-20px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(168,85,247,.22),transparent 70%);pointer-events:none;}
+.home-bal-lbl{font-family:'Inter var','Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:rgba(255,255,255,0.38);letter-spacing:.18em;text-transform:uppercase;margin-bottom:6px;}
 .home-bal-num{font-size:2.8rem;font-weight:700;letter-spacing:-1.5px;line-height:1;color:#f0f0f0;margin-bottom:4px;}
-.home-bal-ngn{font-family:'Inter var','Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:rgba(255,255,255,0.45);margin-bottom:12px;}
+.home-bal-ngn{font-family:'Inter var','Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:rgba(196,181,253,0.5);margin-bottom:12px;}
 .home-tok-row{display:flex;gap:6px;margin-top:2px;}
 .tok{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:100px;padding:4px 10px;font-family:'Inter var','Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:.95rem;font-weight:500;color:rgba(255,255,255,.75);}
 .tok-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
@@ -150,8 +150,8 @@ body::after{display:none;}
 .cticon{width:20px;height:20px;border-radius:6px;background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.25);display:flex;align-items:center;justify-content:center;font-size:1rem;}
 
 /* Old balance card (send page) */
-.bal-card{background:#111;border:1px solid rgba(255,255,255,0.09);border-radius:var(--radius);padding:22px;margin-bottom:14px;position:relative;overflow:hidden;}
-.bal-card::before{display:none;}
+.bal-card{background:linear-gradient(145deg,#1a1a1a 0%,#111111 50%,#1a1a1a 100%);border:1px solid rgba(255,255,255,0.08);border-radius:var(--radius);padding:22px;margin-bottom:14px;position:relative;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.5);}
+.bal-card::before{content:'';position:absolute;top:-20px;right:-20px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(168,85,247,.2),transparent 70%);pointer-events:none;}
 .bal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
 .bal-lbl{font-family:'Inter var','Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:rgba(255,255,255,0.4);letter-spacing:.18em;text-transform:uppercase;}
 .bal-badge{display:flex;align-items:center;gap:4px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.25);border-radius:100px;padding:3px 8px;font-size:1rem;color:var(--accent3);font-family:'Inter var','Inter',sans-serif;font-variant-numeric:tabular-nums;}
@@ -499,11 +499,8 @@ a:hover{color:var(--text);}
 
   /* Unified page cards Ã¢â¬â tighter on mobile */
   .page > div[style*="border-radius:22px"]{
-    background:transparent!important;
-    border:none!important;
-    border-radius:0!important;
-    padding:0!important;
-    box-shadow:none!important;
+    border-radius:16px!important;
+    padding:14px!important;
   }
   /* Balance amount inside unified card */
   .page > div[style*="border-radius:22px"] [style*="2.6rem"]{font-size:2rem!important;}
@@ -1024,9 +1021,6 @@ a:hover{color:var(--text);}
     animation:none !important;isolation:auto !important;transform:none !important;
   }
   .page.active{display:flex !important;}
-  /* Payment request new page — must be flex-start not center */
-  #page-payreq-new.active{align-items:flex-start !important;overflow-y:auto !important;}
-  #page-payreq-new.active>*{max-width:600px !important;width:100% !important;margin-left:auto !important;margin-right:auto !important;padding-left:24px !important;padding-right:24px !important;}
 
   /* All direct children centered at 600px */
   .page > *{
@@ -1615,21 +1609,7 @@ a:hover{color:var(--text);}
 [data-theme="light"] .success-circle{
   background:#7000ff !important;
   box-shadow:0 8px 24px rgba(112,0,255,.3) !important;
-  color:#fff !important;
 }
-
-/* Light mode: fix all white text in success card */
-[data-theme="light"] .success-amount{color:#111111 !important;}
-[data-theme="light"] .success-title{color:rgba(0,0,0,.6) !important;}
-[data-theme="light"] .success-recipient{background:rgba(112,0,255,.06) !important;border-color:rgba(112,0,255,.15) !important;}
-[data-theme="light"] .success-rec-label{color:#666 !important;}
-[data-theme="light"] .success-rec-val{color:#111 !important;}
-[data-theme="light"] .success-hash{color:#7000ff !important;}
-[data-theme="light"] .success-time{color:#16a34a !important;}
-[data-theme="light"] .success-sub{color:#666 !important;}
-[data-theme="light"] #successCard{background:#fff !important;}
-[data-theme="light"] #successTo{color:#111 !important;}
-[data-theme="light"] #successTime{color:#16a34a !important;}
 
 /* Buttons stay purple in light mode */
 [data-theme="light"] .btn{
@@ -1655,7 +1635,69 @@ a:hover{color:var(--text);}
    MOBILE Ã¢â¬â Remove outer card wrappers on feature pages
    Cards still show on desktop (min-width:481px+)
 Ã¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢ÂÃ¢â¢Â */
+@media(max-width:480px){
 
+  /* Remove outer card look from all .card elements inside pages */
+  .page > .card,
+  .page > .send-card,
+  .page > .swap-box,
+  .page > .arcname-card,
+  .page > [class*="card"]{
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* Remove outer wrapper divs that use inline card styles */
+  /* These are the first direct child divs of pages with card styling */
+  .page > div:first-child:not(.page-title):not(.page-sub):not(.type-sel):not(.bottom-bar){
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  /* Keep inner cards (nested ones) Ã¢â¬â they still show */
+  .page > .card .card,
+  .page > div > .card,
+  .page > div > .send-card,
+  .page > div > .position-card,
+  .page > div > .swap-box,
+  .page > div > [class*="card"]{
+    background: rgba(255,255,255,0.04) !important;
+    border: 1px solid rgba(168,85,247,0.18) !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3) !important;
+    border-radius: var(--radius) !important;
+    padding: 14px !important;
+  }
+
+  /* Keep home balance card styled */
+  .home-bal-card,
+  .bal-card{
+    background: linear-gradient(135deg,rgba(139,92,246,.18),rgba(109,40,217,.12)) !important;
+    border: 1px solid rgba(139,92,246,.3) !important;
+    border-radius: 18px !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,.3) !important;
+  }
+
+  /* Reduce page padding on mobile since no outer card */
+  .page{
+    padding: 12px 14px 20px !important;
+  }
+
+  /* Page titles stay visible */
+  .page-title{
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+}
 
 /* Ã¢â¢ÂÃ¢â¢Â TOPBAR & DISCONNECT FIX Ã¢â¢ÂÃ¢â¢Â */
 [data-theme="light"] #disconnectTopBtn { color: #dc2626 !important; }
@@ -2132,175 +2174,3 @@ a:hover{color:var(--text);}
 .brand{display:flex;align-items:center;gap:0;}
 
 .brand-logo{display:flex!important;align-items:center;flex-shrink:0;background:none!important;box-shadow:none!important;}
-
-
-
-/* ═══════════════════════════════════════════
-   MOBILE — mirrors desktop layout, keeps bottom nav
-   max-width: 480px
-═══════════════════════════════════════════ */
-@media(max-width:768px){
-
-  /* ── Keep bottom nav, topbar ── */
-  #bottomNav{ display:flex !important; }
-  #desktopNav{ display:none !important; }
-  #globalTopBar{ display:flex !important; }
-
-  /* ── App root full width ── */
-  #app-root{
-    max-width:100% !important;
-    border-radius:0 !important;
-    box-shadow:none !important;
-  }
-  #app-root::before,#app-root::after{ display:none !important; }
-
-  /* ── Topbar ── */
-  #globalTopBar{
-    height:52px !important;
-    padding:0 14px !important;
-  }
-  .brand-logo svg{ width:28px !important; height:36px !important; }
-
-  /* ── Pages — same as desktop but offset for topbar + bottom nav ── */
-  .page{
-    position:fixed !important;
-    top:52px !important;
-    left:0 !important;
-    right:0 !important;
-    bottom:62px !important;
-    width:100% !important;
-    max-width:100% !important;
-    display:none !important;
-    overflow-y:auto !important;
-    overflow-x:hidden !important;
-    flex-direction:column !important;
-    align-items:center !important;
-    padding:16px 0 24px !important;
-    animation:none !important;
-    -webkit-overflow-scrolling:touch !important;
-  }
-  .page.active{ display:flex !important; }
-
-  /* ── All page content centered at 480px max ── */
-  .page > *{
-    width:100% !important;
-    max-width:480px !important;
-    flex-shrink:0 !important;
-    box-sizing:border-box !important;
-    padding-left:14px !important;
-    padding-right:14px !important;
-  }
-
-  /* ── Keep cards — same as desktop ── */
-  .page > div[style*="border-radius:22px"]{
-    border-radius:18px !important;
-    overflow:hidden !important;
-  }
-
-  /* ── Inputs — 16px prevents iOS zoom ── */
-  input,select,textarea{ font-size:16px !important; }
-
-  /* ── Buttons — proper touch targets ── */
-  button{ min-height:44px !important; }
-
-  /* ── Balance number ── */
-  .home-bal-num{ font-size:2.2rem !important; }
-
-  /* ── Action buttons grid ── */
-  .home-actions-top{
-    display:grid !important;
-    grid-template-columns:repeat(4,1fr) !important;
-    gap:8px !important;
-  }
-
-  /* ── Bottom nav ── */
-  #bottomNav{
-    height:62px !important;
-    background:var(--topbar-bg) !important;
-    backdrop-filter:blur(20px) !important;
-    -webkit-backdrop-filter:blur(20px) !important;
-    border-top:1px solid var(--border) !important;
-  }
-  .nav-pill-wrap{
-    width:100% !important;
-    border:none !important;
-    background:transparent !important;
-    border-radius:0 !important;
-    gap:0 !important;
-    padding:0 !important;
-  }
-  .nav-btn{
-    flex:1 !important;
-    font-size:.6rem !important;
-    padding:6px 2px !important;
-    min-height:unset !important;
-    letter-spacing:0 !important;
-    border-radius:0 !important;
-    gap:3px !important;
-  }
-  .nav-btn .ni svg{ width:18px !important; height:18px !important; }
-
-  /* ── Toast ── */
-  #toast{
-    left:14px !important;
-    right:14px !important;
-    bottom:70px !important;
-    max-width:none !important;
-    width:auto !important;
-  }
-
-  /* ── AI button — above nav ── */
-  #aiBtn{
-    bottom:72px !important;
-    right:14px !important;
-    width:44px !important;
-    height:44px !important;
-  }
-
-  /* ── Agent panel — bottom sheet ── */
-  #agentPanel{
-    top:auto !important;
-    left:0 !important;
-    right:0 !important;
-    bottom:0 !important;
-    width:100% !important;
-    max-width:100% !important;
-    height:92dvh !important;
-    border-radius:20px 20px 0 0 !important;
-    border-left:none !important;
-    border-top:1px solid var(--border) !important;
-    transform:none !important;
-  }
-
-  /* ── Pickers — bottom sheet ── */
-  #chainPickerSheet,#bankPickerSheet{
-    left:0 !important;
-    right:0 !important;
-    bottom:0 !important;
-    top:auto !important;
-    width:100% !important;
-    max-width:100% !important;
-    transform:none !important;
-    border-radius:20px 20px 0 0 !important;
-  }
-
-  /* ── Modals ── */
-  .wallet-modal{
-    margin:auto 14px !important;
-    border-radius:18px !important;
-    max-width:none !important;
-  }
-
-  /* ── Prevent horizontal scroll ── */
-  body{ overflow-x:hidden !important; }
-
-  /* ── Small phones ── */
-}
-@media(max-width:360px){
-  .page > *{
-    padding-left:10px !important;
-    padding-right:10px !important;
-  }
-  .home-bal-num{ font-size:1.9rem !important; }
-  .nav-btn{ font-size:.55rem !important; }
-}
