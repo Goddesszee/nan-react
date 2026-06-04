@@ -2081,6 +2081,24 @@ function openChainPicker(){
   }, 100);
 }
 
+const _BRIDGE_NETWORKS = {
+  'ETH-SEPOLIA':  { chainId:'0xaa36a7', name:'Ethereum Sepolia', rpc:'https://rpc.sepolia.org', explorer:'https://sepolia.etherscan.io', symbol:'ETH' },
+  'BASE-SEPOLIA': { chainId:'0x14a34',  name:'Base Sepolia',     rpc:'https://sepolia.base.org', explorer:'https://sepolia-explorer.base.org', symbol:'ETH' },
+  'ARB-SEPOLIA':  { chainId:'0x66eee',  name:'Arbitrum Sepolia', rpc:'https://sepolia-rollup.arbitrum.io/rpc', explorer:'https://sepolia.arbiscan.io', symbol:'ETH' },
+  'OP-SEPOLIA':   { chainId:'0xaa37dc', name:'OP Sepolia',       rpc:'https://sepolia.optimism.io', explorer:'https://sepolia-optimism.etherscan.io', symbol:'ETH' },
+  'AVAX-FUJI':    { chainId:'0xa869',   name:'Avalanche Fuji',   rpc:'https://api.avax-test.network/ext/bc/C/rpc', explorer:'https://testnet.snowtrace.io', symbol:'AVAX' }
+};
+async function _autoSwitchToBridgeDest(destChain){
+  const net=_BRIDGE_NETWORKS[destChain];
+  if(!net||!window.ethereum) return;
+  try {
+    await window.ethereum.request({method:'wallet_switchEthereumChain',params:[{chainId:net.chainId}]});
+  } catch(e) {
+    if(e.code===4902) {
+      await window.ethereum.request({method:'wallet_addEthereumChain',params:[{chainId:net.chainId,chainName:net.name,nativeCurrency:{name:net.symbol,symbol:net.symbol,decimals:18},rpcUrls:[net.rpc],blockExplorerUrls:[net.explorer]}]});
+    }
+  }
+}
 async function doBridge(){
   const destChain=document.getElementById('bridgeDestChain').value;
   const destAddr=document.getElementById('bridgeDestAddr').value.trim();
@@ -2148,6 +2166,7 @@ async function doBridge(){
     burnTxHash=burnTx.hash;
     lastTxHash=burnTxHash;
     toast('✓ Burn submitted! Waiting for Circle attestation…','info',8000);
+    _autoSwitchToBridgeDest(destChain).catch(()=>{});
     const receipt=await burnTx.wait(1);
     addTx({hash:burnTxHash,to:destAddr,toRaw:'Bridge→'+destChain,amount:amt.toFixed(6),type:'bridge',token:'USDC',ts:Date.now(),confirmed:true,source:'cctp',destChain});
 
@@ -3531,7 +3550,9 @@ function renderAgentChips(){
   chips.push("My pending orders");
   if(nanOrders.length>0) chips.push("Cancel all orders");
   chips.push("How does earn work?");
-  document.getElementById('agentChips').innerHTML=chips.slice(0,6).map(c=>`<button onclick="sendAgentMsg('${c}')" style="font-size:13px;font-weight:600;color:var(--accent3);background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:20px;padding:6px 13px;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;">${c}</button>`).join('');
+  const chipsEl=document.getElementById('agentChips');
+  chipsEl.innerHTML=chips.slice(0,6).map(c=>`<button data-msg="${c.replace(/"/g,'&quot;')}" style="font-size:13px;font-weight:600;color:var(--accent3);background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:20px;padding:6px 13px;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;">${c}</button>`).join('');
+  chipsEl.querySelectorAll('button').forEach(btn=>btn.addEventListener('click',()=>sendAgentMsg(btn.dataset.msg)));
 }
 function scrollAgentBottom(){const el=document.getElementById('agentMessages');setTimeout(()=>{el.scrollTop=el.scrollHeight;},50);}
 
@@ -5412,3 +5433,53 @@ async function mcRefresh() {
   btn.disabled = false;
 }
 
+
+// ── Mint Testnet USDC functions ──
+async function checkMintBal(){
+  const sel=document.getElementById('mintChainSelect');
+  const opt=sel.options[sel.selectedIndex];
+  const balEl=document.getElementById('mintChainBal');
+  if(!userAddr){balEl.textContent='⚠ Connect wallet first';return;}
+  balEl.textContent='Checking…';
+  try{
+    const res=await fetch(opt.dataset.rpc,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({jsonrpc:'2.0',id:1,method:'eth_call',params:[{to:opt.dataset.usdc,
+      data:'0x70a08231000000000000000000000000'+userAddr.slice(2).padStart(64,'0')},'latest']})});
+    const d=await res.json();
+    const bal=(Number(BigInt(d.result||'0x0'))/1e6).toFixed(2);
+    balEl.innerHTML=`Balance: <strong style="color:var(--text)">${bal} USDC</strong> on ${opt.text}`;
+  }catch(e){balEl.textContent='❌ '+e.message;}
+}
+async function openMintFaucet(){
+  const sel=document.getElementById('mintChainSelect');
+  const opt=sel.options[sel.selectedIndex];
+  const balEl=document.getElementById('mintChainBal');
+  const networks={
+    'ETH-SEPOLIA':{chainId:'0xaa36a7',name:'Ethereum Sepolia',rpc:'https://rpc.sepolia.org',explorer:'https://sepolia.etherscan.io',symbol:'ETH'},
+    'BASE-SEPOLIA':{chainId:'0x14a34',name:'Base Sepolia',rpc:'https://sepolia.base.org',explorer:'https://sepolia-explorer.base.org',symbol:'ETH'},
+    'ARB-SEPOLIA':{chainId:'0x66eee',name:'Arbitrum Sepolia',rpc:'https://sepolia-rollup.arbitrum.io/rpc',explorer:'https://sepolia.arbiscan.io',symbol:'ETH'},
+    'OP-SEPOLIA':{chainId:'0xaa37dc',name:'OP Sepolia',rpc:'https://sepolia.optimism.io',explorer:'https://sepolia-optimism.etherscan.io',symbol:'ETH'},
+    'AVAX-FUJI':{chainId:'0xa869',name:'Avalanche Fuji',rpc:'https://api.avax-test.network/ext/bc/C/rpc',explorer:'https://testnet.snowtrace.io',symbol:'AVAX'}
+  };
+  const net=networks[sel.value];
+  const usdcAddress=opt.dataset.usdc;
+  if(!window.ethereum){balEl.textContent='⚠ MetaMask not found';return;}
+  if(!userAddr){balEl.textContent='⚠ Connect wallet first';return;}
+  try{
+    balEl.textContent='Switching to '+net.name+'…';
+    try{
+      await window.ethereum.request({method:'wallet_switchEthereumChain',params:[{chainId:net.chainId}]});
+    }catch(switchErr){
+      if(switchErr.code===4902){
+        balEl.textContent='Adding '+net.name+' to MetaMask…';
+        await window.ethereum.request({method:'wallet_addEthereumChain',params:[{chainId:net.chainId,chainName:net.name,nativeCurrency:{name:net.symbol,symbol:net.symbol,decimals:18},rpcUrls:[net.rpc],blockExplorerUrls:[net.explorer]}]});
+      }else{throw switchErr;}
+    }
+    balEl.textContent='Confirm mint in wallet…';
+    const mintData='0x40c10f19'+userAddr.slice(2).padStart(64,'0')+(10_000_000).toString(16).padStart(64,'0');
+    const tx=await window.ethereum.request({method:'eth_sendTransaction',params:[{from:userAddr,to:usdcAddress,data:mintData}]});
+    balEl.innerHTML=`✅ Minting 10 USDC on ${net.name}! tx: ${tx.slice(0,10)}…`;
+  }catch(e){
+    balEl.textContent='❌ '+(e.message||'Cancelled');
+  }
+}
