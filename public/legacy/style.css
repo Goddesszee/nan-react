@@ -500,10 +500,10 @@ a:hover{color:var(--text);}
     overflow:visible !important;
   }
   #secretTapZone svg{
-    width:32px !important;
-    height:32px !important;
-    min-width:32px !important;
-    min-height:32px !important;
+    width:58px !important;
+    height:58px !important;
+    min-width:58px !important;
+    min-height:58px !important;
     display:block !important;
     overflow:visible !important;
   }
