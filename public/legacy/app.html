@@ -157,13 +157,22 @@ html,body{background:var(--bg);}
 
 .dnav-brand{font-size:2.5rem!important;font-weight:900!important;color:var(--text);letter-spacing:-.03em;line-height:1;text-transform:uppercase;}
 /* Logo theme switching */
-.logo-dark { display:none; }
+.logo-dark { display:none !important; }
 .logo-light { display:inline-flex; align-items:center; }
-[data-theme="dark"] .logo-dark { display:inline-flex !important; align-items:center; }
-[data-theme="dark"] .logo-light { display:none !important; }
+[data-theme="dark"] .logo-dark { display:none !important; }
+[data-theme="dark"] .logo-light { display:inline-flex !important; align-items:center; }
 [data-theme="light"] .logo-light { display:inline-flex !important; align-items:center; }
 [data-theme="light"] .logo-dark { display:none !important; }
 .brand-logo{display:flex!important;align-items:center;flex-shrink:0;background:none!important;box-shadow:none!important;}
+.logo-light svg {
+  background: #7000ff;
+  border-radius: 16px;
+  padding: 8px;
+  width: 46px !important;
+  height: 46px !important;
+  box-shadow: 0 2px 12px rgba(112,0,255,.4);
+  box-sizing: border-box;
+}
 .brand{display:flex;align-items:center;gap:0;}
 </style>
 
@@ -1788,15 +1797,52 @@ function pickChain(val,label){
 
 /* ── Bank picker ── */
 function openBankPicker(){
-  const cur = document.getElementById('ngnBankName').value;
-  document.getElementById('bankPickerOptions').innerHTML = BANK_OPTIONS.map(b=>`
-    <div style="display:flex;align-items:center;gap:14px;padding:16px 20px;cursor:pointer;border-bottom:1px solid var(--border);${b===cur?'background:rgba(168,85,247,.12);':''}" ontouchstart="this.style.background='rgba(168,85,247,.15)'" ontouchend="this.style.background='${b===cur?'rgba(168,85,247,.12)':'transparent'}'" onclick="pickBank('${b}')">
-      <span style="font-size:1.3rem;">🏦</span>
-      <span style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:var(--text);flex:1;">${b}</span>
-      ${b===cur?'<span style="color:var(--accent3);">✓</span>':''}
-    </div>`).join('');
-  document.getElementById('bankPickerOverlay').style.display='block';
-  document.getElementById('bankPickerSheet').style.display='block';
+  const cur=document.getElementById('ngnBankName').value;
+  const BCDN='https://cdn.jsdelivr.net/gh/wovenfinance/cdn@main/logos/';
+  const BANKS=[
+    {name:'Access Bank',code:'000014',color:'#cc0000'},
+    {name:'Citibank Nigeria',code:'000023',color:'#003b8e'},
+    {name:'Ecobank Nigeria',code:'000050',color:'#007bc1'},
+    {name:'Fidelity Bank',code:'000007',color:'#007a4d'},
+    {name:'First Bank',code:'000016',color:'#004b87'},
+    {name:'First City Monument Bank (FCMB)',code:'000003',color:'#8b0000'},
+    {name:'Guaranty Trust Bank (GTBank)',code:'000013',color:'#f68b1f'},
+    {name:'Heritage Bank',code:'000020',color:'#00843d'},
+    {name:'Keystone Bank',code:'000002',color:'#005baa'},
+    {name:'Kuda Bank',code:'090267',color:'#5b45e0'},
+    {name:'Moniepoint',code:'090405',color:'#0b5c1e'},
+    {name:'Opay',code:'100004',color:'#1a9e3f'},
+    {name:'PalmPay',code:'100033',color:'#00a651'},
+    {name:'Polaris Bank',code:'000008',color:'#e30613'},
+    {name:'Stanbic IBTC Bank',code:'000012',color:'#009fdf'},
+    {name:'Standard Chartered Bank',code:'000021',color:'#1e8a4a'},
+    {name:'Sterling Bank',code:'000001',color:'#c8102e'},
+    {name:'Union Bank',code:'000018',color:'#004a97'},
+    {name:'United Bank for Africa (UBA)',code:'000004',color:'#e31837'},
+    {name:'Unity Bank',code:'000011',color:'#7b2d8b'},
+    {name:'Wema Bank',code:'000017',color:'#7b2d8b'},
+    {name:'Zenith Bank',code:'000015',color:'#d4002a'},
+  ];
+  const optHtml=BANKS.map(b=>{
+    const ini=b.name.split(' ').slice(0,2).map(w=>w[0]).join('');
+    return `<div data-bank="${b.name}" style="display:flex;align-items:center;gap:14px;padding:13px 20px;cursor:pointer;border-bottom:1px solid var(--border);${b.name===cur?'background:rgba(168,85,247,.1);':''}" onclick="pickBank('${b.name.replace(/'/g,"\'")}')">
+      <img src="${BCDN+b.code+'.png'}" style="width:36px;height:36px;border-radius:10px;object-fit:contain;background:#fff;padding:3px;box-shadow:0 1px 6px rgba(0,0,0,.1);flex-shrink:0;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+      <div style="display:none;width:36px;height:36px;border-radius:10px;background:${b.color};align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:12px;flex-shrink:0;">${ini}</div>
+      <span style="font-family:'Inter',sans-serif;font-size:14.5px;font-weight:500;color:var(--text);flex:1;">${b.name}</span>
+      ${b.name===cur?'<span style="color:#a855f7;">✓</span>':''}
+    </div>`;
+  }).join('');
+  document.getElementById('bankPickerOptions').innerHTML=`<div style="padding:12px 16px;position:sticky;top:0;background:var(--bg);z-index:2;border-bottom:1px solid var(--border);"><input id="bankSearchInput" placeholder="Search bank..." oninput="document.querySelectorAll('#bankOptionsList [data-bank]').forEach(el=>el.style.display=el.dataset.bank.toLowerCase().includes(this.value.toLowerCase())?'flex':'none')" style="width:100%;background:var(--surface);border:1px solid rgba(109,40,217,.25);border-radius:12px;padding:11px 14px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;"></div><div id="bankOptionsList">${optHtml}</div>`;
+  var overlay=document.getElementById('bankPickerOverlay');
+  var sheet=document.getElementById('bankPickerSheet');
+  if(overlay.parentElement!==document.body){document.body.appendChild(overlay);document.body.appendChild(sheet);}
+  overlay.style.cssText='display:block !important;position:fixed !important;top:0 !important;left:0 !important;width:100vw !important;height:100vh !important;background:rgba(0,0,0,.6) !important;z-index:2147483640 !important;';
+  sheet.style.cssText='display:flex !important;flex-direction:column !important;position:fixed !important;bottom:0 !important;left:0 !important;right:0 !important;width:100% !important;height:70vh !important;background:var(--card) !important;border-radius:22px 22px 0 0 !important;border-top:1px solid var(--border) !important;z-index:2147483647 !important;overflow:hidden !important;box-shadow:0 -8px 32px rgba(0,0,0,.25) !important;transform:none !important;margin:0 !important;padding:0 !important;';
+  var opts=document.getElementById('bankPickerOptions');
+  opts.style.cssText='display:flex !important;flex-direction:column !important;flex:1 !important;overflow:hidden !important;min-height:0 !important;';
+  var lst=document.getElementById('bankOptionsList');
+  if(lst)lst.style.cssText='overflow-y:auto !important;flex:1 !important;min-height:0 !important;-webkit-overflow-scrolling:touch !important;';
+  setTimeout(()=>document.getElementById('bankSearchInput')?.focus(),100);
 }
 function closeBankPicker(){
   document.getElementById('bankPickerOverlay').style.display='none';
