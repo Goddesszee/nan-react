@@ -1,4 +1,4 @@
-export function NanLogo({ height = 42, theme = 'dark' }) {
+export function NanLogo({ height = 58, theme = 'dark' }) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" width={height} height={height} style={{flexShrink:0}}>
       <rect width="36" height="36" rx="6" fill="#7000ff"/>
