@@ -72,12 +72,9 @@ export default function App() {
     return (
       <div style={{minHeight:'100vh',background:'#000',display:'flex',flexDirection:'column',
         alignItems:'center',justifyContent:'center',gap:16,fontFamily:'Inter,sans-serif'}}>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="235 205 265 325" width="48" height="60">
-          <g fill="#7000ff">
-            <path d="M248 215 H312 L490 520 H426 Z"/>
-            <rect x="426" y="215" width="64" height="155"/>
-            <rect x="248" y="365" width="64" height="155"/>
-          </g>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" width="48" height="48">
+          <rect width="36" height="36" fill="#7000ff"/>
+          <rect x="7" y="7" width="14" height="14" fill="#ffffff"/>
         </svg>
         <div style={{color:'#fff',fontSize:'1rem',fontWeight:600}}>{status}</div>
         <div style={{display:'flex',gap:6}}>
