@@ -189,6 +189,7 @@ html,body{background:var(--bg);}
 .chain-dropdown-item:hover{background:rgba(112,0,255,.08);}
 .chain-dropdown-item.selected{background:rgba(112,0,255,.12);}
 </style>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 </head>
 <body>
 <div id="app-root">
@@ -504,6 +505,8 @@ html,body{background:var(--bg);}
           style="width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:14px 54px 14px 14px;color:var(--text);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:16px;outline:none;transition:border-color .15s;"/>
         <button onclick="navigator.clipboard.readText().then(t=>{document.getElementById('recipInput').value=t;onRecipInput()}).catch(()=>document.getElementById('recipInput').focus())"
           style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:rgba(112,0,255,.15);border:1px solid rgba(112,0,255,.2);border-radius:8px;color:var(--accent3);font-size:1rem;padding:5px 9px;cursor:pointer;font-family:'Inter',sans-serif;">Paste</button>
+        <button onclick="startQRScan()"
+          style="position:absolute;right:74px;top:50%;transform:translateY(-50%);background:rgba(112,0,255,.15);border:1px solid rgba(112,0,255,.2);border-radius:8px;color:var(--accent3);font-size:1rem;padding:5px 9px;cursor:pointer;font-family:'Inter',sans-serif;font-weight:600;">Scan</button>
       </div>
       <div class="res-bar" id="resolvedBar"><span id="resolvedTxt"></span></div>
 
@@ -2161,6 +2164,47 @@ function setMintChainVal(val){
   window._mintChainVal=val;
   window._mintRpc=rpcMap[val];
   window._mintUsdc=usdcMap[val];
+}
+</script>
+<script>
+function startQRScan() {
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;';
+  const title = document.createElement('div');
+  title.textContent = 'Point camera at QR code';
+  title.style.cssText = 'color:#fff;font-size:1rem;font-weight:700;font-family:Inter,sans-serif;';
+  const video = document.createElement('video');
+  video.style.cssText = 'width:300px;height:300px;object-fit:cover;border-radius:16px;border:3px solid #6d28d9;';
+  video.autoplay = true; video.playsInline = true;
+  const canvas = document.createElement('canvas');
+  canvas.style.display = 'none';
+  const closeBtn = document.createElement('button');
+  closeBtn.textContent = 'Cancel';
+  closeBtn.style.cssText = 'background:#6d28d9;border:none;border-radius:10px;color:#fff;padding:10px 24px;font-size:1rem;font-weight:700;cursor:pointer;font-family:Inter,sans-serif;';
+  modal.append(title, video, canvas, closeBtn);
+  document.body.appendChild(modal);
+  const ctx = canvas.getContext('2d');
+  let stream, scanning = true;
+  closeBtn.onclick = () => { scanning = false; if (stream) stream.getTracks().forEach(t => t.stop()); modal.remove(); };
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+    .then(s => {
+      stream = s; video.srcObject = s; video.play();
+      (function scan() {
+        if (!scanning) return;
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+          canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+          ctx.drawImage(video, 0, 0);
+          const code = jsQR(ctx.getImageData(0, 0, canvas.width, canvas.height).data, canvas.width, canvas.height);
+          if (code) {
+            document.getElementById('recipInput').value = code.data;
+            if (typeof onRecipInput === 'function') onRecipInput();
+            scanning = false; stream.getTracks().forEach(t => t.stop()); modal.remove();
+          }
+        }
+        requestAnimationFrame(scan);
+      })();
+    })
+    .catch(() => { modal.remove(); alert('Camera access denied.'); });
 }
 </script>
 </body>
