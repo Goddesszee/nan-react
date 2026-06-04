@@ -737,14 +737,22 @@ a:hover{color:var(--text);}
 /* Ã¢â¢ÂÃ¢â¢Â MOBILE IMPROVEMENTS Ã¢â¢ÂÃ¢â¢Â */
 /* AI Chat panel - full mobile friendly */
 #agentPanel {
-  border-radius: 0 !important;
+  position: fixed !important;
+  top: 80px !important;
+  right: 0 !important;
+  left: auto !important;
+  bottom: 0 !important;
+  width: 480px !important;
   max-width: 480px !important;
-  left: 50% !important;
-  transform: translateX(-50%) translateY(100%) !important;
+  border-radius: 0 !important;
+  transform: translateX(100%) !important;
   transition: transform .35s cubic-bezier(.32,1,.23,1) !important;
+  border-left: 1px solid rgba(109,40,217,.3) !important;
+  border-top: 1px solid rgba(109,40,217,.15) !important;
+  overflow: hidden !important;
 }
 #agentPanel.open {
-  transform: translateX(-50%) translateY(0) !important;
+  transform: translateX(0) !important;
 }
 
 /* Larger tap targets on mobile */
@@ -1067,7 +1075,7 @@ a:hover{color:var(--text);}
   #aiBtn{bottom:32px !important;right:32px !important;width:50px !important;height:50px !important;border-radius:14px !important;}
 
   /* Agent panel slides from right */
-  #agentPanel{left:auto !important;right:0 !important;bottom:0 !important;top:0 !important;width:380px !important;max-width:380px !important;border-radius:0 !important;border-left:1px solid var(--border) !important;transform:translateX(100%) !important;}
+  #agentPanel{top:80px !important;right:0 !important;bottom:0 !important;left:auto !important;width:480px !important;max-width:480px !important;border-radius:0 !important;border-left:1px solid rgba(109,40,217,.3) !important;transform:translateX(100%) !important;}
   #agentPanel.open{transform:translateX(0) !important;}
 
   /* Modals centered */
