@@ -1054,7 +1054,9 @@ async function onConnected(isEmail=false, isDev=false){
   renderHistory();
   renderArcDirectory();
   initLendUI();
-  document.getElementById('aiBtn').style.display='flex';
+  const _aiEl=document.getElementById('aiBtn');
+  if(_aiEl){ _aiEl.style.display='flex'; _aiEl._aiListenerAdded=false; }
+  setTimeout(attachAIListeners,100);
   var deskAI=document.getElementById('aiBtnDesktop');
   if(deskAI)deskAI.style.display='flex';
   var navF=document.getElementById('navFaucetBtn');
