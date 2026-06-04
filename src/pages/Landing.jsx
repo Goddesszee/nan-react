@@ -220,7 +220,7 @@ function LoginModal({ onClose, onEmailConnect, onWalletConnect }) {
 
         {/* Header */}
         <div style={{textAlign:'center',marginBottom:24}}>
-          <div style={{width:52,height:52,background:'#7000ff',borderRadius:16,margin:'0 auto 10px',boxShadow:'0 2px 12px rgba(112,0,255,.4)'}} />
+          <div style={{}} ><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36' width='52' height='52' style={{display:'block'}}><rect width='36' height='36' fill='#7000ff'/><rect x='7' y='7' width='14' height='14' fill='#ffffff'/></svg></div>
           <div style={{fontSize:'1.2rem',fontWeight:800,color:textColor,letterSpacing:'-.02em'}}>
             {step==='options' ? 'Sign in to NAN' : step==='email' ? 'Continue with Email' : step==='otp' ? 'Check your inbox' : 'Please wait…'}
           </div>
