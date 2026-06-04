@@ -3045,3 +3045,92 @@ a:hover{color:var(--text);}
   }
   #netPill{display:none !important;}
 }
+
+/* ════════════════════════════════════════════
+   MOBILE FINAL FIXES — desktop untouched
+   ════════════════════════════════════════════ */
+@media(max-width:768px){
+
+  /* ── Bridge button: force purple (has mob-action-ico class now) ── */
+  .mob-action-ico{
+    background:#7000ff !important;
+    box-shadow:0 4px 16px rgba(112,0,255,.35) !important;
+    width:48px !important;
+    height:48px !important;
+    border-radius:14px !important;
+    flex-shrink:0 !important;
+  }
+
+  /* ── Dark line fix: page bottom = nav height exactly ── */
+  .page{
+    bottom:72px !important;
+  }
+  /* Ensure bottom nav height matches */
+  .bottom-nav{
+    height:72px !important;
+  }
+
+  /* ── Light mode: remove dark band ── */
+  [data-theme="light"] #app-root{
+    background:#f5f5f5 !important;
+  }
+  [data-theme="light"] .page{
+    background:#f5f5f5 !important;
+  }
+
+  /* ── Topbar: hide connectTopBtn when connected (addr pill replaces it) ── */
+  #connectTopBtn.connected{
+    display:none !important;
+  }
+  /* Hide desktop disconnect on mobile */
+  #disconnectTopBtn{
+    display:none !important;
+  }
+
+  /* ── Naira row: same border as USDC/EURC rows ── */
+  .mob-asset-row{
+    border-bottom:1px solid var(--border) !important;
+  }
+  .mob-asset-row:last-child{
+    border-bottom:none !important;
+  }
+  [data-theme="light"] .mob-asset-row{
+    border-bottom-color:#ebebeb !important;
+  }
+
+  /* ── Transactions: page needs side padding for form content ── */
+  #page-send .confirm-wrap,
+  #page-send .success-wrap{
+    padding:16px !important;
+    margin:0 !important;
+  }
+  #page-send #tab-send,
+  #page-send #tab-recv{
+    padding:16px !important;
+  }
+
+  /* ── All inputs: 16px prevents iOS zoom ── */
+  input,select,textarea{
+    font-size:16px !important;
+    -webkit-text-size-adjust:100% !important;
+  }
+
+  /* ── Buttons: responsive tap ── */
+  button{
+    -webkit-tap-highlight-color:transparent !important;
+    touch-action:manipulation !important;
+  }
+  .btn{
+    min-height:50px !important;
+    font-size:16px !important;
+  }
+  #sendBtn{
+    min-height:52px !important;
+    font-size:16px !important;
+  }
+
+  /* ── Light mode text colors on asset rows ── */
+  [data-theme="light"] .mob-asset-row [style*="color:var(--text3)"]{
+    color:#888 !important;
+  }
+}
