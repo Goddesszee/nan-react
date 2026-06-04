@@ -5047,7 +5047,7 @@ async function loadAdminStats(){
 
   // Fallback: browser RPC scan
   setMsg('Server unavailable — scanning blockchain…');
-  const RPC='https://rpc.testnet.arc.network';
+  const RPC='https://rpc.testnet.arc.io';
   const SWAP  ='0x5cE359b74BE53b1B370641571cBef157dD575c79';
   const LEND  ='0x4CC84BbEf992439Cb01FeF2E1150B37916d1f2ce';
   const NAME  ='0x043D072B12CBe488DBA3d2975c42Db3055F2836f';
