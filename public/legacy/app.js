@@ -3342,6 +3342,60 @@ function attachAIListeners(){
 }
 
 // Attach on load and also expose for after-connect call
+
+// ── Bank Picker ──
+const BANK_CDN='https://cdn.jsdelivr.net/gh/wovenfinance/cdn@main/logos/';
+const BANK_DATA=[
+  {name:'Access Bank',code:'000014',color:'#cc0000'},
+  {name:'Citibank Nigeria',code:'000023',color:'#003b8e'},
+  {name:'Ecobank Nigeria',code:'000050',color:'#007bc1'},
+  {name:'Fidelity Bank',code:'000007',color:'#007a4d'},
+  {name:'First Bank',code:'000016',color:'#004b87'},
+  {name:'First City Monument Bank (FCMB)',code:'000003',color:'#8b0000'},
+  {name:'Guaranty Trust Bank (GTBank)',code:'000013',color:'#f68b1f'},
+  {name:'Heritage Bank',code:'000020',color:'#00843d'},
+  {name:'Keystone Bank',code:'000002',color:'#005baa'},
+  {name:'Kuda Bank',code:'090267',color:'#5b45e0'},
+  {name:'Moniepoint',code:'090405',color:'#0b5c1e'},
+  {name:'Opay',code:'100004',color:'#1a9e3f'},
+  {name:'PalmPay',code:'100033',color:'#00a651'},
+  {name:'Polaris Bank',code:'000008',color:'#e30613'},
+  {name:'Stanbic IBTC Bank',code:'000012',color:'#009fdf'},
+  {name:'Standard Chartered Bank',code:'000021',color:'#1e8a4a'},
+  {name:'Sterling Bank',code:'000001',color:'#c8102e'},
+  {name:'Union Bank',code:'000018',color:'#004a97'},
+  {name:'United Bank for Africa (UBA)',code:'000004',color:'#e31837'},
+  {name:'Unity Bank',code:'000011',color:'#7b2d8b'},
+  {name:'Wema Bank',code:'000017',color:'#7b2d8b'},
+  {name:'Zenith Bank',code:'000015',color:'#d4002a'},
+];
+function openBankPicker(){
+  const cur=document.getElementById('ngnBankName').value;
+  const optionsHtml=BANK_DATA.map(b=>{
+    const initials=b.name.split(' ').slice(0,2).map(w=>w[0]).join('');
+    const logoUrl=BANK_CDN+b.code+'.png';
+    return `<div data-bank="${b.name}" style="display:flex;align-items:center;gap:14px;padding:13px 20px;cursor:pointer;border-bottom:1px solid var(--border);${b.name===cur?'background:rgba(168,85,247,.1);':''}" onclick="pickBank('${b.name.replace(/'/g,"\'")}')">
+      <img src="${logoUrl}" style="width:36px;height:36px;border-radius:10px;object-fit:contain;background:#fff;padding:3px;box-shadow:0 1px 6px rgba(0,0,0,.1);flex-shrink:0;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+      <div style="display:none;width:36px;height:36px;border-radius:10px;background:${b.color};align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:12px;flex-shrink:0;">${initials}</div>
+      <span style="font-family:'Inter',sans-serif;font-size:14.5px;font-weight:500;color:var(--text);flex:1;">${b.name}</span>
+      ${b.name===cur?'<span style="color:#a855f7;">\u2713</span>':''}
+    </div>`;
+  }).join('');
+  document.getElementById('bankPickerOptions').innerHTML=`<div style="padding:12px 16px 8px;position:sticky;top:0;background:var(--bg);z-index:2;border-bottom:1px solid var(--border);"><input id="bankSearchInput" placeholder="Search bank..." oninput="filterBanks(this.value)" style="width:100%;background:var(--surface);border:1px solid rgba(109,40,217,.25);border-radius:12px;padding:11px 14px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;"></div><div id="bankOptionsList">${optionsHtml}</div>`;
+  // Move picker to body to escape overflow clipping
+  var overlay=document.getElementById('bankPickerOverlay');
+  var sheet=document.getElementById('bankPickerSheet');
+  if(overlay.parentElement!==document.body){document.body.appendChild(overlay);document.body.appendChild(sheet);}
+  overlay.style.display='block';
+  sheet.style.display='flex';
+  sheet.style.flexDirection='column';
+  setTimeout(()=>document.getElementById('bankSearchInput')?.focus(),100);
+}
+function filterBanks(q){
+  document.querySelectorAll('#bankOptionsList [data-bank]').forEach(el=>{
+    el.style.display=el.dataset.bank.toLowerCase().includes(q.toLowerCase())?'flex':'none';
+  });
+}
 document.addEventListener('DOMContentLoaded', attachAIListeners);
 
 // fix: auto-connect from landing page — calls correct function names
