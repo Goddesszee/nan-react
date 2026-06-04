@@ -5122,7 +5122,7 @@ async function loadAdminStats(){
 
   // Fallback: browser RPC scan
   setMsg('Server unavailable — scanning blockchain…');
-  const RPC='https://rpc.testnet.arc.io';
+  const RPC='https://rpc.testnet.arc.network';
   const SWAP  ='0x5cE359b74BE53b1B370641571cBef157dD575c79';
   const LEND  ='0x4CC84BbEf992439Cb01FeF2E1150B37916d1f2ce';
   const NAME  ='0x043D072B12CBe488DBA3d2975c42Db3055F2836f';
@@ -5332,12 +5332,12 @@ async function adminSeedPool(){
 // MULTICHAIN BALANCE
 // ═══════════════════════════════════════════
 const MC_CHAINS = [
-  { id:'ARC',          name:'Arc Testnet',      color:'#6d28d9', rpc:'https://rpc.testnet.arc.network',    usdc:'0x3600000000000000000000000000000000000000', decimals:6,  icon:'🟣' },
-  { id:'ETH-SEPOLIA',  name:'Ethereum Sepolia', color:'#627EEA', rpc:'https://ethereum-sepolia-rpc.publicnode.com',             usdc:'0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238', decimals:6,  icon:'⟠' },
-  { id:'BASE-SEPOLIA', name:'Base Sepolia',     color:'#0052FF', rpc:'https://sepolia.base.org',            usdc:'0x036CbD53842c5426634e7929541eC2318f3dCF7e', decimals:6,  icon:'🔵' },
-  { id:'ARB-SEPOLIA',  name:'Arbitrum Sepolia', color:'#28A0F0', rpc:'https://sepolia-rollup.arbitrum.io/rpc', usdc:'0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d', decimals:6, icon:'🔷' },
-  { id:'OP-SEPOLIA',   name:'OP Sepolia',       color:'#FF0420', rpc:'https://sepolia.optimism.io',         usdc:'0x5fd84259d66Cd46123540766Be93DFE6D43130D7', decimals:6,  icon:'🔴' },
-  { id:'AVAX-FUJI',    name:'Avalanche Fuji',   color:'#E84142', rpc:'https://api.avax-test.network/ext/bc/C/rpc', usdc:'0x5425890298aed601595a70ab815c96711a31Bc65', decimals:6, icon:'🔺' },
+  { id:'ARC',          name:'Arc Testnet',      color:'#0a0f1e', rpc:'https://rpc.testnet.arc.network',    usdc:'0x3600000000000000000000000000000000000000', decimals:6,  icon:'<img src="https://testnet.arcscan.app/assets/configs/og_image.png" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\'">' },
+  { id:'ETH-SEPOLIA',  name:'Ethereum Sepolia', color:'#627EEA', rpc:'https://ethereum-sepolia-rpc.publicnode.com', usdc:'0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238', decimals:6, icon:'<img src="https://coin-images.coingecko.com/coins/images/279/small/ethereum.png?1696501628" style="width:100%;height:100%;object-fit:cover;">' },
+  { id:'BASE-SEPOLIA', name:'Base Sepolia',     color:'#0052FF', rpc:'https://sepolia.base.org',            usdc:'0x036CbD53842c5426634e7929541eC2318f3dCF7e', decimals:6,  icon:'<img src="https://coin-images.coingecko.com/asset_platforms/images/131/small/base-network.png?1710164297" style="width:100%;height:100%;object-fit:cover;">' },
+  { id:'ARB-SEPOLIA',  name:'Arbitrum Sepolia', color:'#28A0F0', rpc:'https://sepolia-rollup.arbitrum.io/rpc', usdc:'0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d', decimals:6, icon:'<img src="https://coin-images.coingecko.com/coins/images/16547/small/photo_2023-03-29_21.47.00.jpeg" style="width:100%;height:100%;object-fit:cover;">' },
+  { id:'OP-SEPOLIA',   name:'OP Sepolia',       color:'#FF0420', rpc:'https://sepolia.optimism.io',         usdc:'0x5fd84259d66Cd46123540766Be93DFE6D43130D7', decimals:6,  icon:'<img src="https://coin-images.coingecko.com/coins/images/25244/small/Optimism.png" style="width:100%;height:100%;object-fit:cover;">' },
+  { id:'AVAX-FUJI',    name:'Avalanche Fuji',   color:'#E84142', rpc:'https://api.avax-test.network/ext/bc/C/rpc', usdc:'0x5425890298aed601595a70ab815c96711a31Bc65', decimals:6, icon:'<img src="https://coin-images.coingecko.com/coins/images/12559/small/Avalanche_Circle_RedWhite_Trans.png" style="width:100%;height:100%;object-fit:cover;">' },
 ];
 const MC_BAL_ABI = ['function balanceOf(address) view returns (uint256)'];
 
@@ -5382,11 +5382,11 @@ async function mcRefresh() {
   // Show skeleton cards
   list.innerHTML = MC_CHAINS.map(c =>
     '<div id="mc-row-'+c.id+'" style="display:flex;align-items:center;gap:12px;padding:13px 14px;background:var(--surface);border:1px solid var(--border);border-radius:12px;">' +
-    '<div style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">'+c.icon+'</div>' +
-    '<div style="flex:1;"><div style="font-size:.88rem;font-weight:600;color:var(--text);">'+c.name+'</div>' +
-    '<div style="font-size:.72rem;color:var(--text3);" id="mc-sub-'+c.id+'">Fetching…</div></div>' +
-    '<div style="text-align:right;"><div style="font-size:.88rem;font-weight:700;color:var(--text3);" id="mc-bal-'+c.id+'">—</div>' +
-    '<div style="font-size:.7rem;color:var(--text3);" id="mc-usd-'+c.id+'">$—</div></div></div>'
+    '<div style="width:38px;height:38px;border-radius:50%;background:'+c.color+';display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">'+c.icon+'</div>' +
+    '<div style="flex:1;"><div style="font-size:1rem;font-weight:700;color:var(--text);">'+c.name+'</div>' +
+    '<div style="font-size:.82rem;color:var(--text3);" id="mc-sub-'+c.id+'">Fetching…</div></div>' +
+    '<div style="text-align:right;"><div style="font-size:1rem;font-weight:700;color:var(--text3);" id="mc-bal-'+c.id+'">—</div>' +
+    '<div style="font-size:.78rem;color:var(--text3);" id="mc-usd-'+c.id+'">$—</div></div></div>'
   ).join('');
 
   // Fetch all chains in parallel
