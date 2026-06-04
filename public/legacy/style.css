@@ -2174,3 +2174,178 @@ a:hover{color:var(--text);}
 .brand{display:flex;align-items:center;gap:0;}
 
 .brand-logo{display:flex!important;align-items:center;flex-shrink:0;background:none!important;box-shadow:none!important;}
+
+
+/* ═══════════════════════════════════════════════
+   MOBILE (≤768px) — Full desktop look, keep nav
+   Desktop: sidebar + topbar | Mobile: topbar + bottom nav
+═══════════════════════════════════════════════ */
+@media(max-width:768px){
+
+  /* ── App shell ── */
+  html,body{ overflow:hidden; height:100%; background:var(--bg); }
+  #app-root{
+    position:fixed; top:0; left:0; right:0; bottom:0;
+    width:100%; max-width:100%; height:100dvh;
+    overflow:visible; box-shadow:none; transform:none; background:transparent;
+  }
+  #app-root::before,#app-root::after{ display:none; }
+
+  /* ── Hide desktop sidebar ── */
+  #desktopNav{ display:none !important; }
+
+  /* ── Mobile topbar ── */
+  #globalTopBar{
+    display:flex !important;
+    position:fixed; top:0; left:0; right:0; height:54px;
+    background:var(--topbar-bg);
+    border-bottom:1px solid var(--border);
+    align-items:center; justify-content:space-between;
+    padding:0 16px; z-index:200;
+  }
+  #globalTopBar .brand{ display:flex !important; align-items:center; gap:8px; }
+
+  /* ── Keep bottom nav ── */
+  #bottomNav{
+    display:flex !important;
+    position:fixed; bottom:0; left:0; right:0; height:60px;
+    background:var(--topbar-bg);
+    backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+    border-top:1px solid var(--border);
+    z-index:200;
+  }
+  .nav-pill-wrap{
+    width:100%; padding:0; gap:0;
+    border:none; background:transparent; border-radius:0;
+  }
+  .nav-btn{
+    flex:1; display:flex; flex-direction:column; align-items:center;
+    gap:3px; padding:6px 4px; min-height:unset;
+    font-size:.6rem; letter-spacing:0; border-radius:0;
+    background:transparent; border:none; color:var(--text2);
+    font-family:'Inter',sans-serif; font-weight:600; cursor:pointer;
+    transition:color .15s;
+  }
+  .nav-btn .ni svg{ width:18px; height:18px; }
+  .nav-btn.active{ color:var(--accent3); }
+
+  /* ── Pages — desktop style but offset for topbar + bottom nav ── */
+  .page{
+    position:fixed !important;
+    top:54px !important;
+    left:0 !important; right:0 !important;
+    bottom:60px !important;
+    width:100% !important; max-width:100% !important;
+    display:none !important;
+    overflow-y:auto !important; overflow-x:hidden !important;
+    -webkit-overflow-scrolling:touch !important;
+    flex-direction:column !important; align-items:center !important;
+    padding:14px 0 24px !important;
+    animation:none !important;
+  }
+  .page.active{ display:flex !important; }
+
+  /* ── All page content — desktop 600px → mobile full width with padding ── */
+  .page > *{
+    width:100% !important; max-width:100% !important;
+    flex-shrink:0 !important; box-sizing:border-box !important;
+    padding-left:14px !important; padding-right:14px !important;
+  }
+
+  /* ── Same content cap as desktop for all pages ── */
+  #page-home > *,#page-send > *,#page-lend > *,
+  #page-swap > *,#page-bridge > *,#page-history > *,
+  #page-more > *,#page-arcname > *,#page-naira > *,
+  #page-bulk > *,#page-multichain > *,#page-payreq > *{
+    max-width:100% !important; width:100% !important;
+    box-sizing:border-box !important;
+  }
+
+  /* ── Cards — same as desktop ── */
+  .card{ padding:18px; border-radius:18px; }
+  .card-title{ font-size:.95rem; margin-bottom:14px; }
+  .home-bal-card{ padding:18px; margin-bottom:12px; }
+
+  /* ── Balance ── */
+  .home-bal-num{ font-size:2.2rem !important; }
+
+  /* ── Quick actions — 4 cols on mobile ── */
+  .home-actions-top{
+    display:grid !important;
+    grid-template-columns:repeat(4,1fr) !important;
+    gap:8px !important; margin-bottom:10px !important;
+  }
+  .home-action{ padding:12px 6px !important; border-radius:14px !important; }
+  .home-action-icon{ font-size:1.2rem !important; margin-bottom:3px !important; }
+  .home-action-label{ font-size:.72rem !important; }
+
+  /* ── Inputs — 16px prevents iOS zoom, same desktop style ── */
+  input,select,textarea{
+    font-size:16px !important; padding:11px 14px !important;
+  }
+  .flbl{ font-size:.9rem; margin-bottom:7px; }
+  .btn{ padding:13px; font-size:.95rem; border-radius:14px; }
+  .max-btn{ padding:8px 12px; font-size:.88rem; }
+  .page-title{ font-size:1.3rem; margin-bottom:5px; }
+  .page-sub{ font-size:.88rem; margin-bottom:14px; }
+
+  /* ── AI button — above bottom nav ── */
+  #aiBtn{
+    bottom:70px !important; right:16px !important;
+    width:46px !important; height:46px !important;
+    border-radius:14px !important;
+  }
+
+  /* ── Agent panel — bottom sheet on mobile ── */
+  #agentPanel{
+    left:0 !important; right:0 !important;
+    bottom:0 !important; top:auto !important;
+    width:100% !important; max-width:100% !important;
+    height:88dvh !important; border-radius:20px 20px 0 0 !important;
+    border-left:none !important; border-top:1px solid var(--border) !important;
+    transform:translateY(100%) !important;
+  }
+  #agentPanel.open{ transform:translateY(0) !important; }
+
+  /* ── Modals ── */
+  .wallet-modal-overlay{ align-items:flex-end !important; padding-bottom:0 !important; }
+  .wallet-modal{
+    border-radius:22px 22px 0 0 !important;
+    max-width:100% !important; width:100% !important;
+  }
+
+  /* ── Toast — above bottom nav ── */
+  #toast{
+    bottom:68px !important;
+    left:14px !important; right:14px !important;
+    max-width:none !important; width:auto !important;
+    min-width:0 !important; padding:10px 16px !important;
+  }
+
+  /* ── Pickers — bottom sheet ── */
+  #chainPickerSheet,#bankPickerSheet{
+    left:0 !important; right:0 !important;
+    bottom:0 !important; top:auto !important;
+    width:100% !important; transform:none !important;
+    border-radius:20px 20px 0 0 !important;
+    max-height:70dvh !important;
+    border:none !important; border-top:1px solid var(--border2) !important;
+    box-shadow:0 -8px 32px rgba(0,0,0,.4) !important;
+  }
+
+  /* ── Prevent horizontal scroll ── */
+  body,#app-root{ overflow-x:hidden !important; }
+
+  /* ── Scrollbar hidden on mobile ── */
+  .page::-webkit-scrollbar{ display:none; }
+  .page{ scrollbar-width:none; }
+}
+
+/* ── Very small phones (360px) ── */
+@media(max-width:360px){
+  #globalTopBar{ padding:0 10px !important; }
+  .page > *{ padding-left:10px !important; padding-right:10px !important; }
+  .home-bal-num{ font-size:1.9rem !important; }
+  .nav-btn{ font-size:.55rem !important; }
+  .home-action-label{ font-size:.62rem !important; }
+}
