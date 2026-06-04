@@ -625,19 +625,20 @@ function toggleTheme(){
   root.setAttribute('data-theme',t);
   localStorage.setItem('nan_theme',t);
   const btn=document.getElementById('themeToggle');
-  if(btn) btn.textContent=t==='light'?'🌙':'☀️';
+  if(btn) btn.classList.toggle('is-light',t==='light');
 }
 function initTheme(){
   const s=localStorage.getItem('nan_theme')||'dark';
   document.documentElement.setAttribute('data-theme',s);
   const btn=document.getElementById('themeToggle');
-  if(btn) btn.textContent=s==='light'?'🌙':'☀️';
+  if(btn) btn.classList.toggle('is-light',s==='light');
 }
 function updateTopBar(connected){
   const bar=document.getElementById('globalTopBar');
   const btn=document.getElementById('connectTopBtn');
   const landBtn=document.getElementById('landConnectBtn');
   const dNav=document.getElementById('desktopNav');
+  const addrPill=document.getElementById('mobileAddrPill');
   if(connected){
     if(window.innerWidth >= 769){
       bar.classList.add('desktop-show');
@@ -659,6 +660,12 @@ function updateTopBar(connected){
         setTimeout(()=>{btn.textContent=orig;btn.style.color='';btn.style.borderColor='';},1800);
       });
     };
+    // Mobile address pill
+    if(addrPill){
+      const label=otpEmail?'⚡ '+otpEmail.split('@')[0].slice(0,12):'0x…'+userAddr.slice(-6);
+      addrPill.textContent=label;
+      addrPill.style.display='block';
+    }
     const discBtn=document.getElementById('disconnectTopBtn');
     if(discBtn)discBtn.style.display='block';
     const discBtnMobile=document.getElementById('disconnectTopBtnMobile');
@@ -668,6 +675,7 @@ function updateTopBar(connected){
     bar.style.display='none';
     if(dNav) dNav.style.display='none';
     btn.style.display='none';
+    if(addrPill) addrPill.style.display='none';
     const discBtnMobile=document.getElementById('disconnectTopBtnMobile');
     if(discBtnMobile)discBtnMobile.style.display='none';
     if(landBtn) landBtn.style.display='block';

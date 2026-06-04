@@ -52,7 +52,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20width%3D%2232%22%20height%3D%2232%22%20viewBox%3D%220%200%2032%2032%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M10%2C16%20C10%2C9%202%2C9%202%2C16%20C2%2C23%2010%2C23%2014%2C16%20C18%2C9%2026%2C9%2026%2C16%20C26%2C23%2018%2C23%2014%2C16%20Z%22%20fill%3D%22none%22%20stroke%3D%22%237000ff%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E"/>
 <link rel="preconnect" href="https://rsms.me/">
 <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
-<link rel="stylesheet" href="/legacy/style.css?v=1780559862"/>
+<link rel="stylesheet" href="/legacy/style.css?v=1780560363"/>
 <style>
 /* ══ THEME TOKENS — scoped per theme so neither fights the other ══ */
 :root,[data-theme="dark"]{
@@ -194,16 +194,32 @@ html,body{background:var(--bg);}
       <button id="tnav-ai" onclick="toggleAgent()" style="display:none;align-items:center;gap:5px;background:rgba(109,40,217,.15);border:1px solid rgba(109,40,217,.3);border-radius:100px;padding:6px 12px;font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;color:#c084fc;cursor:pointer;white-space:nowrap;">✦ AI</button>
     </div>
     </div>
-    <div style="display:flex;align-items:center;gap:8px;">
+    <!-- Mobile wallet address pill (center) -->
+    <button id="mobileAddrPill" onclick="if(userAddr){navigator.clipboard.writeText(userAddr).then(()=>{const o=this.textContent;this.textContent='✓ Copied';setTimeout(()=>this.textContent=o,1600)})}" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:100px;padding:4px 10px;font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:.72rem;font-weight:600;color:var(--text2);cursor:pointer;white-space:nowrap;flex:1;text-align:center;max-width:110px;overflow:hidden;text-overflow:ellipsis;transition:all .2s;"></button>
+    <div style="display:flex;align-items:center;gap:6px;">
       <span id="devBadge" class="dev-badge" style="display:none;"></span>
-      <button id="themeToggle" onclick="toggleTheme()" class="theme-toggle-btn">🌙</button>
-      <button id="navFaucetBtn" onclick="claimFaucet(this)" style="display:none;align-items:center;gap:5px;background:rgba(109,40,217,.12);border:1px solid rgba(109,40,217,.25);border-radius:100px;padding:5px 12px;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:700;color:#c084fc;cursor:pointer;white-space:nowrap;transition:all .2s;" title="Get free USDC tokens">💧 Faucet</button>
-      <div class="net-pill" id="netPill">Arc Testnet</div>
+      <!-- Net pill: shows "Arc Testnet" on desktop, "Arc" on mobile via CSS -->
+      <div class="net-pill" id="netPill"><span class="net-pill-full">Arc Testnet</span><span class="net-pill-short" style="display:none;">Arc</span></div>
+      <!-- Faucet: text pill on desktop, icon button on mobile -->
+      <button id="navFaucetBtn" onclick="claimFaucet(this)" style="display:none;" class="tb-icon-btn tb-faucet" title="Get free USDC tokens">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6M5 12a7 7 0 0 0 14 0"/><path d="M12 22v-4"/><path d="M9 19h6"/></svg>
+        <span class="tb-btn-text">Faucet</span>
+      </button>
+      <!-- Theme toggle: SVG icons, JS updates class -->
+      <button id="themeToggle" onclick="toggleTheme()" class="tb-icon-btn tb-theme" title="Toggle theme">
+        <!-- Sun icon (shown in dark mode to switch to light) -->
+        <svg class="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <!-- Moon icon (shown in light mode to switch to dark) -->
+        <svg class="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
       <button id="connectTopBtn" onclick="showWalletPicker()">Connect</button>
       <button id="landConnectBtn" style="display:none;" onclick="showWalletPicker()">Connect</button>
+      <!-- Desktop disconnect (text) -->
       <button id="disconnectTopBtn" onclick="disconnect()" style="display:none;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);border-radius:100px;padding:6px 12px;font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;color:var(--danger);cursor:pointer;white-space:nowrap;transition:all .2s;">⏏ Disconnect</button>
-      <!-- Mobile-only icon disconnect -->
-      <button id="disconnectTopBtnMobile" onclick="disconnect()" style="display:none;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);border-radius:50%;width:32px;height:32px;font-size:1rem;color:var(--danger);cursor:pointer;align-items:center;justify-content:center;flex-shrink:0;">⏏</button>
+      <!-- Mobile disconnect (icon button) -->
+      <button id="disconnectTopBtnMobile" onclick="disconnect()" class="tb-icon-btn tb-disconnect" style="display:none;" title="Disconnect">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
     </div>
   </div>
 
@@ -1671,7 +1687,7 @@ document.addEventListener('DOMContentLoaded',function(){
   }
 })();
 </script>
-<script src="/legacy/app.js?v=1780556461"></script>
+<script src="/legacy/app.js?v=1780560363"></script>
 <script src="/legacy/ui.js?v=1780556461"></script>
 
 <!-- ══ BANK PICKER MODAL ══ -->

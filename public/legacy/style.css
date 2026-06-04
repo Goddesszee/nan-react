@@ -2384,3 +2384,195 @@ a:hover{color:var(--text);}
     padding-right:14px !important;
   }
 }
+
+/* ════════════════════════════════════════════
+   TOPBAR ICON BUTTONS — unified circle style
+   Works on both desktop and mobile
+   ════════════════════════════════════════════ */
+.tb-icon-btn{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--text2);cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:all .15s;
+  padding:0;
+}
+.tb-icon-btn:hover{background:var(--card2);color:var(--text);border-color:var(--border2);}
+.tb-icon-btn.tb-faucet{color:var(--accent3);border-color:rgba(168,85,247,.25);background:rgba(168,85,247,.08);}
+.tb-icon-btn.tb-faucet:hover{background:rgba(168,85,247,.16);}
+.tb-icon-btn.tb-disconnect{color:var(--danger);border-color:rgba(248,113,113,.25);background:rgba(248,113,113,.06);}
+.tb-icon-btn.tb-disconnect:hover{background:rgba(248,113,113,.14);}
+/* Hide text labels inside icon buttons on mobile */
+.tb-icon-btn .tb-btn-text{font-family:'Inter',sans-serif;font-size:.78rem;font-weight:700;margin-left:4px;}
+
+/* Theme toggle SVG icons — sun shown in dark mode, moon in light mode */
+.tb-theme .icon-sun{display:block;}
+.tb-theme .icon-moon{display:none;}
+.tb-theme.is-light .icon-sun{display:none;}
+.tb-theme.is-light .icon-moon{display:block;}
+
+/* Old emoji theme-toggle-btn kept working on desktop */
+.theme-toggle-btn{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--text);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.9rem;transition:all .15s;
+}
+
+/* ════════════════════════════════════════════
+   MOBILE TOPBAR LAYOUT
+   ════════════════════════════════════════════ */
+@media(max-width:768px){
+  /* Topbar layout: logo | addr-pill | icon-buttons */
+  #globalTopBar{
+    display:flex;align-items:center;
+    gap:6px;
+    padding:0 12px !important;
+    height:54px !important;
+  }
+  /* Hide desktop nav pills on mobile */
+  #topbarNav,#topbarPageInfo{display:none !important;}
+  /* Address pill: takes up remaining center space */
+  #mobileAddrPill{display:none;} /* shown via JS after connect */
+  /* Net pill: hide long text, show short */
+  .net-pill-full{display:none !important;}
+  .net-pill-short{display:inline !important;}
+  /* Faucet: hide text label, show icon only */
+  .tb-faucet .tb-btn-text{display:none !important;}
+  /* Keep icon buttons 30px on mobile */
+  .tb-icon-btn{width:30px !important;height:30px !important;}
+  /* Hide full-text disconnect on mobile */
+  #disconnectTopBtn{display:none !important;}
+  /* Hide old connectTopBtn connected state on mobile — addr pill replaces it */
+  #connectTopBtn.connected{display:none !important;}
+  /* Page offset */
+  .page{top:54px !important;}
+  /* AI FAB above nav */
+  #aiBtn{bottom:84px !important;right:14px !important;}
+}
+
+@media(min-width:769px){
+  /* Desktop: hide mobile addr pill and short net pill text */
+  #mobileAddrPill{display:none !important;}
+  .net-pill-full{display:inline !important;}
+  .net-pill-short{display:none !important;}
+  /* Faucet on desktop: show text + icon */
+  #navFaucetBtn{
+    background:rgba(109,40,217,.12) !important;
+    border:1px solid rgba(109,40,217,.25) !important;
+    border-radius:100px !important;
+    padding:5px 12px !important;
+    color:#c084fc !important;
+    width:auto !important;height:auto !important;
+  }
+  .tb-faucet .tb-btn-text{display:inline !important;}
+  /* Disconnect: hide mobile icon on desktop */
+  #disconnectTopBtnMobile{display:none !important;}
+}
+
+/* ════════════════════════════════════════════
+   MOBILE FRIENDLY COLORS — both modes
+   ════════════════════════════════════════════ */
+@media(max-width:768px){
+
+  /* Dark mode: ensure all page text is readable */
+  .page-title{color:var(--text) !important;}
+  .page-sub{color:var(--text2) !important;}
+  .card-title{color:var(--accent3) !important;}
+  .flbl{color:var(--text2) !important;}
+
+  /* Inputs readable on both modes */
+  input,select,textarea{
+    color:var(--text) !important;
+    background:var(--surface) !important;
+    border-color:var(--border) !important;
+  }
+  input::placeholder{color:var(--text3) !important;}
+
+  /* More page items */
+  .more-item-title{color:var(--text) !important;}
+  .more-item-sub{color:var(--text2) !important;}
+
+  /* History items */
+  .tx-title{color:var(--text) !important;}
+  .tx-time{color:var(--text3) !important;}
+
+  /* Gas row */
+  .gas-row{color:var(--success) !important;}
+
+  /* Confirm rows */
+  .conf-lbl{color:var(--text3) !important;}
+  .conf-val{color:var(--text) !important;}
+}
+
+/* ════════════════════════════════════════════
+   LIGHT MODE MOBILE — clean, native feel
+   ════════════════════════════════════════════ */
+@media(max-width:768px){
+  [data-theme="light"] #globalTopBar{
+    background:#ffffff !important;
+    border-bottom:1px solid #e8e8e8 !important;
+  }
+  [data-theme="light"] .tb-icon-btn{
+    background:#f4f4f4 !important;
+    border-color:#e5e5e5 !important;
+    color:#555 !important;
+  }
+  [data-theme="light"] .tb-icon-btn.tb-faucet{
+    background:rgba(112,0,255,.06) !important;
+    border-color:rgba(112,0,255,.18) !important;
+    color:#7000ff !important;
+  }
+  [data-theme="light"] .tb-icon-btn.tb-disconnect{
+    background:rgba(220,38,38,.05) !important;
+    border-color:rgba(220,38,38,.2) !important;
+    color:#dc2626 !important;
+  }
+  [data-theme="light"] #mobileAddrPill{
+    background:#f4f4f4 !important;
+    border-color:#e5e5e5 !important;
+    color:#444 !important;
+  }
+  [data-theme="light"] .net-pill{
+    background:rgba(112,0,255,.06) !important;
+    border-color:rgba(112,0,255,.18) !important;
+    color:#7000ff !important;
+  }
+  [data-theme="light"] .page{background:#fafafa !important;}
+  [data-theme="light"] .bottom-nav{
+    background:#ffffff !important;
+    border-top:1px solid #e8e8e8 !important;
+  }
+  [data-theme="light"] .nav-pill-wrap{
+    background:rgba(112,0,255,.03) !important;
+    border-color:rgba(112,0,255,.1) !important;
+  }
+  [data-theme="light"] input,[data-theme="light"] select{
+    background:#ffffff !important;
+    border-color:#e5e5e5 !important;
+    color:#111 !important;
+  }
+  [data-theme="light"] .card{
+    background:#ffffff !important;
+    border-color:#ebebeb !important;
+    box-shadow:0 1px 3px rgba(0,0,0,.06) !important;
+  }
+  [data-theme="light"] .more-item{
+    background:#ffffff !important;
+    border-color:#ebebeb !important;
+  }
+  [data-theme="light"] .tx-item{
+    background:#ffffff !important;
+    border-color:#ebebeb !important;
+  }
+  [data-theme="light"] .swap-inner,
+  [data-theme="light"] .swap-box-wrap{
+    background:#ffffff !important;
+    border-color:#ebebeb !important;
+  }
+  [data-theme="light"] .home-asset-row{
+    background:#ffffff !important;
+    border-color:#ebebeb !important;
+  }
+}
