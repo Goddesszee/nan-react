@@ -595,6 +595,7 @@ function showPage(name){
   // Extra page init
   try{ if(name==='lend') initLendUI(); } catch(e){}
   try{ if(name==='history') renderHistory(); } catch(e){}
+  try{ if(name==='multichain') mcRefresh(); } catch(e){}
   try{ if(name==='bulk'){renderPayrollGroups();renderPayrollHistory();} } catch(e){}
   try{ if(name==='arcname') renderArcDirectory(); } catch(e){}
   try{ if(name==='swap') refreshBalances(); } catch(e){}
@@ -5236,3 +5237,102 @@ async function adminSeedPool(){
   }
 }
 // Railway redeploy trigger Sun May 31 08:32:21 UTC 2026
+
+
+// ═══════════════════════════════════════════
+// MULTICHAIN BALANCE
+// ═══════════════════════════════════════════
+const MC_CHAINS = [
+  { id:'ARC',          name:'Arc Testnet',      color:'#6d28d9', rpc:'https://rpc.testnet.arc.network',    usdc:'0x3600000000000000000000000000000000000000', decimals:6,  icon:'🟣' },
+  { id:'ETH-SEPOLIA',  name:'Ethereum Sepolia', color:'#627EEA', rpc:'https://rpc.sepolia.org',             usdc:'0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238', decimals:6,  icon:'⟠' },
+  { id:'BASE-SEPOLIA', name:'Base Sepolia',     color:'#0052FF', rpc:'https://sepolia.base.org',            usdc:'0x036CbD53842c5426634e7929541eC2318f3dCF7e', decimals:6,  icon:'🔵' },
+  { id:'ARB-SEPOLIA',  name:'Arbitrum Sepolia', color:'#28A0F0', rpc:'https://sepolia-rollup.arbitrum.io/rpc', usdc:'0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d', decimals:6, icon:'🔷' },
+  { id:'OP-SEPOLIA',   name:'OP Sepolia',       color:'#FF0420', rpc:'https://sepolia.optimism.io',         usdc:'0x5fd84259d66Cd46123540766Be93DFE6D43130D7', decimals:6,  icon:'🔴' },
+  { id:'AVAX-FUJI',    name:'Avalanche Fuji',   color:'#E84142', rpc:'https://api.avax-test.network/ext/bc/C/rpc', usdc:'0x5425890298aed601595a70ab815c96711a31Bc65', decimals:6, icon:'🔺' },
+];
+const MC_BAL_ABI = ['function balanceOf(address) view returns (uint256)'];
+
+async function mcFetchBalance(chain, address) {
+  try {
+    const provider = new ethers.JsonRpcProvider(chain.rpc);
+    const contract = new ethers.Contract(chain.usdc, MC_BAL_ABI, provider);
+    const bal = await Promise.race([
+      contract.balanceOf(address),
+      new Promise((_,r) => setTimeout(() => r(new Error('timeout')), 8000))
+    ]);
+    return parseFloat(ethers.formatUnits(bal, chain.decimals));
+  } catch(e) {
+    return null;
+  }
+}
+
+async function mcRefresh() {
+  const addr = userAddr || circleWalletAddress;
+  if (!addr) { toast('Connect wallet first', 'error'); return; }
+
+  const btn = document.getElementById('mcRefreshBtn');
+  const list = document.getElementById('mcChainList');
+  const totalEl = document.getElementById('mcTotalBal');
+  const chainsEl = document.getElementById('mcTotalChains');
+  const updEl = document.getElementById('mcLastUpdated');
+
+  btn.innerHTML = '<span class="spinner"></span> Loading…';
+  btn.disabled = true;
+  list.innerHTML = '';
+  totalEl.textContent = '...';
+  chainsEl.textContent = 'Fetching balances...';
+
+  // Show skeleton cards
+  list.innerHTML = MC_CHAINS.map(c =>
+    '<div id="mc-row-'+c.id+'" style="display:flex;align-items:center;gap:12px;padding:13px 14px;background:var(--surface);border:1px solid var(--border);border-radius:12px;">' +
+    '<div style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">'+c.icon+'</div>' +
+    '<div style="flex:1;"><div style="font-size:.88rem;font-weight:600;color:var(--text);">'+c.name+'</div>' +
+    '<div style="font-size:.72rem;color:var(--text3);" id="mc-sub-'+c.id+'">Fetching…</div></div>' +
+    '<div style="text-align:right;"><div style="font-size:.88rem;font-weight:700;color:var(--text3);" id="mc-bal-'+c.id+'">—</div>' +
+    '<div style="font-size:.7rem;color:var(--text3);" id="mc-usd-'+c.id+'">$—</div></div></div>'
+  ).join('');
+
+  // Fetch all chains in parallel
+  const results = await Promise.all(MC_CHAINS.map(async c => {
+    const bal = await mcFetchBalance(c, addr);
+    return { chain: c, bal };
+  }));
+
+  let total = 0;
+  let chainsWithBal = 0;
+
+  results.forEach(({ chain, bal }) => {
+    const balEl = document.getElementById('mc-bal-'+chain.id);
+    const usdEl = document.getElementById('mc-usd-'+chain.id);
+    const subEl = document.getElementById('mc-sub-'+chain.id);
+    const rowEl = document.getElementById('mc-row-'+chain.id);
+
+    if (bal === null) {
+      if (balEl) balEl.textContent = 'Error';
+      if (usdEl) usdEl.textContent = '';
+      if (subEl) subEl.textContent = 'Could not fetch';
+      if (rowEl) rowEl.style.opacity = '0.5';
+    } else {
+      if (balEl) {
+        balEl.textContent = bal.toFixed(2) + ' USDC';
+        balEl.style.color = bal > 0 ? 'var(--text)' : 'var(--text3)';
+      }
+      if (usdEl) usdEl.textContent = '$' + bal.toFixed(2);
+      if (subEl) subEl.textContent = chain.id === 'ARC' ? 'Native USDC on Arc' : 'CCTP USDC';
+      if (rowEl && bal > 0) {
+        rowEl.style.borderColor = chain.color + '40';
+        rowEl.style.background = chain.color + '0a';
+      }
+      total += bal;
+      if (bal > 0) chainsWithBal++;
+    }
+  });
+
+  totalEl.textContent = total.toFixed(2) + ' USDC';
+  chainsEl.textContent = chainsWithBal + ' chain' + (chainsWithBal !== 1 ? 's' : '') + ' with balance · $' + total.toFixed(2);
+  updEl.textContent = 'Updated ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+
+  btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Refresh';
+  btn.disabled = false;
+}
+
