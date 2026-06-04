@@ -2576,3 +2576,128 @@ a:hover{color:var(--text);}
     border-color:#ebebeb !important;
   }
 }
+
+/* ════════════════════════════════════════════
+   LIGHT MODE — HOME PAGE INLINE COLOR FIXES
+   Targets hardcoded rgba(255,255,255,...) text
+   ════════════════════════════════════════════ */
+@media(max-width:768px){
+  /* Home balance card outer wrapper: transparent so inner card shows */
+  [data-theme="light"] #page-home > div:first-child{
+    background:transparent !important;
+    border:none !important;
+    box-shadow:none !important;
+  }
+  /* Balance section inside card: hardcoded white text -> dark */
+  [data-theme="light"] #page-home [style*="color:rgba(255,255,255,.85)"],
+  [data-theme="light"] #page-home [style*="color:rgba(255,255,255,0.85)"],
+  [data-theme="light"] #page-home [style*="color:rgba(255,255,255,.7)"],
+  [data-theme="light"] #page-home [style*="color:rgba(255,255,255,.75)"],
+  [data-theme="light"] #page-home [style*="color:rgba(255,255,255,.9)"],
+  [data-theme="light"] #page-home [style*="color:rgba(255,255,255,.65)"],
+  [data-theme="light"] #page-home [style*="color:rgba(225,210,255,.8)"]{
+    color:rgba(0,0,0,.7) !important;
+  }
+  /* Arc Testnet pill on balance card */
+  [data-theme="light"] #page-home [style*="background:rgba(112,0,255,.08)"][style*="border:1px solid rgba(112,0,255,.18)"],
+  [data-theme="light"] #page-home [style*="background:rgba(112,0,255,.08)"][style*="border:1px solid rgba(112,0,255,.2)"]{
+    background:rgba(112,0,255,.08) !important;
+    border-color:rgba(112,0,255,.25) !important;
+    color:#5800cc !important;
+  }
+  /* Token pills on balance card */
+  [data-theme="light"] #page-home [style*="background:rgba(255,255,255,.06)"][style*="border-radius:100px"]{
+    background:rgba(112,0,255,.06) !important;
+    border-color:rgba(112,0,255,.2) !important;
+    color:#5800cc !important;
+  }
+  /* Balance card background section */
+  [data-theme="light"] #page-home [style*="background:var(--card)"][style*="padding:22px"]{
+    background:linear-gradient(135deg,#7000ff,#9333ea) !important;
+  }
+  [data-theme="light"] #page-home [style*="background:var(--card)"][style*="padding:22px"] *{
+    color:#fff !important;
+  }
+  /* "Total Balance" text and $amount in light mode */
+  [data-theme="light"] #homeBalAmt,
+  [data-theme="light"] #homeBalNgn,
+  [data-theme="light"] #homeUsdcBal,
+  [data-theme="light"] #homeEurcBal{
+    color:#fff !important;
+  }
+  /* Actions section */
+  [data-theme="light"] .mob-actions{
+    background:#f8f8f8 !important;
+    border-color:#e8e8e8 !important;
+  }
+  [data-theme="light"] .mob-action-item span,
+  [data-theme="light"] .mob-action-item [style*="color:var(--text)"]{
+    color:#111 !important;
+  }
+  /* Earn promo section */
+  [data-theme="light"] #page-home [style*="4.80%"],
+  [data-theme="light"] #page-home [style*="letter-spacing:.12em"]{
+    color:#888 !important;
+  }
+  /* Asset rows text fixes */
+  [data-theme="light"] .mob-asset-row [style*="color:var(--text)"]{
+    color:#111 !important;
+  }
+  [data-theme="light"] #page-home [style*="border-bottom:1px solid var(--border)"]{
+    border-bottom-color:#e8e8e8 !important;
+  }
+  /* Outer card wrapper on home page dark mode: keep dark */
+  #page-home > div:first-child{
+    background:var(--card) !important;
+    border:1px solid var(--border) !important;
+    border-radius:22px !important;
+    overflow:hidden !important;
+  }
+}
+
+/* ════════════════════════════════════════════
+   LIGHT MODE — ALL PAGES INLINE COLOR FIXES
+   Hardcoded rgba(255,255,255,...) text on other pages
+   ════════════════════════════════════════════ */
+@media(max-width:768px){
+  /* Generic: any hardcoded white text in light mode */
+  [data-theme="light"] .page [style*="color:#f0f0f0"],
+  [data-theme="light"] .page [style*="color: #f0f0f0"],
+  [data-theme="light"] .page [style*="color:#ffffff"],
+  [data-theme="light"] .page [style*="color: #ffffff"]{
+    color:#111111 !important;
+  }
+  /* But keep white text on purple buttons */
+  [data-theme="light"] .page .btn,
+  [data-theme="light"] .page [style*="background:#7000ff"] *,
+  [data-theme="light"] .page [style*="background:linear-gradient(135deg,#7000ff"] *,
+  [data-theme="light"] .mob-action-ico *{
+    color:#ffffff !important;
+  }
+  /* Inputs on all pages */
+  [data-theme="light"] .page input,
+  [data-theme="light"] .page select,
+  [data-theme="light"] .page textarea{
+    background:#ffffff !important;
+    color:#111111 !important;
+    border-color:#e0e0e0 !important;
+  }
+  /* Surface backgrounds */
+  [data-theme="light"] .page [style*="background:var(--surface)"],
+  [data-theme="light"] .page [style*="background:#1a1a1a"],
+  [data-theme="light"] .page [style*="background:#111111"],
+  [data-theme="light"] .page [style*="background:#111;"]{
+    background:#f4f4f4 !important;
+  }
+  /* Dark borders */
+  [data-theme="light"] .page [style*="border:1px solid rgba(255,255,255,.1)"],
+  [data-theme="light"] .page [style*="border:1px solid rgba(255,255,255,.08)"],
+  [data-theme="light"] .page [style*="border:1px solid rgba(255,255,255,.07)"]{
+    border-color:#e0e0e0 !important;
+  }
+  /* Page title and sub in light mode */
+  [data-theme="light"] .page-title{color:#111 !important;}
+  [data-theme="light"] .page-sub{color:#666 !important;}
+  [data-theme="light"] .flbl{color:#555 !important;}
+  [data-theme="light"] .card-title{color:#7000ff !important;}
+}
