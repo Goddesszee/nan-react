@@ -1063,16 +1063,21 @@ async function onConnected(isEmail=false, isDev=false){
   renderHistory();
   renderArcDirectory();
   initLendUI();
-  const _aiEl=document.getElementById('aiBtn');
-  if(_aiEl){ _aiEl.style.display='flex'; _aiEl._aiListenerAdded=false; }
-  setTimeout(attachAIListeners,100);
+  // Move aiBtn and agentPanel to body so overflow:hidden on page divs cannot clip them
+  var _aiEl=document.getElementById('aiBtn');
+  if(_aiEl){document.body.appendChild(_aiEl);_aiEl.style.display='flex';_aiEl._aiListenerAdded=false;}
+  var _panel=document.getElementById('agentPanel');
+  if(_panel){document.body.appendChild(_panel);}
+  // Hide extra AI buttons - single floating button only
   var deskAI=document.getElementById('aiBtnDesktop');
-  if(deskAI)deskAI.style.display='none'; // hidden — desktop AI button not used
+  if(deskAI)deskAI.style.display='none';
+  var tnavAI=document.getElementById('tnav-ai');
+  if(tnavAI)tnavAI.style.display='none';
+  var moreAI=document.getElementById('nanAiMoreBtn');
+  if(moreAI)moreAI.style.display='none';
   var navF=document.getElementById('navFaucetBtn');
   if(navF)navF.style.display='flex';
-  var tnavAI=document.getElementById('tnav-ai');
-  if(tnavAI){tnavAI.style.display='flex';tnavAI._aiListenerAdded=false;}
-  setTimeout(attachAIListeners, 100); // re-attach after button is visible
+  setTimeout(attachAIListeners,100);
   startOrderEngine();
   // Pre-approve all contracts once so users never see repeated approve popups
   // Approvals done per-transaction with exact amounts for security
