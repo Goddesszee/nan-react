@@ -1762,14 +1762,11 @@ function calcSwap(){
     document.getElementById('swapToUSD').textContent='0.00';
     return;
   }
-  // Show FX estimate immediately while contract quote loads
   const rate=swapFlipped?(1/FX):FX;
   const estOut=(amt*rate*0.999).toFixed(6);
   document.getElementById('swapTo').value=estOut;
   document.getElementById('swapFromUSD').textContent=swapFlipped?(amt*(1/FX)).toFixed(2):amt.toFixed(2);
   document.getElementById('swapToUSD').textContent=swapFlipped?parseFloat(estOut).toFixed(2):(parseFloat(estOut)*(1/FX)).toFixed(2);
-  // Fetch contract quote in background and update
-  _fetchContractQuote(amt);
 }
 let _contractQuoteTimer=null;
 async function _fetchContractQuote(amt){
