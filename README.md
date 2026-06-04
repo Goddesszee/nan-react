@@ -1,5 +1,3 @@
 # NAN Wallet
 
-Stablecoin-native DeFi wallet. Built on Arc Testnet.
-
-<!-- deploy trigger -->
+Stablecoin-native DeFi wallet on Arc Testnet.
