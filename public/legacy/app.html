@@ -191,7 +191,7 @@ html,body{background:var(--bg);}
       <button onclick="goPage('home')" id="tnav-home" class="tnav-btn">Home</button>
       <button onclick="goPage('earn')" id="tnav-earn" class="tnav-btn">Earn</button>
       <button onclick="goPage('more')" id="tnav-more" class="tnav-btn">More</button>
-      <button id="tnav-ai" onclick="toggleAgent()" style="display:none;align-items:center;gap:5px;background:rgba(109,40,217,.15);border:1px solid rgba(109,40,217,.3);border-radius:100px;padding:6px 12px;font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;color:#c084fc;cursor:pointer;white-space:nowrap;">✦ AI</button>
+      <button id="tnav-ai" style="display:none;align-items:center;gap:5px;background:rgba(109,40,217,.15);border:1px solid rgba(109,40,217,.3);border-radius:100px;padding:6px 12px;font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;color:#c084fc;cursor:pointer;white-space:nowrap;">✦ AI</button>
     </div>
     </div>
     <!-- Mobile wallet address pill (center) -->
@@ -813,7 +813,7 @@ html,body{background:var(--bg);}
     <div style="font-size:.875rem;color:var(--text);letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px;padding:0 2px;">Account</div>
     <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:14px;">
 
-      <div id="nanAiMoreBtn" onclick="toggleAgent()" style="display:flex;align-items:center;gap:14px;padding:13px 15px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;" onmouseover="this.style.background='rgba(109,40,217,.08)'" onmouseout="this.style.background='transparent'">
+      <div id="nanAiMoreBtn" style="display:flex;align-items:center;gap:14px;padding:13px 15px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;" onmouseover="this.style.background='rgba(109,40,217,.08)'" onmouseout="this.style.background='transparent'">
         <div style="width:36px;height:36px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
         </div>
@@ -1890,7 +1890,7 @@ function pickBank(name){
   <span>✦</span>
   <span style="font-size:1rem;font-family:'Inter',sans-serif;font-weight:700;letter-spacing:.05em;">AI</span>
 </button>
-<button id="aiBtnDesktop" onclick="toggleAgent()" style="display:none;position:fixed;top:80px;right:28px;z-index:2147483647;align-items:center;gap:8px;background:#6d28d9;border:none;border-radius:14px;color:#f3e8ff;font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;padding:10px 16px;cursor:pointer;box-shadow:0 4px 20px rgba(109,40,217,.4);touch-action:manipulation;">
+<button id="aiBtnDesktop" style="display:none;position:fixed;top:80px;right:28px;z-index:2147483647;align-items:center;gap:8px;background:#6d28d9;border:none;border-radius:14px;color:#f3e8ff;font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;padding:10px 16px;cursor:pointer;box-shadow:0 4px 20px rgba(109,40,217,.4);touch-action:manipulation;">
   <span>✦</span> NAN AI
 </button>
 <div id="agentPanel" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid #1a1a1a;border-radius:24px 24px 0 0;z-index:2147483647;font-family:'Inter',sans-serif;overflow:hidden;">
