@@ -988,7 +988,6 @@ html,body{background:var(--bg);}
         <option value="ARB-SEPOLIA">🔷 Arbitrum Sepolia</option>
         <option value="OP-SEPOLIA">🔴 OP Sepolia</option>
         <option value="AVAX-FUJI">🔺 Avalanche Fuji</option>
-        <option value="POLYGON-AMOY">🟣 Polygon Amoy</option>
       </select>
 
       <!-- Address toggle -->
@@ -1003,7 +1002,7 @@ html,body{background:var(--bg);}
 
       <!-- Address input — hidden by default -->
       <div id="bridgeAddrWrap" style="display:none;margin-top:12px;position:relative;">
-        <input id="bridgeDestAddr" type="text" placeholder="0x... address on destination network" onfocus="if(isCircleWallet&&!this.value&&userAddr)this.value=userAddr;"
+        <input id="bridgeDestAddr" type="text" placeholder="0x... address on destination network" onfocus="if(!this.value&&userAddr)this.value=userAddr;" onclick="if(!this.value&&userAddr)this.value=userAddr;"
           style="width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:12px 54px 12px 14px;color:var(--text);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;outline:none;"/>
         <button onclick="navigator.clipboard.readText().then(t=>{document.getElementById('bridgeDestAddr').value=t}).catch(()=>document.getElementById('bridgeDestAddr').focus())"
           style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(112,0,255,.15);border:1px solid rgba(112,0,255,.2);border-radius:7px;color:var(--accent3);font-size:1rem;padding:4px 8px;cursor:pointer;font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;">Paste</button>
