@@ -20,3 +20,5 @@ If you are developing a production application, we recommend using TypeScript wi
 <!-- deploy: 2026-06-04 11:37:20 -->
 
 <!-- deploy-ready: 2026-06-04 11:42 -->
+
+<!-- deploy: 2026-06-04 12:12 — ai panel fix -->
