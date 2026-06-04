@@ -3322,6 +3322,8 @@ function attachAIListeners(){
     });
   }
   addToggle(document.getElementById('aiBtn'));
+  addToggle(document.getElementById('aiBtnDesktop'));
+  addToggle(document.getElementById('tnav-ai'));
   addToggle(document.getElementById('nanAiMoreBtn'));
   addToggle(document.getElementById('agentCloseBtn'));
 }
