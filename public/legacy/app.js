@@ -65,7 +65,7 @@ const CCTP_DEST_DOMAIN = {
 const CCTP_DEST_CONFIG = {
   'ETH-SEPOLIA': {
     chainId:'0xaa36a7', chainName:'Ethereum Sepolia',
-    rpc:'https://rpc.sepolia.org',
+    rpc:'https://ethereum-sepolia-rpc.publicnode.com',
     explorer:'https://sepolia.etherscan.io', currency:'ETH',
     transmitter:'0xE737e5cEBEEBa77EFE34D4aa090756590b1CE275',
   },
@@ -2082,7 +2082,7 @@ function openChainPicker(){
 }
 
 const _BRIDGE_NETWORKS = {
-  'ETH-SEPOLIA':  { chainId:'0xaa36a7', name:'Ethereum Sepolia', rpc:'https://rpc.sepolia.org', explorer:'https://sepolia.etherscan.io', symbol:'ETH' },
+  'ETH-SEPOLIA':  { chainId:'0xaa36a7', name:'Ethereum Sepolia', rpc:'https://ethereum-sepolia-rpc.publicnode.com', explorer:'https://sepolia.etherscan.io', symbol:'ETH' },
   'BASE-SEPOLIA': { chainId:'0x14a34',  name:'Base Sepolia',     rpc:'https://sepolia.base.org', explorer:'https://sepolia-explorer.base.org', symbol:'ETH' },
   'ARB-SEPOLIA':  { chainId:'0x66eee',  name:'Arbitrum Sepolia', rpc:'https://sepolia-rollup.arbitrum.io/rpc', explorer:'https://sepolia.arbiscan.io', symbol:'ETH' },
   'OP-SEPOLIA':   { chainId:'0xaa37dc', name:'OP Sepolia',       rpc:'https://sepolia.optimism.io', explorer:'https://sepolia-optimism.etherscan.io', symbol:'ETH' },
@@ -5333,7 +5333,7 @@ async function adminSeedPool(){
 // ═══════════════════════════════════════════
 const MC_CHAINS = [
   { id:'ARC',          name:'Arc Testnet',      color:'#6d28d9', rpc:'https://rpc.testnet.arc.network',    usdc:'0x3600000000000000000000000000000000000000', decimals:6,  icon:'🟣' },
-  { id:'ETH-SEPOLIA',  name:'Ethereum Sepolia', color:'#627EEA', rpc:'https://rpc.sepolia.org',             usdc:'0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238', decimals:6,  icon:'⟠' },
+  { id:'ETH-SEPOLIA',  name:'Ethereum Sepolia', color:'#627EEA', rpc:'https://ethereum-sepolia-rpc.publicnode.com',             usdc:'0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238', decimals:6,  icon:'⟠' },
   { id:'BASE-SEPOLIA', name:'Base Sepolia',     color:'#0052FF', rpc:'https://sepolia.base.org',            usdc:'0x036CbD53842c5426634e7929541eC2318f3dCF7e', decimals:6,  icon:'🔵' },
   { id:'ARB-SEPOLIA',  name:'Arbitrum Sepolia', color:'#28A0F0', rpc:'https://sepolia-rollup.arbitrum.io/rpc', usdc:'0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d', decimals:6, icon:'🔷' },
   { id:'OP-SEPOLIA',   name:'OP Sepolia',       color:'#FF0420', rpc:'https://sepolia.optimism.io',         usdc:'0x5fd84259d66Cd46123540766Be93DFE6D43130D7', decimals:6,  icon:'🔴' },
