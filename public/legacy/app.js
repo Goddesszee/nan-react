@@ -1071,7 +1071,7 @@ async function onConnected(isEmail=false, isDev=false){
   var navF=document.getElementById('navFaucetBtn');
   if(navF)navF.style.display='flex';
   var tnavAI=document.getElementById('tnav-ai');
-  if(tnavAI)tnavAI.style.display='flex';
+  if(tnavAI){tnavAI.style.display='flex';tnavAI._aiListenerAdded=false;}
   setTimeout(attachAIListeners, 100); // re-attach after button is visible
   startOrderEngine();
   // Pre-approve all contracts once so users never see repeated approve popups
