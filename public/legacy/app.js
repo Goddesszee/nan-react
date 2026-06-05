@@ -167,6 +167,7 @@ const SWAP_ABI = [
   'function quoteEURCtoUSDC(uint256) view returns (uint256,uint256)',
   'function getRate() view returns (uint256,uint256)',
   'function getLiquidity() view returns (uint256,uint256)',
+  'function withdrawLiquidity(uint256,uint256) external',
 ];
 const LENDING_ABI = [
   'function supply(uint256) external',
@@ -5123,8 +5124,8 @@ async function loadAdminStats(){
     loading.innerHTML=`<div style="font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#888;text-align:center;padding:20px;line-height:2;">${msg}</div>`;
   }
 
-  // Try server-side analytics first (fast)
-  try{
+  // Skip Railway analytics (Railway cannot reach Arc RPC) — go straight to browser RPC scan
+  if(false){
     setMsg('Loading NAN analytics…');
     const res=await fetch('https://nan-production.up.railway.app/api/analytics');
     if(res.ok){
@@ -5150,7 +5151,7 @@ async function loadAdminStats(){
         return;
       }
     }
-  }catch(e){ console.warn('Server analytics failed, falling back to RPC scan:', e.message); }
+  } // end if(false) - Railway analytics disabled
 
   // Fallback: browser RPC scan
   setMsg('Server unavailable — scanning blockchain…');
@@ -5193,22 +5194,17 @@ async function loadAdminStats(){
 
     // Find what chunk size RPC accepts by testing
     setMsg('Finding optimal chunk size…');
-    let CHUNK=500000;
-    for(const sz of [500000,200000,100000,50000,20000,10000,5000]){
-      try{
-        await rpc('eth_getLogs',[{fromBlock:'0x0',toBlock:'0x'+sz.toString(16),address:HIST}]);
-        CHUNK=sz;
-        break;
-      }catch(e){continue;}
-    }
-    setMsg(`Using ${CHUNK.toLocaleString()} block chunks…`);
+    const NAN_START=45488000;
+    let CHUNK=10000;
+    setMsg(`Scanning from NAN deployment block…`);
 
-    // Scan in chunks — show progress
+    // Scan in chunks from NAN_START — show progress
     async function scanContract(addr, topics, label){
       const logs=[];
-      const chunks=Math.ceil(latest/CHUNK);
+      const totalBlocks=latest-NAN_START;
+      const chunks=Math.ceil(totalBlocks/CHUNK);
       for(let i=0;i<chunks;i++){
-        const from=i*CHUNK, to=Math.min(from+CHUNK-1,latest);
+        const from=NAN_START+(i*CHUNK), to=Math.min(from+CHUNK-1,latest);
         const r=await oneLogs(addr,topics,from,to);
         logs.push(...r);
         setMsg(`${label}<br/>${logs.length} events · ${Math.round(((i+1)/chunks)*100)}%`);
@@ -5322,6 +5318,29 @@ async function loadAdminPoolStats(){
   }catch(e){console.warn('Pool stats error:',e.message);}
 }
 
+async function adminWithdrawPool(){
+  if(!signer){toast('Connect MetaMask (owner wallet 0x86B2...366a) first','error',5000);return;}
+  if(!onArcNetwork){toast('Switch to Arc Testnet first','error',4000);return;}
+  const btn=document.getElementById('adminWithdrawBtn');
+  const statusEl=document.getElementById('adminSeedStatus');
+  btn.disabled=true;btn.textContent='Withdrawing…';
+  try{
+    const swapC=new ethers.Contract(SWAP_CONTRACT,SWAP_ABI,signer);
+    const [uLiq,eLiq]=await swapC.getLiquidity();
+    const u=parseFloat(ethers.formatUnits(uLiq,6));
+    const e=parseFloat(ethers.formatUnits(eLiq,6));
+    if(u<=0&&e<=0){toast('Pool is already empty','error',3000);btn.disabled=false;btn.textContent='Withdraw All';return;}
+    if(statusEl)statusEl.innerHTML='<span style="color:#f87171;">Withdrawing '+u.toFixed(2)+' USDC + '+e.toFixed(2)+' EURC…</span>';
+    const tx=await swapC.withdrawLiquidity(uLiq,eLiq,arcGasOpts());
+    await tx.wait(1);
+    toast('✓ Withdrew '+u.toFixed(2)+' USDC + '+e.toFixed(2)+' EURC from pool','success',6000);
+    await loadAdminPoolStats();
+  }catch(err){
+    toast('Withdraw failed: '+err.message.slice(0,100),'error',6000);
+  }finally{
+    btn.disabled=false;btn.textContent='Withdraw All';
+  }
+}
 async function adminSeedPool(){
   if(!signer){toast('Connect MetaMask first to seed pool','error',4000);return;}
   if(!onArcNetwork){toast('Switch to Arc Testnet first','error',4000);return;}
@@ -5464,4 +5483,5 @@ async function mcRefresh() {
   btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Refresh';
   btn.disabled = false;
 }
+
 
