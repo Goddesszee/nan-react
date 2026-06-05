@@ -1058,7 +1058,7 @@ async function onConnected(isEmail=false, isDev=false){
   updateTopBar(true);
   if(typeof updateDesktopNav === 'function') updateDesktopNav();
   // Mobile UI enhancements
-  setTimeout(()=>{ injectMobileWelcome(); wrapBalanceCurrSign(); }, 300);
+  setTimeout(()=>{ injectMobileWelcome(); }, 300);
   // Update More page profile card
   try{
     const addr = userAddr||'';
@@ -5397,25 +5397,6 @@ function injectMobileWelcome(){
   const tapZone = document.getElementById('secretTapZone');
   if(tapZone) brand.insertBefore(el, tapZone);
   else brand.prepend(el);
-}
-
-// ── Mobile balance $ wrap ──
-function wrapBalanceCurrSign(){
-  if(window.innerWidth > 480) return;
-  if(document.getElementById('balCurrSign')) return;
-  const balAmt = document.getElementById('homeBalAmt');
-  if(!balAmt) return;
-  const parent = balAmt.parentElement;
-  if(!parent) return;
-  const textNode = parent.childNodes[0];
-  if(textNode && textNode.nodeType === 3 && textNode.textContent.includes('$')){
-    const span = document.createElement('span');
-    span.id = 'balCurrSign';
-    span.style.cssText = 'font-size:1.8rem;font-weight:800;margin-top:2px;margin-right:1px;line-height:1;vertical-align:top;display:inline-block;';
-    span.textContent = '$';
-    parent.replaceChild(span, textNode);
-    parent.style.cssText += ';display:flex!important;align-items:flex-start!important;line-height:1!important;font-size:2.2rem!important;';
-  }
 }
 // Railway redeploy trigger Sun May 31 08:32:21 UTC 2026
 
