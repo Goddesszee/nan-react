@@ -3282,10 +3282,48 @@ a:hover{color:var(--text);}
   #secretTapZone { display: none !important; }
   #mobileWelcome { display: flex !important; }
 
-  /* ── Hide theme + disconnect from topbar ── */
-  #themeToggle { display: none !important; }
+  /* ── Theme toggle: icon only, square ── */
+  #themeToggle {
+    display: flex !important;
+    width: 30px !important;
+    height: 30px !important;
+    border-radius: 8px !important;
+    background: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    padding: 0 !important;
+    min-height: unset !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  #themeToggle svg { width: 15px !important; height: 15px !important; }
+
+  /* ── Disconnect: icon + Exit label ── */
   #disconnectTopBtn { display: none !important; }
-  #disconnectTopBtnMobile { display: none !important; }
+  #disconnectTopBtnMobile {
+    display: flex !important;
+    width: auto !important;
+    padding: 0 10px !important;
+    height: 30px !important;
+    border-radius: 8px !important;
+    background: rgba(248,113,113,.12) !important;
+    border: 1px solid rgba(248,113,113,.25) !important;
+    color: #f87171 !important;
+    min-height: unset !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    font-size: .72rem !important;
+    font-weight: 700 !important;
+    font-family: 'Inter', sans-serif !important;
+  }
+  #disconnectTopBtnMobile::after {
+    content: 'Exit' !important;
+    font-size: .72rem !important;
+    font-weight: 700 !important;
+    font-family: 'Inter', sans-serif !important;
+    color: #f87171 !important;
+  }
+  #disconnectTopBtnMobile svg { width: 13px !important; height: 13px !important; }
 
   /* ── Faucet button: text only, no icon ── */
   .tb-faucet svg { display: none !important; }
@@ -3307,6 +3345,15 @@ a:hover{color:var(--text);}
     background: linear-gradient(135deg,#5b00d6 0%,#7000ff 50%,#9333ea 100%) !important;
     border-radius: 20px !important;
     border: none !important;
+  }
+  /* Outer wrapper must be transparent to show gradient card */
+  #page-home > div[style*="border-radius:22px"],
+  #page-home > div[style*="var(--card)"] {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
   }
   .home-bal-lbl {
     color: rgba(255,255,255,.75) !important;
