@@ -1897,50 +1897,18 @@ async function doSwap(){
   btn.innerHTML='<span class="spinner"></span>Swapping...';btn.disabled=true;
   if(isCircleWallet&&circleWalletId){
     try{
-      // Fire approve + swap without waiting between — Arc confirms in <1s
-      // Approve runs in background, swap submits immediately after
-      btn.innerHTML='<span class="spinner"></span>Submitting swap…';
-      const approveKey='nan_sw_approved_'+circleWalletId+'_'+(isUSDCtoEURC?'u':'e');
-      const alreadyApproved=sessionStorage.getItem(approveKey);
-      if(!alreadyApproved){
-        // Fire approve without waiting
-        fetch('https://nan-production.up.railway.app/api/circle-wallets',{method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({action:'contractCall',walletId:circleWalletId,
-            contractAddress:isUSDCtoEURC?USDC_ADDR:EURC_ADDR,
-            functionSignature:'approve(address,uint256)',
-            params:[SWAP_CONTRACT,'115792089237316195423570985008687907853269984665640564039457584007913129639935']})})
-          .then(()=>sessionStorage.setItem(approveKey,'1'))
-          .catch(()=>{});
-        // Wait 2s for Arc to confirm approve (sub-second finality + Circle processing)
-        await new Promise(r=>setTimeout(r,2000));
-      }
-      // Submit swap — non-blocking, Arc confirms in <1s
+      btn.innerHTML='<span class=\"spinner\"></span>Swapping via App Kit…';
       const swapRes=await fetch('https://nan-production.up.railway.app/api/circle-wallets',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({action:'contractCall',walletId:circleWalletId,
-          contractAddress:SWAP_CONTRACT,
-          functionSignature:isUSDCtoEURC?'swapUSDCtoEURC(uint256)':'swapEURCtoUSDC(uint256)',
-          params:[Math.floor(fromAmt*1_000_000).toString()]})});
+        body:JSON.stringify({action:'swapExecute',walletAddress:circleWalletAddress,tokenIn,tokenOut,amountIn:fromAmt.toString()})});
       const d=await swapRes.json();
       if(!d.success)throw new Error(d.error||'Swap failed');
-      // Use contract quote if available, else fall back to FX estimate
-      const _cq=window._lastContractQuote;
-      const amtOut=(_cq&&Math.abs(_cq.amtIn-fromAmt)<0.001)?
-        _cq.amtOut.toFixed(4):
-        (fromAmt*(isUSDCtoEURC?FX:(1/FX))*0.999).toFixed(4);
-      window._lastContractQuote=null; // clear after use
+      const amtOut=d.amountOut?parseFloat(d.amountOut).toFixed(4):(fromAmt*(isUSDCtoEURC?FX:(1/FX))*0.999).toFixed(4);
       toast('✓ Swapped '+fromAmt.toFixed(2)+' '+tokenIn+' → '+amtOut+' '+tokenOut+'!','success',6000);
-      const _swapTxId=d.txHash||d.transactionId||'pending';
-      addTx({hash:_swapTxId,to:SWAP_CONTRACT,toRaw:'NANSwap',amount:fromAmt.toFixed(6),fromToken:tokenIn,toToken:tokenOut,outAmount:amtOut,type:'swap',token:tokenIn,ts:Date.now(),confirmed:true,source:'swap'});
-      setTimeout(()=>resolveCircleTxHash(_swapTxId),2000);
+      addTx({hash:d.txHash,to:SWAP_CONTRACT,toRaw:'NANSwap',amount:fromAmt.toFixed(6),fromToken:tokenIn,toToken:tokenOut,outAmount:amtOut,type:'swap',token:tokenIn,ts:Date.now(),confirmed:true,source:'appkit-swap'});
       document.getElementById('swapFrom').value='';document.getElementById('swapTo').value='';
       btn.innerHTML='Swap';btn.disabled=false;
-      // Poll balance until it changes
-      setTimeout(async()=>{
-        for(let i=0;i<6;i++){
-          await new Promise(r=>setTimeout(r,3000));
-          await refreshBalances();
-        }
-      },0);
+      setTimeout(()=>refreshBalances(),2000);
+      setTimeout(()=>refreshBalances(),6000);
       return;
     }catch(err){
       toast('Swap failed: '+err.message.slice(0,120),'error',7000);
