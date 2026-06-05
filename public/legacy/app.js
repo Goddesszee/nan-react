@@ -5397,6 +5397,20 @@ function injectMobileWelcome(){
   const tapZone = document.getElementById('secretTapZone');
   if(tapZone) brand.insertBefore(el, tapZone);
   else brand.prepend(el);
+  // Wrap dollar sign after welcome inject
+  setTimeout(()=>{
+    if(window.innerWidth > 480) return;
+    const balParent = document.getElementById('homeBalAmt')?.parentElement;
+    if(!balParent || document.getElementById('balCurrSign')) return;
+    const textNode = Array.from(balParent.childNodes).find(n => n.nodeType===3 && n.textContent.includes('$'));
+    if(textNode){
+      const span = document.createElement('span');
+      span.id = 'balCurrSign';
+      span.style.cssText = 'font-size:2.4rem;font-weight:800;color:#f0f0f0;line-height:1;';
+      span.textContent = '$';
+      balParent.replaceChild(span, textNode);
+    }
+  }, 500);
 }
 // Railway redeploy trigger Sun May 31 08:32:21 UTC 2026
 
