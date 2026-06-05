@@ -143,6 +143,7 @@ async function getDynamicSigner() {
     window.wp       = injected;
     window.provider = prov;
     window.onArcNetwork = true;
+    userAddr = await s.getAddress();
     return s;
   } catch(e) {
     console.error('getDynamicSigner error:', e);
@@ -735,7 +736,17 @@ async function fetchLiveFX(){
 function updateSwapRateDisplay(){
   if(document.getElementById('swapFrom')?.value>0) calcSwap();
   const el=document.getElementById('swapRate');if(!el)return;
-  // Show pool rate from contract (not FX API which is real-world rate)
+  // Circle wallet users: show live FX rate (App Kit uses real-world rate, not pool)
+  if(isCircleWallet){
+    const time=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    if(swapFlipped){
+      el.innerHTML=`1 EURC ≈ ${(1/FX).toFixed(4)} USDC &nbsp;·&nbsp; <span style="color:var(--success);font-size:.65rem;">● live ${time}</span>`;
+    }else{
+      el.innerHTML=`1 USDC ≈ ${FX.toFixed(4)} EURC &nbsp;·&nbsp; <span style="color:var(--success);font-size:.65rem;">● live ${time}</span>`;
+    }
+    return;
+  }
+  // MetaMask users: show pool rate from contract
   try{
     const provider=getArcProvider();
     const c=new ethers.Contract(SWAP_CONTRACT,['function quoteUSDCtoEURC(uint256) view returns (uint256,uint256)','function quoteEURCtoUSDC(uint256) view returns (uint256,uint256)'],provider);
@@ -1861,6 +1872,8 @@ function flipSwap(){
   updateSwapRateDisplay();
 }
 async function doSwap(){
+  if(!userAddr&&signer){userAddr=await signer.getAddress();}
+  if(!userAddr&&!isCircleWallet){const _s=await getDynamicSigner();if(_s)userAddr=await _s.getAddress();}
   if(!userAddr){toast('Connect wallet first','error');return;}
   // Auto-switch to Arc if on wrong network
   if(!isCircleWallet&&wp){
