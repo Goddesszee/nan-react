@@ -3401,8 +3401,8 @@ a:hover{color:var(--text);}
   /* ── Hide address pill on mobile ── */
   #mobileAddrPill { display: none !important; }
 
-  /* ── Hide welcome avatar on mobile ── */
-  #mobileWelcome > div:first-child { display: none !important; }
+  /* ── Welcome text must be visible ── */
+  #mobileWelcome { display: flex !important; align-items: center !important; }
 
   /* ── Font sizes ── */
   .page-title { font-size: 1.1rem !important; }
@@ -3418,5 +3418,20 @@ a:hover{color:var(--text);}
   .more-item-sub { font-size: .75rem !important; }
   .earn-apy-num { font-size: 2.4rem !important; }
   .swap-input { font-size: 1.4rem !important; }
+
+  /* ── Save & Earn section readable in light mode ── */
+  [data-theme="light"] #page-home div[style*="border-bottom"] * {
+    color: var(--text) !important;
+  }
+  [data-theme="light"] #page-home div[style*="border-bottom"] span {
+    color: var(--text3) !important;
+  }
+
+  /* ── Balance $ sign styling ── */
+  #homeBalAmt {
+    font-size: 2.4rem !important;
+    font-weight: 800 !important;
+    color: #f0f0f0 !important;
+  }
 
 }
