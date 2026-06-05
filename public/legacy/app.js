@@ -215,7 +215,7 @@ const CCTP_TRANSMITTER_ABI = [
 // ═══════════════════════════════════════════
 let provider=null, signer=null, userAddr=null, wp=null;
 let usdcBal='0', eurcBal='0';
-let onArcNetwork=false, balancesLoading=false;
+let onArcNetwork=false, balancesLoading=false, _bridging=false;
 let lastTxHash=null, lastTxId=null;
 let recipType='address', resolvedTo=null, lastResolvedInput='';
 let regType='x', swapFlipped=false, sendToken='USDC';
@@ -734,11 +734,26 @@ async function fetchLiveFX(){
 }
 function updateSwapRateDisplay(){
   if(document.getElementById('swapFrom')?.value>0) calcSwap();
-  const time=fxLastUpdated?fxLastUpdated.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'fallback';
   const el=document.getElementById('swapRate');if(!el)return;
-  el.innerHTML=swapFlipped
-    ?`1 EURC ≈ ${(1/FX).toFixed(4)} USDC &nbsp;·&nbsp; <span style="color:var(--success);font-size:.65rem;">● live ${time}</span>`
-    :`1 USDC ≈ ${FX.toFixed(4)} EURC &nbsp;·&nbsp; <span style="color:var(--success);font-size:.65rem;">● live ${time}</span>`;
+  // Show pool rate from contract (not FX API which is real-world rate)
+  try{
+    const provider=getArcProvider();
+    const c=new ethers.Contract(SWAP_CONTRACT,['function quoteUSDCtoEURC(uint256) view returns (uint256,uint256)','function quoteEURCtoUSDC(uint256) view returns (uint256,uint256)'],provider);
+    const oneUnit=ethers.parseUnits('1',6);
+    if(swapFlipped){
+      c.quoteEURCtoUSDC(oneUnit).then(q=>{
+        const rate=parseFloat(ethers.formatUnits(q[0],6));
+        const time=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+        el.innerHTML=`1 EURC ≈ ${rate.toFixed(4)} USDC &nbsp;·&nbsp; <span style="color:var(--success);font-size:.65rem;">● pool ${time}</span>`;
+      }).catch(()=>{});
+    }else{
+      c.quoteUSDCtoEURC(oneUnit).then(q=>{
+        const rate=parseFloat(ethers.formatUnits(q[0],6));
+        const time=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+        el.innerHTML=`1 USDC ≈ ${rate.toFixed(4)} EURC &nbsp;·&nbsp; <span style="color:var(--success);font-size:.65rem;">● pool ${time}</span>`;
+      }).catch(()=>{});
+    }
+  }catch(e){}
 }
 
 // ═══════════════════════════════════════════
@@ -757,11 +772,11 @@ async function checkNetwork(){
   try{
     const hex=await wp.request({method:'eth_chainId'});
     const chainId=parseInt(hex,16);
-    onArcNetwork=chainId===ARC_CHAIN_ID;
+    onArcNetwork=(chainId===ARC_CHAIN_ID||hex.toLowerCase()===ARC_HEX.toLowerCase());
     const banner=document.getElementById('wrongNetBanner');
     if(banner)banner.classList.toggle('show',!onArcNetwork&&!!userAddr);
-    // Auto-prompt switch if on wrong network
-    if(!onArcNetwork&&userAddr) switchToArc().catch(()=>{});
+    // Auto-prompt switch if on wrong network (not during bridge mint)
+    if(!onArcNetwork&&userAddr&&!_bridging) switchToArc().catch(()=>{});
     return onArcNetwork;
   }catch{return false;}
 }
@@ -1850,11 +1865,11 @@ async function doSwap(){
   // Auto-switch to Arc if on wrong network
   if(!isCircleWallet&&wp){
     const _cid=await wp.request({method:'eth_chainId'});
-    if(_cid!==ARC_HEX){
+    if(_cid.toLowerCase()!==ARC_HEX.toLowerCase()){
       toast('Switching to Arc Testnet…','info',3000);
       await switchToArc();
       const _cid2=await wp.request({method:'eth_chainId'});
-      if(_cid2!==ARC_HEX){toast('Please switch to Arc Testnet in your wallet','error');return;}
+      if(_cid2.toLowerCase()!==ARC_HEX.toLowerCase()){toast('Please switch to Arc Testnet in your wallet','error');return;}
       provider=new ethers.BrowserProvider(wp);signer=await provider.getSigner();onArcNetwork=true;
     }
   }
@@ -2138,11 +2153,11 @@ async function doBridge(){
   // Auto-switch to Arc if on wrong network
   if(wp){
     const _cid=await wp.request({method:'eth_chainId'});
-    if(_cid!==ARC_HEX){
+    if(_cid.toLowerCase()!==ARC_HEX.toLowerCase()){
       toast('Switching to Arc Testnet…','info',3000);
       await switchToArc();
       const _cid2=await wp.request({method:'eth_chainId'});
-      if(_cid2!==ARC_HEX){toast('Please switch to Arc Testnet in your wallet','error');return;}
+      if(_cid2.toLowerCase()!==ARC_HEX.toLowerCase()){toast('Please switch to Arc Testnet in your wallet','error');return;}
       provider=new ethers.BrowserProvider(wp);signer=await provider.getSigner();onArcNetwork=true;
     }
   }
@@ -2156,6 +2171,7 @@ async function doBridge(){
   const btn=document.getElementById('bridgeBtn');
   const statusCard=document.getElementById('bridgeStatusCard');
   const statusContent=document.getElementById('bridgeStatusContent');
+  _bridging=true; // suppress auto-network-switch during bridge
   btn.innerHTML='<span class="spinner"></span>Step 1/3: Approving USDC…';btn.disabled=true;
   try{
     const amtParsed=ethers.parseUnits(amt.toFixed(USDC_DECIMALS),USDC_DECIMALS);
@@ -2186,7 +2202,7 @@ async function doBridge(){
     burnTxHash=burnTx.hash;
     lastTxHash=burnTxHash;
     toast('✓ Burn submitted! Waiting for Circle attestation…','info',8000);
-    _autoSwitchToBridgeDest(destChain).catch(()=>{});
+    // Chain switch handled by pollIrisAttestation after attestation arrives
     const receipt=await burnTx.wait(1);
     addTx({hash:burnTxHash,to:destAddr,toRaw:'Bridge→'+destChain,amount:amt.toFixed(6),type:'bridge',token:'USDC',ts:Date.now(),confirmed:true,source:'cctp',destChain});
 
@@ -2210,7 +2226,7 @@ async function doBridge(){
     await refreshBalances();
   }catch(err){
     toast((err?.info?.error?.message||err?.reason||err?.message||'Bridge failed').slice(0,140),'error',8000);
-  }finally{btn.innerHTML='Bridge USDC via CCTP';btn.disabled=false;}
+  }finally{btn.innerHTML='Bridge USDC via CCTP';btn.disabled=false;_bridging=false;}
 }
 
 async function pollIrisAttestation(txHash, destChain) {
@@ -2307,6 +2323,9 @@ async function pollIrisAttestation(txHash, destChain) {
       const mintEl = document.getElementById('mintStatus');
       if (mintEl) { mintEl.style.display = 'block'; mintEl.textContent = '⏳ Switching wallet to ' + destConfig.chainName + '…'; }
 
+      // Ensure wp is set - use rabby/ethereum as fallback
+      if(!wp) wp = window.rabby || window.ethereum || null;
+      if(!wp) { if(mintEl) mintEl.textContent = '⚠️ Wallet disconnected — reconnect and retry'; return; }
       try {
         // Switch to destination chain
         try {
@@ -4605,7 +4624,12 @@ window.addEventListener('load',()=>{
       onArcNetwork = true;
       // Try to get signer from injected provider
       getDynamicSigner().then(s => {
-        if (s) { signer = s; onConnected(false, false); }
+        if (s) {
+          signer = s;
+          // Also restore wp so bridge/swap/send work after page reload
+          if(!wp) wp = window.rabby || window.ethereum || null;
+          onConnected(false, false);
+        }
         else { onConnected(false, false); }
       }).catch(() => onConnected(false, false));
     }
