@@ -1057,6 +1057,8 @@ async function onConnected(isEmail=false, isDev=false){
   showPage('home');
   updateTopBar(true);
   if(typeof updateDesktopNav === 'function') updateDesktopNav();
+  // Mobile UI enhancements
+  setTimeout(()=>{ injectMobileWelcome(); wrapBalanceCurrSign(); }, 300);
   // Update More page profile card
   try{
     const addr = userAddr||'';
@@ -5374,6 +5376,45 @@ async function adminSeedPool(){
     toast('Seed failed: '+err.message.slice(0,100),'error',6000);
   }finally{
     btn.disabled=false;btn.textContent='Seed Pool';
+  }
+}
+
+// ── Mobile welcome block injection ──
+function injectMobileWelcome(){
+  if(window.innerWidth > 480) return;
+  if(document.getElementById('mobileWelcome')) return;
+  const brand = document.querySelector('.brand');
+  if(!brand) return;
+  const name = (typeof arcNames !== 'undefined' && arcNames.length)
+    ? arcNames[0].name + '.arc'
+    : (userAddr ? userAddr.slice(0,6)+'...' : 'NAN');
+  const initial = name.charAt(0).toUpperCase();
+  const el = document.createElement('div');
+  el.id = 'mobileWelcome';
+  el.onclick = () => handleSecretTap();
+  el.style.cssText = 'display:none;align-items:center;gap:10px;cursor:pointer;';
+  el.innerHTML = '<div style="width:32px;height:32px;border-radius:8px;background:#7000ff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#fff;flex-shrink:0;">'+initial+'</div><div><div style="font-size:11px;color:var(--text3);line-height:1;margin-bottom:2px;">Welcome back</div><div id="mobileWelcomeName" style="font-size:14px;font-weight:700;color:var(--text);line-height:1.2;">'+name+'</div></div>';
+  const tapZone = document.getElementById('secretTapZone');
+  if(tapZone) brand.insertBefore(el, tapZone);
+  else brand.prepend(el);
+}
+
+// ── Mobile balance $ wrap ──
+function wrapBalanceCurrSign(){
+  if(window.innerWidth > 480) return;
+  if(document.getElementById('balCurrSign')) return;
+  const balAmt = document.getElementById('homeBalAmt');
+  if(!balAmt) return;
+  const parent = balAmt.parentElement;
+  if(!parent) return;
+  const textNode = parent.childNodes[0];
+  if(textNode && textNode.nodeType === 3 && textNode.textContent.includes('$')){
+    const span = document.createElement('span');
+    span.id = 'balCurrSign';
+    span.style.cssText = 'font-size:1.8rem;font-weight:800;margin-top:2px;margin-right:1px;line-height:1;vertical-align:top;display:inline-block;';
+    span.textContent = '$';
+    parent.replaceChild(span, textNode);
+    parent.style.cssText += ';display:flex!important;align-items:flex-start!important;line-height:1!important;font-size:2.2rem!important;';
   }
 }
 // Railway redeploy trigger Sun May 31 08:32:21 UTC 2026
