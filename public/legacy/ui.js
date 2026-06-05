@@ -40,6 +40,7 @@ function goPage(name) {
     'payreq-new': 'page-payreq-new',
     'payreq-view': 'page-payreq-view',
     'pay-now':  'page-pay-now',
+    multichain: 'page-multichain',
   };
 
   const navMap = {
@@ -56,6 +57,7 @@ function goPage(name) {
     history:    'nav-history',
     payreq:     'nav-more',
     'payreq-new': 'nav-more',
+    multichain:  'nav-more',
   };
 
   const pageId = pageMap[name] || ('page-' + name);
@@ -91,6 +93,7 @@ function goPage(name) {
   if (name === 'bulk') { renderBulkRecipients(); updateBulkSummary(); }
   if (name === 'home') updateHomeScreen();
   if (name === 'payreq') renderPaymentRequests();
+  if (name === 'multichain') { if(typeof mcRefresh==='function') setTimeout(mcRefresh, 100); }
   if (name === 'payreq-new') initNewPRForm();
 }
 
