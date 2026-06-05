@@ -48,7 +48,7 @@ const HISTORY_ABI = [
 ];
 
 // CCTP — Circle Cross-Chain Transfer Protocol
-const ARC_CCTP_DOMAIN = 7; const CCTP_TOKEN_MESSENGER = '0x8FE6B999Dc680CcFDD5Bf7EB0974218be2542DAA'; // Arc Testnet TokenMessengerV2 (official)
+const ARC_CCTP_DOMAIN = 26; const CCTP_TOKEN_MESSENGER = '0x8FE6B999Dc680CcFDD5Bf7EB0974218be2542DAA'; // Arc Testnet TokenMessengerV2 (official)
 const CCTP_MESSAGE_TRANSMITTER = '0xE737e5cEBEEBa77EFE34D4aa090756590b1CE275'; // Arc Testnet MessageTransmitterV2
 // Arc Testnet CCTP Domain = 26 (official from docs.arc.io)
 const CCTP_DEST_DOMAIN = {
@@ -753,7 +753,6 @@ function detectWallet(){
   return window.ethereum||window.rabby||null;
 }
 async function checkNetwork(){
-  // If using Dynamic wallet (no injected provider), assume Arc Testnet
   if(!wp){ onArcNetwork=true; return true; }
   try{
     const hex=await wp.request({method:'eth_chainId'});
@@ -761,13 +760,15 @@ async function checkNetwork(){
     onArcNetwork=chainId===ARC_CHAIN_ID;
     const banner=document.getElementById('wrongNetBanner');
     if(banner)banner.classList.toggle('show',!onArcNetwork&&!!userAddr);
+    // Auto-prompt switch if on wrong network
+    if(!onArcNetwork&&userAddr) switchToArc().catch(()=>{});
     return onArcNetwork;
   }catch{return false;}
 }
 async function switchToArc(){
   if(!wp)return;
   try{await wp.request({method:'wallet_switchEthereumChain',params:[{chainId:ARC_HEX}]});}
-  catch(e){if(e.code===4902||e.code===-32603){try{await wp.request({method:'wallet_addEthereumChain',params:[ARC_PARAMS]});}catch{}}}
+  catch(e){if(e.code===4902||e.code===-32603){try{await wp.request({method:'wallet_addEthereumChain',params:[ARC_PARAMS]});await wp.request({method:'wallet_switchEthereumChain',params:[{chainId:ARC_HEX}]});}catch{}}}
 }
 async function connectWallet(){
   showWalletPicker();
@@ -1846,9 +1847,17 @@ function flipSwap(){
 }
 async function doSwap(){
   if(!userAddr){toast('Connect wallet first','error');return;}
-  if(!onArcNetwork&&!isCircleWallet&&wp){toast('Switch to Arc Testnet first','error');return;}
-  // Debug: log wallet state
-  console.log('doSwap state:', {userAddr, isCircleWallet, circleWalletId, wp:!!wp, signer:!!signer, onArcNetwork});
+  // Auto-switch to Arc if on wrong network
+  if(!isCircleWallet&&wp){
+    const _cid=await wp.request({method:'eth_chainId'});
+    if(_cid!==ARC_HEX){
+      toast('Switching to Arc Testnet…','info',3000);
+      await switchToArc();
+      const _cid2=await wp.request({method:'eth_chainId'});
+      if(_cid2!==ARC_HEX){toast('Please switch to Arc Testnet in your wallet','error');return;}
+      provider=new ethers.BrowserProvider(wp);signer=await provider.getSigner();onArcNetwork=true;
+    }
+  }
   const fromAmt=parseFloat(document.getElementById('swapFrom').value);
   if(!fromAmt||fromAmt<=0){toast('Enter an amount','error');return;}
   const isUSDCtoEURC=!swapFlipped;
@@ -2101,7 +2110,8 @@ async function _autoSwitchToBridgeDest(destChain){
 }
 async function doBridge(){
   const destChain=document.getElementById('bridgeDestChain').value;
-  const destAddr=document.getElementById('bridgeDestAddr').value.trim();
+  const addrOn=document.getElementById('bridgeAddrToggle')?.checked;
+  const destAddr=addrOn ? document.getElementById('bridgeDestAddr').value.trim() : (circleWalletAddress||userAddr);
   const amt=parseFloat(document.getElementById('bridgeAmt').value);
   if(!userAddr){toast('Connect wallet first','error');return;}
   if(isCircleWallet){
@@ -2125,7 +2135,17 @@ async function doBridge(){
   }
   return;
 }if(!signer){toast('Connect MetaMask to use the bridge','error');return;}
-  if(!onArcNetwork&&!isCircleWallet&&wp){toast('Switch to Arc Testnet first','error');return;}
+  // Auto-switch to Arc if on wrong network
+  if(wp){
+    const _cid=await wp.request({method:'eth_chainId'});
+    if(_cid!==ARC_HEX){
+      toast('Switching to Arc Testnet…','info',3000);
+      await switchToArc();
+      const _cid2=await wp.request({method:'eth_chainId'});
+      if(_cid2!==ARC_HEX){toast('Please switch to Arc Testnet in your wallet','error');return;}
+      provider=new ethers.BrowserProvider(wp);signer=await provider.getSigner();onArcNetwork=true;
+    }
+  }
   if(!destAddr||!ethers.isAddress(destAddr)){toast('Enter a valid destination address','error');return;}
   if(!amt||amt<=0){toast('Enter an amount','error');return;}
   await refreshBalances();
@@ -2208,7 +2228,7 @@ async function pollIrisAttestation(txHash, destChain) {
       try {
         const pr = await fetch('https://nan-production.up.railway.app/api/cctp-attest', {
           method: 'POST', headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({action:'getAttestation', txHash, sourceDomain:7}),
+          body: JSON.stringify({action:'getAttestation', txHash, sourceDomain:26}),
         });
         if (pr.ok) {
           const pd = await pr.json();
@@ -2455,8 +2475,8 @@ function renderHistory(){
   if(!_adminUnlocked){
     const m=getMetrics();
     const ss=document.getElementById('statSends');
-    const sw=document.getElementById('statSwaps');
-    const sb=document.getElementById('statBridges');
+    const sw=document.getElementById('histStatSwaps');
+    const sb=document.getElementById('histStatBridges');
     if(ss) ss.textContent=m.totalSends||txHistory.filter(t=>t.source!=='swap'&&t.type==='out').length||0;
     if(sw) sw.textContent=m.totalSwaps||txHistory.filter(t=>t.source==='swap').length||0;
     if(sb) sb.textContent=m.totalBridges||txHistory.filter(t=>t.source==='cctp').length||0;
@@ -4733,7 +4753,8 @@ async function checkPendingPaymentRequests(){
     }
   }
   savePaymentRequests();
-  renderPaymentRequests();
+  // Only re-render list if user is on the payreq page, not the detail view
+  if(window._currentPage==='payreq') renderPaymentRequests();
 }
 function savePaymentRequests(){
   localStorage.setItem('nan_payreqs_'+(userAddr||''),JSON.stringify(paymentRequests));
@@ -4857,6 +4878,8 @@ async function createPaymentRequest(){
   }
 }
 function viewPaymentRequest(id){
+  // Ensure array is loaded from localStorage before searching
+  if(!paymentRequests.length) loadPaymentRequests();
   const pr=paymentRequests.find(p=>p.id===id);
   if(!pr)return;
   activePRId=id;
@@ -4873,8 +4896,7 @@ function viewPaymentRequest(id){
   const link=buildPRLink(pr);
   document.getElementById('prViewLink').textContent=link;
   const qrBox=document.getElementById('prViewQR');
-  qrBox.innerHTML='';
-  try{new QRCode(qrBox,{text:link,width:120,height:120,colorDark:'#111111',colorLight:'#ffffff'});}catch{}
+  if(qrBox){qrBox.innerHTML='';try{new QRCode(qrBox,{text:link,width:120,height:120,colorDark:'#111111',colorLight:'#ffffff'});}catch{}}
   document.getElementById('prMarkPaidBtn').style.display=pr.status==='paid'?'none':'block';
   goPage('payreq-view');
 }
@@ -5026,6 +5048,11 @@ function deletePR(){
       document.getElementById('payNowAddrDisplay').textContent=dl.to||'';
       const qrBox=document.getElementById('payNowQR');
       if(qrBox){qrBox.innerHTML='';try{new QRCode(qrBox,{text:dl.to||'',width:120,height:120,colorDark:'#111111',colorLight:'#ffffff'});}catch{}}
+      // Also populate the second QR / address section
+      const qrBox2=document.getElementById('payNowQR2');
+      if(qrBox2){qrBox2.innerHTML='';try{new QRCode(qrBox2,{text:dl.to||'',width:120,height:120,colorDark:'#111111',colorLight:'#ffffff'});}catch{}}
+      const addr2=document.getElementById('payNowAddrDisplay2');
+      if(addr2) addr2.textContent=dl.to||'';
       goPage('pay-now');
       if(dl.lbl)toast('💸 Pay: '+dl.lbl,'info',5000);
       window._prDeepLink=null;
