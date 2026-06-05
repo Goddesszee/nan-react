@@ -2596,7 +2596,31 @@ a:hover{color:var(--text);}
     border-color:rgba(220,38,38,.2) !important;
     color:#dc2626 !important;
   }
-  [data-theme="light"] #mobileAddrPill{
+  /* ── Bridge chain dropdown: light mode fix ── */
+[data-theme="light"] .chain-dropdown-btn {
+  background: #f5f5f5 !important;
+  border-color: #e0e0e0 !important;
+  color: #111 !important;
+}
+[data-theme="light"] .chain-dropdown-list {
+  background: #ffffff !important;
+  border-color: #e0e0e0 !important;
+}
+[data-theme="light"] .chain-dropdown-item {
+  background: #ffffff !important;
+  color: #111 !important;
+}
+[data-theme="light"] .chain-dropdown-item:hover {
+  background: rgba(112,0,255,.06) !important;
+}
+[data-theme="light"] .chain-dropdown-item.selected {
+  background: rgba(112,0,255,.08) !important;
+}
+[data-theme="light"] .chain-dropdown-item span {
+  color: #111 !important;
+}
+
+[data-theme="light"] #mobileAddrPill{
     background:#f4f4f4 !important;
     border-color:#e5e5e5 !important;
     color:#444 !important;
@@ -3370,9 +3394,15 @@ a:hover{color:var(--text);}
 
   /* ── Asset rows spacing ── */
   .mob-asset-row {
-    padding: 12px 16px !important;
+    padding: 12px 14px 12px 0 !important;
     gap: 13px !important;
   }
+
+  /* ── Hide address pill on mobile ── */
+  #mobileAddrPill { display: none !important; }
+
+  /* ── Hide welcome avatar on mobile ── */
+  #mobileWelcome > div:first-child { display: none !important; }
 
   /* ── Font sizes ── */
   .page-title { font-size: 1.1rem !important; }
