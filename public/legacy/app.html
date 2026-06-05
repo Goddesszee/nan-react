@@ -324,6 +324,9 @@ html,body{background:var(--bg);}
     </div>
   </div>
 
+  <!-- ══ GLOBAL WRONG NETWORK BANNER ══ -->
+  <div class="wrong-net" id="wrongNetBanner" style="position:fixed;top:64px;left:0;right:0;z-index:9999;border-radius:0;border-left:none;border-right:none;margin:0;padding:10px 16px;justify-content:center;gap:10px;">⚠ Wrong network — switch to Arc Testnet to use NAN. <button class="switch-net-btn" onclick="switchToArc()">Switch Now</button></div>
+
   <!-- ══ HOME PAGE ══ -->
   <div class="page" id="page-home">
     <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;">
@@ -458,7 +461,6 @@ html,body{background:var(--bg);}
 
     <!-- Status banners (kept for JS) -->
     <div id="onboardChecklist" style="display:none;"></div>
-    <div class="wrong-net" id="wrongNetBanner">⚠ Wrong network — switch to Arc Testnet. <button class="switch-net-btn" onclick="switchToArc()">Switch Now</button></div>
     <div class="rpc-error" id="rpcError" style="display:none;">⚠ Could not fetch balances. <a href="#" onclick="refreshBalances();return false;" style="margin-left:6px;">Retry</a></div>
     <div class="tx-polling" id="txPolling" style="display:none;">
       <span class="spinner" style="border-top-color:var(--accent3);"></span>
@@ -1392,11 +1394,11 @@ html,body{background:var(--bg);}
         <div class="hist-stat-lbl">Sends</div>
       </div>
       <div class="hist-stat">
-        <div class="hist-stat-num" id="statSwaps">0</div>
+        <div class="hist-stat-num" id="histStatSwaps">0</div>
         <div class="hist-stat-lbl">Swaps</div>
       </div>
       <div class="hist-stat">
-        <div class="hist-stat-num" id="statBridges">0</div>
+        <div class="hist-stat-num" id="histStatBridges">0</div>
         <div class="hist-stat-lbl">Bridges</div>
       </div>
     </div>
@@ -1474,8 +1476,8 @@ html,body{background:var(--bg);}
     </div>
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;text-align:center;">
       <div style="font-size:.875rem;font-weight:700;color:var(--success);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;letter-spacing:.05em;margin-bottom:10px;">Step 1 — Scan or copy address</div>
-      <div id="payNowQR" style="display:flex;justify-content:center;margin-bottom:10px;"></div>
-      <div style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:var(--accent3);word-break:break-all;text-align:center;padding:8px;background:rgba(168,85,247,.06);border-radius:8px;margin-bottom:10px;" id="payNowAddrDisplay">—</div>
+      <div id="payNowQR2" style="display:flex;justify-content:center;margin-bottom:10px;"></div>
+      <div style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:var(--accent3);word-break:break-all;text-align:center;padding:8px;background:rgba(168,85,247,.06);border-radius:8px;margin-bottom:10px;" id="payNowAddrDisplay2">—</div>
       <button onclick="navigator.clipboard.writeText(document.getElementById('payNowTo').textContent).then(()=>toast('✓ Address copied!','success',2000))" style="width:100%;padding:11px;background:#7000ff;border:none;border-radius:10px;color:#f3e8ff;font-family:'Inter',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;">📋 Copy Address</button>
     </div>
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:12px;">
