@@ -3731,6 +3731,11 @@ function executeAgentAction(action){
       renderAgentMsgs();scrollAgentBottom();
       break;}
   }
+  // Agent Stack actions
+  if (action && action.action && action.action.startsWith('agent-')) {
+    executeAgentStackAction(action);
+    return;
+  }
   renderAgentMsgs();scrollAgentBottom();
 }
 
@@ -5521,3 +5526,286 @@ async function mcRefresh() {
 }
 
 
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CIRCLE AGENT STACK
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const AGENT_API = 'https://nan-production.up.railway.app/api/agent-stack';
+let agentWalletEmail = null;
+let agentWallets = null;       // { 'ARC-TESTNET': '0x...', ... }
+let agentRequestId = null;
+let agentPollInterval = null;
+
+// ── Navigate to agent-wallet page ───────────────────────────────────────────
+function goAgentWallet() {
+  goPage('agent-wallet');
+  agentPageRefresh();
+}
+
+// ── Refresh page state ───────────────────────────────────────────────────────
+function agentPageRefresh() {
+  const arcAddr = agentWallets?.['ARC-TESTNET'];
+  if (arcAddr) {
+    document.getElementById('agentLoginSection').style.display = 'none';
+    document.getElementById('agentOtpSection').style.display = 'none';
+    document.getElementById('agentPendingSection').style.display = 'none';
+    document.getElementById('agentConnectedSection').style.display = '';
+    document.getElementById('agentWalletStatus').textContent = 'Connected · Arc Testnet';
+    document.getElementById('agentWalletBadge').textContent = 'Active';
+    document.getElementById('agentWalletBadge').style.background = 'rgba(34,197,94,.12)';
+    document.getElementById('agentWalletBadge').style.borderColor = 'rgba(34,197,94,.3)';
+    document.getElementById('agentWalletBadge').style.color = '#4ade80';
+    document.getElementById('agentWalletArcAddr').textContent = 'Arc: ' + arcAddr;
+  } else {
+    document.getElementById('agentLoginSection').style.display = '';
+    document.getElementById('agentOtpSection').style.display = 'none';
+    document.getElementById('agentPendingSection').style.display = 'none';
+    document.getElementById('agentConnectedSection').style.display = 'none';
+    document.getElementById('agentWalletStatus').textContent = 'Not connected';
+    document.getElementById('agentWalletBadge').textContent = 'Offline';
+    document.getElementById('agentWalletBadge').style.background = 'rgba(107,114,128,.1)';
+    document.getElementById('agentWalletBadge').style.borderColor = 'var(--border)';
+    document.getElementById('agentWalletBadge').style.color = 'var(--text3)';
+  }
+}
+
+function agentShowResult(text) {
+  const box = document.getElementById('agentResultBox');
+  const txt = document.getElementById('agentResultText');
+  if (!box || !txt) return;
+  txt.textContent = typeof text === 'object' ? JSON.stringify(text, null, 2) : String(text);
+  box.style.display = '';
+  setTimeout(() => { box.style.display = 'none'; }, 12000);
+}
+
+// ── Login Step 1 ─────────────────────────────────────────────────────────────
+async function agentLoginInit() {
+  const emailInput = document.getElementById('agentEmailInput');
+  const email = emailInput?.value?.trim() || userAddr || '';
+  if (!email.includes('@')) {
+    agentShowResult('Please enter a valid email address');
+    return;
+  }
+  agentWalletEmail = email;
+  const btn = document.getElementById('agentLoginBtn');
+  if (btn) { btn.textContent = 'Sending OTP…'; btn.disabled = true; }
+
+  try {
+    const r = await fetch(AGENT_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'login-init', email }),
+    });
+    const d = await r.json();
+
+    if (d.installing) {
+      agentShowResult('Circle CLI is installing (~60s). Please try again shortly.');
+      if (btn) { btn.textContent = 'Connect Agent Wallet'; btn.disabled = false; }
+      return;
+    }
+    if (d.alreadyLoggedIn) {
+      await agentLoadWallets();
+      return;
+    }
+    if (d.requestId) {
+      agentRequestId = d.requestId;
+      document.getElementById('agentLoginSection').style.display = 'none';
+      document.getElementById('agentOtpSection').style.display = '';
+      document.getElementById('agentOtpInput').value = '';
+      document.getElementById('agentOtpInput').focus();
+    } else {
+      agentShowResult('Error: ' + (d.error || 'Unknown error'));
+      if (btn) { btn.textContent = 'Connect Agent Wallet'; btn.disabled = false; }
+    }
+  } catch (e) {
+    agentShowResult('Network error — please try again');
+    if (btn) { btn.textContent = 'Connect Agent Wallet'; btn.disabled = false; }
+  }
+}
+
+// ── Login Step 2 ─────────────────────────────────────────────────────────────
+async function agentLoginComplete() {
+  const otp = document.getElementById('agentOtpInput')?.value?.trim();
+  if (!otp) { agentShowResult('Please enter the OTP from your email'); return; }
+
+  document.getElementById('agentOtpSection').style.display = 'none';
+  document.getElementById('agentPendingSection').style.display = '';
+
+  try {
+    await fetch(AGENT_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'login-complete', requestId: agentRequestId, otp, email: agentWalletEmail }),
+    });
+
+    // Poll for completion
+    let attempts = 0;
+    agentPollInterval = setInterval(async () => {
+      attempts++;
+      try {
+        const r = await fetch(AGENT_API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'login-status', email: agentWalletEmail }),
+        });
+        const d = await r.json();
+        if (d.ready && d.wallets) {
+          clearInterval(agentPollInterval);
+          agentWallets = d.wallets;
+          agentPageRefresh();
+          showToast('Agent Wallet connected!');
+        } else if (d.error) {
+          clearInterval(agentPollInterval);
+          agentLoginReset();
+          agentShowResult('Login failed: ' + d.error);
+        } else if (attempts > 24) {
+          clearInterval(agentPollInterval);
+          agentLoginReset();
+          agentShowResult('Timed out. Please try again.');
+        }
+      } catch {}
+    }, 5000);
+  } catch (e) {
+    agentLoginReset();
+    agentShowResult('Network error — please try again');
+  }
+}
+
+function agentLoginReset() {
+  clearInterval(agentPollInterval);
+  document.getElementById('agentPendingSection').style.display = 'none';
+  document.getElementById('agentOtpSection').style.display = 'none';
+  document.getElementById('agentLoginSection').style.display = '';
+  const btn = document.getElementById('agentLoginBtn');
+  if (btn) { btn.textContent = 'Connect Agent Wallet'; btn.disabled = false; }
+}
+
+async function agentLoadWallets() {
+  try {
+    const r = await fetch(AGENT_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'login-status', email: agentWalletEmail }),
+    });
+    const d = await r.json();
+    if (d.wallets) { agentWallets = d.wallets; agentPageRefresh(); }
+  } catch {}
+}
+
+// ── Actions ─────────────────────────────────────────────────────────────────
+async function agentFund() {
+  const addr = agentWallets?.['ARC-TESTNET'];
+  if (!addr) return;
+  agentShowResult('Requesting faucet funds…');
+  try {
+    const r = await fetch(AGENT_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'fund', address: addr, chain: 'ARC-TESTNET' }),
+    });
+    const d = await r.json();
+    agentShowResult(d.result || d);
+  } catch (e) { agentShowResult('Error: ' + e.message); }
+}
+
+async function agentCheckBalance() {
+  const addr = agentWallets?.['ARC-TESTNET'];
+  if (!addr) return;
+  agentShowResult('Checking balance…');
+  try {
+    const r = await fetch(AGENT_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'balance', address: addr, chain: 'ARC-TESTNET' }),
+    });
+    const d = await r.json();
+    agentShowResult(d.balance || d);
+  } catch (e) { agentShowResult('Error: ' + e.message); }
+}
+
+async function agentDiscover() {
+  agentShowResult('Searching Agent Marketplace…');
+  try {
+    const r = await fetch(AGENT_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'services-search', query: 'financial' }),
+    });
+    const d = await r.json();
+    agentShowResult(d.services?.length
+      ? d.services.map(s => s.name + ': ' + s.url).join('
+')
+      : 'No services found on marketplace yet');
+  } catch (e) { agentShowResult('Error: ' + e.message); }
+}
+
+async function agentLogout() {
+  clearInterval(agentPollInterval);
+  try {
+    await fetch(AGENT_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'logout', email: agentWalletEmail }),
+    });
+  } catch {}
+  agentWallets = null;
+  agentWalletEmail = null;
+  agentRequestId = null;
+  agentPageRefresh();
+  showToast('Agent Wallet disconnected');
+}
+
+// ── AI Action handlers for agent-* action types ──────────────────────────────
+async function executeAgentStackAction(action) {
+  if (!agentWallets) {
+    addAgentMsg('⚠️ Agent Wallet not connected. Go to More → Agent Wallet to set it up.');
+    renderAgentMsgs(); scrollAgentBottom();
+    return;
+  }
+  const arcAddr = agentWallets['ARC-TESTNET'];
+
+  const actionMap = {
+    'agent-balance':  { action: 'balance',  address: arcAddr, chain: 'ARC-TESTNET' },
+    'agent-fund':     { action: 'fund',     address: arcAddr, chain: 'ARC-TESTNET' },
+    'agent-tx-list':  { action: 'tx-list',  address: arcAddr, chain: action.chain || 'ARC-TESTNET' },
+    'agent-services-search': { action: 'services-search', query: action.query || 'financial' },
+  };
+
+  let payload = actionMap[action.action];
+
+  if (action.action === 'agent-transfer') {
+    payload = { action: 'transfer', fromAddress: arcAddr, toAddress: action.toAddress || userAddr, amount: action.amount, chain: action.chain || 'ARC-TESTNET' };
+  } else if (action.action === 'agent-swap') {
+    payload = { action: 'swap', address: arcAddr, sellToken: action.sellToken || 'USDC', sellAmount: action.sellAmount, buyToken: action.buyToken || 'EURC', chain: action.chain || 'ARC-TESTNET', quoteOnly: action.quoteOnly !== false };
+  } else if (action.action === 'agent-bridge') {
+    payload = { action: 'bridge', fromAddress: arcAddr, toChain: action.toChain, toAddress: action.toAddress || userAddr, amount: action.amount, fromChain: action.fromChain || 'ARC-TESTNET' };
+  } else if (action.action === 'agent-pay-service') {
+    payload = { action: 'pay-service', url: action.url, address: agentWallets['BASE-SEPOLIA'] || arcAddr, chain: 'BASE-SEPOLIA', maxAmount: action.maxAmount || '0.01' };
+  } else if (action.action === 'agent-setup') {
+    agentOpen = false;
+    document.getElementById('agentPanel').style.display = 'none';
+    goPage('agent-wallet');
+    return;
+  }
+
+  if (!payload) return;
+
+  addAgentMsg('⏳ Running on Agent Wallet…');
+  renderAgentMsgs(); scrollAgentBottom();
+
+  try {
+    const r = await fetch(AGENT_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const d = await r.json();
+    const result = d.balance || d.result || d.transactions || d.services || d;
+    addAgentMsg('✅ Done: ' + (typeof result === 'object' ? JSON.stringify(result, null, 2) : String(result)));
+  } catch (e) {
+    addAgentMsg('❌ Error: ' + e.message);
+  }
+  renderAgentMsgs(); scrollAgentBottom();
+}
