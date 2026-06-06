@@ -3666,3 +3666,115 @@ input[style*="background: none"] {
 #page-payreq-view > * {
   flex-shrink: 0;
 }
+
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   RECEIPT (SEND SUCCESS) — LIGHT MODE TEXT FIXES
+   All hardcoded #f0f0f0 text becomes dark in light theme
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+[data-theme="light"] .success-amount {
+  color: #1a1a1a !important;
+}
+[data-theme="light"] .success-title {
+  color: #444444 !important;
+}
+[data-theme="light"] .success-rec-val {
+  color: #1a1a1a !important;
+}
+[data-theme="light"] .success-rec-label {
+  color: #666666 !important;
+}
+[data-theme="light"] .success-hash {
+  color: #7000ff !important;
+}
+[data-theme="light"] .success-recipient {
+  background: rgba(112,0,255,.06) !important;
+  border-color: rgba(112,0,255,.18) !important;
+}
+[data-theme="light"] .success-time {
+  color: #16a34a !important;
+}
+/* Outline buttons in light mode success card */
+[data-theme="light"] .success-actions .btn-outline {
+  color: #5500cc !important;
+  border-color: rgba(112,0,255,.35) !important;
+  background: rgba(112,0,255,.06) !important;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   NOTIFICATION PANEL — VISIBILITY + BACKDROP FIXES
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* Dark backdrop behind panel on mobile so content underneath doesn't bleed through */
+#nanNotifPanel::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.0);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Panel itself — stronger shadow, ensure it sits above everything */
+#nanNotifPanel {
+  box-shadow: 0 12px 48px rgba(0,0,0,.5), 0 2px 8px rgba(0,0,0,.3) !important;
+  z-index: 10000 !important;
+  border: 1.5px solid rgba(112,0,255,.3) !important;
+}
+
+/* Light mode panel — needs dark enough background to be readable */
+[data-theme="light"] #nanNotifPanel {
+  background: #ffffff !important;
+  border-color: rgba(112,0,255,.25) !important;
+  box-shadow: 0 12px 48px rgba(0,0,0,.18), 0 2px 8px rgba(0,0,0,.1) !important;
+}
+[data-theme="light"] #nanNotifHeader {
+  background: #f8f5ff !important;
+  border-bottom-color: rgba(112,0,255,.15) !important;
+}
+[data-theme="light"] #nanNotifHeader span {
+  color: #1a1a1a !important;
+}
+[data-theme="light"] #nanNotifClear {
+  color: #7000ff !important;
+}
+[data-theme="light"] .nan-notif-title {
+  color: #1a1a1a !important;
+}
+[data-theme="light"] .nan-notif-msg {
+  color: #555555 !important;
+}
+[data-theme="light"] .nan-notif-time {
+  color: #888888 !important;
+}
+[data-theme="light"] .nan-notif-item:hover {
+  background: #f8f5ff !important;
+}
+[data-theme="light"] #nanNotifEmpty {
+  color: #888888 !important;
+}
+[data-theme="light"] #nanPushBanner {
+  background: rgba(112,0,255,.06) !important;
+  border-bottom-color: rgba(112,0,255,.15) !important;
+}
+[data-theme="light"] #nanPushBanner span {
+  color: #444444 !important;
+}
+
+/* Mobile: make panel full-width slide down instead of floating corner popover */
+@media (max-width: 768px) {
+  #nanNotifPanel {
+    right: 0 !important;
+    left: 0 !important;
+    top: 57px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 70vh !important;
+    border-radius: 0 0 18px 18px !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-top: none !important;
+  }
+}
