@@ -3589,15 +3589,13 @@ input[style*="background: none"] {
    ══════════════════════════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
 
-  /* ── Bridge: chain dropdown button ── */
+  /* ── Bridge: chain dropdown — DARK mode ── */
   :root .chain-dropdown-btn,
   [data-theme="dark"] .chain-dropdown-btn {
     background: rgba(255,255,255,.04) !important;
     border-color: rgba(112,0,255,.25) !important;
     color: var(--text) !important;
   }
-
-  /* ── Bridge: chain dropdown list + items ── */
   :root .chain-dropdown-list,
   [data-theme="dark"] .chain-dropdown-list {
     background: #12132a !important;
@@ -3615,6 +3613,30 @@ input[style*="background: none"] {
   :root .chain-dropdown-item.selected,
   [data-theme="dark"] .chain-dropdown-item.selected {
     background: rgba(112,0,255,.18) !important;
+  }
+
+  /* ── Bridge: chain dropdown — LIGHT mode (must come after dark to win) ── */
+  [data-theme="light"] .chain-dropdown-btn {
+    background: #f5f5f5 !important;
+    border-color: #e0e0e0 !important;
+    color: #111 !important;
+  }
+  [data-theme="light"] .chain-dropdown-list {
+    background: #ffffff !important;
+    border-color: #e0e0e0 !important;
+  }
+  [data-theme="light"] .chain-dropdown-item {
+    background: #ffffff !important;
+    color: #111 !important;
+  }
+  [data-theme="light"] .chain-dropdown-item:hover {
+    background: rgba(112,0,255,.06) !important;
+  }
+  [data-theme="light"] .chain-dropdown-item.selected {
+    background: rgba(112,0,255,.08) !important;
+  }
+  [data-theme="light"] .chain-dropdown-item span {
+    color: #111 !important;
   }
 
   /* ── History: stat boxes (4 SENDS / 0 SWAPS / 0 BRIDGES) ── */
@@ -3635,17 +3657,31 @@ input[style*="background: none"] {
     background: transparent !important;
   }
 
-  /* ── Bridge: FROM box ── */
+  /* ── Bridge: FROM box — DARK ── */
   :root #page-bridge .card,
   [data-theme="dark"] #page-bridge .card {
     background: rgba(255,255,255,.03) !important;
     border-color: rgba(112,0,255,.18) !important;
   }
+  /* ── Bridge: FROM box — LIGHT ── */
+  [data-theme="light"] #page-bridge .card {
+    background: #ffffff !important;
+    border-color: rgba(112,0,255,.18) !important;
+  }
 
-  /* ── Bridge/Send: amount inner surface ── */
+  /* ── Bridge: amount inner surface — DARK ── */
   :root #page-bridge .card > div[style*="background:var(--surface)"],
   [data-theme="dark"] #page-bridge .card > div[style*="background:var(--surface)"] {
     background: rgba(255,255,255,.04) !important;
+  }
+  /* ── Bridge: amount inner surface — LIGHT ── */
+  [data-theme="light"] #page-bridge .card > div[style*="background:var(--surface)"] {
+    background: #f5f5f5 !important;
+  }
+
+  /* ── Bridge: FROM chain pill — LIGHT ── */
+  [data-theme="light"] #page-bridge .card div[style*="background:var(--surface)"] {
+    background: #f5f5f5 !important;
   }
 
 }
