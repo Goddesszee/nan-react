@@ -242,7 +242,6 @@ html,body{background:var(--bg);}
       <button id="landConnectBtn" style="display:none;" onclick="showWalletPicker()">Connect</button>
       <!-- Desktop disconnect (text) -->
       <button id="disconnectTopBtn" onclick="disconnect()" style="display:none;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);border-radius:100px;padding:6px 12px;font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;color:var(--danger);cursor:pointer;white-space:nowrap;transition:all .2s;">⏏ Disconnect</button>
-      <button id="nan-arc-topbadge" onclick="goPage('arcname')" style="display:none;background:rgba(112,0,255,.12);border:1px solid rgba(168,85,247,.3);border-radius:100px;padding:5px 10px;font-family:'Inter',sans-serif;font-size:.78rem;font-weight:700;color:#a855f7;cursor:pointer;white-space:nowrap;">+ .arc</button>
       <!-- Mobile disconnect (icon button) -->
       <button id="disconnectTopBtnMobile" onclick="disconnect()" class="tb-icon-btn tb-disconnect" style="display:none;" title="Disconnect">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
@@ -2836,9 +2835,21 @@ function nanToggleFaucet(btn){
     window.updateHomeScreen=function(){
       _orig.apply(this,arguments);
       setTimeout(function(){
+        var chainMap={'ETH Sepolia':'ETH-SEPOLIA','Base':'BASE-SEPOLIA','Arbitrum':'ARB-SEPOLIA','Optimism':'OP-SEPOLIA','Avalanche':'AVAX-FUJI'};
         var chains=['ETH-SEPOLIA','BASE-SEPOLIA','ARB-SEPOLIA','OP-SEPOLIA','AVAX-FUJI'];
         var multiTotal=0;
         chains.forEach(function(c){ multiTotal+=parseFloat(document.getElementById('mc-bal-'+c)?.textContent)||0; });
+        // Update chain rows on home
+        document.querySelectorAll('#page-home [onclick*="multichain"]').forEach(function(row){
+          var chainName=row.querySelector('[style*="text3"]')?.textContent?.trim();
+          var chainId=chainMap[chainName];
+          if(!chainId) return;
+          var bal=document.getElementById('mc-bal-'+chainId)?.textContent?.trim();
+          var usd=document.getElementById('mc-usd-'+chainId)?.textContent?.trim();
+          var divs=row.querySelectorAll('[style*="text-align:right"] div');
+          if(divs[0]&&bal&&bal!=='0.00 USDC') divs[0].textContent=bal;
+          if(divs[1]&&usd) divs[1].textContent=usd;
+        });
         if(multiTotal===0) return;
         var arcTotal=parseFloat(document.getElementById('homeBalAmt')?.textContent?.replace(/[^0-9.]/g,''))||0;
         var grand=arcTotal+multiTotal;
