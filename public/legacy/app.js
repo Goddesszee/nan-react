@@ -4795,7 +4795,7 @@ function genPRId(){
   return 'pr_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 }
 function buildPRLink(pr){
-  const base=window.location.origin+'/';
+  const base='https://nan-production.up.railway.app/pay.html';
   const id=pr.onChainId||pr.id;
   const p=new URLSearchParams({pay:id,to:pr.to,amt:pr.amount||'',tok:pr.token,lbl:pr.label,note:pr.note||''});
   return base+'?'+p.toString();
@@ -4900,7 +4900,7 @@ async function createPaymentRequest(){
     paymentRequests.unshift(pr);
     savePaymentRequests();
     const link=buildPRLink(pr);
-    navigator.clipboard.writeText(link).catch(()=>{});
+    _mobileCopy(link,()=>{});
     toast('✓ Created! Link copied — share it to get paid','success',4000);
     try{viewPaymentRequest(pr.id);}catch(e){console.warn('viewPR err:',e.message);}
   }catch(err){
@@ -4960,7 +4960,24 @@ function renderPaymentRequests(){
 }
 function copyPRLink(){
   const link=document.getElementById('prViewLink').textContent;
-  navigator.clipboard.writeText(link).then(()=>toast('✓ Link copied!','success',2000));
+  _mobileCopy(link,()=>toast('✓ Link copied!','success',2000),()=>toast('✓ Link copied!','success',2000));
+}
+function _mobileCopy(text,onSuccess,onFallback){
+  if(navigator.clipboard&&window.isSecureContext){
+    navigator.clipboard.writeText(text).then(onSuccess).catch(()=>_execCopy(text,onFallback));
+  }else{
+    _execCopy(text,onFallback);
+  }
+}
+function _execCopy(text,cb){
+  const ta=document.createElement('textarea');
+  ta.value=text;
+  ta.style.cssText='position:fixed;top:0;left:0;opacity:0;pointer-events:none;';
+  document.body.appendChild(ta);
+  ta.focus();ta.select();
+  try{document.execCommand('copy');}catch(e){}
+  document.body.removeChild(ta);
+  if(cb)cb();
 }
 function sharePRLink(){
   const link=document.getElementById('prViewLink').textContent;
@@ -4969,7 +4986,7 @@ function sharePRLink(){
   const amt=pr.amount?pr.amount+' '+pr.token:pr.token;
   const text='Pay me '+amt+' — '+pr.label+'\n\n'+link+'\n\nPowered by NAN Wallet on Arc Testnet';
   if(navigator.share){navigator.share({title:'Payment Request — '+pr.label,text,url:link}).catch(()=>{});}
-  else{navigator.clipboard.writeText(text).then(()=>toast('✓ Copied — paste to share!','success',3000));}
+  else{_mobileCopy(text,()=>toast('✓ Copied — paste to share!','success',3000));}
 }
 function markPRAsPaid(){
   const pr=paymentRequests.find(p=>p.id===activePRId);
