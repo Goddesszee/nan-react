@@ -92,6 +92,36 @@
 html,body{background:var(--bg);}
 #app-root{background:var(--bg);}
 .bottom-nav{background:var(--nav-bg) !important;border-top:1px solid var(--border) !important;}
+    /* ── MOBILE DARK MODE & DROPDOWN FIXES ── */
+    @media (max-width: 768px) {
+      /* Dollar sign fix */
+      #homeBalAmt::before { content: '$'; }
+      
+      /* Faucet button */
+      #navFaucetBtn { display:flex !important; align-items:center !important; justify-content:center !important; width:32px !important; height:32px !important; border-radius:50% !important; padding:0 !important; background:#6d28d9 !important; border:none !important; color:#fff !important; font-size:16px !important; min-width:unset !important; }
+      #navFaucetBtn .tb-btn-text { display:none !important; }
+      
+      /* Faucet dropdown items readable */
+      #nan-faucet-dd a > div > div:first-child { font-size:13px !important; font-weight:600 !important; }
+      #nan-faucet-dd a > div > div:last-child { font-size:11px !important; }
+      #nan-faucet-dd a { padding:8px 10px !important; }
+      #nan-faucet-dd img { width:22px !important; height:22px !important; }
+
+      /* Market search */
+      #page-market .mkt-search, #page-market .mkt-search input { background: var(--surface) !important; color: var(--text) !important; }
+
+      /* Chain dropdown dark mode */
+      [data-theme=dark] .chain-dropdown-list { background: #1e1e2e !important; border-color: rgba(255,255,255,.1) !important; }
+      [data-theme=dark] .chain-dropdown-item { color: #ffffff !important; background: #1e1e2e !important; }
+      [data-theme=dark] .chain-dropdown-item:hover { background: rgba(109,40,217,.2) !important; }
+      [data-theme=dark] .chain-dropdown-btn { color: var(--text) !important; }
+
+      /* Naira bank dropdown dark mode */
+      [data-theme=dark] [id*=bankList], [data-theme=dark] [class*=bank-list],
+      [data-theme=dark] [id*=bankDd], [data-theme=dark] [id*=bank-dd] { background: #1e1e2e !important; color: #fff !important; }
+      [data-theme=dark] input[placeholder*=bank], [data-theme=dark] input[placeholder*=Bank] { background: #2a2a3e !important; color: #fff !important; border-color: rgba(255,255,255,.15) !important; }
+    }
+
     /* ── MOBILE BALANCE DOLLAR FIX ── */
     @media (max-width: 768px) {
       #homeBalAmt::before { content: '$'; }
@@ -2878,8 +2908,20 @@ function nanToggleFaucet(btn){
   var rect=btn.getBoundingClientRect();
   var open=dd.style.display!=='block';
   dd.style.display=open?'block':'none';
-  dd.style.top=(rect.bottom+4)+'px';
-  dd.style.left=rect.left+'px';
+  if(window.innerWidth<=768){
+    dd.style.top=(rect.bottom+4)+'px';
+    dd.style.left='auto';
+    dd.style.right='14px';
+    dd.style.width='190px';
+    dd.style.background='#ffffff';
+    dd.style.color='#111111';
+  } else {
+    dd.style.top=(rect.bottom+4)+'px';
+    dd.style.left=rect.left+'px';
+    dd.style.width='';
+    dd.style.background='';
+    dd.style.color='';
+  }
   if(tradeDd) tradeDd.style.display='none';
   document.addEventListener('click',function _fc(e){
     if(!btn.contains(e.target)&&!dd.contains(e.target)){
