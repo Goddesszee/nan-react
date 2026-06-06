@@ -291,30 +291,55 @@ html,body{background:var(--bg);}
 #nanNotifBtn:hover{background:rgba(109,40,217,.12);}
 #nanNotifBadge{position:absolute;top:2px;right:2px;min-width:16px;height:16px;background:#ef4444;border-radius:100px;font-size:9px;font-weight:700;color:#fff;display:none;align-items:center;justify-content:center;padding:0 3px;line-height:1;}
 #nanNotifBadge.show{display:flex;}
-#nanNotifPanel{position:fixed;top:56px;right:12px;width:320px;max-width:94vw;background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.35);z-index:9999;display:none;flex-direction:column;overflow:hidden;max-height:440px;}
+
+/* Full-screen backdrop — blocks all interaction with page behind */
+#nanNotifBackdrop{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.55);
+  z-index:10998;
+  -webkit-backdrop-filter:blur(2px);
+  backdrop-filter:blur(2px);
+}
+#nanNotifBackdrop.open{display:block;}
+
+/* Panel sits above backdrop */
+#nanNotifPanel{
+  display:none;position:fixed;
+  top:57px;left:0;right:0;
+  width:100%;max-width:100%;
+  background:var(--card);
+  border:none;
+  border-bottom:1.5px solid rgba(112,0,255,.3);
+  border-radius:0 0 20px 20px;
+  box-shadow:0 16px 48px rgba(0,0,0,.5);
+  z-index:10999;
+  flex-direction:column;
+  overflow:hidden;
+  max-height:70vh;
+}
 #nanNotifPanel.open{display:flex;}
-#nanNotifHeader{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;border-bottom:1px solid var(--border);}
-#nanNotifHeader span{font-size:.82rem;font-weight:700;color:var(--text);letter-spacing:.03em;}
-#nanNotifClear{font-size:.72rem;color:var(--accent3);background:none;border:none;cursor:pointer;padding:2px 6px;border-radius:6px;}
+#nanNotifHeader{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 12px;border-bottom:1px solid var(--border);background:rgba(112,0,255,.06);}
+#nanNotifHeader span{font-size:.9rem;font-weight:700;color:var(--text);letter-spacing:.02em;}
+#nanNotifClear{font-size:.75rem;color:var(--accent3);background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:6px;font-weight:600;}
 #nanNotifClear:hover{background:rgba(109,40,217,.1);}
-#nanNotifList{overflow-y:auto;flex:1;}
-#nanNotifEmpty{padding:28px 16px;text-align:center;color:var(--text3);font-size:.8rem;}
-.nan-notif-item{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s;}
-.nan-notif-item:hover{background:var(--surface);}
+#nanNotifList{overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch;}
+#nanNotifEmpty{padding:32px 16px;text-align:center;color:var(--text3);font-size:.85rem;}
+.nan-notif-item{display:flex;align-items:flex-start;gap:12px;padding:13px 18px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s;}
+.nan-notif-item:hover,.nan-notif-item:active{background:var(--surface);}
 .nan-notif-item:last-child{border-bottom:none;}
-.nan-notif-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-top:1px;}
-.nan-notif-icon.send{background:rgba(239,68,68,.12);}
-.nan-notif-icon.receive{background:rgba(52,211,153,.12);}
-.nan-notif-icon.swap{background:rgba(109,40,217,.12);}
-.nan-notif-icon.bridge{background:rgba(59,130,246,.12);}
-.nan-notif-icon.info{background:rgba(156,163,175,.1);}
+.nan-notif-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;margin-top:1px;}
+.nan-notif-icon.send{background:rgba(239,68,68,.15);}
+.nan-notif-icon.receive{background:rgba(52,211,153,.15);}
+.nan-notif-icon.swap{background:rgba(109,40,217,.15);}
+.nan-notif-icon.bridge{background:rgba(59,130,246,.15);}
+.nan-notif-icon.info{background:rgba(156,163,175,.12);}
 .nan-notif-body{flex:1;min-width:0;}
-.nan-notif-title{font-size:.78rem;font-weight:600;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.nan-notif-msg{font-size:.72rem;color:var(--text2);line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.nan-notif-time{font-size:.65rem;color:var(--text3);margin-top:3px;}
-#nanPushBanner{display:flex;align-items:center;gap:8px;padding:8px 14px;background:rgba(109,40,217,.08);border-bottom:1px solid rgba(109,40,217,.18);}
-#nanPushBanner span{font-size:.72rem;color:var(--text2);flex:1;}
-#nanPushEnableBtn{font-size:.7rem;background:#6d28d9;color:#fff;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;white-space:nowrap;}
+.nan-notif-title{font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nan-notif-msg{font-size:.76rem;color:var(--text2);line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nan-notif-time{font-size:.68rem;color:var(--text3);margin-top:4px;}
+#nanPushBanner{display:flex;align-items:center;gap:10px;padding:10px 18px;background:rgba(109,40,217,.1);border-bottom:1px solid rgba(109,40,217,.2);}
+#nanPushBanner span{font-size:.78rem;color:var(--text2);flex:1;line-height:1.4;}
+#nanPushEnableBtn{font-size:.78rem;background:#7000ff;color:#fff;border:none;border-radius:8px;padding:7px 14px;cursor:pointer;white-space:nowrap;font-weight:700;}
 </style>
 
 <style>
@@ -3114,7 +3139,8 @@ function nanToggleFaucet(btn){
 </script>
 
 
-<!-- ── Notification Panel ── -->
+<!-- ── Notification Backdrop + Panel ── -->
+<div id="nanNotifBackdrop" onclick="toggleNotifPanel()"></div>
 <div id="nanNotifPanel">
   <div id="nanNotifHeader">
     <span>🔔 Notifications</span>
