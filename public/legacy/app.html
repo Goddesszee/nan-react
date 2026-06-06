@@ -130,21 +130,55 @@ html,body{background:var(--bg);}
       #bankOptionsList { max-height: 35vh !important; overflow-y: auto !important; }
       #bankSearchInput { background: var(--surface) !important; color: var(--text) !important; }
       
-      /* Bank picker dark mode */
-      [data-theme=dark] #bankPickerSheet { background: #1e1e2e !important; color: #fff !important; }
-      [data-theme=dark] #bankSearchInput { background: #2a2a3e !important; color: #fff !important; border-color: rgba(255,255,255,.15) !important; }
-      [data-theme=dark] #bankOptionsList > div { color: #fff !important; }
-      [data-theme=dark] #bankPickerLabel { color: #fff !important; }
-      
-      /* Faucet dropdown readable in both modes */
-      #nan-faucet-dd a > div > div { color: #111 !important; }
-      [data-theme=dark] #nan-faucet-dd { background: #1e1e2e !important; border-color: rgba(255,255,255,.1) !important; }
-      [data-theme=dark] #nan-faucet-dd a > div > div { color: #fff !important; }
-
-      /* Naira bank dropdown dark mode */
+      /* ── Bank picker: DARK mode ── */
+      [data-theme=dark] #bankPickerSheet {
+        background: #0f102a !important;
+        border-color: rgba(112,0,255,.3) !important;
+        color: #ede9fe !important;
+      }
+      [data-theme=dark] #bankSearchInput {
+        background: rgba(255,255,255,.06) !important;
+        color: #ede9fe !important;
+        border-color: rgba(112,0,255,.3) !important;
+      }
+      [data-theme=dark] #bankSearchInput::placeholder { color: #666 !important; }
+      [data-theme=dark] #bankOptionsList > div { color: #ede9fe !important; }
+      [data-theme=dark] #bankOptionsList > div:hover { background: rgba(112,0,255,.12) !important; }
+      [data-theme=dark] #bankPickerLabel { color: #ede9fe !important; }
       [data-theme=dark] [id*=bankList], [data-theme=dark] [class*=bank-list],
-      [data-theme=dark] [id*=bankDd], [data-theme=dark] [id*=bank-dd] { background: #1e1e2e !important; color: #fff !important; }
-      [data-theme=dark] input[placeholder*=bank], [data-theme=dark] input[placeholder*=Bank] { background: #2a2a3e !important; color: #fff !important; border-color: rgba(255,255,255,.15) !important; }
+      [data-theme=dark] [id*=bankDd], [data-theme=dark] [id*=bank-dd] {
+        background: #0f102a !important; color: #ede9fe !important;
+      }
+      [data-theme=dark] input[placeholder*=bank],
+      [data-theme=dark] input[placeholder*=Bank] {
+        background: rgba(255,255,255,.06) !important;
+        color: #ede9fe !important;
+        border-color: rgba(112,0,255,.3) !important;
+      }
+
+      /* ── Bank picker: LIGHT mode ── */
+      [data-theme=light] #bankPickerSheet {
+        background: #ffffff !important;
+        border-color: rgba(112,0,255,.2) !important;
+        color: #111 !important;
+      }
+      [data-theme=light] #bankSearchInput {
+        background: #f5f5f5 !important;
+        color: #111 !important;
+        border-color: rgba(112,0,255,.25) !important;
+      }
+      [data-theme=light] #bankSearchInput::placeholder { color: #aaa !important; }
+      [data-theme=light] #bankOptionsList > div { color: #111 !important; background: #fff !important; }
+      [data-theme=light] #bankOptionsList > div:hover { background: rgba(112,0,255,.06) !important; }
+      [data-theme=light] #bankPickerLabel { color: #111 !important; }
+
+      /* ── Faucet dropdown ── */
+      #nan-faucet-dd a > div > div { color: #111 !important; }
+      [data-theme=dark] #nan-faucet-dd {
+        background: #0f102a !important;
+        border-color: rgba(112,0,255,.25) !important;
+      }
+      [data-theme=dark] #nan-faucet-dd a > div > div { color: #ede9fe !important; }
     }
 
     /* ── MOBILE BALANCE DOLLAR FIX ── */
@@ -2560,7 +2594,7 @@ function openBankPicker(){
       ${b.name===cur?'<span style="color:#a855f7;">✓</span>':''}
     </div>`;
   }).join('');
-  document.getElementById('bankPickerOptions').innerHTML=`<div style="padding:12px 16px;position:sticky;top:0;background:var(--bg);z-index:2;border-bottom:1px solid var(--border);"><input id="bankSearchInput" placeholder="Search bank..." oninput="document.querySelectorAll('#bankOptionsList [data-bank]').forEach(el=>el.style.display=el.dataset.bank.toLowerCase().includes(this.value.toLowerCase())?'flex':'none')" style="width:100%;background:var(--surface);border:1px solid rgba(109,40,217,.25);border-radius:12px;padding:11px 14px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;"></div><div id="bankOptionsList">${optHtml}</div>`;
+  document.getElementById('bankPickerOptions').innerHTML=`<div style="padding:12px 16px;position:sticky;top:0;background:var(--card);z-index:2;border-bottom:1px solid var(--border);"><input id="bankSearchInput" placeholder="Search bank..." oninput="document.querySelectorAll('#bankOptionsList [data-bank]').forEach(el=>el.style.display=el.dataset.bank.toLowerCase().includes(this.value.toLowerCase())?'flex':'none')" style="width:100%;background:var(--surface);border:1px solid rgba(109,40,217,.25);border-radius:12px;padding:11px 14px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;"></div><div id="bankOptionsList">${optHtml}</div>`;
   var overlay=document.getElementById('bankPickerOverlay');
   var sheet=document.getElementById('bankPickerSheet');
   if(overlay.parentElement!==document.body){document.body.appendChild(overlay);document.body.appendChild(sheet);}
@@ -2570,6 +2604,22 @@ function openBankPicker(){
   opts.style.cssText='display:flex !important;flex-direction:column !important;flex:1 !important;overflow:hidden !important;min-height:0 !important;';
   var lst=document.getElementById('bankOptionsList');
   if(lst)lst.style.cssText='overflow-y:auto !important;flex:1 !important;min-height:0 !important;-webkit-overflow-scrolling:touch !important;';
+  // Apply theme-correct background to sheet and search
+  const _isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+  sheet.style.background = _isDark ? '#0f102a' : '#ffffff';
+  sheet.style.borderColor = _isDark ? 'rgba(112,0,255,.3)' : 'rgba(112,0,255,.2)';
+  const _inp = document.getElementById('bankSearchInput');
+  if(_inp){
+    _inp.style.background = _isDark ? 'rgba(255,255,255,.06)' : '#f5f5f5';
+    _inp.style.color = _isDark ? '#ede9fe' : '#111';
+    _inp.style.borderColor = _isDark ? 'rgba(112,0,255,.3)' : 'rgba(112,0,255,.25)';
+  }
+  // Apply theme to each bank row
+  document.querySelectorAll('#bankOptionsList > div').forEach(row => {
+    row.style.color = _isDark ? '#ede9fe' : '#111';
+    if(!row.style.background || row.style.background === 'transparent')
+      row.style.background = _isDark ? '#0f102a' : '#ffffff';
+  });
   setTimeout(()=>document.getElementById('bankSearchInput')?.focus(),100);
 }
 function closeBankPicker(){
