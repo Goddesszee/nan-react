@@ -392,6 +392,33 @@ html,body{background:var(--bg);}
     #page-market .mrow{padding:13px 0;gap:12px;}
     #page-market .mri{width:38px;height:38px;border-radius:10px;}
     #page-market .msg{gap:10px;}
+    #page-market .msl{font-size:11px !important;font-weight:700 !important;letter-spacing:.13em !important;opacity:1 !important;}
+    #page-market .moc-name{font-size:17px !important;font-weight:700 !important;}
+    #page-market .moc-desc{font-size:13px !important;}
+    #page-market .moc-badge{font-size:12px !important;padding:3px 8px !important;}
+    #page-market .moc{padding:16px !important;}
+    #page-market .msn{font-size:15px !important;font-weight:700 !important;}
+    #page-market .msd{font-size:13px !important;}
+    #page-market .msi{width:44px !important;height:44px !important;font-size:1.3rem !important;border-radius:11px !important;margin-bottom:10px !important;}
+    #page-market .msc{padding:16px !important;border-radius:14px !important;}
+    #page-market .mstag{font-size:12px !important;padding:3px 7px !important;}
+    #page-market .mrn{font-size:15px !important;font-weight:700 !important;margin-bottom:3px !important;}
+    #page-market .mrs{font-size:13px !important;}
+    #page-market .mrp{font-size:14px !important;font-weight:700 !important;}
+    #page-market .mra{font-size:12px !important;}
+    #page-market .mri{width:44px !important;height:44px !important;font-size:1.2rem !important;border-radius:11px !important;}
+    #page-market .mrow{padding:15px 0 !important;gap:14px !important;}
+    #page-market .mrow-wrap{padding:0 14px !important;border-radius:14px !important;}
+    #page-market .live-tag{font-size:12px !important;padding:3px 9px !important;}
+    #page-market .mbal-lbl{font-size:11px !important;}
+    #page-market .mbal-amt{font-size:2.2rem !important;}
+    #page-market .mbal-ngn{font-size:13px !important;}
+    #page-market .mleg-item{font-size:13px !important;}
+    #page-market .mcta-t{font-size:16px !important;font-weight:700 !important;}
+    #page-market .mcta-s{font-size:13px !important;}
+    #page-market .mcta-ico{width:44px !important;height:44px !important;border-radius:11px !important;}
+    #page-market .mcta{padding:15px !important;}
+    #page-market .mkt-search input{font-size:14px !important;}
     </style>
 
     <!-- Unified card -->
@@ -422,21 +449,35 @@ html,body{background:var(--bg);}
 
 
 
-        <!-- NAN AI recommendation -->
-        <div class="mai-ban" onclick="document.getElementById('aiBtn')?.click()">
-          <div class="mai-ico">&#10022;</div>
-          <div>
-            <div class="mai-t">NAN AI suggests</div>
-            <div class="mai-s" id="mkt-ai-tip">You have idle USDC, earn &#8358;85,000 extra this year at 4.8% APY</div>
-          </div>
-          <div style="font-size:14px;color:rgba(168,85,247,.5);flex-shrink:0">&#8250;</div>
-        </div>
+
 
         <!-- Legend -->
         <div class="mleg">
           <div class="mleg-item"><div class="mleg-dot" style="background:#10b981"></div>Live now</div>
           <div class="mleg-item"><div class="mleg-dot" style="background:#a855f7"></div>Demo</div>
           <div class="mleg-item"><div class="mleg-dot" style="background:var(--text3)"></div>Coming soon</div>
+        </div>
+
+        <!-- Naira services -->
+        <div id="mkt-naira" style="margin-bottom:13px">
+          <div class="msl">&#127469;&#127468; Naira services</div>
+          <div class="mrow-wrap">
+            <div class="mrow" onclick="goPage('naira');setTimeout(()=>document.getElementById('ntab-deposit')?.click(),200)">
+              <div class="mri igo" style="font-size:1.2rem;color:#fbbf24">&#8358;</div>
+              <div style="flex:1"><div class="mrn">Deposit Naira</div><div class="mrs">Fund wallet via bank transfer</div></div>
+              <div><div class="mrp"><span class="live-tag">Live</span></div><div class="mra">Providus &#8594;</div></div>
+            </div>
+            <div class="mrow" onclick="goPage('naira');setTimeout(()=>document.getElementById('ntab-withdraw')?.click(),200)">
+              <div class="mri igo" style="font-size:1.1rem">&#127982;</div>
+              <div style="flex:1"><div class="mrn">Withdraw Naira</div><div class="mrs">Send NGN to any Nigerian bank</div></div>
+              <div><div class="mrp">1.5% fee</div><div class="mra">~5 mins &#8594;</div></div>
+            </div>
+            <div class="mrow" onclick="goPage('naira');setTimeout(()=>document.getElementById('ntab-convert')?.click(),200)">
+              <div class="mri igo" style="font-size:1.2rem;color:#fbbf24">&#8651;</div>
+              <div style="flex:1"><div class="mrn">Convert NGN &#8596; USDC</div><div class="mrs">Swap at live market rate</div></div>
+              <div><div class="mrp"><span class="live-tag">Live</span></div><div class="mra">Best rate &#8594;</div></div>
+            </div>
+          </div>
         </div>
 
         <!-- Outstanding features -->
@@ -516,11 +557,7 @@ html,body{background:var(--bg);}
         <div id="mkt-agents">
           <div class="msl">AI agent services</div>
           <div class="mrow-wrap">
-            <div class="mrow" onclick="doFX()">
-              <div class="mri ipu">&#129302;</div>
-              <div style="flex:1"><div class="mrn">FX Rate Oracle</div><div class="mrs">Live NGN/USD rate, used by NAN AI</div></div>
-              <div><div class="mrp"><span class="live-tag">Live</span></div><div class="mra">$0.0001/call</div></div>
-            </div>
+
             <div class="mrow" onclick="doCredit()">
               <div class="mri ign">&#128202;</div>
               <div style="flex:1"><div class="mrn">Credit Scoring</div><div class="mrs">On-chain borrowing power</div></div>
@@ -858,17 +895,7 @@ html,body{background:var(--bg);}
         </div>
       </div>
 
-      <div class="mob-asset-row" onclick="goPage('naira')" style="display:flex;align-items:center;gap:13px;padding:13px 16px;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;" onmouseover="this.style.background='rgba(112,0,255,.04)'" onmouseout="this.style.background='transparent'">
-        <div style="width:40px;height:40px;border-radius:50%;background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.25);display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:#fbbf24;flex-shrink:0;">₦</div>
-        <div style="flex:1;">
-          <div style="font-size:1rem;font-weight:700;color:var(--text);">Naira</div>
-          <div style="font-size:.875rem;color:var(--text3);margin-top:2px;">NGN · Deposit · Withdraw</div>
-        </div>
-        <div style="text-align:right;">
-          <div id="homeAssetNgn" style="font-size:1rem;font-weight:700;color:#fbbf24;">₦0.00</div>
-          <div style="font-size:.875rem;color:var(--text3);margin-top:2px;">Coming soon</div>
-        </div>
-      </div>
+
 
 
       <div class="mob-asset-row" onclick="goPage('multichain')" style="display:flex;align-items:center;gap:13px;padding:13px 16px;border-bottom:1px solid var(--border);cursor:pointer;">
