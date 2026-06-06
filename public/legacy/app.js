@@ -102,12 +102,16 @@ const CCTP_DEST_CONFIG = {
 };
 
 // Arc Testnet provider — ENS disabled since Arc doesn't support it
+let _cachedArcProvider = null;
 function getArcProvider(){
-  return new ethers.JsonRpcProvider(ARC_RPC, {
-    chainId: ARC_CHAIN_ID,
-    name: 'arc-testnet',
-    ensAddress: null,
-  });
+  if(!_cachedArcProvider){
+    _cachedArcProvider = new ethers.JsonRpcProvider(ARC_RPC, {
+      chainId: ARC_CHAIN_ID,
+      name: 'arc-testnet',
+      ensAddress: null,
+    });
+  }
+  return _cachedArcProvider;
 }
 // Dynamic wallet signer helper — gets signer fresh each time
 async function getDynamicSigner() {
@@ -1095,17 +1099,7 @@ async function onConnected(isEmail=false, isDev=false){
   renderArcDirectory();
   initLendUI();
   // Move aiBtn and agentPanel to body so overflow:hidden on page divs cannot clip them
-  var _aiEl=document.getElementById('aiBtn');
-  if(_aiEl){document.body.appendChild(_aiEl);_aiEl.style.display='flex';_aiEl._aiListenerAdded=false;}
-  var _panel=document.getElementById('agentPanel');
-  if(_panel){document.body.appendChild(_panel);}
-  // Hide extra AI buttons - single floating button only
-  var deskAI=document.getElementById('aiBtnDesktop');
-  if(deskAI)deskAI.style.display='none';
-  var tnavAI=document.getElementById('tnav-ai');
-  if(tnavAI)tnavAI.style.display='none';
-  var moreAI=document.getElementById('nanAiMoreBtn');
-  if(moreAI)moreAI.style.display='none';
+  _ensureAIButton();
   var navF=document.getElementById('navFaucetBtn');
   if(navF)navF.style.display='flex';
   setTimeout(attachAIListeners,100);
@@ -3406,6 +3400,30 @@ function toggleAgent(){
 }
 
 // AI button listeners — single source of truth, no onclick in HTML
+
+// Guarantee AI button is always visible — call on connect + page changes
+function _ensureAIButton(){
+  const btn=document.getElementById('aiBtn');
+  const panel=document.getElementById('agentPanel');
+  const deskAI=document.getElementById('aiBtnDesktop');
+  const tnavAI=document.getElementById('tnav-ai');
+  const moreAI=document.getElementById('nanAiMoreBtn');
+  if(deskAI)deskAI.style.display='none';
+  if(tnavAI)tnavAI.style.display='none';
+  if(moreAI)moreAI.style.display='none';
+  if(btn){
+    // Move to body if not already there
+    if(btn.parentElement!==document.body) document.body.appendChild(btn);
+    btn.style.cssText='position:fixed!important;bottom:88px!important;right:18px!important;z-index:2147483647!important;width:52px!important;height:52px!important;border-radius:50%!important;background:#6d28d9!important;border:none!important;cursor:pointer!important;display:flex!important;align-items:center!important;justify-content:center!important;box-shadow:0 4px 20px rgba(109,40,217,.5)!important;';
+    btn._aiListenerAdded=false;
+  }
+  if(panel){
+    if(panel.parentElement!==document.body) document.body.appendChild(panel);
+  }
+  // Retry once after 500ms in case DOM wasn't ready
+  if(!btn) setTimeout(_ensureAIButton, 500);
+}
+
 function attachAIListeners(){
   function addToggle(el){
     if(!el||el._aiListenerAdded)return;
@@ -3899,17 +3917,58 @@ async function checkPoolLiquidity(){
   try{
     const readProvider=getArcProvider();
     const swapRead=new ethers.Contract(SWAP_CONTRACT,SWAP_ABI,readProvider);
-    const [usdcLiq,eurcLiq]=await swapRead.getLiquidity();
+    const [[usdcLiq,eurcLiq],[rateNum,rateDen]]=await Promise.all([
+      swapRead.getLiquidity(),
+      swapRead.getRate().catch(()=>[BigInt(9258),BigInt(10000)])
+    ]);
     poolStats.usdcLiq=parseFloat(ethers.formatUnits(usdcLiq,6));
     poolStats.eurcLiq=parseFloat(ethers.formatUnits(eurcLiq,6));
-    console.log('Pool liquidity — USDC:',poolStats.usdcLiq,'EURC:',poolStats.eurcLiq);
-
-    // Show liquidity info on swap page
-    // Pool stats logged to console only — no banner shown to users
-    console.log('Pool liquidity — USDC:',poolStats.usdcLiq,'EURC:',poolStats.eurcLiq);
+    // Update live rate displayed on swap page
+    if(rateNum&&rateDen&&BigInt(rateDen)>0n){
+      const liveRate=(Number(rateNum)/Number(rateDen)).toFixed(4);
+      const rateEl=document.getElementById('swapLiveRate');
+      if(rateEl) rateEl.textContent='Pool rate: 1 USDC = '+liveRate+' EURC';
+    }
+    // Show pool health badge on swap page
+    const poolEl=document.getElementById('swapPoolBadge');
+    if(poolEl){
+      const healthy=poolStats.usdcLiq>=10&&poolStats.eurcLiq>=10;
+      poolEl.style.display='flex';
+      poolEl.innerHTML=healthy
+        ?'<span style="color:#34d399;">● Pool healthy · '+poolStats.usdcLiq.toFixed(0)+' USDC / '+poolStats.eurcLiq.toFixed(0)+' EURC</span>'
+        :'<span style="color:#f87171;">⚠ Pool low · swaps may fail</span>';
+    }
+    // Auto-seed if pool is low and we own the wallet
+    if((poolStats.usdcLiq<5||poolStats.eurcLiq<5)&&signer&&onArcNetwork){
+      console.log('[pool] Low liquidity — auto-seeding');
+      _autoSeedPool().catch(e=>console.log('[pool] Auto-seed skipped:',e.message));
+    }
   }catch(e){console.log('Pool check error:',e.message);}
 }
 
+async function _autoSeedPool(){
+  try{
+    const usdcC=new ethers.Contract(USDC_ADDR,ERC20_ABI,signer);
+    const eurcC=new ethers.Contract(EURC_ADDR,ERC20_ABI,signer);
+    const swapC=new ethers.Contract(SWAP_CONTRACT,SWAP_ABI,signer);
+    const [uBal,eBal]=await Promise.all([usdcC.balanceOf(userAddr),eurcC.balanceOf(userAddr)]);
+    const u=parseFloat(ethers.formatUnits(uBal,6));
+    const e=parseFloat(ethers.formatUnits(eBal,6));
+    if(u<1||e<1) return; // not enough to seed
+    const seed=Math.min(200,u*0.5,e*0.5);
+    const seedU=ethers.parseUnits(seed.toFixed(6),6);
+    const seedE=ethers.parseUnits(seed.toFixed(6),6);
+    const [appU,appE]=await Promise.all([
+      usdcC.approve(SWAP_CONTRACT,ethers.MaxUint256,arcGasOpts()),
+      eurcC.approve(SWAP_CONTRACT,ethers.MaxUint256,arcGasOpts()),
+    ]);
+    await Promise.all([appU.wait(0),appE.wait(0)]);
+    const tx=await swapC.addLiquidity(seedU,seedE,arcGasOpts());
+    await tx.wait(0);
+    toast('✓ Swap pool topped up with '+seed.toFixed(0)+' USDC + EURC','success',5000);
+    checkPoolLiquidity();
+  }catch(e){console.log('[autoSeed]',e.message);}
+}
 // Track user metrics for grant application
 function trackEvent(event,data={}){
   try{
@@ -4661,7 +4720,7 @@ window.addEventListener('load',()=>{
     // Skip the rest of the init flow
     initSwapUI(); initBridgeUI(); fetchLiveFX();
     setInterval(fetchLiveFX, 60000);
-    setInterval(async()=>{ if(userAddr){ if(!isCircleWallet)await checkNetwork(); if(onArcNetwork||isCircleWallet){await refreshBalances();} } }, 10000);
+    setInterval(async()=>{ if(userAddr){ if(!isCircleWallet)await checkNetwork(); if(onArcNetwork||isCircleWallet){await refreshBalances();} } }, 6000);
     if(userAddr){ startOrderEngine(); startIncomingPoller(); }
     document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&userAddr)refreshBalances(); });
     return;
@@ -4750,7 +4809,7 @@ window.addEventListener('load',()=>{
       if(!isCircleWallet)await checkNetwork();
       if(onArcNetwork||isCircleWallet){await refreshBalances();}
     }
-  },10000);
+  },6000);
   if(userAddr){ startOrderEngine(); startIncomingPoller(); }
   document.addEventListener('visibilitychange',()=>{
     if(!document.hidden&&userAddr)refreshBalances();
