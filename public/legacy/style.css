@@ -3439,3 +3439,145 @@ a:hover{color:var(--text);}
   }
 
 }
+
+/* ════════════════════════════════════════════
+   DARK MODE CONTRAST FIXES — mobile
+   All pages: surface containers need to be
+   visually distinct from the card background
+   ════════════════════════════════════════════ */
+
+/* Core fix: surface containers get a lighter bg in dark mode
+   so they stand out against the #1a1a1a card background */
+:root {
+  --surface-raised: #222222;  /* slightly lighter than --surface for contrast */
+  --input-bg: #222222;        /* input fields in dark mode */
+  --border-strong: rgba(255,255,255,.12); /* stronger border for dark mode containers */
+}
+
+/* ── Earn / Lend page — input containers ── */
+#page-lend [style*="background:var(--surface)"] {
+  background: var(--surface-raised) !important;
+  border-color: rgba(255,255,255,.1) !important;
+}
+
+/* Amount input rows across all pages */
+#page-lend .stake-panel > div[style*="background:var(--surface)"],
+#page-lend .stake-panel > div[style*="background: var(--surface)"] {
+  background: var(--surface-raised) !important;
+  border-color: rgba(255,255,255,.1) !important;
+}
+
+/* ── All pages — inner surface containers ── */
+.page [style*="background:var(--surface)"] {
+  background: var(--surface-raised) !important;
+}
+
+/* ── Send page — recipient input area ── */
+#page-send [style*="background:var(--surface)"],
+#page-send .conf-rows {
+  background: var(--surface-raised) !important;
+}
+
+/* ── Swap page — swap box ── */
+#page-swap [style*="background:var(--surface)"] {
+  background: var(--surface-raised) !important;
+}
+
+/* ── Bridge page — inner cards ── */
+#page-bridge [style*="background:var(--surface)"] {
+  background: var(--surface-raised) !important;
+}
+
+/* ── More page — feature rows ── */
+#page-more [style*="background:rgba(255,255,255,.03)"] {
+  background: rgba(255,255,255,.04) !important;
+  border-color: rgba(255,255,255,.09) !important;
+}
+
+/* ── Input fields — use surface-raised so they read as inputs ── */
+input {
+  background: var(--surface-raised) !important;
+}
+
+/* Inputs with background:none (earn page large inputs) stay transparent */
+input[style*="background:none"],
+input[style*="background: none"] {
+  background: none !important;
+}
+
+/* ── Earn page APY text — hardcoded white fix ── */
+#page-lend [style*="color:rgba(255,255,255,.5)"] {
+  color: var(--text2) !important;
+}
+#page-lend [style*="color:rgba(255,255,255,.45)"] {
+  color: var(--text3) !important;
+}
+
+/* ── History page ── */
+#page-history [style*="background:var(--surface)"] {
+  background: var(--surface-raised) !important;
+}
+
+/* ── Arc Name page ── */
+#page-arcname [style*="background:var(--surface)"] {
+  background: var(--surface-raised) !important;
+}
+
+/* ── Bulk pay page ── */
+#page-bulk [style*="background:var(--surface)"] {
+  background: var(--surface-raised) !important;
+}
+
+/* ── Pay request page ── */
+#page-payreq [style*="background:var(--surface)"] {
+  background: var(--surface-raised) !important;
+}
+
+/* ── Wallet modal ── */
+.wallet-modal {
+  background: var(--surface-raised) !important;
+}
+
+/* ── Confirm wrap ── */
+.confirm-wrap {
+  background: var(--surface-raised) !important;
+  border-color: var(--border-strong) !important;
+}
+.conf-rows {
+  background: #2a2a2a !important;
+}
+
+/* ── Lend tabs ── */
+#page-lend .send-tabs {
+  background: rgba(255,255,255,.04) !important;
+}
+#page-lend .stab {
+  background: transparent !important;
+}
+#page-lend .stab.active {
+  background: var(--surface-raised) !important;
+}
+
+/* ── Light mode: undo surface-raised (light mode already works) ── */
+[data-theme="light"] {
+  --surface-raised: #f4f4f4;
+  --input-bg: #f4f4f4;
+}
+[data-theme="light"] input {
+  background: #f4f4f4 !important;
+  border-color: #e4e4e4 !important;
+  color: #1a1a1a !important;
+}
+[data-theme="light"] .page [style*="background:var(--surface)"] {
+  background: #f4f4f4 !important;
+}
+[data-theme="light"] .confirm-wrap {
+  background: #ffffff !important;
+  border-color: #e4e4e4 !important;
+}
+[data-theme="light"] .conf-rows {
+  background: #f4f4f4 !important;
+}
+[data-theme="light"] .wallet-modal {
+  background: #ffffff !important;
+}
