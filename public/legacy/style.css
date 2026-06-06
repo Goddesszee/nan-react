@@ -3649,3 +3649,20 @@ input[style*="background: none"] {
   }
 
 }
+
+
+/* ── page-payreq-view: ensure it scrolls and fills on mobile ── */
+#page-payreq-view {
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  display: none;
+  flex-direction: column;
+  padding-bottom: 100px !important;
+}
+#page-payreq-view.active {
+  display: flex !important;
+}
+/* Prevent any child overflow:hidden clipping the content */
+#page-payreq-view > * {
+  flex-shrink: 0;
+}
