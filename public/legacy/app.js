@@ -4959,22 +4959,50 @@ function renderPaymentRequests(){
   }).join('');
 }
 function copyPRLink(){
-  const link=document.getElementById('prViewLink').textContent;
-  _mobileCopy(link,()=>toast('✓ Link copied!','success',2000),()=>toast('✓ Link copied!','success',2000));
-}
-function _mobileCopy(text,onSuccess,onFallback){
-  if(navigator.clipboard&&window.isSecureContext){
-    navigator.clipboard.writeText(text).then(onSuccess).catch(()=>_execCopy(text,onFallback));
-  }else{
-    _execCopy(text,onFallback);
+  const link=document.getElementById('prViewLink').textContent.trim();
+  if(!link)return;
+  // Use hidden input already in the DOM — most reliable on Android Chrome
+  const inp=document.getElementById('prViewLinkInput');
+  if(inp){
+    inp.value=link;
+    inp.style.cssText='position:fixed;top:50%;left:0;width:100%;opacity:0;font-size:16px;';
+    inp.removeAttribute('disabled');
+    inp.focus();
+    inp.select();
+    inp.setSelectionRange(0,link.length);
+    let ok=false;
+    try{ok=document.execCommand('copy');}catch(e){}
+    inp.style.cssText='position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;';
+    if(ok){toast('✓ Link copied!','success',2000);return;}
   }
+  // Fallback: clipboard API (desktop / iOS 13.4+)
+  if(navigator.clipboard&&window.isSecureContext){
+    navigator.clipboard.writeText(link).then(()=>toast('✓ Link copied!','success',2000)).catch(()=>_execCopy(link));
+  }else{
+    _execCopy(link);
+  }
+}
+function _mobileCopy(text,onSuccess){
+  const inp=document.getElementById('prViewLinkInput');
+  if(inp){
+    inp.value=text;
+    inp.style.cssText='position:fixed;top:50%;left:0;width:100%;opacity:0;font-size:16px;';
+    inp.removeAttribute('disabled');
+    inp.focus();inp.select();inp.setSelectionRange(0,text.length);
+    let ok=false;try{ok=document.execCommand('copy');}catch(e){}
+    inp.style.cssText='position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;';
+    if(ok){if(onSuccess)onSuccess();return;}
+  }
+  if(navigator.clipboard&&window.isSecureContext){
+    navigator.clipboard.writeText(text).then(()=>{if(onSuccess)onSuccess();}).catch(()=>_execCopy(text,onSuccess));
+  }else{_execCopy(text,onSuccess);}
 }
 function _execCopy(text,cb){
   const ta=document.createElement('textarea');
   ta.value=text;
-  ta.style.cssText='position:fixed;top:0;left:0;opacity:0;pointer-events:none;';
+  ta.style.cssText='position:fixed;top:50%;left:0;width:100%;opacity:0;font-size:16px;';
   document.body.appendChild(ta);
-  ta.focus();ta.select();
+  ta.focus();ta.select();ta.setSelectionRange(0,text.length);
   try{document.execCommand('copy');}catch(e){}
   document.body.removeChild(ta);
   if(cb)cb();
