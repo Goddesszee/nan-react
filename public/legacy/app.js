@@ -5659,14 +5659,17 @@ function renderNotifBadge() {
 // ── Panel toggle ──────────────────────────────────────────────────────────────
 function toggleNotifPanel(e) {
   e && e.stopPropagation();
-  const panel = document.getElementById('nanNotifPanel');
+  const panel    = document.getElementById('nanNotifPanel');
+  const backdrop = document.getElementById('nanNotifBackdrop');
   if (!panel) return;
   nanNotifOpen = !nanNotifOpen;
   panel.classList.toggle('open', nanNotifOpen);
+  if (backdrop) backdrop.classList.toggle('open', nanNotifOpen);
+  // Prevent body scroll when panel open on mobile
+  document.body.style.overflow = nanNotifOpen ? 'hidden' : '';
   if (nanNotifOpen) {
     renderNotifList();
     markAllRead();
-    // Show push enable banner if not yet subscribed
     const banner = document.getElementById('nanPushBanner');
     if (banner && Notification.permission !== 'granted') banner.style.display = 'flex';
   }
@@ -5675,11 +5678,14 @@ function toggleNotifPanel(e) {
 // close panel when clicking outside
 document.addEventListener('click', e => {
   if (!nanNotifOpen) return;
-  const panel = document.getElementById('nanNotifPanel');
-  const btn = document.getElementById('nanNotifBtn');
+  const panel    = document.getElementById('nanNotifPanel');
+  const backdrop = document.getElementById('nanNotifBackdrop');
+  const btn      = document.getElementById('nanNotifBtn');
   if (panel && !panel.contains(e.target) && btn && !btn.contains(e.target)) {
     nanNotifOpen = false;
     panel.classList.remove('open');
+    if (backdrop) backdrop.classList.remove('open');
+    document.body.style.overflow = '';
   }
 });
 
