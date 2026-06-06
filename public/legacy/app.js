@@ -1900,14 +1900,29 @@ async function doSwap(){
   btn.innerHTML='<span class="spinner"></span>Swapping...';btn.disabled=true;
   if(isCircleWallet&&circleWalletId){
     try{
-      btn.innerHTML='<span class=\"spinner\"></span>Swapping via App Kit…';
-      const swapRes=await fetch('https://nan-production.up.railway.app/api/circle-wallets',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({action:'swapExecute',walletAddress:circleWalletAddress,tokenIn,tokenOut,amountIn:fromAmt.toString()})});
-      const d=await swapRes.json();
-      if(!d.success)throw new Error(d.error||'Swap failed');
-      const amtOut=d.amountOut?parseFloat(d.amountOut).toFixed(4):(fromAmt*(isUSDCtoEURC?FX:(1/FX))*0.999).toFixed(4);
+      btn.innerHTML='<span class="spinner"></span>Swapping via App Kit…';
+      // ── Primary: /api/appkit/swap (Circle App Kit route) ──
+      let data=null;
+      try{
+        const r=await fetch('https://nan-production.up.railway.app/api/appkit/swap',{
+          method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({action:'swap',walletAddress:circleWalletAddress,tokenIn,tokenOut,amountIn:fromAmt.toString()}),
+        });
+        const j=await r.json();
+        if(j.success&&!j.fallback) data=j;
+      }catch(_){}
+      // ── Fallback: /api/circle-wallets swapExecute ──
+      if(!data){
+        const r2=await fetch('https://nan-production.up.railway.app/api/circle-wallets',{
+          method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({action:'swapExecute',walletAddress:circleWalletAddress,tokenIn,tokenOut,amountIn:fromAmt.toString()}),
+        });
+        data=await r2.json();
+      }
+      if(!data||!data.success) throw new Error((data&&data.error)||'Swap failed');
+      const amtOut=data.amountOut?parseFloat(data.amountOut).toFixed(4):(fromAmt*(isUSDCtoEURC?FX:(1/FX))*0.999).toFixed(4);
       toast('✓ Swapped '+fromAmt.toFixed(2)+' '+tokenIn+' → '+amtOut+' '+tokenOut+'!','success',6000);
-      addTx({hash:d.txHash,to:SWAP_CONTRACT,toRaw:'NANSwap',amount:fromAmt.toFixed(6),fromToken:tokenIn,toToken:tokenOut,outAmount:amtOut,type:'swap',token:tokenIn,ts:Date.now(),confirmed:true,source:'appkit-swap'});
+      addTx({hash:data.txHash,to:SWAP_CONTRACT,toRaw:'NANSwap',amount:fromAmt.toFixed(6),fromToken:tokenIn,toToken:tokenOut,outAmount:amtOut,type:'swap',token:tokenIn,ts:Date.now(),confirmed:true,source:'appkit-swap'});
       document.getElementById('swapFrom').value='';document.getElementById('swapTo').value='';
       btn.innerHTML='Swap';btn.disabled=false;
       setTimeout(()=>refreshBalances(),2000);
