@@ -372,6 +372,26 @@ html,body{background:var(--bg);}
     #page-market .ird{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2)}
     #page-market .ipk{background:rgba(236,72,153,.1);border:1px solid rgba(236,72,153,.2)}
     #page-market .itl{background:rgba(20,184,166,.1);border:1px solid rgba(20,184,166,.2)}
+    #page-market .msl{font-size:.82rem;font-weight:700;letter-spacing:.12em;color:var(--text);opacity:.75;}
+    #page-market .moc-name{font-size:.95rem;font-weight:700;color:var(--text);}
+    #page-market .moc-desc{font-size:.82rem;line-height:1.5;color:var(--text2);}
+    #page-market .msn{font-size:.92rem;font-weight:700;color:var(--text);margin-bottom:4px;}
+    #page-market .msd{font-size:.8rem;color:var(--text2);line-height:1.4;margin-bottom:8px;}
+    #page-market .mrn{font-size:.92rem;font-weight:700;color:var(--text);margin-bottom:3px;}
+    #page-market .mrs{font-size:.8rem;color:var(--text2);}
+    #page-market .mrp{font-size:.88rem;font-weight:700;color:var(--text);}
+    #page-market .mra{font-size:.78rem;color:var(--text3);}
+    #page-market .mbal-amt{font-size:2rem;font-weight:800;letter-spacing:-1px;}
+    #page-market .mai-t{font-size:.8rem;font-weight:700;}
+    #page-market .mai-s{font-size:.84rem;line-height:1.5;color:var(--text2);}
+    #page-market .mcta-t{font-size:.9rem;font-weight:700;}
+    #page-market .mcta-s{font-size:.8rem;color:var(--text2);}
+    #page-market .mleg-item{font-size:.78rem;color:var(--text2);}
+    #page-market .msc{padding:14px;border-radius:14px;}
+    #page-market .msi{width:38px;height:38px;border-radius:10px;margin-bottom:9px;}
+    #page-market .mrow{padding:13px 0;gap:12px;}
+    #page-market .mri{width:38px;height:38px;border-radius:10px;}
+    #page-market .msg{gap:10px;}
     </style>
 
     <!-- Unified card -->
@@ -398,46 +418,16 @@ html,body{background:var(--bg);}
           <input id="mkt-search-inp" placeholder="Search airtime, DSTV, Ajo..." oninput="mktSearch(this.value)" />
         </div>
 
-        <!-- Recently used -->
-        <div class="msl">Recently used</div>
-        <div class="mrec" id="mkt-recent">
-          <div class="mrb" onclick="doAirtime()"><span>&#128241;</span><span class="mrb-t">Airtime</span></div>
-          <div class="mrb" onclick="doNepa()"><span>&#9889;</span><span class="mrb-t">NEPA</span></div>
-          <div class="mrb" onclick="goPage('bridge')"><span>&#9992;&#65039;</span><span class="mrb-t">Send Abroad</span></div>
-          <div class="mrb" onclick="doAjo()"><span>&#129309;</span><span class="mrb-t">Ajo</span></div>
-        </div>
 
-        <!-- Quick actions -->
-        <div class="msl">Quick actions</div>
-        <div class="mqs">
-          <div class="mqb" onclick="doOnRamp()">
-            <div class="mqi ign">&#127469;&#127468;</div>
-            <span class="mql">NGN In</span>
-          </div>
-          <div class="mqb" onclick="doBank()">
-            <div class="mqi igo">&#127982;</div>
-            <span class="mql">NGN Out</span>
-          </div>
-          <div class="mqb" onclick="doAirtime()">
-            <div class="mqi ibl">&#128241;</div>
-            <span class="mql">Airtime</span>
-          </div>
-          <div class="mqb" onclick="goPage('bridge')">
-            <div class="mqi ipu">&#9992;&#65039;</div>
-            <span class="mql">Abroad</span>
-          </div>
-          <div class="mqb" onclick="goPage('lend')">
-            <div class="mqi itl">&#128200;</div>
-            <span class="mql">Earn 4.8%</span>
-          </div>
-        </div>
+
+
 
         <!-- NAN AI recommendation -->
         <div class="mai-ban" onclick="document.getElementById('aiBtn')?.click()">
           <div class="mai-ico">&#10022;</div>
           <div>
             <div class="mai-t">NAN AI suggests</div>
-            <div class="mai-s" id="mkt-ai-tip">You have idle USDC &#8212; earn &#8358;85,000 extra this year at 4.8% APY</div>
+            <div class="mai-s" id="mkt-ai-tip">You have idle USDC, earn &#8358;85,000 extra this year at 4.8% APY</div>
           </div>
           <div style="font-size:14px;color:rgba(168,85,247,.5);flex-shrink:0">&#8250;</div>
         </div>
@@ -452,30 +442,14 @@ html,body{background:var(--bg);}
         <!-- Outstanding features -->
         <div id="mkt-outstanding">
           <div class="msl">Only on NAN <span class="msl-badge">UNIQUE</span></div>
-          <div class="mog">
-            <div class="moc oc-pu" onclick="doAjo()">
-              <div class="moc-badge b-live"><span class="live-dot"></span> Live now</div>
-              <span class="moc-ico">&#129309;</span>
-              <div class="moc-name">Ajo Savings</div>
-              <div class="moc-desc">On-chain rotating savings &#8212; first in Africa</div>
-            </div>
-            <div class="moc oc-gn" onclick="goPage('bridge')">
-              <div class="moc-badge b-live"><span class="live-dot"></span> Live now</div>
-              <span class="moc-ico">&#9992;&#65039;</span>
-              <div class="moc-name">Send Abroad</div>
-              <div class="moc-desc">Free USDC remittance via CCTP, any chain</div>
-            </div>
-            <div class="moc oc-go" onclick="goPage('lend')">
-              <div class="moc-badge b-live"><span class="live-dot"></span> Live now</div>
-              <span class="moc-ico">&#128200;</span>
-              <div class="moc-name">Earn 4.80%</div>
-              <div class="moc-desc">Save USDC, withdraw anytime, no lockup</div>
-            </div>
-            <div class="moc oc-bl" onclick="goPage('arcname')">
-              <div class="moc-badge b-live"><span class="live-dot"></span> Live now</div>
-              <span class="moc-ico">&#127760;</span>
-              <div class="moc-name">.arc Names</div>
-              <div class="moc-desc">Send to zara.arc not 0x123...abc</div>
+          <div class="mog" style="display:block;margin-bottom:13px;">
+            <div class="moc oc-pu" onclick="doAjo()" style="display:flex;align-items:center;gap:16px;padding:16px;">
+              <div style="flex-shrink:0;width:44px;height:44px;border-radius:12px;background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.25);display:flex;align-items:center;justify-content:center;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
+              <div style="flex:1;">
+                <div class="moc-badge b-live" style="margin-bottom:4px;"><span class="live-dot"></span> Live now</div>
+                <div class="moc-name">Ajo Savings</div>
+                <div class="moc-desc">On-chain rotating savings, first in Africa</div>
+              </div>
             </div>
           </div>
         </div>
@@ -485,41 +459,41 @@ html,body{background:var(--bg);}
           <div class="msl">&#127469;&#127468; Nigerian services</div>
           <div class="msg">
             <div class="msc s-demo" onclick="doAirtime()">
-              <div class="msbdg hot">HOT</div>
-              <div class="msi ibl">&#128241;</div>
+              
+              <div class="msi ibl"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div>
               <div class="msn">Airtime</div>
               <div class="msd">MTN, Airtel, Glo, 9mobile</div>
-              <span class="mstag tp">1% &#183; Demo</span>
+              
             </div>
             <div class="msc s-demo" onclick="doData()">
-              <div class="msbdg hot">HOT</div>
-              <div class="msi ign">&#128225;</div>
+              
+              <div class="msi ign"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1.05 12a11 11 0 0121.9 0M5 12a7 7 0 0114 0M9 12a3 3 0 016 0"/><circle cx="12" cy="12" r="1"/></svg></div>
               <div class="msn">Data Bundles</div>
-              <div class="msd">All networks, instant</div>
-              <span class="mstag tp">1% &#183; Demo</span>
+              <div class="msd">All networks, instant delivery</div>
+              
             </div>
             <div class="msc s-demo" onclick="doNepa()">
-              <div class="msi igo">&#9889;</div>
+              <div class="msi igo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
               <div class="msn">NEPA / BEDC</div>
               <div class="msd">Electricity bills</div>
-              <span class="mstag tg">Free &#183; Demo</span>
+              
             </div>
             <div class="msc s-demo" onclick="doDstv()">
-              <div class="msi ird">&#128250;</div>
+              <div class="msi ird"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg></div>
               <div class="msn">DSTV / GoTV</div>
               <div class="msd">All bouquets</div>
-              <span class="mstag tg">Free &#183; Demo</span>
+              
             </div>
             <div class="msc s-demo" onclick="doGift()">
-              <div class="msbdg demo-b">NEW</div>
-              <div class="msi ipu">&#127873;</div>
+              
+              <div class="msi ipu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="8" width="18" height="14" rx="2"/><path d="M19 8V6a3 3 0 00-6 0c0-1.66-1.34-3-3-3a3 3 0 00-3 3v2"/><line x1="12" y1="8" x2="12" y2="22"/></svg></div>
               <div class="msn">Gift Cards</div>
               <div class="msd">Amazon, Netflix, iTunes</div>
-              <span class="mstag tp">2% &#183; Demo</span>
+              
             </div>
-            <div class="msc s-soon">
-              <div class="msbdg soon-b">Q4</div>
-              <div class="msi itl">&#128167;</div>
+            <div class="msc s-demo" onclick="doWater()">
+              
+              <div class="msi itl"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg></div>
               <div class="msn">Water Bill</div>
               <div class="msd">Lagos, Abuja</div>
               <span class="mstag tg" style="opacity:.5">Free &#183; Soon</span>
@@ -531,24 +505,9 @@ html,body{background:var(--bg);}
         <div id="mkt-money">
           <div class="msl">Money services</div>
           <div class="mrow-wrap">
-            <div class="mrow" onclick="doOnRamp()">
-              <div class="mri ign">&#127469;&#127468;</div>
-              <div style="flex:1"><div class="mrn">NGN On-Ramp</div><div class="mrs">Bank &#8594; USDC &#183; Paystack &#183; Demo</div></div>
-              <div><div class="mrp">1.5%</div><div class="mra">~5 min &#8594;</div></div>
-            </div>
-            <div class="mrow" onclick="doBank()">
-              <div class="mri igo">&#127982;</div>
-              <div style="flex:1"><div class="mrn">Bank Withdrawal</div><div class="mrs">USDC &#8594; Nigerian bank &#183; Demo</div></div>
-              <div><div class="mrp">1.5%</div><div class="mra">~5 min &#8594;</div></div>
-            </div>
-            <div class="mrow" onclick="goPage('bridge')">
-              <div class="mri ipu">&#9992;&#65039;</div>
-              <div style="flex:1"><div class="mrn">Send Abroad</div><div class="mrs">Free via CCTP &#183; Any chain</div></div>
-              <div><div class="mrp"><span class="live-tag">Live</span></div><div class="mra">instant &#8594;</div></div>
-            </div>
             <div class="mrow" onclick="doBVN()">
               <div class="mri ipk">&#10003;</div>
-              <div style="flex:1"><div class="mrn">BVN Verification</div><div class="mrs">Unlock higher limits &#183; Demo</div></div>
+              <div style="flex:1"><div class="mrn">BVN Verification</div><div class="mrs">Unlock higher limits</div></div>
               <div><div class="mrp">$0.10</div><div class="mra">once &#8594;</div></div>
             </div>
           </div>
@@ -560,12 +519,12 @@ html,body{background:var(--bg);}
           <div class="mrow-wrap">
             <div class="mrow" onclick="doFX()">
               <div class="mri ipu">&#129302;</div>
-              <div style="flex:1"><div class="mrn">FX Rate Oracle</div><div class="mrs">Live NGN/USD &#183; Used by NAN AI</div></div>
+              <div style="flex:1"><div class="mrn">FX Rate Oracle</div><div class="mrs">Live NGN/USD rate, used by NAN AI</div></div>
               <div><div class="mrp"><span class="live-tag">Live</span></div><div class="mra">$0.0001/call</div></div>
             </div>
             <div class="mrow" onclick="doCredit()">
               <div class="mri ign">&#128202;</div>
-              <div style="flex:1"><div class="mrn">Credit Scoring</div><div class="mrs">Borrowing power &#183; Demo</div></div>
+              <div style="flex:1"><div class="mrn">Credit Scoring</div><div class="mrs">On-chain borrowing power</div></div>
               <div><div class="mrp">$0.05</div><div class="mra">per check</div></div>
             </div>
           </div>
@@ -574,7 +533,7 @@ html,body{background:var(--bg);}
         <!-- List service CTA -->
         <div class="mcta" onclick="doList()">
           <div class="mcta-ico">&#128188;</div>
-          <div><div class="mcta-t">List your service</div><div class="mcta-s">Sell to NAN users &#183; Get paid in USDC</div></div>
+          <div><div class="mcta-t">List your service</div><div class="mcta-s">Sell to NAN users, get paid in USDC</div></div>
           <div style="margin-left:auto;font-size:16px;color:#fbbf24;opacity:.5">&#8250;</div>
         </div>
 
