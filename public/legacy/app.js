@@ -1044,6 +1044,59 @@ async function _autoSeedLiquidity(){
   }catch(e){console.warn('[pool] Liquidity seed skipped:',e.message);}
 }
 
+// ── Load cached balances instantly on login — no RPC wait ───────────────────
+function loadCachedBalances(){
+  if(!userAddr) return;
+  const cu = localStorage.getItem('nan_cached_usdc_'+userAddr);
+  const ce = localStorage.getItem('nan_cached_eurc_'+userAddr);
+  if(!cu && !ce) return; // no cache yet — first ever login
+
+  const u = parseFloat(cu)||0;
+  const e = parseFloat(ce)||0;
+  // Set global vars so everything that reads usdcBal/eurcBal works
+  usdcBal = String(u);
+  eurcBal = String(e);
+
+  const uFmt = u.toFixed(2);
+  const eFmt = e.toFixed(2);
+  const stableFX = (FX && FX>0.8 && FX<1.2) ? FX : 0.9258;
+  const totalUsd = u + e*(1/stableFX);
+  const NGN_RATE = 1622;
+
+  // Home page
+  const homeBalAmt = document.getElementById('homeBalAmt');
+  const homeBalNgn = document.getElementById('homeBalNgn');
+  const homeUsdcBal = document.getElementById('homeUsdcBal');
+  const homeEurcBal = document.getElementById('homeEurcBal');
+  if(homeBalAmt) homeBalAmt.textContent = totalUsd.toFixed(2);
+  if(homeBalNgn) homeBalNgn.textContent = '≈ ₦'+Math.round(totalUsd*NGN_RATE).toLocaleString()+' NGN';
+  if(homeUsdcBal) homeUsdcBal.textContent = uFmt+' USDC';
+  if(homeEurcBal) homeEurcBal.textContent = eFmt+' EURC';
+
+  // Send page chips
+  const usdcBal2 = document.getElementById('usdcBal2');
+  const eurcBal2 = document.getElementById('eurcBal2');
+  if(usdcBal2) usdcBal2.textContent = uFmt;
+  if(eurcBal2) eurcBal2.textContent = eFmt;
+
+  // Swap page
+  const swapFromBal = document.getElementById('swapFromBal');
+  const swapToBal   = document.getElementById('swapToBal');
+  if(swapFromBal) swapFromBal.textContent = swapFlipped ? eFmt : uFmt;
+  if(swapToBal)   swapToBal.textContent   = swapFlipped ? uFmt : eFmt;
+
+  // Send available
+  updateSendAvailable();
+
+  // Hide skeleton, show real balance immediately
+  const sk = document.getElementById('balSkelWrap');
+  const rw = document.getElementById('balRealWrap');
+  if(sk) sk.style.display = 'none';
+  if(rw) rw.style.display = 'block';
+
+  console.log('[cache] Painted balances instantly — USDC:'+uFmt+' EURC:'+eFmt);
+}
+
 async function onConnected(isEmail=false, isDev=false){
   const land = document.getElementById('page-land');
   if(land){
@@ -1089,9 +1142,10 @@ async function onConnected(isEmail=false, isDev=false){
   document.getElementById('devBadge').style.display=(isEmail&&isDev)?'inline-block':'none';
 
   if(!isEmail)await checkNetwork();
-  // Auto liquidity + approvals disabled — happen per-transaction only
-  showBalSkeleton();
-  await refreshBalances();
+  // Paint cached balances IMMEDIATELY — no waiting for RPC
+  loadCachedBalances();
+  // Then refresh from chain in background — UI already shows something
+  refreshBalances().catch(e=>console.log('[balance refresh]',e.message));
   loadTxHistory();arcNames=JSON.parse(localStorage.getItem('nan_arcnames_'+userAddr)||'[]');
   setTimeout(()=>loadOnChainHistory(),2000);
   renderQR(userAddr);
@@ -1152,10 +1206,11 @@ function disconnect(){
 // BALANCE REFRESH
 // ═══════════════════════════════════════════
 async function refreshBalances(){
-  // Show skeleton while loading
+  // Skeleton only shown if balance has never been seen (no cache)
   const skelWrap=document.getElementById('balSkelWrap');
   const realWrap=document.getElementById('balRealWrap');
-  if(skelWrap&&realWrap&&(document.getElementById('homeBalAmt').textContent==='—')){
+  const neverSeen=!localStorage.getItem('nan_cached_usdc_'+userAddr);
+  if(skelWrap&&realWrap&&neverSeen){
     skelWrap.style.display='block';
     realWrap.style.display='none';
   }
