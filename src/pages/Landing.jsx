@@ -1,390 +1,423 @@
-import { useEffect, useRef, useState } from 'react'
-import { NanLogo } from '../components/NanLogo'
-import { useTheme } from '../hooks/useTheme'
+import { useState } from 'react'
 
 const API = 'https://nan-production.up.railway.app'
 
-const features = [
-  { icon: '↑', title: 'Send', desc: 'Transfer USDC and EURC to any Arc address in under a second. Zero gas fees.' },
-  { icon: '⇄', title: 'Swap', desc: 'Exchange between USDC and EURC at live market rates. No slippage surprises.' },
-  { icon: '⊞', title: 'Bridge', desc: 'Move stablecoins between chains using Circle CCTP V2. No wrapped tokens.' },
-  { icon: '📈', title: 'Earn', desc: 'Put idle stablecoins to work at 4.80% APY. Fully liquid. No lockup.' },
-]
-
-const stats = [
-  { value: '$0',     label: 'Gas fees ever' },
-  { value: '<1s',    label: 'Settlement time' },
-  { value: '4.80%',  label: 'APY on USDC' },
-  { value: 'CCTP V2',label: 'Bridge protocol' },
-]
-
-const CYCLE_WORDS = ['Borders.', 'Limits.', 'Barriers.', 'Borders.']
-
-// Network animation
-function NetworkCanvas({ theme }) {
-  const canvasRef = useRef(null)
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    let w, h, nodes, edges, pulses, animId
-    const dark = theme !== 'light'
-    function resize() {
-      w = canvas.width = canvas.offsetWidth
-      h = canvas.height = canvas.offsetHeight
-      initScene()
-    }
-    function initScene() {
-      nodes = Array.from({ length: Math.max(Math.floor((w*h)/18000), 14) }, () => ({
-        x: Math.random()*w, y: Math.random()*h,
-        vx: (Math.random()-.5)*.55, vy: (Math.random()-.5)*.55,
-        r: Math.random()*3+1.5, pulse: Math.random()*Math.PI*2,
-      }))
-      edges = []; pulses = []
-      for (let i=0;i<6;i++) spawnPulse()
-    }
-    function spawnPulse() {
-      if (!edges.length) return
-      const edge = edges[Math.floor(Math.random()*edges.length)]
-      pulses.push({ edge, t:0, speed: Math.random()*.008+.004, reverse: Math.random()>.5, size: Math.random()*3+2, trail:[] })
-    }
-    function draw() {
-      ctx.clearRect(0,0,w,h)
-      for (const n of nodes) {
-        n.pulse+=.025; n.x+=n.vx; n.y+=n.vy
-        if(n.x<0||n.x>w) n.vx*=-1
-        if(n.y<0||n.y>h) n.vy*=-1
-      }
-      edges=[]
-      for(let i=0;i<nodes.length;i++) for(let j=i+1;j<nodes.length;j++) {
-        const dx=nodes[i].x-nodes[j].x,dy=nodes[i].y-nodes[j].y,d=Math.sqrt(dx*dx+dy*dy)
-        if(d<220) edges.push({a:i,b:j,dist:d})
-      }
-      for(const e of edges) {
-        const a=nodes[e.a],b=nodes[e.b]
-        ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y)
-        ctx.strokeStyle=`rgba(112,0,255,${(dark?.18:.12)*(1-e.dist/220)})`
-        ctx.lineWidth=.8;ctx.stroke()
-      }
-      for(const n of nodes) {
-        const p=n.r+Math.sin(n.pulse)*1.2
-        const g=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,p*5)
-        g.addColorStop(0,`rgba(112,0,255,${dark?.25:.12})`);g.addColorStop(1,'rgba(112,0,255,0)')
-        ctx.beginPath();ctx.arc(n.x,n.y,p*5,0,Math.PI*2);ctx.fillStyle=g;ctx.fill()
-        ctx.beginPath();ctx.arc(n.x,n.y,p,0,Math.PI*2)
-        ctx.fillStyle=`rgba(112,0,255,${dark?.9:.7})`;ctx.fill()
-      }
-      const alive=[]
-      for(const p of pulses) {
-        p.t+=p.speed; if(p.t>1){spawnPulse();continue}
-        const e=p.edge; if(!nodes[e.a]||!nodes[e.b]) continue
-        const a=nodes[e.a],b=nodes[e.b],t=p.reverse?1-p.t:p.t
-        const px=a.x+(b.x-a.x)*t,py=a.y+(b.y-a.y)*t
-        p.trail.push({x:px,y:py}); if(p.trail.length>18) p.trail.shift()
-        for(let i=0;i<p.trail.length;i++) {
-          const tp=p.trail[i],ta=(i/p.trail.length)*.7
-          ctx.beginPath();ctx.arc(tp.x,tp.y,p.size*(i/p.trail.length)*.8,0,Math.PI*2)
-          ctx.fillStyle=dark?`rgba(192,132,252,${ta})`:`rgba(112,0,255,${ta*.8})`;ctx.fill()
-        }
-        const hg=ctx.createRadialGradient(px,py,0,px,py,p.size*3)
-        hg.addColorStop(0,dark?'rgba(255,255,255,.95)':'rgba(112,0,255,.95)')
-        hg.addColorStop(.4,dark?'rgba(192,132,252,.6)':'rgba(147,51,234,.5)')
-        hg.addColorStop(1,'rgba(112,0,255,0)')
-        ctx.beginPath();ctx.arc(px,py,p.size*3,0,Math.PI*2);ctx.fillStyle=hg;ctx.fill()
-        ctx.beginPath();ctx.arc(px,py,p.size,0,Math.PI*2)
-        ctx.fillStyle=dark?'#c084fc':'#7000ff';ctx.fill()
-        alive.push(p)
-      }
-      pulses=alive; while(pulses.length<8) spawnPulse()
-      animId=requestAnimationFrame(draw)
-    }
-    resize(); draw()
-    const ro=new ResizeObserver(resize); ro.observe(canvas)
-    window.addEventListener('resize',resize)
-    return()=>{cancelAnimationFrame(animId);ro.disconnect();window.removeEventListener('resize',resize)}
-  },[theme])
-  return <canvas ref={canvasRef} style={{position:'fixed',top:0,left:0,width:'100vw',height:'100vh',pointerEvents:'none',zIndex:0}}/>
-}
-
-// Typewriter
-function TypewriterCycle() {
-  const [idx,setIdx]=useState(0)
-  const [displayed,setDisplayed]=useState('')
-  const [deleting,setDeleting]=useState(false)
-  const [paused,setPaused]=useState(false)
-  useEffect(()=>{
-    if(paused){const t=setTimeout(()=>{setDeleting(true);setPaused(false)},1600);return()=>clearTimeout(t)}
-    const word=CYCLE_WORDS[idx]
-    if(!deleting){
-      if(displayed.length<word.length){const t=setTimeout(()=>setDisplayed(word.slice(0,displayed.length+1)),75);return()=>clearTimeout(t)}
-      else setPaused(true)
-    } else {
-      if(displayed.length>0){const t=setTimeout(()=>setDisplayed(displayed.slice(0,-1)),40);return()=>clearTimeout(t)}
-      else{setDeleting(false);setIdx(i=>(i+1)%CYCLE_WORDS.length)}
-    }
-  },[displayed,deleting,paused,idx])
-  return <span className="l-typewriter">{displayed}<span className="l-cursor">|</span></span>
-}
-
-// Login Modal
-function LoginModal({ onClose, onEmailConnect, onWalletConnect }) {
-  const [step, setStep] = useState('options') // options | email | otp | loading
+export function Landing({ onConnect }) {
   const [email, setEmail] = useState('')
-  const [otp, setOtp] = useState('')
+  const [status, setStatus] = useState('')
   const [error, setError] = useState('')
-  const [info, setInfo] = useState('')
-  const [loadMsg, setLoadMsg] = useState('')
-  const tokenRef = useRef(null)
-  const expiryRef = useRef(null)
 
-  const hasWallet = !!(window.ethereum || (window.evmproviders && Object.values(window.evmproviders).length))
-
-  async function sendOTP() {
+  async function handleEmail(e) {
+    e.preventDefault()
     if (!email.includes('@')) { setError('Enter a valid email'); return }
-    setStep('loading'); setLoadMsg('Sending code…'); setError('')
+    setError(''); setStatus('Setting up your wallet...')
     try {
-      const r = await fetch(`${API}/api/otp`, {
-        method: 'POST', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ action: 'send', email }),
+      const r = await fetch(`${API}/api/circle-wallets`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'getWallet', email }),
       })
       const d = await r.json()
-      if (!d.success) { setError(d.error || 'Failed to send'); setStep('email'); return }
-      tokenRef.current = d.token; expiryRef.current = d.expiresAt
-      setInfo(`Code sent to ${email}`)
-      setStep('otp')
-    } catch(e) { setError('Network error'); setStep('email') }
+      const w = d.wallet || d
+      if (w?.id && w?.address) {
+        localStorage.setItem('circleWalletId', w.id)
+        localStorage.setItem('circleWalletAddr', w.address)
+        localStorage.setItem('nan_dynamic_address', w.address)
+        localStorage.setItem('nan_dynamic_email', email)
+        localStorage.setItem('nan_dynamic_token', 'dynamic_authenticated')
+        window.location.replace('/legacy/app.html')
+      } else { setStatus(''); setError(d.error || 'Wallet setup failed') }
+    } catch(e) { setStatus(''); setError('Connection error — please retry') }
   }
 
-  async function verifyOTP() {
-    if (otp.length !== 6) { setError('Enter the 6-digit code'); return }
-    setStep('loading'); setLoadMsg('Verifying…'); setError('')
+  async function handleWallet() {
+    const provider = window.ethereum || (window.evmproviders && Object.values(window.evmproviders)[0])
+    if (!provider) { setError('No wallet found. Install MetaMask or Rabby.'); return }
     try {
-      const vr = await fetch(`${API}/api/otp`, {
-        method: 'POST', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ action: 'verify', email, otp, token: tokenRef.current, expiresAt: expiryRef.current }),
-      })
-      const vd = await vr.json()
-      if (!vd.success) { setError(vd.error || 'Invalid code'); setStep('otp'); return }
-      setLoadMsg('Setting up wallet…')
-      await onEmailConnect(email)
-    } catch(e) { setError(e.message || 'Error'); setStep('otp') }
+      const accounts = await provider.request({ method: 'eth_requestAccounts' })
+      if (!accounts?.length) throw new Error('No accounts')
+      const addr = accounts[0]
+      localStorage.removeItem('circleWalletId'); localStorage.removeItem('circleWalletAddr')
+      localStorage.setItem('nan_dynamic_address', addr)
+      localStorage.setItem('nan_dynamic_email', '')
+      localStorage.setItem('nan_dynamic_token', 'dynamic_authenticated')
+      window.location.replace('/legacy/app.html')
+    } catch(e) { setError(e.message?.slice(0, 80) || 'Connection failed') }
   }
 
-  async function connectWallet() {
-    setStep('loading'); setLoadMsg('Connecting wallet…'); setError('')
-    try {
-      await onWalletConnect()
-    } catch(e) { setError(e.message); setStep('options') }
-  }
-
-  const { theme: modalTheme } = useTheme()
-  const dark = modalTheme !== 'light'
-  const overlay = {
-    position:'fixed',inset:0,background: dark ? 'rgba(0,0,0,.85)' : 'rgba(0,0,0,.5)',
-    backdropFilter:'blur(12px)',zIndex:9999,
-    display:'flex',alignItems:'center',justifyContent:'center',padding:16,
-    animation:'fadeIn .2s ease',
-  }
-  const modal = {
-    background: dark ? '#111' : '#ffffff',
-    border: dark ? '1px solid rgba(255,255,255,.1)' : '1px solid rgba(0,0,0,.1)',
-    borderRadius:24,padding:'28px 24px',width:'100%',maxWidth:400,position:'relative',
-    boxShadow:'0 0 60px rgba(112,0,255,.15)',
-    animation:'scaleIn .25s cubic-bezier(.34,1.56,.64,1)',fontFamily:'Inter,sans-serif',
-  }
-  const textColor = dark ? '#ffffff' : '#111111'
-  const subColor  = dark ? '#aaaaaa' : '#555555'
-  const inp = {
-    width:'100%',padding:'13px 14px',
-    background: dark ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.05)',
-    border: dark ? '1px solid rgba(255,255,255,.15)' : '1px solid rgba(0,0,0,.15)',
-    borderRadius:12,color:textColor,fontFamily:'Inter,sans-serif',fontSize:'1rem',
-    outline:'none',boxSizing:'border-box',
-  }
-  const primaryBtn = {
-    width:'100%',padding:13,background:'#7000ff',border:'none',borderRadius:12,
-    color:'#fff',fontFamily:'Inter,sans-serif',fontSize:'1rem',fontWeight:700,
-    cursor:'pointer',boxShadow:'0 0 20px rgba(112,0,255,.35)',
-  }
-  const secondaryBtn = {
-    width:'100%',padding:13,
-    background: dark ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.05)',
-    border: dark ? '1px solid rgba(255,255,255,.15)' : '1px solid rgba(0,0,0,.15)',
-    borderRadius:12,color:textColor,fontFamily:'Inter,sans-serif',fontSize:'1rem',fontWeight:600,cursor:'pointer',
-  }
+  if (status) return (
+    <div style={S.loader}>
+      <div style={S.loaderMark}>N</div>
+      <div style={S.loaderText}>{status}</div>
+    </div>
+  )
 
   return (
-    <div style={overlay} onClick={e=>e.target===e.currentTarget&&onClose()}>
-      <div style={modal}>
-        <button onClick={onClose} style={{position:'absolute',top:14,right:16,background:'none',border:'none',color:subColor,fontSize:'1.3rem',cursor:'pointer',lineHeight:1}}>×</button>
+    <div style={S.root}>
+      {/* Orbs */}
+      <div style={{...S.orb, width:700,height:700,background:'radial-gradient(circle,rgba(112,0,255,.18) 0%,transparent 65%)',top:-250,left:-200}} />
+      <div style={{...S.orb, width:500,height:500,background:'radial-gradient(circle,rgba(0,229,160,.08) 0%,transparent 65%)',bottom:-100,right:-100}} />
+      <div style={{...S.orb, width:400,height:400,background:'radial-gradient(circle,rgba(59,130,246,.07) 0%,transparent 65%)',top:'50%',left:'60%'}} />
 
-        {/* Header */}
-        <div style={{textAlign:'center',marginBottom:24}}>
-          <div style={{}} ><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36' width='52' height='52' style={{display:'block'}}><rect width='36' height='36' rx='6' fill='#7000ff'/><rect x='7' y='7' width='22' height='22' rx='3' fill='#ffffff'/><rect x='11' y='11' width='14' height='14' rx='2' fill='#000000'/><text x='18' y='19' fontFamily='Inter,system-ui,sans-serif' fontSize='10' fontWeight='900' fill='#ffffff' textAnchor='middle' dominantBaseline='middle'>N</text></svg></div>
-          <div style={{fontSize:'1.2rem',fontWeight:800,color:textColor,letterSpacing:'-.02em'}}>
-            {step==='options' ? 'Sign in to NAN' : step==='email' ? 'Continue with Email' : step==='otp' ? 'Check your inbox' : 'Please wait…'}
-          </div>
-          <div style={{fontSize:'.82rem',color:subColor,marginTop:4}}>
-            {step==='options' ? 'Payments Without Borders' : step==='otp' ? `Code sent to ${email}` : ''}
+      {/* NAV */}
+      <nav style={S.nav}>
+        <div style={S.navLogo}>
+          <div style={S.navMark}>N</div>
+          <span style={S.navName}>NAN</span>
+        </div>
+        <div style={S.navBadge}>Arc Testnet</div>
+        <button style={S.navCta} onClick={() => document.getElementById('hero-email').focus()}>Log in</button>
+      </nav>
+
+      {/* HERO */}
+      <section style={S.hero}>
+        <div style={S.pill}>
+          <span style={S.dot} />
+          NOW LIVE ON ARC TESTNET
+        </div>
+        <h1 style={S.title}>
+          Payments<br/>
+          Without <span style={S.titleEm}>Borders.</span>
+        </h1>
+        <p style={S.sub}>
+          The complete stablecoin wallet on Arc. Send, swap, bridge, earn and borrow with USDC and EURC. Zero gas. AI-powered. Built on Circle.
+        </p>
+        <div style={S.form}>
+          <form onSubmit={handleEmail} style={S.eform}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3d3860" strokeWidth="2" strokeLinecap="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
+            <input
+              id="hero-email"
+              type="email"
+              placeholder="Enter your email..."
+              value={email}
+              onChange={e => { setEmail(e.target.value); setError('') }}
+              style={S.input}
+            />
+            <button type="submit" style={S.submitBtn}>Get Started</button>
+          </form>
+          {error && <div style={S.error}>{error}</div>}
+          <div style={S.orRow}><span style={S.orLine}/><span style={{fontSize:'.78rem',color:'#3d3860',padding:'0 12px'}}>or</span><span style={S.orLine}/></div>
+          <button style={S.wBtn} onClick={handleWallet}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="1" y="8" width="22" height="14" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v2"/><circle cx="18" cy="15" r="1" fill="currentColor"/></svg>
+            Connect MetaMask / Rabby
+          </button>
+          <div style={S.trust}>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Non-custodial · No seed phrase · Circle MPC
           </div>
         </div>
+      </section>
 
-        {/* Error / Info */}
-        {error && <div style={{background:'rgba(248,113,113,.1)',border:'1px solid rgba(248,113,113,.2)',borderRadius:10,padding:'10px 14px',fontSize:'.82rem',color:'#f87171',marginBottom:14}}>{error}</div>}
-        {info && !error && <div style={{background:'rgba(112,0,255,.1)',border:'1px solid rgba(112,0,255,.2)',borderRadius:10,padding:'10px 14px',fontSize:'.82rem',color:'#a855f7',marginBottom:14}}>{info}</div>}
-
-        {/* Loading */}
-        {step==='loading' && (
-          <div style={{textAlign:'center',padding:'24px 0'}}>
-            <div style={{width:36,height:36,border:'3px solid rgba(112,0,255,.2)',borderTopColor:'#7000ff',borderRadius:'50%',animation:'spin .7s linear infinite',margin:'0 auto 12px'}}/>
-            <div style={{color:subColor,fontSize:'.85rem'}}>{loadMsg}</div>
-            <style>{`@keyframes spin{to{transform:rotate(360deg)}}@keyframes fadeIn{from{opacity:0}}@keyframes scaleIn{from{opacity:0;transform:scale(.9)}}`}</style>
+      {/* STATS */}
+      <div style={S.stats}>
+        {[
+          {v:'$0', l:'Gas fees ever', g:true},
+          {v:'<1s', l:'Settlement time'},
+          {v:'4.80%', l:'APY on USDC'},
+          {v:'6', l:'Chains supported'},
+        ].map((s,i) => (
+          <div key={i} style={{...S.stat, borderRight: i<3?'1px solid rgba(255,255,255,.06)':'none'}}>
+            <div style={{...S.sv, ...(s.g?{color:'#00e5a0'}:{})}}>{s.v}</div>
+            <div style={S.sl}>{s.l}</div>
           </div>
-        )}
+        ))}
+      </div>
 
-        {/* Options */}
-        {step==='options' && (
-          <div style={{display:'flex',flexDirection:'column',gap:10}}>
-            <button style={primaryBtn} onClick={()=>{setStep('email');setError('')}}>
-              ✉️ &nbsp; Continue with Email
-            </button>
-            {hasWallet ? (
-              <button style={secondaryBtn} onClick={connectWallet}>
-                🦊 &nbsp; Connect Wallet (MetaMask, Rabby…)
-              </button>
-            ) : (
-              <button style={{...secondaryBtn,opacity:.5,cursor:'default'}} disabled>
-                🦊 &nbsp; No wallet detected
-              </button>
-            )}
-            <div style={{textAlign:'center',margin:'8px 0',fontSize:'.75rem',color:'#444'}}>— or —</div>
-            <div style={{background: dark ? 'rgba(255,255,255,.04)' : 'rgba(0,0,0,.03)',border: dark ? '1px solid rgba(255,255,255,.08)' : '1px solid rgba(0,0,0,.08)',borderRadius:12,padding:'12px 14px'}}>
-              <div style={{fontSize:'.78rem',color:subColor,marginBottom:8}}>Don't have a wallet?</div>
-              <div style={{fontSize:'.82rem',color: dark ? '#aaa' : '#555',lineHeight:1.6}}>
-                Use <strong style={{color:'#a855f7'}}>Continue with Email</strong> — we create a secure wallet for you automatically. No downloads, no seed phrases.
+      {/* CORE FEATURES */}
+      <Section tag="Core features" title={<>Everything stablecoin,<br/>in one wallet</>}>
+        <div style={S.featGrid}>
+          <FCard icon={<ArrowUp/>} title="Send" badges={[{t:'Zero gas',g:true},{t:'.arc names',p:true}]}>
+            Transfer USDC and EURC to any wallet address or .arc name in under a second. Use human-readable names like <strong style={{color:'#ede9ff'}}>zara.arc</strong> instead of 0x addresses.
+          </FCard>
+          <FCard icon={<Swap/>} title="Swap" badges={[{t:'Live FX rates',g:true},{t:'Limit orders',p:true}]}>
+            Exchange USDC to EURC at live Frankfurt ECB rates via NANSwap on Arc. Set limit orders that execute automatically when your target rate is reached.
+          </FCard>
+          <FCard icon={<Bridge/>} title="Bridge" badges={[{t:'CCTP V2',b:true},{t:'6 chains',p:true}]}>
+            Move USDC across 6 chains using Circle CCTP V2. No wrapped tokens, no trust assumptions. Arc to Ethereum, Base, Arbitrum, Optimism and Avalanche in minutes.
+          </FCard>
+          <FCard icon={<Earn/>} title="Earn" badges={[{t:'4.80% APY',g:true},{t:'On-chain',p:true}]}>
+            Put idle USDC to work at <strong style={{color:'#00e5a0'}}>4.80% APY</strong> via NANLendingPool on Arc. Borrow against your USDC collateral at 7.20% APR. Fully liquid — withdraw anytime.
+          </FCard>
+        </div>
+      </Section>
+
+      {/* BRIDGE CHAINS */}
+      <Section tag="Bridge destinations" title="Bridge USDC to any chain" tight>
+        <div style={S.chains}>
+          {[
+            {name:'Arc Testnet',color:'#7000ff',sub:'Home'},
+            {name:'Ethereum Sepolia',color:'#627EEA'},
+            {name:'Base Sepolia',color:'#0052FF'},
+            {name:'Arbitrum Sepolia',color:'#28A0F0'},
+            {name:'OP Sepolia',color:'#FF0420'},
+            {name:'Avalanche Fuji',color:'#E84142'},
+          ].map((c,i) => (
+            <div key={i} style={S.chainChip}>
+              <span style={{width:8,height:8,borderRadius:'50%',background:c.color,flexShrink:0,display:'inline-block'}}/>
+              {c.name}{c.sub&&<span style={{fontSize:'.65rem',color:'#3d3860',marginLeft:4}}>{c.sub}</span>}
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* EARN HIGHLIGHT */}
+      <Section tag="Earn" title="Your stablecoins should work for you" tight>
+        <div style={S.earnCard}>
+          <div>
+            <div style={S.earnNum}>4.80<span style={{fontSize:'1.6rem'}}>%</span></div>
+            <div style={S.earnLabel}>APY on USDC — NANLendingPool</div>
+          </div>
+          <div style={S.earnDetail}>
+            Deposit USDC into NANLendingPool, a smart contract deployed on Arc Testnet. Earn 4.80% APY automatically. Borrow against your USDC at 7.20% APR. Fully liquid — no lockup, withdraw anytime.
+            <div style={{marginTop:10,fontSize:'.73rem',color:'#3d3860'}}>
+              Contract: <span style={{fontFamily:'monospace',color:'#8b82b8'}}>0x4CC84BbEf992439Cb01FeF2E1150B37916d1f2ce</span>
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      {/* ADVANCED FEATURES */}
+      <Section tag="Advanced" title="Built for power users too" tight>
+        <div style={S.advGrid}>
+          {[
+            {icon:<BotIcon/>, title:'NAN AI', desc:'Ask anything in plain English. NAN AI executes sends, swaps, limit orders, and scheduled payments autonomously. Voice input supported.'},
+            {icon:<Target/>, title:'Limit Orders', desc:'Set a target USDC/EURC rate and NAN executes the swap automatically when the market hits your price. 24/7, no babysitting.'},
+            {icon:<Clock/>, title:'Scheduled Sends', desc:'Schedule a one-off payment or recurring standing order — weekly, monthly, or custom interval. Tell NAN AI what you want.'},
+            {icon:<Users/>, title:'Payroll / Bulk Pay', desc:'Pay your whole team in one transaction. Upload addresses, set amounts, send USDC or EURC to dozens of wallets simultaneously.'},
+            {icon:<Link/>, title:'Payment Requests', desc:'Create shareable payment links with a fixed amount and expiry. Share the URL — anyone can pay you in USDC or EURC instantly.'},
+            {icon:<Globe/>, title:'Circle Gateway', desc:'Unified USDC balance across all chains in one view. No need to check each network separately — see your total stablecoin wealth instantly.'},
+            {icon:<Tag/>, title:'.arc Names', desc:'Register your own .arc name via NANNameRegistry. Send to alice.arc instead of 0x addresses. 1, 2, or 3-year registrations from 2 USDC.'},
+            {icon:<Naira/>, title:'Naira (NGN)', desc:'Deposit, withdraw, and convert Nigerian Naira. Live NGN/USDC rate at 1,620. Off-ramp to local bank accounts — coming soon.'},
+            {icon:<Layers/>, title:'Multichain Balance', desc:'View your USDC balance across Arc, Ethereum, Base, Arbitrum, Optimism and Avalanche in one unified dashboard.'},
+          ].map((a,i) => (
+            <div key={i} style={S.aCard}>
+              <div style={S.aIcon}>{a.icon}</div>
+              <div style={S.aTitle}>{a.title}</div>
+              <div style={S.aDesc}>{a.desc}</div>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* AI DEMO */}
+      <Section tag="NAN AI" title={null}>
+        <div style={S.aiWrap}>
+          <div>
+            <h2 style={{...S.secTitle, marginBottom:16}}>Just talk to your wallet</h2>
+            <p style={{fontSize:'.9rem',color:'#8b82b8',lineHeight:1.7,marginBottom:20}}>
+              NAN AI understands what you want and executes it. No menus, no confusing forms. Powered by Groq — responds in milliseconds. Voice input supported.
+            </p>
+            <div style={{display:'flex',flexDirection:'column',gap:8}}>
+              <div style={S.cmdLabel}>Example commands</div>
+              {['"Send 5 USDC to zara.arc"','"Swap 10 USDC to EURC when rate hits 0.92"','"Pay my team 50 USDC every Friday"','"How much have I earned this month?"'].map((c,i)=>(
+                <div key={i} style={S.cmdItem}>{c}</div>
+              ))}
+            </div>
+          </div>
+          <div style={S.aiChat}>
+            <div style={S.aiU}>Send 5 USDC to alice.arc</div>
+            <div style={S.aiA}>Resolved alice.arc to 0x6915...556d. Sending 5 USDC now — gas is sponsored.</div>
+            <div style={S.aiAction}>Execute — SEND 5 USDC</div>
+            <div style={{borderTop:'1px solid rgba(255,255,255,.06)',margin:'4px 0'}}/>
+            <div style={S.aiU}>Set a limit order: swap 20 USDC to EURC when rate is 0.95</div>
+            <div style={S.aiA}>Limit order set. I will sell 20 USDC to EURC when rate reaches 0.95. Current rate: 0.859. Order ID: ord_abc123</div>
+          </div>
+        </div>
+      </Section>
+
+      {/* HOW IT WORKS */}
+      <Section tag="How it works" title="Up in 30 seconds" tight>
+        {[
+          {n:1, title:'Enter your email', desc:'No seed phrase. No downloads. Enter your email and a Circle Developer-Controlled Wallet is created for you instantly — you own the keys via MPC, we never hold them.', badge:'Non-custodial via Circle MPC'},
+          {n:2, title:'Get free testnet USDC', desc:'Tap Faucet to receive USDC on Arc Testnet instantly. No real money, no KYC. Explore every feature freely — real on-chain transactions, zero cost.', badge:'Free to explore'},
+          {n:3, title:'Send, swap, bridge, earn', desc:'The full stablecoin stack at your fingertips. Talk to NAN AI, set limit orders, schedule payments, bridge across chains. Everything works out of the box.', badge:'AI executes everything'},
+          {n:4, title:'Or connect MetaMask / Rabby', desc:'Already have a wallet? Connect MetaMask or Rabby directly. All features work with your existing Web3 wallet — no new account needed.', badge:'Any EVM wallet'},
+        ].map((s,i,arr) => (
+          <div key={i} style={{...S.step, borderBottom: i<arr.length-1?'1px solid rgba(255,255,255,.06)':'none'}}>
+            <div style={S.sNum}>{s.n}</div>
+            <div>
+              <div style={S.sTitle}>{s.title}</div>
+              <div style={S.sDesc}>{s.desc}</div>
+              <span style={S.sBadge}>{s.badge}</span>
+            </div>
+          </div>
+        ))}
+      </Section>
+
+      {/* POWERED BY */}
+      <Section tag="Built on" title="Trusted infrastructure" tight>
+        <div style={S.pwGrid}>
+          {[
+            {name:'Circle', desc:'Developer-Controlled Wallets · CCTP V2 · Gateway', color:'#7000ff'},
+            {name:'Arc Network', desc:'Chain ID 5042002 · USDC-native gas', color:'#c084fc'},
+            {name:'Groq', desc:'llama-3.1-8b-instant · NAN AI', color:'#f97316'},
+            {name:'NANLendingPool', desc:'On-chain lending at 4.80% APY', color:'#00e5a0'},
+            {name:'NANSwap', desc:'On-chain USDC / EURC swaps', color:'#3b82f6'},
+            {name:'NANNameRegistry', desc:'.arc identity on-chain', color:'#a855f7'},
+          ].map((p,i)=>(
+            <div key={i} style={S.pwCard}>
+              <span style={{width:8,height:8,borderRadius:'50%',background:p.color,flexShrink:0,display:'inline-block'}}/>
+              <div>
+                <div style={S.pwName}>{p.name}</div>
+                <div style={S.pwDesc}>{p.desc}</div>
               </div>
             </div>
-            <div style={{textAlign:'center',fontSize:'.72rem',color:subColor,marginTop:4}}>
-              Powered by Circle · <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" style={{verticalAlign:"middle",marginRight:"4px",display:"inline-block",flexShrink:0,borderRadius:"3px",background:"#0d1b2e",padding:"1px"}}><path fill="url(#arc_land)" d="M3.5 20.999c.146-4.407.893-8.519 2.142-11.717C7.223 5.231 9.513 3 12.088 3s4.865 2.231 6.447 6.283c.822 2.107 1.427 4.61 1.786 7.334q.048.366.087.737.015.024.013.041s.21 1.317.256 3.604h-.024c-.313-.256-4-3.153-10.112-2.314.093-1.035.22-2.04.383-3.005l.027-.146a24.5 24.5 0 0 1 6.104.57q-.007-.056-.017-.115c-.33-2.06-.819-3.945-1.448-5.556-1.029-2.635-2.371-4.271-3.502-4.271-1.132 0-2.474 1.636-3.503 4.271q-.375.958-.679 2.034a30 30 0 0 0-.718 3.213A40 40 0 0 0 6.662 21H3.5z"/><defs><linearGradient id="arc_land" x1="12" x2="12" y1="3" y2="21" gradientUnits="userSpaceOnUse"><stop stopColor="#d0d8e8"/><stop offset="1" stopColor="#7a8faa"/></linearGradient></defs></svg>Testnet
-            </div>
-          </div>
-        )}
+          ))}
+        </div>
+      </Section>
 
-        {/* Email input */}
-        {step==='email' && (
-          <div style={{display:'flex',flexDirection:'column',gap:12}}>
-            <input style={inp} type="email" placeholder="your@email.com" value={email}
-              onChange={e=>setEmail(e.target.value)} onKeyDown={e=>e.key==='Enter'&&sendOTP()} autoFocus/>
-            <button style={primaryBtn} onClick={sendOTP}>Send Code →</button>
-            <button onClick={()=>{setStep('options');setError('')}} style={{background:'none',border:'none',color:subColor,fontSize:'.82rem',cursor:'pointer'}}>← Back</button>
-          </div>
-        )}
+      {/* FOOTER CTA */}
+      <div style={S.fcta}>
+        <div style={S.fctaTitle}>Ready to start?</div>
+        <div style={S.fctaSub}>Create your free wallet in 30 seconds.<br/>No crypto experience needed.</div>
+        <button style={S.fctaBtn} onClick={() => window.scrollTo({top:0,behavior:'smooth'})}>Create Free Wallet</button>
+      </div>
 
-        {/* OTP input */}
-        {step==='otp' && (
-          <div style={{display:'flex',flexDirection:'column',gap:12}}>
-            <input style={{...inp,textAlign:'center',fontSize:'1.8rem',letterSpacing:10,fontWeight:700}}
-              type="text" inputMode="numeric" maxLength={6} placeholder="······" value={otp}
-              onChange={e=>setOtp(e.target.value.replace(/\D/g,''))}
-              onKeyDown={e=>e.key==='Enter'&&verifyOTP()} autoFocus/>
-            <button style={primaryBtn} onClick={verifyOTP}>Verify & Enter →</button>
-            <button onClick={()=>{setStep('email');setOtp('');setError('')}} style={{background:'none',border:'none',color:subColor,fontSize:'.82rem',cursor:'pointer'}}>← Use different email</button>
-          </div>
-        )}
+      {/* FOOTER */}
+      <footer style={S.footer}>
+        <div style={{display:'flex',alignItems:'center',gap:8,fontSize:'.78rem',color:'#3d3860'}}>
+          <div style={{...S.navMark,width:26,height:26,borderRadius:7,fontSize:13}}>N</div>
+          NAN Wallet · Arc Testnet · v1.0.0
+        </div>
+        <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap'}}>
+          {['Circle','CCTP V2','Arc Network','Groq AI','Non-custodial'].map((t,i)=>(
+            <span key={i} style={S.ftag}>{t}</span>
+          ))}
+        </div>
+      </footer>
+    </div>
+  )
+}
+
+/* ── Sub-components ── */
+function Section({tag, title, children, tight}) {
+  return (
+    <section style={{...S.sec, paddingTop: tight?0:88}}>
+      {tag && <div style={S.secTag}>{tag}</div>}
+      {title && <h2 style={S.secTitle}>{title}</h2>}
+      {children}
+    </section>
+  )
+}
+
+function FCard({icon, title, badges, children}) {
+  return (
+    <div style={S.fCard}>
+      <div style={S.fIcon}>{icon}</div>
+      <div style={S.fTitle}>{title}</div>
+      <div style={S.fDesc}>{children}</div>
+      <div style={{display:'flex',gap:6,flexWrap:'wrap',marginTop:10}}>
+        {badges?.map((b,i)=>(
+          <span key={i} style={{...S.fBadge, ...(b.g?S.fBadgeG:b.b?S.fBadgeB:S.fBadgeP)}}>{b.t}</span>
+        ))}
       </div>
     </div>
   )
 }
 
-// Landing page
-export function Landing({ onEmailConnect, onWalletConnect }) {
-  const { theme, toggleTheme } = useTheme()
-  const [showLogin, setShowLogin] = useState(false)
-  const featuresRef = useRef(null)
-  const [cardsVisible, setCardsVisible] = useState(false)
+/* ── SVG Icons ── */
+const ic = (children) => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7000ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{children}</svg>
+const ArrowUp = () => ic(<><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></>)
+const Swap = () => ic(<><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></>)
+const Bridge = () => ic(<><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></>)
+const Earn = () => ic(<><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></>)
+const BotIcon = () => ic(<><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></>)
+const Target = () => ic(<><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></>)
+const Clock = () => ic(<><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>)
+const Users = () => ic(<><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></>)
+const Link = () => ic(<><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></>)
+const Globe = () => ic(<><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></>)
+const Tag = () => ic(<><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></>)
+const Naira = () => ic(<><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/><line x1="8" y1="12" x2="16" y2="12"/></>)
+const Layers = () => ic(<><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></>)
 
-  useEffect(()=>{
-    const el=featuresRef.current; if(!el) return
-    const obs=new IntersectionObserver(([e])=>{if(e.isIntersecting){setCardsVisible(true);obs.disconnect()}},{threshold:.15})
-    obs.observe(el); return()=>obs.disconnect()
-  },[])
+/* ── STYLES ── */
+const S = {
+  root:{background:'#04040a',color:'#ede9ff',fontFamily:"'DM Sans',sans-serif",minHeight:'100vh',overflowX:'hidden',position:'relative'},
+  orb:{position:'fixed',borderRadius:'50%',pointerEvents:'none',zIndex:0,filter:'blur(80px)'},
+  loader:{minHeight:'100vh',background:'#04040a',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:16,fontFamily:"'DM Sans',sans-serif"},
+  loaderMark:{width:48,height:48,borderRadius:12,background:'#7000ff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:800,fontSize:24,color:'#fff'},
+  loaderText:{color:'#8b82b8',fontSize:'.95rem'},
 
-  const openLogin = () => setShowLogin(true)
+  nav:{position:'fixed',top:0,left:0,right:0,zIndex:100,padding:'14px 24px',display:'flex',alignItems:'center',justifyContent:'space-between',background:'rgba(4,4,10,.75)',backdropFilter:'blur(24px)',borderBottom:'1px solid rgba(255,255,255,.06)'},
+  navLogo:{display:'flex',alignItems:'center',gap:10},
+  navMark:{width:34,height:34,borderRadius:9,background:'#7000ff',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:800,fontSize:17,color:'#fff',flexShrink:0},
+  navName:{fontWeight:700,fontSize:'.95rem',color:'#ede9ff'},
+  navBadge:{fontSize:'.68rem',fontWeight:500,letterSpacing:'.07em',background:'rgba(112,0,255,.15)',border:'1px solid rgba(112,0,255,.3)',color:'#c084fc',borderRadius:100,padding:'4px 10px'},
+  navCta:{background:'#7000ff',border:'none',color:'#fff',fontFamily:"'DM Sans',sans-serif",fontWeight:500,fontSize:'.85rem',padding:'9px 20px',borderRadius:10,cursor:'pointer'},
 
-  return (
-    <div className="landing" data-theme={theme} style={{position:'relative'}}>
-      <NetworkCanvas theme={theme}/>
+  hero:{position:'relative',zIndex:1,minHeight:'100vh',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',textAlign:'center',padding:'120px 24px 80px'},
+  pill:{display:'inline-flex',alignItems:'center',gap:8,background:'rgba(255,255,255,.04)',border:'1px solid rgba(255,255,255,.1)',borderRadius:100,padding:'6px 16px',fontSize:'.72rem',fontWeight:500,letterSpacing:'.06em',color:'#8b82b8',marginBottom:32},
+  dot:{width:6,height:6,borderRadius:'50%',background:'#00e5a0',boxShadow:'0 0 8px #00e5a0',display:'inline-block'},
+  title:{fontSize:'clamp(2.8rem,9vw,5.8rem)',fontWeight:800,lineHeight:1.03,letterSpacing:'-.035em',marginBottom:24},
+  titleEm:{background:'linear-gradient(135deg,#a855f7 0%,#7000ff 45%,#3b82f6 100%)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text'},
+  sub:{fontSize:'clamp(.95rem,2.5vw,1.15rem)',fontWeight:300,color:'#8b82b8',maxWidth:520,lineHeight:1.7,marginBottom:40},
+  form:{width:'100%',maxWidth:360},
+  eform:{display:'flex',alignItems:'center',gap:8,background:'rgba(255,255,255,.04)',border:'1px solid rgba(255,255,255,.1)',borderRadius:16,padding:'4px 4px 4px 16px',marginBottom:12},
+  input:{flex:1,background:'none',border:'none',outline:'none',color:'#ede9ff',fontFamily:"'DM Sans',sans-serif",fontSize:'.9rem',padding:'10px 0',minWidth:0},
+  submitBtn:{background:'#7000ff',border:'none',color:'#fff',fontFamily:"'DM Sans',sans-serif",fontWeight:500,fontSize:'.85rem',padding:'10px 18px',borderRadius:12,cursor:'pointer',whiteSpace:'nowrap',flexShrink:0},
+  error:{fontSize:'.78rem',color:'#f87171',marginTop:8,textAlign:'center'},
+  orRow:{display:'flex',alignItems:'center',marginBottom:12},
+  orLine:{flex:1,height:1,background:'rgba(255,255,255,.06)'},
+  wBtn:{width:'100%',padding:13,borderRadius:14,background:'rgba(255,255,255,.04)',border:'1px solid rgba(255,255,255,.06)',color:'#ede9ff',fontFamily:"'DM Sans',sans-serif",fontWeight:500,fontSize:'.88rem',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:8,marginBottom:16},
+  trust:{fontSize:'.73rem',color:'#3d3860',display:'flex',alignItems:'center',justifyContent:'center',gap:5},
 
-      {showLogin && <LoginModal onClose={()=>setShowLogin(false)} onEmailConnect={onEmailConnect} onWalletConnect={onWalletConnect}/>}
+  stats:{position:'relative',zIndex:1,borderTop:'1px solid rgba(255,255,255,.06)',borderBottom:'1px solid rgba(255,255,255,.06)',background:'rgba(255,255,255,.02)',display:'grid',gridTemplateColumns:'repeat(4,1fr)'},
+  stat:{padding:'22px 16px',textAlign:'center'},
+  sv:{fontWeight:700,fontSize:'1.5rem',color:'#ede9ff',marginBottom:3},
+  sl:{fontSize:'.68rem',color:'#3d3860',letterSpacing:'.05em',textTransform:'uppercase'},
 
-      {/* Nav */}
-      <nav className="l-nav" style={{position:'relative',zIndex:10}}>
-        <NanLogo height={58} theme={theme}/>
-        <div className="l-nav-right">
-          <button className="l-theme-btn" onClick={toggleTheme}>{theme==='light'?'🌙':'☀️'}</button>
-          <span className="l-net-pill">• <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" style={{verticalAlign:"middle",marginRight:"4px",display:"inline-block",flexShrink:0,borderRadius:"3px",background:"#0d1b2e",padding:"1px"}}><path fill="url(#arc_land)" d="M3.5 20.999c.146-4.407.893-8.519 2.142-11.717C7.223 5.231 9.513 3 12.088 3s4.865 2.231 6.447 6.283c.822 2.107 1.427 4.61 1.786 7.334q.048.366.087.737.015.024.013.041s.21 1.317.256 3.604h-.024c-.313-.256-4-3.153-10.112-2.314.093-1.035.22-2.04.383-3.005l.027-.146a24.5 24.5 0 0 1 6.104.57q-.007-.056-.017-.115c-.33-2.06-.819-3.945-1.448-5.556-1.029-2.635-2.371-4.271-3.502-4.271-1.132 0-2.474 1.636-3.503 4.271q-.375.958-.679 2.034a30 30 0 0 0-.718 3.213A40 40 0 0 0 6.662 21H3.5z"/><defs><linearGradient id="arc_land" x1="12" x2="12" y1="3" y2="21" gradientUnits="userSpaceOnUse"><stop stopColor="#d0d8e8"/><stop offset="1" stopColor="#7a8faa"/></linearGradient></defs></svg>Testnet</span>
-          <button onClick={openLogin} style={{background:'#7000ff',border:'none',borderRadius:10,color:'#fff',padding:'8px 18px',fontFamily:'Inter,sans-serif',fontSize:'.85rem',fontWeight:700,cursor:'pointer',boxShadow:'0 0 16px rgba(112,0,255,.35)'}}>
-            Log in
-          </button>
-        </div>
-      </nav>
+  sec:{position:'relative',zIndex:1,padding:'88px 24px',maxWidth:960,margin:'0 auto'},
+  secTag:{fontSize:'.7rem',fontWeight:500,letterSpacing:'.12em',textTransform:'uppercase',color:'#9b30ff',marginBottom:14},
+  secTitle:{fontWeight:700,fontSize:'clamp(1.7rem,4vw,2.5rem)',lineHeight:1.12,letterSpacing:'-.025em',marginBottom:48},
 
-      {/* Hero */}
-      <section className="l-hero l-hero-full" style={{position:'relative',zIndex:1}}>
-        <div className="l-hero-inner">
-          <div className="l-badge l-fade-in" style={{animationDelay:'.1s'}}>
-            <span className="l-badge-dot"/>NOW LIVE ON <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" style={{verticalAlign:"middle",marginRight:"4px",display:"inline-block",flexShrink:0,borderRadius:"3px",background:"#0d1b2e",padding:"1px"}}><path fill="url(#arc_land)" d="M3.5 20.999c.146-4.407.893-8.519 2.142-11.717C7.223 5.231 9.513 3 12.088 3s4.865 2.231 6.447 6.283c.822 2.107 1.427 4.61 1.786 7.334q.048.366.087.737.015.024.013.041s.21 1.317.256 3.604h-.024c-.313-.256-4-3.153-10.112-2.314.093-1.035.22-2.04.383-3.005l.027-.146a24.5 24.5 0 0 1 6.104.57q-.007-.056-.017-.115c-.33-2.06-.819-3.945-1.448-5.556-1.029-2.635-2.371-4.271-3.502-4.271-1.132 0-2.474 1.636-3.503 4.271q-.375.958-.679 2.034a30 30 0 0 0-.718 3.213A40 40 0 0 0 6.662 21H3.5z"/><defs><linearGradient id="arc_land" x1="12" x2="12" y1="3" y2="21" gradientUnits="userSpaceOnUse"><stop stopColor="#d0d8e8"/><stop offset="1" stopColor="#7a8faa"/></linearGradient></defs></svg>ARC TESTNET
-          </div>
-          <h1 className="l-h1 l-fade-in" style={{animationDelay:'.25s'}}>
-            Payments Without<br/>
-            <span className="l-h1-purple"><TypewriterCycle/></span>
-          </h1>
-          <p className="l-sub l-fade-in" style={{animationDelay:'.45s'}}>
-            The complete stablecoin wallet on Arc. Send, swap, bridge and earn with USDC and EURC. Powered by Circle. Zero gas fees.
-          </p>
-          <div className="l-cta-row l-fade-in" style={{animationDelay:'.6s'}}>
-            <button className="btn-primary" style={{padding:'13px 32px',fontSize:'1rem'}} onClick={openLogin}>
-              Get Started →
-            </button>
-            <a className="l-btn-ghost" href="https://faucet.arc.fun" target="_blank" rel="noreferrer">Get Free Tokens →</a>
-          </div>
-          <div className="l-stats l-fade-in" style={{animationDelay:'.8s'}}>
-            {stats.map(s=>(
-              <div key={s.label} className="l-stat">
-                <div className="l-stat-val">{s.value}</div>
-                <div className="l-stat-lbl">{s.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+  featGrid:{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:12},
+  fCard:{background:'#0b0b15',border:'1px solid rgba(255,255,255,.06)',borderRadius:22,padding:26,position:'relative',overflow:'hidden'},
+  fIcon:{width:42,height:42,borderRadius:12,background:'rgba(112,0,255,.15)',border:'1px solid rgba(112,0,255,.2)',display:'flex',alignItems:'center',justifyContent:'center',marginBottom:16,flexShrink:0},
+  fTitle:{fontWeight:600,fontSize:'1rem',color:'#ede9ff',marginBottom:6},
+  fDesc:{fontSize:'.82rem',color:'#8b82b8',lineHeight:1.65},
+  fBadge:{display:'inline-block',fontSize:'.68rem',padding:'2px 8px',borderRadius:5,fontWeight:500},
+  fBadgeG:{background:'rgba(0,229,160,.12)',border:'1px solid rgba(0,229,160,.2)',color:'#00e5a0'},
+  fBadgeP:{background:'rgba(112,0,255,.15)',border:'1px solid rgba(112,0,255,.25)',color:'#c084fc'},
+  fBadgeB:{background:'rgba(59,130,246,.1)',border:'1px solid rgba(59,130,246,.2)',color:'#93c5fd'},
 
-      {/* Features */}
-      <section className="l-features" ref={featuresRef} style={{position:'relative',zIndex:1}}>
-        <div className="l-features-inner">
-          <h2 className="l-section-title">Built for the stablecoin era</h2>
-          <p className="l-section-sub">One wallet. Every stablecoin primitive on Arc, fully integrated.</p>
-          <div className="l-feature-grid">
-            {features.map((f,i)=>(
-              <div key={f.title} className={`l-feature-card ${cardsVisible?'l-card-visible':''}`} style={{transitionDelay:`${i*.1}s`}}>
-                <div className="l-feature-ico">{f.icon}</div>
-                <div className="l-feature-title">{f.title}</div>
-                <div className="l-feature-desc">{f.desc}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+  chains:{display:'flex',flexWrap:'wrap',gap:10},
+  chainChip:{display:'flex',alignItems:'center',gap:8,padding:'9px 14px',borderRadius:100,background:'#0b0b15',border:'1px solid rgba(255,255,255,.06)',fontSize:'.8rem',color:'#8b82b8'},
 
-      {/* Footer */}
-      <footer className="l-footer" style={{position:'relative',zIndex:1}}>
-        <NanLogo height={28} theme={theme}/>
-        <span className="l-footer-txt">Built on Arc · Powered by Circle · © 2025 NAN</span>
-        <div className="l-footer-links">
-          <a href="https://twitter.com/nanarc_xyz" target="_blank" rel="noreferrer">X/Twitter</a>
-          <a href="https://github.com/Goddesszee/nan-react" target="_blank" rel="noreferrer">GitHub</a>
-        </div>
-      </footer>
-    </div>
-  )
+  earnCard:{background:'linear-gradient(135deg,rgba(112,0,255,.12) 0%,rgba(0,229,160,.06) 100%)',border:'1px solid rgba(112,0,255,.2)',borderRadius:22,padding:32,display:'grid',gridTemplateColumns:'1fr 1.5fr',gap:24,alignItems:'center'},
+  earnNum:{fontWeight:800,fontSize:'3rem',color:'#00e5a0',lineHeight:1},
+  earnLabel:{fontSize:'.8rem',color:'#8b82b8',marginTop:4},
+  earnDetail:{fontSize:'.82rem',color:'#8b82b8',lineHeight:1.7},
+
+  advGrid:{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:10},
+  aCard:{background:'#0b0b15',border:'1px solid rgba(255,255,255,.06)',borderRadius:18,padding:20},
+  aIcon:{marginBottom:10},
+  aTitle:{fontWeight:600,fontSize:'.9rem',color:'#ede9ff',marginBottom:5},
+  aDesc:{fontSize:'.78rem',color:'#8b82b8',lineHeight:1.6},
+
+  aiWrap:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:24,alignItems:'start'},
+  aiChat:{background:'#0b0b15',border:'1px solid rgba(255,255,255,.06)',borderRadius:20,padding:20,display:'flex',flexDirection:'column',gap:10},
+  aiU:{padding:'11px 14px',borderRadius:'14px 14px 3px 14px',background:'#7000ff',color:'#f3e8ff',fontSize:'.83rem',lineHeight:1.6,alignSelf:'flex-end',maxWidth:'88%'},
+  aiA:{padding:'11px 14px',borderRadius:'14px 14px 14px 3px',background:'#10101e',border:'1px solid rgba(255,255,255,.06)',color:'#8b82b8',fontSize:'.83rem',lineHeight:1.6,alignSelf:'flex-start',maxWidth:'88%'},
+  aiAction:{alignSelf:'flex-start',background:'rgba(112,0,255,.15)',border:'1px solid rgba(112,0,255,.3)',borderRadius:10,padding:'8px 14px',fontSize:'.78rem',fontWeight:600,color:'#c084fc'},
+  cmdLabel:{fontSize:'.75rem',color:'#3d3860',fontWeight:500,letterSpacing:'.05em',textTransform:'uppercase',marginBottom:4},
+  cmdItem:{fontSize:'.82rem',color:'#8b82b8',background:'#0b0b15',border:'1px solid rgba(255,255,255,.06)',borderRadius:10,padding:'10px 14px'},
+
+  step:{display:'flex',gap:20,padding:'22px 0'},
+  sNum:{width:34,height:34,borderRadius:10,background:'rgba(112,0,255,.15)',border:'1px solid rgba(112,0,255,.25)',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:'.85rem',color:'#c084fc',flexShrink:0},
+  sTitle:{fontWeight:600,fontSize:'.95rem',marginBottom:4,color:'#ede9ff'},
+  sDesc:{fontSize:'.82rem',color:'#8b82b8',lineHeight:1.6},
+  sBadge:{display:'inline-block',marginTop:7,fontSize:'.68rem',padding:'3px 8px',borderRadius:5,background:'rgba(0,229,160,.12)',border:'1px solid rgba(0,229,160,.2)',color:'#00e5a0',fontWeight:500},
+
+  pwGrid:{display:'flex',flexWrap:'wrap',gap:12},
+  pwCard:{display:'flex',alignItems:'center',gap:10,background:'#0b0b15',border:'1px solid rgba(255,255,255,.06)',borderRadius:14,padding:'12px 16px',flex:'1 1 160px'},
+  pwName:{fontWeight:600,fontSize:'.85rem',color:'#ede9ff'},
+  pwDesc:{fontSize:'.73rem',color:'#3d3860'},
+
+  fcta:{position:'relative',zIndex:1,margin:'0 24px 80px',background:'linear-gradient(135deg,rgba(112,0,255,.15),rgba(59,130,246,.1))',border:'1px solid rgba(112,0,255,.25)',borderRadius:28,padding:'56px 32px',textAlign:'center',overflow:'hidden'},
+  fctaTitle:{fontWeight:800,fontSize:'clamp(1.8rem,5vw,2.6rem)',letterSpacing:'-.03em',marginBottom:12},
+  fctaSub:{fontSize:'.95rem',color:'#8b82b8',marginBottom:28,lineHeight:1.6},
+  fctaBtn:{display:'inline-block',background:'#7000ff',color:'#fff',fontFamily:"'DM Sans',sans-serif",fontWeight:500,fontSize:'1rem',padding:'14px 36px',borderRadius:14,border:'none',cursor:'pointer'},
+
+  footer:{position:'relative',zIndex:1,borderTop:'1px solid rgba(255,255,255,.06)',padding:24,display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:12},
+  ftag:{fontSize:'.7rem',background:'rgba(255,255,255,.04)',border:'1px solid rgba(255,255,255,.06)',borderRadius:6,padding:'3px 8px',color:'#8b82b8'},
 }
