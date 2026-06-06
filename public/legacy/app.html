@@ -2720,15 +2720,7 @@ function startQRScan() {
 .nan-dd-item:hover{background:rgba(112,0,255,.08);}
 </style>
 <script>
-(function(){
-  function showArcBadge(){
-    var b=document.getElementById('nan-arc-topbadge');
-    if(b) b.style.display='inline-flex';
-  }
-  document.addEventListener('walletConnected',showArcBadge);
-  document.addEventListener('balanceUpdated',showArcBadge);
-  setTimeout(function(){ if(window.userAddr) showArcBadge(); },1500);
-})();
+
 </script>
 <script>
 function nanToggleDd(name,btn){
