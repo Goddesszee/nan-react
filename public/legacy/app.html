@@ -116,6 +116,31 @@ html,body{background:var(--bg);}
       [data-theme=dark] .chain-dropdown-item:hover { background: rgba(109,40,217,.2) !important; }
       [data-theme=dark] .chain-dropdown-btn { color: var(--text) !important; }
 
+      /* Bank picker mobile - smaller floating card */
+      #bankPickerSheet {
+        left: 5% !important;
+        right: 5% !important;
+        bottom: 70px !important;
+        width: 90% !important;
+        max-height: 55vh !important;
+        border-radius: 16px !important;
+        border: 1px solid var(--border) !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,.3) !important;
+      }
+      #bankOptionsList { max-height: 35vh !important; overflow-y: auto !important; }
+      #bankSearchInput { background: var(--surface) !important; color: var(--text) !important; }
+      
+      /* Bank picker dark mode */
+      [data-theme=dark] #bankPickerSheet { background: #1e1e2e !important; color: #fff !important; }
+      [data-theme=dark] #bankSearchInput { background: #2a2a3e !important; color: #fff !important; border-color: rgba(255,255,255,.15) !important; }
+      [data-theme=dark] #bankOptionsList > div { color: #fff !important; }
+      [data-theme=dark] #bankPickerLabel { color: #fff !important; }
+      
+      /* Faucet dropdown readable in both modes */
+      #nan-faucet-dd a > div > div { color: #111 !important; }
+      [data-theme=dark] #nan-faucet-dd { background: #1e1e2e !important; border-color: rgba(255,255,255,.1) !important; }
+      [data-theme=dark] #nan-faucet-dd a > div > div { color: #fff !important; }
+
       /* Naira bank dropdown dark mode */
       [data-theme=dark] [id*=bankList], [data-theme=dark] [class*=bank-list],
       [data-theme=dark] [id*=bankDd], [data-theme=dark] [id*=bank-dd] { background: #1e1e2e !important; color: #fff !important; }
