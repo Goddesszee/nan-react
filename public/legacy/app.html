@@ -2172,12 +2172,14 @@ html,body{background:var(--bg);}
     </div>
     <div class="card" style="margin-bottom:12px;">
       <div style="font-size:.875rem;color:var(--text);margin-bottom:8px;font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;">SHAREABLE LINK</div>
+      <!-- Hidden input used for mobile-safe select+copy -->
+      <input id="prViewLinkInput" readonly style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;" type="text"/>
       <div style="font-size:.78rem;color:var(--text);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;word-break:break-all;margin-bottom:10px;padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:8px;" id="prViewLink"></div>
-      <div style="display:flex;justify-content:center;margin-bottom:10px;" id="prViewQR"></div>
-      <div style="display:flex;gap:8px;">
-        <button onclick="copyPRLink()" style="flex:1;padding:10px;background:#7000ff;border:none;border-radius:10px;color:#f3e8ff;font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;cursor:pointer;">📋 Copy Link</button>
-        <button onclick="sharePRLink()" style="flex:1;padding:10px;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.25);border-radius:10px;color:var(--success);font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;cursor:pointer;">↗ Share</button>
+      <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <button id="prCopyBtn" onclick="copyPRLink()" style="flex:1;padding:10px;background:#7000ff;border:none;border-radius:10px;color:#f3e8ff;font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;">📋 Copy Link</button>
+        <button onclick="sharePRLink()" style="flex:1;padding:10px;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.25);border-radius:10px;color:var(--success);font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;">↗ Share</button>
       </div>
+      <div style="display:flex;justify-content:center;" id="prViewQR"></div>
     </div>
     <div style="display:flex;gap:8px;">
       <button id="prMarkPaidBtn" onclick="markPRAsPaid()" style="flex:1;padding:10px;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.25);border-radius:10px;color:var(--success);font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;cursor:pointer;">✓ Mark as Paid</button>
