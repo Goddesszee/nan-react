@@ -2944,5 +2944,28 @@ function nanToggleFaucet(btn){
   document.head.appendChild(s);
 })();
 </script>
+
+<script>
+// Fix dollar sign size to match balance figure on mobile
+(function(){
+  function fixBalSize(){
+    var amt=document.getElementById('homeBalAmt');
+    if(!amt)return;
+    var parent=amt.parentElement;
+    if(!parent)return;
+    parent.style.setProperty('font-size','31.2px','important');
+    if(!parent._balObserver){
+      parent._balObserver=new MutationObserver(function(){
+        parent.style.setProperty('font-size','31.2px','important');
+      });
+      parent._balObserver.observe(parent,{attributes:true,attributeFilter:['style']});
+    }
+  }
+  document.addEventListener('DOMContentLoaded',fixBalSize);
+  document.addEventListener('balanceUpdated',fixBalSize);
+  setTimeout(fixBalSize,1000);
+  setTimeout(fixBalSize,3000);
+})();
+</script>
 </body>
 
