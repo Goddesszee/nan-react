@@ -128,12 +128,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
             }
           </button>
 
-          {/* Log in button */}
-          <button
-            onClick={() => setStep('email')}
-            style={{ background:accent, border:'none', color:'#fff', fontFamily:'Inter,sans-serif', fontWeight:600, fontSize:'.85rem', padding:'9px 18px', borderRadius:10, cursor:'pointer', whiteSpace:'nowrap' }}>
-            Log in
-          </button>
+
         </div>
       </nav>
 
@@ -187,7 +182,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
                 Connect MetaMask / Rabby
               </button>
 
-              <a href="https://faucet.circle.com" target="_blank" rel="noopener noreferrer" style={{ padding:13, borderRadius:14, background:'none', border:`1px solid ${border}`, color:text2, fontFamily:'Inter,sans-serif', fontWeight:500, fontSize:'.9rem', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8, textDecoration:'none' }}>
+              <a href="https://faucet.circle.com" target="_blank" rel="noopener noreferrer" style={{ padding:13, borderRadius:14, background:accent, border:'none', color:'#fff', fontFamily:'Inter,sans-serif', fontWeight:600, fontSize:'.9rem', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8, textDecoration:'none' }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 2v6m0 0c0-3.31 2.69-6 6-6"/><path d="M5.07 11a7 7 0 1 0 13.86 0"/><path d="M12 8v13"/><path d="M9 18l3 3 3-3"/></svg>
                 Get Free Testnet Tokens
               </a>
