@@ -226,6 +226,7 @@ html,body{background:var(--bg);}
       <!-- Net pill: shows "Arc Testnet" on desktop, "Arc" on mobile via CSS -->
       <div class="net-pill" id="netPill"><span class="net-pill-full"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:4px;display:inline-block;flex-shrink:0;border-radius:3px;background:#0d1b2e;padding:1px;"><path fill="url(#arc_logo)" d="M3.5 20.999c.146-4.407.893-8.519 2.142-11.717C7.223 5.231 9.513 3 12.088 3s4.865 2.231 6.447 6.283c.822 2.107 1.427 4.61 1.786 7.334q.048.366.087.737.015.024.013.041s.21 1.317.256 3.604h-.024c-.313-.256-4-3.153-10.112-2.314.093-1.035.22-2.04.383-3.005l.027-.146a24.5 24.5 0 0 1 6.104.57q-.007-.056-.017-.115c-.33-2.06-.819-3.945-1.448-5.556-1.029-2.635-2.371-4.271-3.502-4.271-1.132 0-2.474 1.636-3.503 4.271q-.375.958-.679 2.034a30 30 0 0 0-.718 3.213A40 40 0 0 0 6.662 21H3.5z"/><defs><linearGradient id="arc_logo" x1="12" x2="12" y1="3" y2="21" gradientUnits="userSpaceOnUse"><stop stop-color="#d0d8e8"/><stop offset="1" stop-color="#7a8faa"/></linearGradient></defs></svg>Testnet</span><span class="net-pill-short" style="display:none;">Arc</span></div>
       <!-- Faucet: text pill on desktop, icon button on mobile -->
+      <button id="nan-history-btn" onclick="goPage('history')" title="History" style="display:none;background:transparent;border:1px solid var(--border);border-radius:100px;width:34px;height:34px;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);flex-shrink:0;transition:all .2s;" onmouseover="this.style.borderColor='rgba(168,85,247,.4)';this.style.color='#a855f7'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text2)'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></button>
       <button id="navFaucetBtn" onclick="claimFaucet(this)" style="display:none;" class="tb-icon-btn tb-faucet" title="Get free USDC tokens">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6M5 12a7 7 0 0 0 14 0"/><path d="M12 22v-4"/><path d="M9 19h6"/></svg>
         <span class="tb-btn-text">Faucet</span>
@@ -880,27 +881,27 @@ html,body{background:var(--bg);}
       <div class="mob-asset-row" onclick="goPage('multichain')" style="display:flex;align-items:center;gap:13px;padding:13px 16px;border-bottom:1px solid var(--border);cursor:pointer;">
         <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" width="40" height="40" style="border-radius:50%;flex-shrink:0;background:#fff;padding:3px;" onerror="this.style.display='none'"/>
         <div style="flex:1;"><div style="font-size:1rem;font-weight:700;color:var(--text);">USDC</div><div style="font-size:.875rem;color:var(--text3);margin-top:2px;">ETH Sepolia</div></div>
-        <div style="text-align:right;"><div style="font-size:1rem;font-weight:700;color:var(--text);">&#8212;</div><div style="font-size:.875rem;color:var(--text3);margin-top:2px;">≈ $0.00</div></div>
+        <div style="text-align:right;"><div style="font-size:1rem;font-weight:700;color:var(--text);">0.00</div><div style="font-size:.875rem;color:var(--text3);margin-top:2px;">≈ $0.00</div></div>
       </div>
       <div class="mob-asset-row" onclick="goPage('multichain')" style="display:flex;align-items:center;gap:13px;padding:13px 16px;border-bottom:1px solid var(--border);cursor:pointer;">
         <img src="https://avatars.githubusercontent.com/u/108554348" width="40" height="40" style="border-radius:50%;flex-shrink:0;" onerror="this.style.display='none'"/>
         <div style="flex:1;"><div style="font-size:1rem;font-weight:700;color:var(--text);">USDC</div><div style="font-size:.875rem;color:var(--text3);margin-top:2px;">Base</div></div>
-        <div style="text-align:right;"><div style="font-size:1rem;font-weight:700;color:var(--text);">&#8212;</div><div style="font-size:.875rem;color:var(--text3);margin-top:2px;">≈ $0.00</div></div>
+        <div style="text-align:right;"><div style="font-size:1rem;font-weight:700;color:var(--text);">0.00</div><div style="font-size:.875rem;color:var(--text3);margin-top:2px;">≈ $0.00</div></div>
       </div>
       <div class="mob-asset-row" onclick="goPage('multichain')" style="display:flex;align-items:center;gap:13px;padding:13px 16px;border-bottom:1px solid var(--border);cursor:pointer;">
         <img src="https://cryptologos.cc/logos/arbitrum-arb-logo.png" width="40" height="40" style="border-radius:50%;flex-shrink:0;" onerror="this.style.display='none'"/>
         <div style="flex:1;"><div style="font-size:1rem;font-weight:700;color:var(--text);">USDC</div><div style="font-size:.875rem;color:var(--text3);margin-top:2px;">Arbitrum</div></div>
-        <div style="text-align:right;"><div style="font-size:1rem;font-weight:700;color:var(--text);">&#8212;</div><div style="font-size:.875rem;color:var(--text3);margin-top:2px;">≈ $0.00</div></div>
+        <div style="text-align:right;"><div style="font-size:1rem;font-weight:700;color:var(--text);">0.00</div><div style="font-size:.875rem;color:var(--text3);margin-top:2px;">≈ $0.00</div></div>
       </div>
       <div class="mob-asset-row" onclick="goPage('multichain')" style="display:flex;align-items:center;gap:13px;padding:13px 16px;border-bottom:1px solid var(--border);cursor:pointer;">
         <img src="https://cryptologos.cc/logos/optimism-ethereum-op-logo.png" width="40" height="40" style="border-radius:50%;flex-shrink:0;" onerror="this.style.display='none'"/>
         <div style="flex:1;"><div style="font-size:1rem;font-weight:700;color:var(--text);">USDC</div><div style="font-size:.875rem;color:var(--text3);margin-top:2px;">Optimism</div></div>
-        <div style="text-align:right;"><div style="font-size:1rem;font-weight:700;color:var(--text);">&#8212;</div><div style="font-size:.875rem;color:var(--text3);margin-top:2px;">≈ $0.00</div></div>
+        <div style="text-align:right;"><div style="font-size:1rem;font-weight:700;color:var(--text);">0.00</div><div style="font-size:.875rem;color:var(--text3);margin-top:2px;">≈ $0.00</div></div>
       </div>
       <div class="mob-asset-row" onclick="goPage('multichain')" style="display:flex;align-items:center;gap:13px;padding:13px 16px;cursor:pointer;">
         <img src="https://cryptologos.cc/logos/avalanche-avax-logo.png" width="40" height="40" style="border-radius:50%;flex-shrink:0;" onerror="this.style.display='none'"/>
         <div style="flex:1;"><div style="font-size:1rem;font-weight:700;color:var(--text);">USDC</div><div style="font-size:.875rem;color:var(--text3);margin-top:2px;">Avalanche</div></div>
-        <div style="text-align:right;"><div style="font-size:1rem;font-weight:700;color:var(--text);">&#8212;</div><div style="font-size:.875rem;color:var(--text3);margin-top:2px;">≈ $0.00</div></div>
+        <div style="text-align:right;"><div style="font-size:1rem;font-weight:700;color:var(--text);">0.00</div><div style="font-size:.875rem;color:var(--text3);margin-top:2px;">≈ $0.00</div></div>
       </div>
     </div><!-- end assets card -->
 
@@ -2787,6 +2788,16 @@ document.addEventListener('click',function(e){
   </a>
 </div>
 <script>
+(function(){
+  function showTopbarBtns(){
+    var hist=document.getElementById('nan-history-btn');
+    if(hist) hist.style.display='flex';
+  }
+  document.addEventListener('walletConnected',showTopbarBtns);
+  document.addEventListener('balanceUpdated',showTopbarBtns);
+  setTimeout(function(){ if(window.userAddr) showTopbarBtns(); },1500);
+})();
+
 // Faucet dropdown
 function nanToggleFaucet(btn){
   var dd=document.getElementById('nan-faucet-dd');
