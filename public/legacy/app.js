@@ -5652,8 +5652,11 @@ function setAdminLiqToken(token, el) {
   });
   const uWrap = document.getElementById('adminUsdcAmtWrap');
   const eWrap = document.getElementById('adminEurcAmtWrap');
+  const note  = document.getElementById('adminLiqNote');
   if(uWrap) uWrap.style.display = (token==='eurc') ? 'none' : 'flex';
   if(eWrap) eWrap.style.display = (token==='usdc') ? 'none' : 'flex';
+  // Show note when single-token selected so user knows what happens
+  if(note) note.style.display = (token==='both') ? 'none' : 'block';
 }
 
 async function adminSeedPool(){
@@ -5667,11 +5670,18 @@ async function adminSeedPool(){
   const uInput = parseFloat(document.getElementById('adminSeedUSDC')?.value)||0;
   const eInput = parseFloat(document.getElementById('adminSeedEURC')?.value)||0;
 
+  // Contract requires BOTH amounts > 0 — when adding single token,
+  // pass minimum (0.000001) for the other so the contract accepts it
   const addUsdc = token==='both'||token==='usdc';
   const addEurc = token==='both'||token==='eurc';
+  const MIN_AMT = 0.000001; // 1 unit in 6-decimal tokens
 
   if(addUsdc && uInput<=0){toast('Enter a USDC amount','error',3000);return;}
   if(addEurc && eInput<=0){toast('Enter a EURC amount','error',3000);return;}
+
+  // Effective amounts — use minimum for the "skipped" token
+  const effectiveU = addUsdc ? uInput : MIN_AMT;
+  const effectiveE = addEurc ? eInput : MIN_AMT;
 
   btn.disabled=true; btn.textContent='Adding…';
   try{
@@ -5679,21 +5689,25 @@ async function adminSeedPool(){
     const eurcC = new ethers.Contract(EURC_ADDR,ERC20_ABI,signer);
     const swapC = new ethers.Contract(SWAP_CONTRACT,SWAP_ABI,signer);
 
-    // Check balances
+    // Check balances — only validate the token user is actually adding
     const [uBal,eBal] = await Promise.all([usdcC.balanceOf(userAddr),eurcC.balanceOf(userAddr)]);
     const uHave = parseFloat(ethers.formatUnits(uBal,6));
     const eHave = parseFloat(ethers.formatUnits(eBal,6));
     if(addUsdc && uInput>uHave){toast('Insufficient USDC (have '+uHave.toFixed(2)+')','error',4000);btn.disabled=false;btn.textContent='＋ Add Liquidity';return;}
     if(addEurc && eInput>eHave){toast('Insufficient EURC (have '+eHave.toFixed(2)+')','error',4000);btn.disabled=false;btn.textContent='＋ Add Liquidity';return;}
+    // Also check minimum balance for auto-filled token
+    if(!addUsdc && uHave<MIN_AMT){toast('Need a tiny USDC balance (min 0.000001) for single-token add','error',4000);btn.disabled=false;btn.textContent='＋ Add Liquidity';return;}
+    if(!addEurc && eHave<MIN_AMT){toast('Need a tiny EURC balance (min 0.000001) for single-token add','error',4000);btn.disabled=false;btn.textContent='＋ Add Liquidity';return;}
 
-    const seedU = addUsdc ? ethers.parseUnits(uInput.toFixed(6),6) : BigInt(0);
-    const seedE = addEurc ? ethers.parseUnits(eInput.toFixed(6),6) : BigInt(0);
+    const seedU = ethers.parseUnits(effectiveU.toFixed(6),6);
+    const seedE = ethers.parseUnits(effectiveE.toFixed(6),6);
 
     statusEl.innerHTML='<span style="color:#c084fc;">Approving…</span>';
-    const approvals = [];
-    if(addUsdc) approvals.push(usdcC.approve(SWAP_CONTRACT,ethers.MaxUint256,arcGasOpts()));
-    if(addEurc) approvals.push(eurcC.approve(SWAP_CONTRACT,ethers.MaxUint256,arcGasOpts()));
-    await Promise.all((await Promise.all(approvals)).map(tx=>tx.wait(0)));
+    // Always approve both since contract takes both
+    await Promise.all([
+      usdcC.approve(SWAP_CONTRACT,ethers.MaxUint256,arcGasOpts()).then(tx=>tx.wait(0)),
+      eurcC.approve(SWAP_CONTRACT,ethers.MaxUint256,arcGasOpts()).then(tx=>tx.wait(0)),
+    ]);
 
     statusEl.innerHTML='<span style="color:#c084fc;">Adding liquidity…</span>';
     const liqTx = await swapC.addLiquidity(seedU,seedE,arcGasOpts());
