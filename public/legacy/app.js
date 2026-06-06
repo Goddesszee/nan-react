@@ -1942,6 +1942,43 @@ function flipSwap(){
   document.getElementById('swapToBal').textContent=swapFlipped?parseFloat(usdcBal).toFixed(2):parseFloat(eurcBal).toFixed(2);
   updateSwapRateDisplay();
 }
+
+// ── Swap pre-approval — run once on connect so swap has zero approval delay ──
+const _swapApproved = { USDC: false, EURC: false };
+
+async function ensureSwapApprovals() {
+  if(!signer || !onArcNetwork || !userAddr) return;
+  try {
+    const usdcC = new ethers.Contract(USDC_ADDR, ERC20_ABI, signer);
+    const eurcC = new ethers.Contract(EURC_ADDR, ERC20_ABI, signer);
+    const half = ethers.MaxUint256 / 2n;
+    const [uAllow, eAllow] = await Promise.all([
+      usdcC.allowance(userAddr, SWAP_CONTRACT),
+      eurcC.allowance(userAddr, SWAP_CONTRACT)
+    ]);
+    const approvals = [];
+    if(uAllow < half) {
+      approvals.push(
+        usdcC.approve(SWAP_CONTRACT, ethers.MaxUint256, arcGasOpts())
+          .then(tx => { _swapApproved.USDC = true; return tx.wait(0); })
+          .catch(() => {})
+      );
+    } else { _swapApproved.USDC = true; }
+    if(eAllow < half) {
+      approvals.push(
+        eurcC.approve(SWAP_CONTRACT, ethers.MaxUint256, arcGasOpts())
+          .then(tx => { _swapApproved.EURC = true; return tx.wait(0); })
+          .catch(() => {})
+      );
+    } else { _swapApproved.EURC = true; }
+    if(approvals.length) {
+      Promise.all(approvals).then(() =>
+        console.log('[swap] Pre-approvals done — USDC:', _swapApproved.USDC, 'EURC:', _swapApproved.EURC)
+      );
+    }
+  } catch(e) { console.log('[swap pre-approve]', e.message); }
+}
+
 async function doSwap(){
   if(!userAddr&&signer){userAddr=await signer.getAddress();}
   if(!userAddr&&!isCircleWallet){const _s=await getDynamicSigner();if(_s)userAddr=await _s.getAddress();}
@@ -1968,34 +2005,52 @@ async function doSwap(){
   btn.innerHTML='<span class="spinner"></span>Swapping...';btn.disabled=true;
   if(isCircleWallet&&circleWalletId){
     try{
-      btn.innerHTML='<span class="spinner"></span>Swapping via App Kit…';
-      // ── Primary: /api/appkit/swap (Circle App Kit route) ──
-      let data=null;
-      try{
-        const r=await fetch('https://nan-production.up.railway.app/api/appkit/swap',{
-          method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({action:'swap',walletAddress:circleWalletAddress,tokenIn,tokenOut,amountIn:fromAmt.toString()}),
+      btn.innerHTML='<span class="spinner"></span>Swapping…';
+      // Race primary and fallback — whichever responds first wins
+      const _swapBody = JSON.stringify({
+        action:'swap', walletAddress:circleWalletAddress,
+        tokenIn, tokenOut, amountIn: fromAmt.toString()
+      });
+      const _swapBody2 = JSON.stringify({
+        action:'swapExecute', walletAddress:circleWalletAddress,
+        tokenIn, tokenOut, amountIn: fromAmt.toString()
+      });
+      const _timeout = ms => new Promise((_,rej) => setTimeout(() => rej(new Error('timeout')), ms));
+      const _fetchSwap = (url, body) =>
+        fetch(url, {method:'POST', headers:{'Content-Type':'application/json'}, body})
+          .then(r => r.json())
+          .then(j => { if(!j.success) throw new Error(j.error||'failed'); return j; });
+
+      let data = null;
+      try {
+        // Try primary with 4s timeout — if slow, parallel fallback kicks in
+        data = await Promise.race([
+          _fetchSwap('https://nan-production.up.railway.app/api/appkit/swap', _swapBody),
+          _timeout(4000).catch(() =>
+            _fetchSwap('https://nan-production.up.railway.app/api/circle-wallets', _swapBody2)
+          )
+        ]);
+      } catch(_) {
+        // Both failed — try fallback directly
+        const r = await fetch('https://nan-production.up.railway.app/api/circle-wallets', {
+          method:'POST', headers:{'Content-Type':'application/json'}, body: _swapBody2
         });
-        const j=await r.json();
-        if(j.success&&!j.fallback) data=j;
-      }catch(_){}
-      // ── Fallback: /api/circle-wallets swapExecute ──
-      if(!data){
-        const r2=await fetch('https://nan-production.up.railway.app/api/circle-wallets',{
-          method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({action:'swapExecute',walletAddress:circleWalletAddress,tokenIn,tokenOut,amountIn:fromAmt.toString()}),
-        });
-        data=await r2.json();
+        data = await r.json();
       }
       if(!data||!data.success) throw new Error((data&&data.error)||'Swap failed');
-      const amtOut=data.amountOut?parseFloat(data.amountOut).toFixed(4):(fromAmt*(isUSDCtoEURC?FX:(1/FX))*0.999).toFixed(4);
+      const amtOut = data.amountOut
+        ? parseFloat(data.amountOut).toFixed(4)
+        : (fromAmt*(isUSDCtoEURC?FX:(1/FX))*0.999).toFixed(4);
+      // Show success instantly — don't wait for balance refresh
       toast('✓ Swapped '+fromAmt.toFixed(2)+' '+tokenIn+' → '+amtOut+' '+tokenOut+'!','success',6000);
       addNotification('✓ Swap complete', 'Swapped '+fromAmt.toFixed(2)+' '+tokenIn+' → '+amtOut+' '+tokenOut, 'swap');
       addTx({hash:data.txHash,to:SWAP_CONTRACT,toRaw:'NANSwap',amount:fromAmt.toFixed(6),fromToken:tokenIn,toToken:tokenOut,outAmount:amtOut,type:'swap',token:tokenIn,ts:Date.now(),confirmed:true,source:'appkit-swap'});
-      document.getElementById('swapFrom').value='';document.getElementById('swapTo').value='';
+      document.getElementById('swapFrom').value='';
+      document.getElementById('swapTo').value='';
       btn.innerHTML='Swap';btn.disabled=false;
-      setTimeout(()=>refreshBalances(),2000);
-      setTimeout(()=>refreshBalances(),6000);
+      // Update balances in background
+      setTimeout(()=>refreshBalances(), 1500);
+      setTimeout(()=>refreshBalances(), 5000);
       return;
     }catch(err){
       toast('Swap failed: '+err.message.slice(0,120),'error',7000);
@@ -2006,27 +2061,42 @@ async function doSwap(){
     // Get signer fresh if not set
     if (!signer) { signer = await getDynamicSigner(); }
     if(signer){
-      const swapContract=new ethers.Contract(SWAP_CONTRACT,SWAP_ABI,signer);
-      const tokenAddr=isUSDCtoEURC?USDC_ADDR:EURC_ADDR;
-      const tokenContract=new ethers.Contract(tokenAddr,ERC20_ABI,signer);
-      const amtIn=ethers.parseUnits(fromAmt.toFixed(6),6);
-      // Approve exact swap amount — safest, user sees exactly what they're approving
-      const currentAllowance=await tokenContract.allowance(userAddr,SWAP_CONTRACT);
-      if(currentAllowance<amtIn){
-        btn.innerHTML='<span class="spinner"></span>Approving '+fromAmt.toFixed(2)+' '+tokenIn+'…';
-        const approveTx=await tokenContract.approve(SWAP_CONTRACT,amtIn,arcGasOpts());
-        await approveTx.wait(1);
-        btn.innerHTML='<span class="spinner"></span>Swapping…';
+      const swapContract = new ethers.Contract(SWAP_CONTRACT, SWAP_ABI, signer);
+      const tokenAddr    = isUSDCtoEURC ? USDC_ADDR : EURC_ADDR;
+      const tokenContract= new ethers.Contract(tokenAddr, ERC20_ABI, signer);
+      const amtIn        = ethers.parseUnits(fromAmt.toFixed(6), 6);
+      const alreadyOk    = isUSDCtoEURC ? _swapApproved.USDC : _swapApproved.EURC;
+
+      // Only check allowance if not pre-approved — saves one RPC round-trip
+      if(!alreadyOk) {
+        const currentAllowance = await tokenContract.allowance(userAddr, SWAP_CONTRACT);
+        if(currentAllowance < amtIn) {
+          btn.innerHTML = '<span class="spinner"></span>Approving…';
+          // Approve MaxUint256 so this never happens again
+          const approveTx = await tokenContract.approve(SWAP_CONTRACT, ethers.MaxUint256, arcGasOpts());
+          await approveTx.wait(0); // Arc sub-second — no need to wait for 1 confirmation
+          if(isUSDCtoEURC) _swapApproved.USDC = true;
+          else             _swapApproved.EURC = true;
+        } else {
+          if(isUSDCtoEURC) _swapApproved.USDC = true;
+          else             _swapApproved.EURC = true;
+        }
       }
-      const swapTx=isUSDCtoEURC?await swapContract.swapUSDCtoEURC(amtIn):await swapContract.swapEURCtoUSDC(amtIn);
-      await swapTx.wait(1);
-      toast('✓ Swap confirmed on Arc!','success',6000);
-      addNotification('✓ Swap complete', 'Swap confirmed on Arc Testnet', 'swap');
+      btn.innerHTML = '<span class="spinner"></span>Swapping…';
+      const swapTx = isUSDCtoEURC
+        ? await swapContract.swapUSDCtoEURC(amtIn, arcGasOpts())
+        : await swapContract.swapEURCtoUSDC(amtIn, arcGasOpts());
+      // wait(0) = don't wait for confirmation — Arc finalises in <1s
+      // Show success immediately, balance refreshes in background
+      const outAmt = (fromAmt * (isUSDCtoEURC ? FX : (1/FX)) * 0.999).toFixed(4);
+      toast('✓ Swapped '+fromAmt.toFixed(2)+' '+tokenIn+' → '+outAmt+' '+tokenOut+'!','success',6000);
+      addNotification('✓ Swap complete', 'Swapped '+fromAmt.toFixed(2)+' '+tokenIn+' → '+outAmt+' '+tokenOut, 'swap');
       addTx({hash:swapTx.hash,to:SWAP_CONTRACT,toRaw:'NANSwap',amount:fromAmt.toFixed(6),type:'out',token:tokenIn,ts:Date.now(),confirmed:true,source:'swap'});
-      await refreshBalances();
-      setTimeout(()=>refreshBalances(),3000);
-      setTimeout(()=>refreshBalances(),8000);
-      document.getElementById('swapFrom').value='';document.getElementById('swapTo').value='';
+      document.getElementById('swapFrom').value = '';
+      document.getElementById('swapTo').value   = '';
+      // Confirm in background — don't block UI
+      swapTx.wait(1).then(() => refreshBalances()).catch(() => refreshBalances());
+      setTimeout(() => refreshBalances(), 3000);
     }
   }catch(err){
     console.error('Swap error:', err);
@@ -4779,6 +4849,7 @@ window.addEventListener('load',()=>{
     setInterval(fetchLiveFX, 60000);
     setInterval(async()=>{ if(userAddr){ if(!isCircleWallet)await checkNetwork(); if(onArcNetwork||isCircleWallet){await refreshBalances();} } }, 6000);
     if(userAddr){ startOrderEngine(); startIncomingPoller(); }
+    if(userAddr&&!isCircleWallet&&signer&&onArcNetwork) setTimeout(ensureSwapApprovals,2000);
     document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&userAddr)refreshBalances(); });
     return;
   }
@@ -4868,6 +4939,7 @@ window.addEventListener('load',()=>{
     }
   },6000);
   if(userAddr){ startOrderEngine(); startIncomingPoller(); }
+  if(userAddr&&!isCircleWallet&&signer&&onArcNetwork) setTimeout(ensureSwapApprovals,2000);
   document.addEventListener('visibilitychange',()=>{
     if(!document.hidden&&userAddr)refreshBalances();
   });
