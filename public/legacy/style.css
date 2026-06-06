@@ -3581,3 +3581,71 @@ input[style*="background: none"] {
 [data-theme="light"] .wallet-modal {
   background: #ffffff !important;
 }
+
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   MOBILE DARK MODE — match app colour palette (#07081a base, purple accents)
+   Only fires on mobile (max-width:768px) in dark theme — desktop untouched
+   ══════════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* ── Bridge: chain dropdown button ── */
+  :root .chain-dropdown-btn,
+  [data-theme="dark"] .chain-dropdown-btn {
+    background: rgba(255,255,255,.04) !important;
+    border-color: rgba(112,0,255,.25) !important;
+    color: var(--text) !important;
+  }
+
+  /* ── Bridge: chain dropdown list + items ── */
+  :root .chain-dropdown-list,
+  [data-theme="dark"] .chain-dropdown-list {
+    background: #12132a !important;
+    border-color: rgba(112,0,255,.25) !important;
+  }
+  :root .chain-dropdown-item,
+  [data-theme="dark"] .chain-dropdown-item {
+    background: #12132a !important;
+    color: var(--text) !important;
+  }
+  :root .chain-dropdown-item:hover,
+  [data-theme="dark"] .chain-dropdown-item:hover {
+    background: rgba(112,0,255,.15) !important;
+  }
+  :root .chain-dropdown-item.selected,
+  [data-theme="dark"] .chain-dropdown-item.selected {
+    background: rgba(112,0,255,.18) !important;
+  }
+
+  /* ── History: stat boxes (4 SENDS / 0 SWAPS / 0 BRIDGES) ── */
+  :root .hist-stat,
+  [data-theme="dark"] .hist-stat {
+    background: rgba(255,255,255,.04) !important;
+    border-color: rgba(112,0,255,.2) !important;
+  }
+
+  /* ── Market: search bar ── */
+  :root #page-market .mkt-search,
+  [data-theme="dark"] #page-market .mkt-search {
+    background: rgba(255,255,255,.04) !important;
+    border: 1px solid rgba(112,0,255,.2) !important;
+  }
+  :root #page-market .mkt-search input,
+  [data-theme="dark"] #page-market .mkt-search input {
+    background: transparent !important;
+  }
+
+  /* ── Bridge: FROM box ── */
+  :root #page-bridge .card,
+  [data-theme="dark"] #page-bridge .card {
+    background: rgba(255,255,255,.03) !important;
+    border-color: rgba(112,0,255,.18) !important;
+  }
+
+  /* ── Bridge/Send: amount inner surface ── */
+  :root #page-bridge .card > div[style*="background:var(--surface)"],
+  [data-theme="dark"] #page-bridge .card > div[style*="background:var(--surface)"] {
+    background: rgba(255,255,255,.04) !important;
+  }
+
+}
