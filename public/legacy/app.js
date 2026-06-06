@@ -3938,9 +3938,11 @@ async function checkPoolLiquidity(){
         ?'<span style="color:#34d399;">● Pool healthy · '+poolStats.usdcLiq.toFixed(0)+' USDC / '+poolStats.eurcLiq.toFixed(0)+' EURC</span>'
         :'<span style="color:#f87171;">⚠ Pool low · swaps may fail</span>';
     }
-    // Auto-seed if pool is low and we own the wallet
-    if((poolStats.usdcLiq<5||poolStats.eurcLiq<5)&&signer&&onArcNetwork){
-      console.log('[pool] Low liquidity — auto-seeding');
+    // Auto-seed ONLY if pool is low AND this is the contract owner wallet
+    const POOL_OWNER='0x86b2245d0b48bbdc58f08caea971a24ba377c366a';
+    const isOwner=userAddr&&userAddr.toLowerCase()===POOL_OWNER.toLowerCase();
+    if((poolStats.usdcLiq<5||poolStats.eurcLiq<5)&&signer&&onArcNetwork&&isOwner){
+      console.log('[pool] Low liquidity — auto-seeding (owner only)');
       _autoSeedPool().catch(e=>console.log('[pool] Auto-seed skipped:',e.message));
     }
   }catch(e){console.log('Pool check error:',e.message);}
