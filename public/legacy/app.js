@@ -4646,7 +4646,7 @@ window.addEventListener('load',()=>{
     initSwapUI(); initBridgeUI(); fetchLiveFX();
     setInterval(fetchLiveFX, 60000);
     setInterval(async()=>{ if(userAddr){ if(!isCircleWallet)await checkNetwork(); if(onArcNetwork||isCircleWallet){await refreshBalances();} } }, 10000);
-    if(userAddr) startOrderEngine();
+    if(userAddr){ startOrderEngine(); startIncomingPoller(); }
     document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&userAddr)refreshBalances(); });
     return;
   }
@@ -4735,7 +4735,7 @@ window.addEventListener('load',()=>{
       if(onArcNetwork||isCircleWallet){await refreshBalances();}
     }
   },10000);
-  if(userAddr) startOrderEngine();
+  if(userAddr){ startOrderEngine(); startIncomingPoller(); }
   document.addEventListener('visibilitychange',()=>{
     if(!document.hidden&&userAddr)refreshBalances();
   });
@@ -5611,6 +5611,123 @@ async function mcRefresh() {
 }
 
 
+
+
+// ══════════════════════════════════════════════════════════════════════════════
+// INCOMING TRANSFER DETECTOR
+// Polls USDC & EURC Transfer(from, to, value) logs to userAddr every 15s
+// Adds to history + fires notification + push if new transfers found
+// ══════════════════════════════════════════════════════════════════════════════
+
+const TRANSFER_SIG = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
+let _incomingLastBlock = 0;
+let _seenIncomingHashes = new Set();
+
+async function _rpcCall(method, params) {
+  try {
+    const res = await fetch('https://rpc.testnet.arc.network', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params })
+    });
+    const d = await res.json();
+    return d.result;
+  } catch(e) { return null; }
+}
+
+async function checkIncomingTransfers() {
+  if (!userAddr) return;
+  try {
+    const latestHex = await _rpcCall('eth_blockNumber', []);
+    if (!latestHex) return;
+    const latest = parseInt(latestHex, 16);
+    // On first run scan last 300 blocks (~5 min on Arc), after that just new blocks
+    const from = _incomingLastBlock > 0
+      ? _incomingLastBlock + 1
+      : Math.max(0, latest - 300);
+    if (from > latest) return;
+
+    const toAddrPadded = '0x' + userAddr.slice(2).toLowerCase().padStart(64, '0');
+    const fromHex = '0x' + from.toString(16);
+    const toHex   = '0x' + latest.toString(16);
+
+    // Check USDC and EURC in parallel
+    const [usdcLogs, eurcLogs] = await Promise.all([
+      _rpcCall('eth_getLogs', [{
+        fromBlock: fromHex, toBlock: toHex,
+        address: USDC_ADDR,
+        topics: [TRANSFER_SIG, null, toAddrPadded]
+      }]),
+      _rpcCall('eth_getLogs', [{
+        fromBlock: fromHex, toBlock: toHex,
+        address: EURC_ADDR,
+        topics: [TRANSFER_SIG, null, toAddrPadded]
+      }])
+    ]);
+
+    _incomingLastBlock = latest;
+
+    const allLogs = [
+      ...(Array.isArray(usdcLogs) ? usdcLogs.map(l => ({...l, token:'USDC'})) : []),
+      ...(Array.isArray(eurcLogs) ? eurcLogs.map(l => ({...l, token:'EURC'})) : [])
+    ];
+
+    for (const log of allLogs) {
+      const txHash = log.transactionHash;
+      if (!txHash || _seenIncomingHashes.has(txHash)) continue;
+
+      // Skip if it's our own outgoing tx already in history
+      const alreadyOut = txHistory.some(t => t.hash === txHash && t.type === 'out');
+      if (alreadyOut) { _seenIncomingHashes.add(txHash); continue; }
+
+      _seenIncomingHashes.add(txHash);
+
+      const rawAmt = parseInt(log.data, 16);
+      if (!rawAmt || isNaN(rawAmt)) continue;
+      const amt = (rawAmt / 1e6).toFixed(6);
+      const from = '0x' + log.topics[1].slice(-40);
+      const token = log.token;
+
+      // Add to history
+      addTx({
+        hash: txHash,
+        to: userAddr,
+        toRaw: 'Received from ' + short(from),
+        from: from,
+        amount: amt,
+        type: 'in',
+        token,
+        ts: Date.now(),
+        confirmed: true,
+        source: 'incoming'
+      });
+
+      // In-app notification
+      const msg = 'Received ' + parseFloat(amt).toFixed(2) + ' ' + token + ' from ' + short(from);
+      addNotification('💚 ' + token + ' received', msg, 'receive');
+
+      // Toast if app is open
+      toast('💚 Received ' + parseFloat(amt).toFixed(2) + ' ' + token + '!', 'success', 5000);
+
+      // Server-side push to this device
+      triggerPushNotification(userAddr,
+        '💚 ' + token + ' received',
+        parseFloat(amt).toFixed(2) + ' ' + token + ' arrived in your wallet'
+      );
+    }
+  } catch(e) {
+    console.log('[incoming]', e.message);
+  }
+}
+
+// Start polling when wallet connects — runs every 15 seconds
+function startIncomingPoller() {
+  if (!userAddr) return;
+  // Immediate first check
+  checkIncomingTransfers();
+  // Then every 15s
+  setInterval(checkIncomingTransfers, 15000);
+}
 
 // ══════════════════════════════════════════════════════════════════════════════
 // NAN NOTIFICATIONS — In-app bell + Web Push
