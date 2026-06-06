@@ -285,6 +285,36 @@ html,body{background:var(--bg);}
   display: block !important;
 }
 .brand{display:flex;align-items:center;gap:0;}
+
+/* ── Notification Bell ─────────────────────────────────────────────── */
+#nanNotifBtn{position:relative;background:transparent;border:none;cursor:pointer;padding:6px;border-radius:8px;color:var(--text2);display:flex;align-items:center;justify-content:center;transition:background .15s;}
+#nanNotifBtn:hover{background:rgba(109,40,217,.12);}
+#nanNotifBadge{position:absolute;top:2px;right:2px;min-width:16px;height:16px;background:#ef4444;border-radius:100px;font-size:9px;font-weight:700;color:#fff;display:none;align-items:center;justify-content:center;padding:0 3px;line-height:1;}
+#nanNotifBadge.show{display:flex;}
+#nanNotifPanel{position:fixed;top:56px;right:12px;width:320px;max-width:94vw;background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,.35);z-index:9999;display:none;flex-direction:column;overflow:hidden;max-height:440px;}
+#nanNotifPanel.open{display:flex;}
+#nanNotifHeader{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;border-bottom:1px solid var(--border);}
+#nanNotifHeader span{font-size:.82rem;font-weight:700;color:var(--text);letter-spacing:.03em;}
+#nanNotifClear{font-size:.72rem;color:var(--accent3);background:none;border:none;cursor:pointer;padding:2px 6px;border-radius:6px;}
+#nanNotifClear:hover{background:rgba(109,40,217,.1);}
+#nanNotifList{overflow-y:auto;flex:1;}
+#nanNotifEmpty{padding:28px 16px;text-align:center;color:var(--text3);font-size:.8rem;}
+.nan-notif-item{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s;}
+.nan-notif-item:hover{background:var(--surface);}
+.nan-notif-item:last-child{border-bottom:none;}
+.nan-notif-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-top:1px;}
+.nan-notif-icon.send{background:rgba(239,68,68,.12);}
+.nan-notif-icon.receive{background:rgba(52,211,153,.12);}
+.nan-notif-icon.swap{background:rgba(109,40,217,.12);}
+.nan-notif-icon.bridge{background:rgba(59,130,246,.12);}
+.nan-notif-icon.info{background:rgba(156,163,175,.1);}
+.nan-notif-body{flex:1;min-width:0;}
+.nan-notif-title{font-size:.78rem;font-weight:600;color:var(--text);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nan-notif-msg{font-size:.72rem;color:var(--text2);line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nan-notif-time{font-size:.65rem;color:var(--text3);margin-top:3px;}
+#nanPushBanner{display:flex;align-items:center;gap:8px;padding:8px 14px;background:rgba(109,40,217,.08);border-bottom:1px solid rgba(109,40,217,.18);}
+#nanPushBanner span{font-size:.72rem;color:var(--text2);flex:1;}
+#nanPushEnableBtn{font-size:.7rem;background:#6d28d9;color:#fff;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;white-space:nowrap;}
 </style>
 
 <style>
@@ -340,6 +370,10 @@ html,body{background:var(--bg);}
         <span class="tb-btn-text">Faucet</span>
       </button>
       <!-- Theme toggle: SVG icons, JS updates class -->
+      <button id="nanNotifBtn" onclick="toggleNotifPanel(event)" title="Notifications" aria-label="Notifications">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span id="nanNotifBadge"></span>
+      </button>
       <button id="themeToggle" onclick="toggleTheme()" class="tb-icon-btn tb-theme" title="Toggle theme">
         <!-- Sun icon (shown in dark mode to switch to light) -->
         <svg class="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
@@ -3018,6 +3052,20 @@ function nanToggleFaucet(btn){
   document.head.appendChild(s);
 })();
 </script>
+
+
+<!-- ── Notification Panel ── -->
+<div id="nanNotifPanel">
+  <div id="nanNotifHeader">
+    <span>🔔 Notifications</span>
+    <button id="nanNotifClear" onclick="clearNotifications()">Clear all</button>
+  </div>
+  <div id="nanPushBanner" style="display:none;">
+    <span>Enable push notifications to get alerts when the app is closed</span>
+    <button id="nanPushEnableBtn" onclick="enablePushNotifications()">Enable</button>
+  </div>
+  <div id="nanNotifList"><div id="nanNotifEmpty">No notifications yet</div></div>
+</div>
 
 </body>
 
