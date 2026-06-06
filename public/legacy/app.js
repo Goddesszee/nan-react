@@ -1063,7 +1063,7 @@ function loadCachedBalances(){
   const totalUsd = u + e*(1/stableFX);
   const NGN_RATE = 1622;
 
-  // Home page
+  // Home page totals
   const homeBalAmt = document.getElementById('homeBalAmt');
   const homeBalNgn = document.getElementById('homeBalNgn');
   const homeUsdcBal = document.getElementById('homeUsdcBal');
@@ -1072,6 +1072,17 @@ function loadCachedBalances(){
   if(homeBalNgn) homeBalNgn.textContent = '≈ ₦'+Math.round(totalUsd*NGN_RATE).toLocaleString()+' NGN';
   if(homeUsdcBal) homeUsdcBal.textContent = uFmt+' USDC';
   if(homeEurcBal) homeEurcBal.textContent = eFmt+' EURC';
+
+  // Home token rows — amount + USD sub-value
+  const haUsdc    = document.getElementById('homeAssetUsdc');
+  const haUsdcSub = document.getElementById('homeAssetUsdcSub');
+  const haEurc    = document.getElementById('homeAssetEurc');
+  const haEurcSub = document.getElementById('homeAssetEurcSub');
+  const eurcUsd   = (e * (1/stableFX)).toFixed(2);
+  if(haUsdc)    haUsdc.textContent    = uFmt;
+  if(haUsdcSub) haUsdcSub.textContent = '≈ $'+u.toFixed(2);
+  if(haEurc)    haEurc.textContent    = eFmt;
+  if(haEurcSub) haEurcSub.textContent = '≈ $'+eurcUsd;
 
   // Send page chips
   const usdcBal2 = document.getElementById('usdcBal2');
@@ -1257,11 +1268,16 @@ async function refreshBalances(){
     if(homeUsdcBal)homeUsdcBal.textContent=u+' USDC';
     if(homeEurcBal)homeEurcBal.textContent=e+' EURC';
     // Update home page asset rows
-    const haUsdc=document.getElementById('homeAssetUsdc');
-    const haEurc=document.getElementById('homeAssetEurc');
-    const haNgn=document.getElementById('homeAssetNgn');
-    if(haUsdc)haUsdc.textContent=u;
-    if(haEurc)haEurc.textContent=e;
+    const haUsdc    = document.getElementById('homeAssetUsdc');
+    const haUsdcSub = document.getElementById('homeAssetUsdcSub');
+    const haEurc    = document.getElementById('homeAssetEurc');
+    const haEurcSub = document.getElementById('homeAssetEurcSub');
+    const haNgn     = document.getElementById('homeAssetNgn');
+    const _eurcUsd  = (parseFloat(e)*(1/stableFX)).toFixed(2);
+    if(haUsdc)    haUsdc.textContent    = u;
+    if(haUsdcSub) haUsdcSub.textContent = '≈ $'+parseFloat(u).toFixed(2);
+    if(haEurc)    haEurc.textContent    = e;
+    if(haEurcSub) haEurcSub.textContent = '≈ $'+_eurcUsd;
     if(haNgn)haNgn.textContent='₦0.00';
     updateSendAvailable();
     validateSend();
