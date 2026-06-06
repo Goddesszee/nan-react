@@ -5510,41 +5510,85 @@ async function adminWithdrawPool(){
     btn.disabled=false;btn.textContent='Withdraw All';
   }
 }
+// ── Admin pool token selector ────────────────────────────────────────────────
+let _adminLiqToken = 'both'; // 'both' | 'usdc' | 'eurc'
+
+function setAdminLiqToken(token, el) {
+  _adminLiqToken = token;
+  ['both','usdc','eurc'].forEach(t => {
+    const btn = document.getElementById('adminLiqOpt'+t.charAt(0).toUpperCase()+t.slice(1));
+    if(btn){
+      btn.style.borderColor = t===token ? 'rgba(112,0,255,.5)' : 'var(--border)';
+      btn.style.background  = t===token ? 'rgba(112,0,255,.1)' : 'none';
+      btn.style.color       = t===token ? 'var(--text)' : 'var(--text2)';
+    }
+  });
+  const uWrap = document.getElementById('adminUsdcAmtWrap');
+  const eWrap = document.getElementById('adminEurcAmtWrap');
+  if(uWrap) uWrap.style.display = (token==='eurc') ? 'none' : 'flex';
+  if(eWrap) eWrap.style.display = (token==='usdc') ? 'none' : 'flex';
+}
+
 async function adminSeedPool(){
-  if(!signer){toast('Connect MetaMask first to seed pool','error',4000);return;}
+  if(!signer){toast('Connect MetaMask first','error',4000);return;}
   if(!onArcNetwork){toast('Switch to Arc Testnet first','error',4000);return;}
-  const btn=document.getElementById('adminSeedBtn');
-  const statusEl=document.getElementById('adminSeedStatus');
-  btn.disabled=true;btn.textContent='Seeding…';
+  const btn = document.getElementById('adminSeedBtn');
+  const statusEl = document.getElementById('adminSeedStatus');
+  const token = _adminLiqToken || 'both';
+
+  // Read amounts from inputs
+  const uInput = parseFloat(document.getElementById('adminSeedUSDC')?.value)||0;
+  const eInput = parseFloat(document.getElementById('adminSeedEURC')?.value)||0;
+
+  const addUsdc = token==='both'||token==='usdc';
+  const addEurc = token==='both'||token==='eurc';
+
+  if(addUsdc && uInput<=0){toast('Enter a USDC amount','error',3000);return;}
+  if(addEurc && eInput<=0){toast('Enter a EURC amount','error',3000);return;}
+
+  btn.disabled=true; btn.textContent='Adding…';
   try{
-    const usdcC=new ethers.Contract(USDC_ADDR,ERC20_ABI,signer);
-    const eurcC=new ethers.Contract(EURC_ADDR,ERC20_ABI,signer);
-    const swapC=new ethers.Contract(SWAP_CONTRACT,SWAP_ABI,signer);
-    const [uBal,eBal]=await Promise.all([usdcC.balanceOf(userAddr),eurcC.balanceOf(userAddr)]);
-    const u=parseFloat(ethers.formatUnits(uBal,6));
-    const e=parseFloat(ethers.formatUnits(eBal,6));
-    if(u<1||e<1){toast('Need at least 1 USDC and 1 EURC to seed pool','error',5000);btn.disabled=false;btn.textContent='Seed Pool';return;}
-    // Seed with up to 500 of each, or full balance if less
-    const seedAmt=Math.min(500, u*0.9, e*0.9);
-    const seedU=ethers.parseUnits(seedAmt.toFixed(6),6);
-    const seedE=ethers.parseUnits(seedAmt.toFixed(6),6);
-    statusEl.innerHTML='<span style="color:#c084fc;">Approving tokens…</span>';
-    const [appU,appE]=await Promise.all([
-      usdcC.approve(SWAP_CONTRACT,ethers.MaxUint256,arcGasOpts()),
-      eurcC.approve(SWAP_CONTRACT,ethers.MaxUint256,arcGasOpts()),
-    ]);
-    await Promise.all([appU.wait(0),appE.wait(0)]);
+    const usdcC = new ethers.Contract(USDC_ADDR,ERC20_ABI,signer);
+    const eurcC = new ethers.Contract(EURC_ADDR,ERC20_ABI,signer);
+    const swapC = new ethers.Contract(SWAP_CONTRACT,SWAP_ABI,signer);
+
+    // Check balances
+    const [uBal,eBal] = await Promise.all([usdcC.balanceOf(userAddr),eurcC.balanceOf(userAddr)]);
+    const uHave = parseFloat(ethers.formatUnits(uBal,6));
+    const eHave = parseFloat(ethers.formatUnits(eBal,6));
+    if(addUsdc && uInput>uHave){toast('Insufficient USDC (have '+uHave.toFixed(2)+')','error',4000);btn.disabled=false;btn.textContent='＋ Add Liquidity';return;}
+    if(addEurc && eInput>eHave){toast('Insufficient EURC (have '+eHave.toFixed(2)+')','error',4000);btn.disabled=false;btn.textContent='＋ Add Liquidity';return;}
+
+    const seedU = addUsdc ? ethers.parseUnits(uInput.toFixed(6),6) : BigInt(0);
+    const seedE = addEurc ? ethers.parseUnits(eInput.toFixed(6),6) : BigInt(0);
+
+    statusEl.innerHTML='<span style="color:#c084fc;">Approving…</span>';
+    const approvals = [];
+    if(addUsdc) approvals.push(usdcC.approve(SWAP_CONTRACT,ethers.MaxUint256,arcGasOpts()));
+    if(addEurc) approvals.push(eurcC.approve(SWAP_CONTRACT,ethers.MaxUint256,arcGasOpts()));
+    await Promise.all((await Promise.all(approvals)).map(tx=>tx.wait(0)));
+
     statusEl.innerHTML='<span style="color:#c084fc;">Adding liquidity…</span>';
-    const liqTx=await swapC.addLiquidity(seedU,seedE,arcGasOpts());
+    const liqTx = await swapC.addLiquidity(seedU,seedE,arcGasOpts());
     await liqTx.wait(1);
-    toast('✓ Pool seeded with '+seedAmt.toFixed(2)+' USDC + '+seedAmt.toFixed(2)+' EURC','success',6000);
+
+    const added = [];
+    if(addUsdc) added.push(uInput.toFixed(2)+' USDC');
+    if(addEurc) added.push(eInput.toFixed(2)+' EURC');
+    toast('✓ Added '+added.join(' + ')+' to pool','success',6000);
+    statusEl.innerHTML='<span style="color:#34d399;">✓ Added '+added.join(' + ')+'</span>';
+    // Clear inputs
+    if(document.getElementById('adminSeedUSDC')) document.getElementById('adminSeedUSDC').value='';
+    if(document.getElementById('adminSeedEURC')) document.getElementById('adminSeedEURC').value='';
     await loadAdminPoolStats();
   }catch(err){
-    toast('Seed failed: '+err.message.slice(0,100),'error',6000);
+    toast('Failed: '+err.message.slice(0,100),'error',6000);
+    statusEl.innerHTML='<span style="color:#f87171;">'+err.message.slice(0,80)+'</span>';
   }finally{
-    btn.disabled=false;btn.textContent='Seed Pool';
+    btn.disabled=false; btn.textContent='＋ Add Liquidity';
   }
 }
+
 
 // ── Mobile welcome block injection ──
 function injectMobileWelcome(){
