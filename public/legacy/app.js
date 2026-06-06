@@ -895,6 +895,7 @@ async function verifyOTP(){
         onArcNetwork=true;
         document.getElementById('otpBox').style.display='none';
         toast('✓ Circle wallet ready!','success',3000);
+      resubscribePushOnConnect();
         await onConnected(true,false);
         btn.innerHTML='Verify →';btn.disabled=false;
         return;
@@ -1123,7 +1124,7 @@ async function onConnected(isEmail=false, isDev=false){
   if(isNew){
     localStorage.setItem('nan_v_'+userAddr,'1');
     document.getElementById('onboardChecklist').style.display='block';
-    setTimeout(()=>toast('🎉 Get free USDC at faucet.circle.com','info',8000),1500);
+    setTimeout(()=>{ toast('🎉 Get free USDC at faucet.circle.com','info',8000); addNotification('👋 Wallet connected', 'Welcome to NAN Wallet!', 'info'); },1500);
   }
 }
 
@@ -1410,6 +1411,7 @@ async function doSend(){
           txHistory[0].hash=lastTxHash;txHistory[0].confirmed=true;
           saveTxHistory();renderHistory();
           toast('✓ Transaction confirmed on-chain!','success',5000);
+          addNotification('✓ Transfer confirmed', 'Transaction confirmed on-chain', 'send');
           await refreshBalances();
         });
       }else{
@@ -1438,6 +1440,7 @@ async function doSend(){
     const receipt=await tx.wait(0);
     addTx({hash:tx.hash,to,toRaw:raw,amount:amt.toFixed(6),type:'out',token:sendToken,ts:Date.now(),confirmed:!!receipt,source:'metamask'});
     toast('✓ Sent '+amt.toFixed(2)+' '+sendToken+'!','success',7000);
+    addNotification('✓ Sent '+sendToken, 'Sent '+amt.toFixed(2)+' '+sendToken+' successfully', 'send');
     document.getElementById('confirmCard').classList.remove('show');
     showSendSuccess(amt,to,tx.hash);
     await refreshBalances();
@@ -1922,6 +1925,7 @@ async function doSwap(){
       if(!data||!data.success) throw new Error((data&&data.error)||'Swap failed');
       const amtOut=data.amountOut?parseFloat(data.amountOut).toFixed(4):(fromAmt*(isUSDCtoEURC?FX:(1/FX))*0.999).toFixed(4);
       toast('✓ Swapped '+fromAmt.toFixed(2)+' '+tokenIn+' → '+amtOut+' '+tokenOut+'!','success',6000);
+      addNotification('✓ Swap complete', 'Swapped '+fromAmt.toFixed(2)+' '+tokenIn+' → '+amtOut+' '+tokenOut, 'swap');
       addTx({hash:data.txHash,to:SWAP_CONTRACT,toRaw:'NANSwap',amount:fromAmt.toFixed(6),fromToken:tokenIn,toToken:tokenOut,outAmount:amtOut,type:'swap',token:tokenIn,ts:Date.now(),confirmed:true,source:'appkit-swap'});
       document.getElementById('swapFrom').value='';document.getElementById('swapTo').value='';
       btn.innerHTML='Swap';btn.disabled=false;
@@ -1952,6 +1956,7 @@ async function doSwap(){
       const swapTx=isUSDCtoEURC?await swapContract.swapUSDCtoEURC(amtIn):await swapContract.swapEURCtoUSDC(amtIn);
       await swapTx.wait(1);
       toast('✓ Swap confirmed on Arc!','success',6000);
+      addNotification('✓ Swap complete', 'Swap confirmed on Arc Testnet', 'swap');
       addTx({hash:swapTx.hash,to:SWAP_CONTRACT,toRaw:'NANSwap',amount:fromAmt.toFixed(6),type:'out',token:tokenIn,ts:Date.now(),confirmed:true,source:'swap'});
       await refreshBalances();
       setTimeout(()=>refreshBalances(),3000);
@@ -2139,8 +2144,10 @@ async function doBridge(){
     if(!data.success)throw new Error(data.error||'Bridge failed');
     const txHash=data.burnTxHash||null;
     addTx({hash:txHash,to:destAddr,toRaw:'Bridge→'+destChain,amount:amt.toFixed(6),type:'bridge',token:'USDC',ts:Date.now(),confirmed:data.state==='success',source:'appkit-bridge',destChain});
-    if(data.state==='success'){toast('✅ Bridge complete! USDC arrived on '+destChain,'success',8000);}
-    else{toast('✓ Bridge submitted via App Kit — CCTP processing…','success',6000);}
+    if(data.state==='success'){toast('✅ Bridge complete! USDC arrived on '+destChain,'success',8000);
+    addNotification('✅ Bridge complete', 'USDC arrived on '+destChain, 'bridge');}
+    else{toast('✓ Bridge submitted via App Kit — CCTP processing…','success',6000);
+    addNotification('🌉 Bridge submitted', 'CCTP bridge processing — USDC on the way', 'bridge');}
     await refreshBalances();
   }catch(err){
     toast((err?.message||'Bridge failed').slice(0,140),'error',8000);
@@ -5538,3 +5545,218 @@ async function mcRefresh() {
 }
 
 
+
+// ══════════════════════════════════════════════════════════════════════════════
+// NAN NOTIFICATIONS — In-app bell + Web Push
+// ══════════════════════════════════════════════════════════════════════════════
+
+const NAN_NOTIF_KEY = 'nan_notifications_v1';
+const NAN_PUSH_ADDR_KEY = 'nan_push_addr';
+let nanNotifOpen = false;
+
+// ── Storage helpers ───────────────────────────────────────────────────────────
+function loadNotifications() {
+  try { return JSON.parse(localStorage.getItem(NAN_NOTIF_KEY) || '[]'); } catch { return []; }
+}
+function saveNotifications(list) {
+  try { localStorage.setItem(NAN_NOTIF_KEY, JSON.stringify(list.slice(0, 50))); } catch {}
+}
+
+// ── Add a notification (call this from anywhere) ──────────────────────────────
+// type: 'send' | 'receive' | 'swap' | 'bridge' | 'info'
+function addNotification(title, msg, type = 'info') {
+  const list = loadNotifications();
+  list.unshift({ id: Date.now(), title, msg, type, ts: Date.now(), read: false });
+  saveNotifications(list);
+  renderNotifBadge();
+  if (nanNotifOpen) renderNotifList();
+  // Also fire a system notification if SW is active and doc is hidden
+  if (document.hidden && 'serviceWorker' in navigator) {
+    navigator.serviceWorker.ready.then(reg => {
+      reg.showNotification(title, {
+        body: msg, icon: '/favicon.svg', badge: '/favicon.svg',
+        tag: 'nan-local', data: { url: '/app.html' }
+      });
+    }).catch(() => {});
+  }
+}
+
+// ── Badge ─────────────────────────────────────────────────────────────────────
+function renderNotifBadge() {
+  const badge = document.getElementById('nanNotifBadge');
+  if (!badge) return;
+  const unread = loadNotifications().filter(n => !n.read).length;
+  badge.textContent = unread > 9 ? '9+' : String(unread);
+  badge.classList.toggle('show', unread > 0);
+}
+
+// ── Panel toggle ──────────────────────────────────────────────────────────────
+function toggleNotifPanel(e) {
+  e && e.stopPropagation();
+  const panel = document.getElementById('nanNotifPanel');
+  if (!panel) return;
+  nanNotifOpen = !nanNotifOpen;
+  panel.classList.toggle('open', nanNotifOpen);
+  if (nanNotifOpen) {
+    renderNotifList();
+    markAllRead();
+    // Show push enable banner if not yet subscribed
+    const banner = document.getElementById('nanPushBanner');
+    if (banner && Notification.permission !== 'granted') banner.style.display = 'flex';
+  }
+}
+
+// close panel when clicking outside
+document.addEventListener('click', e => {
+  if (!nanNotifOpen) return;
+  const panel = document.getElementById('nanNotifPanel');
+  const btn = document.getElementById('nanNotifBtn');
+  if (panel && !panel.contains(e.target) && btn && !btn.contains(e.target)) {
+    nanNotifOpen = false;
+    panel.classList.remove('open');
+  }
+});
+
+// ── Render list ───────────────────────────────────────────────────────────────
+const NOTIF_ICONS = { send:'🔴', receive:'🟢', swap:'🟣', bridge:'🔵', info:'⚪' };
+function renderNotifList() {
+  const list = loadNotifications();
+  const el = document.getElementById('nanNotifList');
+  if (!el) return;
+  if (!list.length) {
+    el.innerHTML = '<div id="nanNotifEmpty">No notifications yet</div>';
+    return;
+  }
+  el.innerHTML = list.map(n => `
+    <div class="nan-notif-item" onclick="handleNotifClick('${n.id}')">
+      <div class="nan-notif-icon ${n.type}">${NOTIF_ICONS[n.type]||'⚪'}</div>
+      <div class="nan-notif-body">
+        <div class="nan-notif-title">${n.title}</div>
+        <div class="nan-notif-msg">${n.msg}</div>
+        <div class="nan-notif-time">${timeAgo(n.ts)}</div>
+      </div>
+    </div>`).join('');
+}
+
+function handleNotifClick(id) {
+  const list = loadNotifications().map(n => n.id == id ? {...n, read:true} : n);
+  saveNotifications(list);
+  toggleNotifPanel();
+}
+
+function clearNotifications() {
+  saveNotifications([]);
+  renderNotifBadge();
+  renderNotifList();
+}
+
+function markAllRead() {
+  const list = loadNotifications().map(n => ({...n, read:true}));
+  saveNotifications(list);
+  renderNotifBadge();
+}
+
+function timeAgo(ts) {
+  const diff = Math.floor((Date.now() - ts) / 1000);
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
+  return Math.floor(diff/86400) + 'd ago';
+}
+
+// ── Web Push registration ─────────────────────────────────────────────────────
+async function initPushNotifications() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  try {
+    const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+    console.log('[push] SW registered, scope:', reg.scope);
+    // If already granted, subscribe silently
+    if (Notification.permission === 'granted') await subscribePush(reg);
+  } catch(e) { console.log('[push] SW register failed:', e.message); }
+  renderNotifBadge();
+}
+
+async function enablePushNotifications() {
+  const btn = document.getElementById('nanPushEnableBtn');
+  if (btn) btn.textContent = 'Enabling…';
+  const perm = await Notification.requestPermission();
+  if (perm !== 'granted') {
+    if (btn) btn.textContent = 'Enable';
+    toast('Notification permission denied', 'error', 4000);
+    return;
+  }
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    await subscribePush(reg);
+    const banner = document.getElementById('nanPushBanner');
+    if (banner) banner.style.display = 'none';
+    toast('✓ Push notifications enabled!', 'success', 3000);
+  } catch(e) {
+    toast('Push setup failed: ' + e.message.slice(0,60), 'error', 4000);
+    if (btn) btn.textContent = 'Enable';
+  }
+}
+
+async function subscribePush(reg) {
+  // Fetch VAPID public key
+  const keyRes = await fetch('https://nan-production.up.railway.app/api/push-key');
+  const { publicKey } = await keyRes.json();
+  if (!publicKey) throw new Error('No VAPID key from server');
+  const sub = await reg.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey: urlBase64ToUint8Array(publicKey)
+  });
+  const addr = userAddr || localStorage.getItem(NAN_PUSH_ADDR_KEY) || 'anon-' + Date.now();
+  if (userAddr) localStorage.setItem(NAN_PUSH_ADDR_KEY, userAddr);
+  await fetch('https://nan-production.up.railway.app/api/push-subscribe', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ subscription: sub.toJSON(), addr })
+  });
+  console.log('[push] Subscribed for addr:', addr.slice(0,12));
+}
+
+// Re-subscribe when wallet connects so server has the right address keyed
+async function resubscribePushOnConnect() {
+  if (!('serviceWorker' in navigator) || Notification.permission !== 'granted') return;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.getSubscription();
+    if (!sub) return;
+    await fetch('https://nan-production.up.railway.app/api/push-subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ subscription: sub.toJSON(), addr: userAddr })
+    });
+    localStorage.setItem(NAN_PUSH_ADDR_KEY, userAddr);
+  } catch(e) { console.log('[push] resubscribe error:', e.message); }
+}
+
+// ── Server-side push trigger (for backend to call after transfer) ─────────────
+async function triggerPushNotification(toAddr, title, body) {
+  try {
+    await fetch('https://nan-production.up.railway.app/api/push-send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ addr: toAddr, title, body, url: '/app.html' })
+    });
+  } catch(e) { console.log('[push-trigger]', e.message); }
+}
+
+// ── Utility ───────────────────────────────────────────────────────────────────
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const raw = atob(base64);
+  return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+}
+
+// ── Init on load ──────────────────────────────────────────────────────────────
+(function initNotifications() {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => { renderNotifBadge(); initPushNotifications(); });
+  } else {
+    renderNotifBadge();
+    initPushNotifications();
+  }
+})();
