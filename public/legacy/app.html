@@ -376,14 +376,48 @@ html,body{background:var(--bg);}
 
     <script>
     (function(){
-      // Tab switching
+      // ── Font fix: ensure Inter on all market elements ──
+      var fs = document.createElement('style');
+      fs.textContent = [
+        '#page-market{font-family:"Inter var","Inter",sans-serif}',
+        '#page-market .mbal-lbl{font-size:.7rem;font-weight:600;letter-spacing:.15em;color:var(--text3)}',
+        '#page-market .mbal-amt{font-size:1.8rem;font-weight:700;letter-spacing:-1px;color:var(--text)}',
+        '#page-market .mbal-ngn{font-size:.8rem;color:var(--text2)}',
+        '#page-market .mslbl{font-size:.7rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--text3)}',
+        '#page-market .feat-title{font-size:1.05rem;font-weight:700;letter-spacing:-.3px;color:var(--text)}',
+        '#page-market .feat-sub{font-size:.8rem;line-height:1.5;color:var(--text2)}',
+        '#page-market .feat-btn{font-size:.8rem;font-weight:700;font-family:"Inter",sans-serif}',
+        '#page-market .feat-badge{font-size:.65rem;font-weight:700;letter-spacing:.08em}',
+        '#page-market .mgc-name{font-size:.8rem;font-weight:700;color:var(--text)}',
+        '#page-market .mgc-desc{font-size:.72rem;color:var(--text2);line-height:1.4}',
+        '#page-market .mtag{font-size:.65rem;font-weight:700}',
+        '#page-market .mbdg{font-size:.62rem;font-weight:700}',
+        '#page-market .mrn{font-size:.8rem;font-weight:700;color:var(--text)}',
+        '#page-market .mrs{font-size:.72rem;color:var(--text2)}',
+        '#page-market .mrp{font-size:.8rem;font-weight:700;color:var(--text)}',
+        '#page-market .mra{font-size:.72rem;color:var(--accent3)}',
+        '#page-market .mt{font-size:.72rem;font-weight:700}',
+        '#page-market .mcta-t{font-size:.8rem;font-weight:700}',
+        '#page-market .mcta-s{font-size:.72rem;color:var(--text2)}',
+        '#page-market .mai-lbl{font-size:.72rem;font-weight:700}',
+        '#page-market .mgc{cursor:pointer;transition:border-color .18s}',
+        '#page-market .mgc:hover{border-color:rgba(168,85,247,.35)!important}',
+        '#page-market .mrow{cursor:pointer;transition:background .18s}',
+        '#page-market .mrow:hover{background:rgba(112,0,255,.04)!important}',
+        '.nan-x-btn:hover{background:var(--border)!important}',
+        '#mkt-sheet #mkt-sheet-inner{position:relative}'
+      ].join('');
+      document.head.appendChild(fs);
+
+      // ── Tab switching ──────────────────────────────────
       document.querySelectorAll('#mkt-tabs .mt').forEach(function(t){
         t.addEventListener('click',function(){
           document.querySelectorAll('#mkt-tabs .mt').forEach(function(x){x.classList.remove('on')});
           t.classList.add('on');
         });
       });
-      // Live balance injection
+
+      // ── Live balance ───────────────────────────────────
       function updateMktBal(){
         var u=document.getElementById('mkt-bal-display');
         var n=document.getElementById('mkt-ngn-display');
@@ -391,10 +425,156 @@ html,body{background:var(--bg);}
         var usdc=window.usdcBal||'--';
         var ngn=window.ngnVal||(window.usdcBal&&window.fxRate?(parseFloat(window.usdcBal)*window.fxRate).toLocaleString():'--');
         u.textContent=usdc+' USDC';
-        n.textContent='≈ ₦'+ngn+' NGN';
+        n.textContent='\u2248 \u20a6'+ngn+' NGN';
       }
       document.addEventListener('balanceUpdated',updateMktBal);
       setTimeout(updateMktBal,1000);
+
+      // ── X button helper ────────────────────────────────
+      function addX(container,closeFn){
+        if(!container||container.querySelector('.nan-x-btn'))return;
+        var x=document.createElement('button');
+        x.className='nan-x-btn';
+        x.innerHTML='&#10005;';
+        x.style.cssText='position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;background:var(--card2);border:1px solid var(--border);color:var(--text2);font-size:.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;font-family:"Inter",sans-serif;transition:all .18s;';
+        x.onclick=closeFn;
+        container.style.position='relative';
+        container.prepend(x);
+      }
+
+      // ── Sheet helper ───────────────────────────────────
+      function sheet(html){
+        var m=document.getElementById('mkt-sheet');
+        if(m)m.remove();
+        m=document.createElement('div');
+        m.id='mkt-sheet';
+        m.style.cssText='position:fixed;inset:0;z-index:99999;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.75);backdrop-filter:blur(10px);';
+        m.innerHTML='<div id="mkt-sheet-inner" style="background:var(--bg);border:1px solid var(--border2);border-radius:20px 20px 0 0;padding:20px 20px 40px;width:100%;max-width:480px;animation:up .28s ease both;max-height:85vh;overflow-y:auto;position:relative;">'+html+'</div>';
+        m.onclick=function(e){if(e.target===m)m.remove();};
+        document.body.appendChild(m);
+        setTimeout(function(){addX(document.getElementById('mkt-sheet-inner'),function(){m.remove();});},60);
+        return m;
+      }
+
+      function handle(){return '<div style="width:36px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 18px;"></div>';}
+      function closeBtn(label){return '<button onclick="document.getElementById(\'mkt-sheet\').remove()" style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:\'Inter\',sans-serif;font-size:.9rem;font-weight:700;padding:12px;cursor:pointer;margin-top:10px;">'+(label||'Close')+'</button>';}
+      function demoTag(){return '<div style="display:inline-flex;align-items:center;gap:5px;background:rgba(112,0,255,.08);border:1px solid rgba(168,85,247,.2);border-radius:100px;padding:4px 10px;font-size:.68rem;font-weight:700;color:#a855f7;margin-bottom:14px;">&#10022; DEMO MODE</div>';}
+      function successCard(msg){return '<div style="background:rgba(112,0,255,.08);border:1px solid rgba(168,85,247,.25);border-radius:12px;padding:14px;text-align:center;margin:12px 0;"><div style="font-size:1.8rem;margin-bottom:8px;">&#10003;</div><div style="font-size:.9rem;font-weight:700;color:var(--text);">'+msg+'</div></div>';}
+      function inp(id,ph,type,extra){return '<input id="'+id+'" type="'+(type||'text')+'" placeholder="'+ph+'" '+(extra||'')+' style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:\'Inter\',sans-serif;font-size:.875rem;padding:10px 13px;outline:none;margin-bottom:10px;box-sizing:border-box;" />';}
+      function lbl(t){return '<div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">'+t+'</div>';}
+      function pBtn(label,fnStr){var id='pb'+Math.random().toString(36).slice(2);setTimeout(function(){var el=document.getElementById(id);if(el)el.onclick=fnStr;},100);return '<button id="'+id+'" style="width:100%;background:#7000ff;border:none;border-radius:12px;color:#fff;font-family:\'Inter\',sans-serif;font-size:.9rem;font-weight:700;padding:12px;cursor:pointer;margin-top:8px;">'+label+'</button>';}
+
+      // ── AIRTIME ────────────────────────────────────────
+      function doAirtime(){sheet(handle()+'<div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">&#128241; Airtime Top-up</div>'+demoTag()+lbl('Phone Number')+inp('mkt-phone','080XXXXXXXX','tel')+lbl('Network')+'<select id="mkt-net" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:\'Inter\',sans-serif;font-size:.875rem;padding:10px 13px;margin-bottom:10px;"><option>MTN</option><option>Airtel</option><option>Glo</option><option>9mobile</option></select>'+lbl('Amount (&#8358;)')+'<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:10px;">'+['100','200','500','1000'].map(function(a){return '<button onclick="document.getElementById(\'mkt-amt\').value=\''+a+'\'" style="padding:7px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:\'Inter\',sans-serif;font-size:.75rem;font-weight:700;cursor:pointer;">&#8358;'+a+'</button>';}).join('')+'</div>'+inp('mkt-amt','Enter amount','number')+'<div style="font-size:.75rem;color:var(--text3);margin-bottom:12px;">Fee: 1% &#183; Balance: '+(window.usdcBal||'--')+' USDC</div>'+pBtn('Buy Airtime (Demo)',function(){var phone=document.getElementById('mkt-phone')?.value||'0801234567';var net=document.getElementById('mkt-net')?.value||'MTN';var amt=document.getElementById('mkt-amt')?.value||'100';var usdc=(amt/(window.fxRate||1625)).toFixed(4);document.getElementById('mkt-sheet-inner').innerHTML=handle()+successCard('Airtime Sent! (Demo)')+'<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;font-size:.8rem;color:var(--text2);"><div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span>Phone</span><span style="color:var(--text);font-weight:700;">'+phone+'</span></div><div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span>Network</span><span style="color:var(--text);font-weight:700;">'+net+'</span></div><div style="display:flex;justify-content:space-between;"><span>USDC Spent</span><span style="color:#a855f7;font-weight:700;">'+usdc+' USDC</span></div></div>'+closeBtn('Done');})+closeBtn());}
+
+      // ── DATA ───────────────────────────────────────────
+      function doData(){var plans=[{n:'1GB — 1 day',p:'&#8358;300'},{n:'2GB — 7 days',p:'&#8358;500'},{n:'5GB — 30 days',p:'&#8358;1500'},{n:'10GB — 30 days',p:'&#8358;2500'}];sheet(handle()+'<div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">&#128225; Data Bundles</div>'+demoTag()+lbl('Phone')+inp('mkt-dp','080XXXXXXXX','tel')+lbl('Select Plan')+plans.map(function(p){return '<div onclick="document.querySelectorAll(\'.dp\').forEach(function(x){x.style.borderColor=\'var(--border)\'});this.style.borderColor=\'#7000ff\'" class="dp" style="display:flex;justify-content:space-between;align-items:center;padding:11px 13px;background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:7px;cursor:pointer;transition:all .18s;"><span style="font-size:.8rem;font-weight:700;color:var(--text);">'+p.n+'</span><span style="font-size:.8rem;color:#a855f7;font-weight:700;">'+p.p+'</span></div>';}).join('')+pBtn('Buy Bundle (Demo)',function(){document.getElementById('mkt-sheet-inner').innerHTML=handle()+successCard('Data Activated! (Demo)')+'<div style="font-size:.75rem;color:var(--text3);text-align:center;margin-top:8px;">Live on mainnet Q3 2026</div>'+closeBtn('Done');})+closeBtn());}
+
+      // ── NEPA ───────────────────────────────────────────
+      function doNepa(){sheet(handle()+'<div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">&#9889; Electricity Payment</div>'+demoTag()+lbl('Distribution Company')+'<select style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:\'Inter\',sans-serif;font-size:.875rem;padding:10px 13px;margin-bottom:10px;"><option>BEDC</option><option>EKEDC (Eko)</option><option>IKEDC (Ikeja)</option><option>AEDC (Abuja)</option><option>PHEDC</option></select>'+lbl('Meter Number')+inp('mkt-meter','Enter meter number')+lbl('Amount (&#8358;)')+'<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:10px;">'+['1000','2000','5000','10000'].map(function(a){return '<button onclick="document.getElementById(\'mkt-nepa-amt\').value=\''+a+'\'" style="padding:7px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:\'Inter\',sans-serif;font-size:.72rem;font-weight:700;cursor:pointer;">&#8358;'+a+'</button>';}).join('')+'</div>'+inp('mkt-nepa-amt','Enter amount','number')+pBtn('Pay Electricity (Demo)',function(){var meter=document.getElementById('mkt-meter')?.value||'1234567890';var amt=document.getElementById('mkt-nepa-amt')?.value||'2000';var token=Math.random().toString().slice(2,7)+'-'+Math.random().toString().slice(2,7)+'-'+Math.random().toString().slice(2,7);document.getElementById('mkt-sheet-inner').innerHTML=handle()+successCard('Payment Successful! (Demo)')+'<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;font-size:.8rem;color:var(--text2);"><div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span>Meter</span><span style="color:var(--text);font-weight:700;">'+meter+'</span></div><div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span>Amount</span><span style="color:var(--text);font-weight:700;">&#8358;'+amt+'</span></div><div style="display:flex;justify-content:space-between;"><span>Token</span><span style="color:#a855f7;font-weight:700;font-size:.75rem;">'+token+'</span></div></div>'+closeBtn('Done');})+closeBtn());}
+
+      // ── DSTV ───────────────────────────────────────────
+      function doDstv(){var plans=[{n:'Padi',p:'&#8358;2,500'},{n:'Yanga',p:'&#8358;3,500'},{n:'Confam',p:'&#8358;6,200'},{n:'Compact',p:'&#8358;15,700'},{n:'Compact+',p:'&#8358;24,500'},{n:'Premium',p:'&#8358;37,000'}];sheet(handle()+'<div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">&#128250; DSTV / GoTV Renewal</div>'+demoTag()+lbl('Smart Card Number')+inp('mkt-dstv','Enter smart card number')+lbl('Select Bouquet')+'<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px;">'+plans.map(function(p){return '<div onclick="document.querySelectorAll(\'.dp2\').forEach(function(x){x.style.borderColor=\'var(--border)\'});this.style.borderColor=\'#7000ff\'" class="dp2" style="padding:10px;background:var(--card);border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all .18s;"><div style="font-size:.75rem;font-weight:700;color:var(--text);">'+p.n+'</div><div style="font-size:.7rem;color:#a855f7;margin-top:2px;">'+p.p+'/mo</div></div>';}).join('')+'</div>'+pBtn('Renew Subscription (Demo)',function(){document.getElementById('mkt-sheet-inner').innerHTML=handle()+successCard('Subscription Renewed! (Demo)')+'<div style="font-size:.75rem;color:var(--text3);text-align:center;margin-top:8px;">Live on mainnet Q3 2026</div>'+closeBtn('Done');})+closeBtn());}
+
+      // ── GIFT CARDS ─────────────────────────────────────
+      function doGift(){var cards=[{n:'Amazon',i:'&#128722;'},{n:'Netflix',i:'&#127902;'},{n:'iTunes',i:'&#127925;'},{n:'Steam',i:'&#127918;'}];sheet(handle()+'<div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">&#127873; Gift Cards</div>'+demoTag()+lbl('Select Card')+'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">'+cards.map(function(c){return '<div onclick="document.querySelectorAll(\'.gcp\').forEach(function(x){x.style.borderColor=\'var(--border)\';x.style.background=\'var(--card)\'});this.style.borderColor=\'#7000ff\';this.style.background=\'rgba(112,0,255,.08)\'" class="gcp" style="padding:11px;background:var(--card);border:1px solid var(--border);border-radius:10px;text-align:center;cursor:pointer;transition:all .18s;"><div style="font-size:1.4rem;">'+c.i+'</div><div style="font-size:.75rem;font-weight:700;color:var(--text);margin-top:3px;">'+c.n+'</div></div>';}).join('')+'</div>'+lbl('Amount')+'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:12px;">'+['$10','$25','$50','$100','$200','Custom'].map(function(a){return '<button onclick="document.querySelectorAll(\'.ga\').forEach(function(x){x.style.borderColor=\'var(--border)\'});this.style.borderColor=\'#7000ff\'" class="ga" style="padding:8px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:\'Inter\',sans-serif;font-size:.75rem;font-weight:700;cursor:pointer;">'+a+'</button>';}).join('')+'</div>'+lbl('Delivery Email')+inp('mkt-gc-email','your@email.com','email')+pBtn('Buy Gift Card (Demo)',function(){var email=document.getElementById('mkt-gc-email')?.value||'user@nan.arc';document.getElementById('mkt-sheet-inner').innerHTML=handle()+successCard('Gift Card Ready! (Demo)')+'<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;font-size:.8rem;color:var(--text2);"><div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span>Code</span><span style="color:#a855f7;font-weight:700;letter-spacing:.1em;">XXXX-XXXX-XXXX</span></div><div style="display:flex;justify-content:space-between;"><span>Sent to</span><span style="color:var(--text);font-weight:700;">'+email+'</span></div></div>'+closeBtn('Done');})+closeBtn());}
+
+      // ── WATER ──────────────────────────────────────────
+      function doWater(){sheet(handle()+'<div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">&#128167; Water Bill</div>'+demoTag()+lbl('Water Agency')+'<select style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:\'Inter\',sans-serif;font-size:.875rem;padding:10px 13px;margin-bottom:10px;"><option>Lagos State Water Corp</option><option>FCT Water Board (Abuja)</option><option>Rivers State Water</option><option>Ogun State Water</option></select>'+lbl('Account Number')+inp('mkt-water-acc','Enter account number')+lbl('Amount (&#8358;)')+inp('mkt-water-amt','Enter amount','number')+pBtn('Pay Water Bill (Demo)',function(){document.getElementById('mkt-sheet-inner').innerHTML=handle()+successCard('Water Bill Paid! (Demo)')+'<div style="font-size:.75rem;color:var(--text3);text-align:center;margin-top:8px;">Live on mainnet Q3 2026</div>'+closeBtn('Done');})+closeBtn());}
+
+      // ── BANK WITHDRAWAL ────────────────────────────────
+      function doBank(){sheet(handle()+'<div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">&#127982; Withdraw to Bank</div>'+demoTag()+lbl('Bank')+'<select id="mkt-bname" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:\'Inter\',sans-serif;font-size:.875rem;padding:10px 13px;margin-bottom:10px;"><option>First Bank</option><option>GTBank</option><option>Access Bank</option><option>Zenith Bank</option><option>UBA</option><option>Kuda</option><option>Opay</option></select>'+lbl('Account Number')+inp('mkt-bacc','0123456789')+lbl('Amount (USDC)')+inp('mkt-busdc','Enter USDC amount','number')+'<div id="mkt-bngn" style="font-size:.75rem;color:var(--text3);margin-bottom:12px;">&#8776; &#8358;0 NGN &#183; 1.5% fee applies</div>'+pBtn('Withdraw to Bank (Demo)',function(){var bank=document.getElementById('mkt-bname')?.value;var acc=document.getElementById('mkt-bacc')?.value||'0123456789';var usdc=document.getElementById('mkt-busdc')?.value||'10';var ngn=(usdc*(window.fxRate||1625)*0.985).toLocaleString();document.getElementById('mkt-sheet-inner').innerHTML=handle()+successCard('Withdrawal Initiated! (Demo)')+'<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;font-size:.8rem;color:var(--text2);"><div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span>Bank</span><span style="color:var(--text);font-weight:700;">'+bank+'</span></div><div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span>Account</span><span style="color:var(--text);font-weight:700;">'+acc+'</span></div><div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span>USDC</span><span style="color:#a855f7;font-weight:700;">'+usdc+' USDC</span></div><div style="display:flex;justify-content:space-between;"><span>NGN Arrives</span><span style="color:var(--text);font-weight:700;">&#8358;'+ngn+'</span></div></div><div style="font-size:.75rem;color:var(--text3);text-align:center;margin-top:8px;">~5 mins &#183; Live Q3 2026</div>'+closeBtn('Done');})+closeBtn());setTimeout(function(){var el=document.getElementById('mkt-busdc');if(el)el.addEventListener('input',function(e){var ngn=(e.target.value*(window.fxRate||1625)*0.985).toLocaleString();var d=document.getElementById('mkt-bngn');if(d)d.textContent='\u2248 \u20a6'+ngn+' NGN \u00b7 1.5% fee';});},200);}
+
+      // ── AJO ────────────────────────────────────────────
+      function doAjo(){var members=['zara.arc','tolu.arc','emeka.arc'];sheet(handle()+'<div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">&#129309; Group Savings &#8212; Ajo</div>'+demoTag()+'<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:12px;">'+members.map(function(m,i){return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);"><div style="width:30px;height:30px;border-radius:50%;background:#7000ff;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:#fff;">'+m[0].toUpperCase()+'</div><div style="flex:1;font-size:.8rem;font-weight:700;color:var(--text);">'+m+'</div><div style="font-size:.7rem;color:'+(i===0?'#a855f7':'var(--text3)')+';">'+(i===0?'&#8592; Receives':'Waiting')+'</div></div>';}).join('')+'<div style="display:flex;justify-content:space-between;padding-top:10px;font-size:.8rem;"><span style="color:var(--text3);">Pot size</span><span style="font-weight:700;color:var(--text);">150 USDC</span></div></div>'+pBtn('Contribute 50 USDC (Demo)',function(){document.getElementById('mkt-sheet-inner').innerHTML=handle()+successCard('Contribution Sent! (Demo)')+'<div style="font-size:.8rem;color:var(--text2);text-align:center;margin:8px 0;">zara.arc receives 150 USDC this cycle</div>'+closeBtn('Done');})+pBtn('Create New Group',function(){document.getElementById('mkt-sheet-inner').innerHTML=handle()+'<div style="font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:12px;">Create Ajo Group</div>'+lbl('Group Name')+inp('mkt-ajn','e.g. Office Savings')+lbl('Contribution per cycle (USDC)')+inp('mkt-aja','e.g. 50','number')+lbl('Frequency')+'<select style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:\'Inter\',sans-serif;font-size:.875rem;padding:10px 13px;margin-bottom:12px;"><option>Weekly</option><option>Monthly</option><option>Bi-weekly</option></select>'+pBtn('Create Group (Demo)',function(){document.getElementById('mkt-sheet-inner').innerHTML=handle()+successCard('Group Created! (Demo)')+'<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;font-size:.8rem;color:var(--text2);"><div style="display:flex;justify-content:space-between;"><span>Invite link</span><span style="color:#a855f7;font-weight:700;">nan.arc/ajo/demo123</span></div></div>'+closeBtn('Done');})+closeBtn();})+closeBtn());}
+
+      // ── BVN ────────────────────────────────────────────
+      function doBVN(){sheet(handle()+'<div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">&#10003; BVN Verification</div>'+demoTag()+'<div style="background:rgba(112,0,255,.06);border:1px solid rgba(168,85,247,.2);border-radius:12px;padding:12px;margin-bottom:12px;font-size:.8rem;color:var(--text2);line-height:1.6;">Unlock higher limits, credit scoring, and your on-chain identity on Arc. Powered by Smile Identity.</div>'+lbl('BVN (11 digits)')+inp('mkt-bvn','Enter your BVN','number','maxlength="11"')+lbl('Date of Birth')+inp('mkt-bvn-dob','','date')+'<div style="font-size:.72rem;color:var(--text3);margin-bottom:12px;">Fee: $0.10 USDC &#183; One-time</div>'+pBtn('Verify BVN (Demo)',function(){var bvn=document.getElementById('mkt-bvn')?.value||'12345678901';document.getElementById('mkt-sheet-inner').innerHTML=handle()+'<div style="text-align:center;padding:30px 0;"><div style="font-size:1.8rem;margin-bottom:10px;">&#128269;</div><div style="font-size:.9rem;font-weight:700;color:var(--text);">Verifying BVN...</div></div>';setTimeout(function(){document.getElementById('mkt-sheet-inner').innerHTML=handle()+successCard('BVN Verified! (Demo)')+'<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;font-size:.8rem;color:var(--text2);"><div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span>BVN</span><span style="color:var(--text);font-weight:700;">'+bvn.slice(0,3)+'****'+bvn.slice(-2)+'</span></div><div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span>Status</span><span style="color:#10b981;font-weight:700;">Verified &#10003;</span></div><div style="display:flex;justify-content:space-between;"><span>Limit</span><span style="color:var(--text);font-weight:700;">$10,000/day</span></div></div>'+closeBtn('Done');},1800);})+closeBtn());}
+
+      // ── FX ORACLE ──────────────────────────────────────
+      function doFX(){var rate=window.fxRate||1625;sheet(handle()+'<div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">&#129302; FX Rate Oracle</div><div style="display:inline-flex;align-items:center;gap:5px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:100px;padding:4px 10px;font-size:.68rem;font-weight:700;color:#10b981;margin-bottom:14px;">&#9679; LIVE</div><div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;text-align:center;"><div style="font-size:.68rem;color:var(--text3);margin-bottom:6px;">1 USDC =</div><div style="font-size:2.2rem;font-weight:800;color:var(--text);letter-spacing:-1px;">&#8358;'+rate.toLocaleString()+'</div><div style="font-size:.68rem;color:var(--text3);margin-top:4px;">Updated just now &#183; ECB/Frankfurter</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;"><div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px;text-align:center;"><div style="font-size:.68rem;color:var(--text3);margin-bottom:3px;">1 EURC =</div><div style="font-size:1rem;font-weight:700;color:var(--text);">&#8358;'+(rate*1.08).toFixed(0)+'</div></div><div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px;text-align:center;"><div style="font-size:.68rem;color:var(--text3);margin-bottom:3px;">$100 =</div><div style="font-size:1rem;font-weight:700;color:var(--text);">&#8358;'+(rate*100).toLocaleString()+'</div></div></div>'+lbl('Convert USDC to NGN')+inp('mkt-fx','USDC amount','number')+'<div id="mkt-fx-r" style="font-size:.95rem;font-weight:700;color:#a855f7;margin-bottom:12px;">Enter amount above</div><div style="background:rgba(112,0,255,.06);border:1px solid rgba(168,85,247,.2);border-radius:10px;padding:11px;font-size:.75rem;color:var(--text2);line-height:1.6;">NAN AI uses this oracle for every balance conversion. Other agents pay <strong style="color:var(--text);">$0.0001/call</strong> on Circle Agent Marketplace.</div>'+closeBtn());setTimeout(function(){var el=document.getElementById('mkt-fx');if(el)el.addEventListener('input',function(e){var ngn=(e.target.value*rate).toLocaleString();var d=document.getElementById('mkt-fx-r');if(d)d.textContent=e.target.value?'\u2248 \u20a6'+ngn+' NGN':'Enter amount above';});},200);}
+
+      // ── CREDIT ─────────────────────────────────────────
+      function doCredit(){sheet(handle()+'<div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">&#128202; Credit Scoring</div>'+demoTag()+pBtn('Check My Score (Demo)',function(){document.getElementById('mkt-sheet-inner').innerHTML=handle()+'<div style="text-align:center;padding:30px 0;"><div style="font-size:1.8rem;margin-bottom:10px;">&#128202;</div><div style="font-size:.9rem;font-weight:700;color:var(--text);">Analysing wallet history...</div></div>';setTimeout(function(){var score=Math.floor(Math.random()*200)+600;var color=score>750?'#10b981':score>650?'#fbbf24':'#f87171';var grade=score>750?'Excellent':score>650?'Good':'Fair';document.getElementById('mkt-sheet-inner').innerHTML=handle()+'<div style="text-align:center;margin-bottom:14px;"><div style="font-size:.68rem;color:var(--text3);margin-bottom:4px;">Your NAN Credit Score</div><div style="font-size:3rem;font-weight:800;color:'+color+';letter-spacing:-2px;">'+score+'</div><div style="font-size:.8rem;font-weight:700;color:'+color+';">'+grade+'</div></div><div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;font-size:.8rem;color:var(--text2);"><div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span>Wallet age</span><span style="color:var(--text);font-weight:700;">45 days</span></div><div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span>Transactions</span><span style="color:var(--text);font-weight:700;">23</span></div><div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span>Borrowing limit</span><span style="color:#a855f7;font-weight:700;">50 USDC</span></div><div style="display:flex;justify-content:space-between;"><span>BVN verified</span><span style="color:#f87171;font-weight:700;">No</span></div></div><div style="font-size:.72rem;color:var(--text3);text-align:center;margin-top:8px;">Verify BVN to unlock 10x limit</div>'+closeBtn('Done');},2000);})+closeBtn());}
+
+      // ── NGN ON-RAMP ────────────────────────────────────
+      function doOnRamp(){sheet(handle()+'<div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">&#127469;&#127468; NGN On-Ramp</div>'+demoTag()+lbl('Amount (&#8358;)')+'<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:10px;">'+['5000','10000','50000','100000'].map(function(a){return '<button onclick="document.getElementById(\'mkt-or\').value=\''+a+'\';var u=('+a+'/(window.fxRate||1625)*0.985).toFixed(2);var d=document.getElementById(\'mkt-or-u\');if(d)d.textContent=\'\u2248 \'+u+\' USDC after 1.5% fee\';" style="padding:7px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:\'Inter\',sans-serif;font-size:.68rem;font-weight:700;cursor:pointer;">&#8358;'+(a/1000)+'k</button>';}).join('')+'</div>'+inp('mkt-or','Enter NGN amount','number')+'<div id="mkt-or-u" style="font-size:.8rem;color:#a855f7;font-weight:700;margin-bottom:12px;">Enter amount above</div><div style="background:var(--card);border:1px solid rgba(168,85,247,.25);border-radius:10px;padding:11px;margin-bottom:12px;display:flex;align-items:center;gap:10px;"><span style="font-size:1.1rem;">&#127982;</span><div><div style="font-size:.8rem;font-weight:700;color:var(--text);">Bank Transfer</div><div style="font-size:.7rem;color:var(--text3);">Powered by Paystack &#183; ~5 mins</div></div></div>'+pBtn('Deposit Naira (Demo)',function(){var amt=document.getElementById('mkt-or')?.value||'10000';var usdc=(amt/(window.fxRate||1625)*0.985).toFixed(2);document.getElementById('mkt-sheet-inner').innerHTML=handle()+'<div style="font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:12px;">Transfer to this account</div><div style="background:var(--card);border:2px solid rgba(168,85,247,.3);border-radius:12px;padding:14px;margin-bottom:12px;"><div style="display:flex;justify-content:space-between;margin-bottom:9px;font-size:.8rem;"><span style="color:var(--text3);">Bank</span><span style="font-weight:700;color:var(--text);">Wema Bank</span></div><div style="display:flex;justify-content:space-between;margin-bottom:9px;"><span style="font-size:.8rem;color:var(--text3);">Account No.</span><span style="font-weight:700;color:#a855f7;font-size:1rem;letter-spacing:.05em;">0123456789</span></div><div style="display:flex;justify-content:space-between;margin-bottom:9px;font-size:.8rem;"><span style="color:var(--text3);">Account Name</span><span style="font-weight:700;color:var(--text);">NAN / Paystack</span></div><div style="display:flex;justify-content:space-between;font-size:.8rem;"><span style="color:var(--text3);">Amount</span><span style="font-weight:700;color:var(--text);">&#8358;'+parseFloat(amt).toLocaleString()+'</span></div></div><div style="background:rgba(112,0,255,.06);border:1px solid rgba(168,85,247,.2);border-radius:10px;padding:11px;font-size:.78rem;color:var(--text2);margin-bottom:12px;">You will receive <strong style="color:#a855f7;">'+usdc+' USDC</strong> in ~5 minutes.</div>'+closeBtn('Done');})+closeBtn());setTimeout(function(){var el=document.getElementById('mkt-or');if(el)el.addEventListener('input',function(e){var u=(e.target.value/(window.fxRate||1625)*0.985).toFixed(2);var d=document.getElementById('mkt-or-u');if(d)d.textContent=e.target.value?'\u2248 '+u+' USDC after 1.5% fee':'Enter amount above';});},200);}
+
+      // ── LIST SERVICE ───────────────────────────────────
+      function doList(){sheet(handle()+'<div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">&#128188; List Your Service</div>'+demoTag()+lbl('Service Name')+inp('mkt-sn','e.g. Lagos Rides Payment')+lbl('Description')+'<textarea placeholder="What does your service do?" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:\'Inter\',sans-serif;font-size:.875rem;padding:10px 13px;outline:none;margin-bottom:10px;height:70px;resize:none;box-sizing:border-box;"></textarea>'+lbl('API Endpoint')+inp('mkt-su','https://yourapi.com/endpoint')+lbl('Price per call (USDC)')+inp('mkt-sp','e.g. 0.001','number')+lbl('Category')+'<select style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:\'Inter\',sans-serif;font-size:.875rem;padding:10px 13px;margin-bottom:12px;"><option>Payments</option><option>Identity</option><option>Data/Oracle</option><option>Savings</option><option>Other</option></select>'+pBtn('Submit Service (Demo)',function(){document.getElementById('mkt-sheet-inner').innerHTML=handle()+successCard('Application Submitted! (Demo)')+'<div style="font-size:.8rem;color:var(--text2);text-align:center;margin:8px 0;">We will review and respond within 48 hours.</div>'+closeBtn('Done');})+closeBtn());}
+
+      // ── WIRE CARDS ─────────────────────────────────────
+      var cardMap={'Airtime':doAirtime,'Data Bundles':doData,'NEPA / BEDC':doNepa,'DSTV / GoTV':doDstv,'Gift Cards':doGift,'Water Bill':doWater};
+      var rowMap={'Bank Withdrawal':doBank,'Send Abroad':function(){goPage('bridge');},'Group Savings (Ajo)':doAjo,'BVN Verification':doBVN,'FX Rate Oracle':doFX,'Credit Scoring':doCredit};
+
+      document.querySelectorAll('#page-market .mgc').forEach(function(c){
+        var name=c.querySelector('.mgc-name')?.textContent?.trim();
+        c.onclick=function(){if(cardMap[name])cardMap[name]();};
+      });
+      document.querySelectorAll('#page-market .mrow').forEach(function(r){
+        var name=r.querySelector('.mrn')?.textContent?.trim();
+        r.onclick=function(){if(rowMap[name])rowMap[name]();};
+      });
+
+      var fb=document.querySelector('#page-market .feat-btn');
+      if(fb)fb.onclick=doOnRamp;
+      var cta=document.querySelector('#page-market .mcta');
+      if(cta)cta.onclick=doList;
+      var ai=document.querySelector('#page-market .mai-pill');
+      if(ai)ai.onclick=function(){document.getElementById('aiBtn')?.click();};
+
+      // ── GLOBAL CLOSE: X + backdrop + Escape + swipe ───
+      function addX(container,closeFn){
+        if(!container||container.querySelector('.nan-x-btn'))return;
+        var x=document.createElement('button');
+        x.className='nan-x-btn';
+        x.innerHTML='&#10005;';
+        x.style.cssText='position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;background:var(--card2);border:1px solid var(--border);color:var(--text2);font-size:.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;transition:all .18s;';
+        x.onclick=closeFn;
+        container.style.position='relative';
+        container.prepend(x);
+      }
+
+      // Wallet modal
+      document.querySelectorAll('.wallet-modal-overlay').forEach(function(el){
+        el.addEventListener('click',function(e){if(e.target===el)el.classList.remove('show');});
+        var modal=el.querySelector('.wallet-modal');
+        if(modal)addX(modal,function(){el.classList.remove('show');});
+      });
+
+      // Escape key
+      document.addEventListener('keydown',function(e){
+        if(e.key!=='Escape')return;
+        document.getElementById('mkt-sheet')?.remove();
+        document.querySelectorAll('.wallet-modal-overlay.show').forEach(function(el){el.classList.remove('show');});
+      });
+
+      // Swipe down to close
+      var ty=0;
+      document.addEventListener('touchstart',function(e){ty=e.touches[0].clientY;},{passive:true});
+      document.addEventListener('touchend',function(e){
+        if(e.changedTouches[0].clientY-ty>80){
+          document.getElementById('mkt-sheet')?.remove();
+          document.querySelectorAll('.wallet-modal-overlay.show').forEach(function(el){el.classList.remove('show');});
+        }
+      },{passive:true});
+
+      // Watch for new sheets
+      new MutationObserver(function(ms){
+        ms.forEach(function(m){
+          m.addedNodes.forEach(function(node){
+            if(!(node instanceof HTMLElement))return;
+            if(node.id==='mkt-sheet'){
+              node.onclick=function(e){if(e.target===node)node.remove();};
+              setTimeout(function(){
+                var inner=node.querySelector('#mkt-sheet-inner');
+                if(inner)addX(inner,function(){node.remove();});
+              },60);
+            }
+          });
+        });
+      }).observe(document.body,{childList:true,subtree:false});
+
     })();
     </script>
   </div>
