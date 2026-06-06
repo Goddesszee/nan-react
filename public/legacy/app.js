@@ -1793,9 +1793,25 @@ function setSendTab(tab){
 }
 function _setSendTabOrig(tab){
   document.getElementById('tab-send').style.display=tab==='send'?'block':'none';
-  document.getElementById('tab-recv').style.display=tab==='receive'?'block':'none';
+  const recvEl=document.getElementById('tab-recv');
+  recvEl.style.display=tab==='receive'?'flex':'none';
+  recvEl.style.flexDirection='column';
+  recvEl.style.alignItems='center';
   document.getElementById('tab-send-btn').classList.toggle('active',tab==='send');
   document.getElementById('tab-recv-btn').classList.toggle('active',tab==='receive');
+  // Re-render QR when switching to receive — must be visible for QRCode lib to size correctly
+  if(tab==='receive'&&userAddr){
+    const box=document.getElementById('qrBox');
+    if(box){
+      box.innerHTML='';
+      try{new QRCode(box,{text:userAddr,width:160,height:160,colorDark:'#111111',colorLight:'#ffffff'});}
+      catch(e){box.innerHTML='<p style="padding:10px;font-size:.7rem;color:#888">QR unavailable</p>';}
+    }
+    document.getElementById('recvAddr').textContent=userAddr||'Connect wallet';
+    // Also update .arc name display
+    const arcEl=document.getElementById('recvArcName');
+    if(arcEl&&arcNames&&arcNames.length>0){arcEl.textContent=arcNames[0].name||'Not registered yet';}
+  }
 }
 
 // ═══════════════════════════════════════════
