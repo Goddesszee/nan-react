@@ -2656,21 +2656,64 @@ function pickBank(name){
         </div>
       </div>
       <div style="background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:10px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-          <div style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:var(--text);letter-spacing:.12em;text-transform:uppercase;">NANSwap Pool Liquidity</div>
-          <button onclick="adminSeedPool()" id="adminSeedBtn" style="background:#7000ff;border:none;border-radius:8px;color:#f0f0f0;padding:6px 14px;font-size:.875rem;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;">Seed Pool</button> <button onclick="adminWithdrawPool()" id="adminWithdrawBtn" style="background:rgba(248,113,113,.15);border:1px solid rgba(248,113,113,.4);border-radius:8px;color:#f87171;padding:6px 14px;font-size:.875rem;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;">Withdraw All</button>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+        <div style="font-family:'Inter',sans-serif;font-size:1rem;color:var(--text);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;font-weight:700;">NANSwap Pool</div>
+
+        <!-- Pool balances -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
           <div style="background:rgba(112,0,255,.06);border:1px solid rgba(112,0,255,.18);border-radius:12px;padding:12px;">
-            <div style="font-size:1rem;color:var(--text);margin-bottom:4px;">USDC in Pool</div>
-            <div id="adminPoolUSDC" style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1.1rem;font-weight:700;color:#7000ff;">—</div>
+            <div style="font-size:.72rem;color:var(--text3);margin-bottom:4px;letter-spacing:.08em;text-transform:uppercase;">USDC in Pool</div>
+            <div id="adminPoolUSDC" style="font-size:1.1rem;font-weight:700;color:#7000ff;font-family:'Inter',sans-serif;">—</div>
           </div>
           <div style="background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.18);border-radius:12px;padding:12px;">
-            <div style="font-size:1rem;color:var(--text);margin-bottom:4px;">EURC in Pool</div>
-            <div id="adminPoolEURC" style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1.1rem;font-weight:700;color:#c084fc;">—</div>
+            <div style="font-size:.72rem;color:var(--text3);margin-bottom:4px;letter-spacing:.08em;text-transform:uppercase;">EURC in Pool</div>
+            <div id="adminPoolEURC" style="font-size:1.1rem;font-weight:700;color:#c084fc;font-family:'Inter',sans-serif;">—</div>
           </div>
         </div>
-        <div id="adminSeedStatus" style="font-size:.875rem;color:var(--text);"></div>
+
+        <!-- Token selector -->
+        <div style="font-size:.72rem;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">Add liquidity</div>
+        <div style="display:flex;gap:6px;margin-bottom:12px;">
+          <button id="adminLiqOptBoth" onclick="setAdminLiqToken('both',this)"
+            style="flex:1;padding:9px;border-radius:10px;border:1.5px solid rgba(112,0,255,.5);background:rgba(112,0,255,.1);color:var(--text);font-family:'Inter',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;">
+            Both
+          </button>
+          <button id="adminLiqOptUSDC" onclick="setAdminLiqToken('usdc',this)"
+            style="flex:1;padding:9px;border-radius:10px;border:1.5px solid var(--border);background:none;color:var(--text2);font-family:'Inter',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;">
+            USDC only
+          </button>
+          <button id="adminLiqOptEURC" onclick="setAdminLiqToken('eurc',this)"
+            style="flex:1;padding:9px;border-radius:10px;border:1.5px solid var(--border);background:none;color:var(--text2);font-family:'Inter',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;">
+            EURC only
+          </button>
+        </div>
+
+        <!-- Amount inputs — shown/hidden based on selection -->
+        <div style="display:flex;gap:8px;margin-bottom:10px;">
+          <div id="adminUsdcAmtWrap" style="flex:1;">
+            <div style="font-size:.68rem;color:var(--text3);margin-bottom:4px;">USDC amount</div>
+            <input id="adminSeedUSDC" type="number" min="1" step="1" placeholder="e.g. 200"
+              style="width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:9px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:16px;outline:none;"/>
+          </div>
+          <div id="adminEurcAmtWrap" style="flex:1;">
+            <div style="font-size:.68rem;color:var(--text3);margin-bottom:4px;">EURC amount</div>
+            <input id="adminSeedEURC" type="number" min="1" step="1" placeholder="e.g. 200"
+              style="width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:9px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:16px;outline:none;"/>
+          </div>
+        </div>
+
+        <!-- Action buttons -->
+        <div style="display:flex;gap:8px;margin-bottom:10px;">
+          <button onclick="adminSeedPool()" id="adminSeedBtn"
+            style="flex:1;background:#7000ff;border:none;border-radius:10px;color:#fff;padding:10px;font-size:.875rem;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;">
+            ＋ Add Liquidity
+          </button>
+          <button onclick="adminWithdrawPool()" id="adminWithdrawBtn"
+            style="flex:1;background:rgba(248,113,113,.1);border:1.5px solid rgba(248,113,113,.25);border-radius:10px;color:#f87171;padding:10px;font-size:.875rem;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;">
+            Withdraw
+          </button>
+        </div>
+
+        <div id="adminSeedStatus" style="font-size:.82rem;color:var(--text);min-height:18px;"></div>
       </div>
       <div style="background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:10px;">
         <div style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:var(--text);letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px;">NANLendingPool</div>
