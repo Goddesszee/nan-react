@@ -41,6 +41,7 @@ function goPage(name) {
     'payreq-view': 'page-payreq-view',
     'pay-now':  'page-pay-now',
     multichain: 'page-multichain',
+    market:     'page-market',
   };
 
   const navMap = {
@@ -58,6 +59,7 @@ function goPage(name) {
     payreq:     'nav-more',
     'payreq-new': 'nav-more',
     multichain:  'nav-more',
+    market:      'nav-market',
   };
 
   const pageId = pageMap[name] || ('page-' + name);
@@ -234,3 +236,4 @@ function updateTopbarPageInfo(page) {
     pillEl.style.cssText = 'display:inline-block;background:rgba(112,0,255,.06);border:1px solid rgba(112,0,255,.15);color:#7000ff;font-family:"JetBrains Mono",monospace;font-size:.58rem;padding:3px 9px;border-radius:100px;';
   }
 }
+
