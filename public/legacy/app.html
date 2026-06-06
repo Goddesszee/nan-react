@@ -215,7 +215,7 @@ html,body{background:var(--bg);}
       <button onclick="goPage('home')" id="tnav-home" class="tnav-btn">Home</button>
       <button onclick="goPage('market')" id="tnav-market" class="tnav-btn">Market</button>
       <button id="tnav-trade-btn" class="tnav-btn" onclick="nanToggleDd('trade',this)">Trade <span class="nan-caret" style="font-size:10px;margin-left:3px;display:inline-block;transition:transform .2s;">&#9660;</span></button>
-      <button id="tnav-more" class="tnav-btn" onclick="nanToggleDd('more',this)">More <span class="nan-caret" style="font-size:10px;margin-left:3px;display:inline-block;transition:transform .2s;">&#9660;</span></button>
+      
       <button id="tnav-ai" style="display:none;align-items:center;gap:5px;background:rgba(109,40,217,.15);border:1px solid rgba(109,40,217,.3);border-radius:100px;padding:6px 12px;font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;color:#c084fc;cursor:pointer;white-space:nowrap;">✦ AI</button>
     </div>
     </div>
@@ -226,7 +226,8 @@ html,body{background:var(--bg);}
       <!-- Net pill: shows "Arc Testnet" on desktop, "Arc" on mobile via CSS -->
       <div class="net-pill" id="netPill"><span class="net-pill-full"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:4px;display:inline-block;flex-shrink:0;border-radius:3px;background:#0d1b2e;padding:1px;"><path fill="url(#arc_logo)" d="M3.5 20.999c.146-4.407.893-8.519 2.142-11.717C7.223 5.231 9.513 3 12.088 3s4.865 2.231 6.447 6.283c.822 2.107 1.427 4.61 1.786 7.334q.048.366.087.737.015.024.013.041s.21 1.317.256 3.604h-.024c-.313-.256-4-3.153-10.112-2.314.093-1.035.22-2.04.383-3.005l.027-.146a24.5 24.5 0 0 1 6.104.57q-.007-.056-.017-.115c-.33-2.06-.819-3.945-1.448-5.556-1.029-2.635-2.371-4.271-3.502-4.271-1.132 0-2.474 1.636-3.503 4.271q-.375.958-.679 2.034a30 30 0 0 0-.718 3.213A40 40 0 0 0 6.662 21H3.5z"/><defs><linearGradient id="arc_logo" x1="12" x2="12" y1="3" y2="21" gradientUnits="userSpaceOnUse"><stop stop-color="#d0d8e8"/><stop offset="1" stop-color="#7a8faa"/></linearGradient></defs></svg>Testnet</span><span class="net-pill-short" style="display:none;">Arc</span></div>
       <!-- Faucet: text pill on desktop, icon button on mobile -->
-      <button id="navFaucetBtn" onclick="claimFaucet(this)" style="display:none;" class="tb-icon-btn tb-faucet" title="Get free USDC tokens">
+      <button id="nan-history-btn" onclick="goPage('history')" title="History" style="background:transparent;border:1px solid var(--border);border-radius:100px;width:34px;height:34px;display:none;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);flex-shrink:0;transition:all .2s;" onmouseover="this.style.borderColor='rgba(168,85,247,.4)';this.style.color='#a855f7'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text2)'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></button>
+      <button id="navFaucetBtn" onclick="nanToggleFaucet(this)" style="display:none;" class="tb-icon-btn tb-faucet" title="Get free USDC tokens">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6M5 12a7 7 0 0 0 14 0"/><path d="M12 22v-4"/><path d="M9 19h6"/></svg>
         <span class="tb-btn-text">Faucet</span>
       </button>
@@ -2706,61 +2707,106 @@ function startQRScan() {
     <div><div style="font-size:1rem;font-weight:700;color:var(--text);">Earn</div><div style="font-size:.75rem;color:var(--text3);">4.80% APY · No lockup</div></div>
   </div>
 </div>
-<div id="nan-more-dd" style="position:fixed;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:8px;min-width:210px;z-index:999999;display:none;">
-  <div class="nan-dd-item" onclick="goPage('history');nanCloseDds()">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-    <span style="font-size:1rem;font-weight:700;color:var(--text);">History</span>
-  </div>
-  <div class="nan-dd-item" onclick="goPage('naira');nanCloseDds()">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-    <span style="font-size:1rem;font-weight:700;color:var(--text);">Naira — NGN</span>
-  </div>
-  <div class="nan-dd-item" onclick="goPage('arcname');nanCloseDds()">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><path d="M8.56 2.75c4.37 6.03 6.02 9.42 8.03 17.72m2.54-15.38c-3.72 4.35-8.94 5.66-16.88 5.85m19.5 1.9c-3.5-.93-6.63-.82-8.94 0-2.58.92-5.01 2.86-7.44 6.32"/></svg>
-    <span style="font-size:1rem;font-weight:700;color:var(--text);">.arc Name</span>
-  </div>
-</div>
+
 <style>
 .nan-dd-item{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;cursor:pointer;transition:background .15s;}
 .nan-dd-item:hover{background:rgba(112,0,255,.08);}
 </style>
 <script>
 (function(){
-  function showArcBadge(){
-    var b=document.getElementById('nan-arc-topbadge');
-    if(b) b.style.display='inline-flex';
+  function showTopbarBtns(){
+    var arc=document.getElementById('nan-arc-topbadge');
+    var hist=document.getElementById('nan-history-btn');
+    if(arc) arc.style.display='inline-flex';
+    if(hist) hist.style.display='flex';
   }
-  document.addEventListener('walletConnected',showArcBadge);
-  document.addEventListener('balanceUpdated',showArcBadge);
-  setTimeout(function(){ if(window.userAddr) showArcBadge(); },1500);
+  document.addEventListener('walletConnected',showTopbarBtns);
+  document.addEventListener('balanceUpdated',showTopbarBtns);
+  setTimeout(function(){ if(window.userAddr) showTopbarBtns(); },1500);
 })();
 </script>
 <script>
 function nanToggleDd(name,btn){
   var dd=document.getElementById('nan-'+name+'-dd');
-  var other=document.getElementById(name==='trade'?'nan-more-dd':'nan-trade-dd');
+  if(!dd) return;
   var rect=btn.getBoundingClientRect();
   var open=dd.style.display!=='block';
   dd.style.display=open?'block':'none';
   dd.style.top=(rect.bottom+4)+'px';
   dd.style.left=rect.left+'px';
-  other.style.display='none';
   btn.querySelectorAll('.nan-caret').forEach(function(c){c.style.transform=open?'rotate(180deg)':''});
 }
 function nanCloseDds(){
-  ['nan-trade-dd','nan-more-dd'].forEach(function(id){document.getElementById(id).style.display='none';});
+  ['nan-trade-dd','nan-faucet-dd'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
   document.querySelectorAll('.nan-caret').forEach(function(c){c.style.transform='';});
 }
 document.addEventListener('click',function(e){
-  ['trade','more'].forEach(function(n){
-    var dd=document.getElementById('nan-'+n+'-dd');
-    var btn=document.getElementById(n==='trade'?'tnav-trade-btn':'tnav-more');
+  ['nan-trade-dd','nan-faucet-dd'].forEach(function(id){
+    var dd=document.getElementById(id);
+    var btnId=id==='nan-trade-dd'?'tnav-trade-btn':'navFaucetBtn';
+    var btn=document.getElementById(btnId);
     if(dd&&btn&&!dd.contains(e.target)&&!btn.contains(e.target)){
       dd.style.display='none';
-      btn.querySelectorAll('.nan-caret').forEach(function(c){c.style.transform='';});
+      if(btn.querySelector) btn.querySelectorAll('.nan-caret').forEach(function(c){c.style.transform='';});
     }
   });
 });
+</script>
+
+<!-- Faucet Dropdown -->
+<div id="nan-faucet-dd" style="position:fixed;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:8px;min-width:240px;z-index:999999;display:none;">
+  <div style="font-size:.78rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text2);padding:6px 12px 8px;">Faucets</div>
+  <a href="https://faucet.arc.fun" target="_blank" class="nan-dd-item" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;color:var(--text);font-size:1rem;font-weight:700;font-family:Inter,sans-serif;text-decoration:none;transition:background .15s;" onmouseover="this.style.background='rgba(112,0,255,.08)'" onmouseout="this.style.background='transparent'">
+    <div style="width:28px;height:28px;border-radius:50%;background:#0d1b2e;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:3px;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"><path fill="url(#arc_f)" d="M3.5 20.999c.146-4.407.893-8.519 2.142-11.717C7.223 5.231 9.513 3 12.088 3s4.865 2.231 6.447 6.283c.822 2.107 1.427 4.61 1.786 7.334q.048.366.087.737.015.024.013.041s.21 1.317.256 3.604h-.024c-.313-.256-4-3.153-10.112-2.314.093-1.035.22-2.04.383-3.005l.027-.146a24.5 24.5 0 0 1 6.104.57q-.007-.056-.017-.115c-.33-2.06-.819-3.945-1.448-5.556-1.029-2.635-2.371-4.271-3.502-4.271-1.132 0-2.474 1.636-3.503 4.271q-.375.958-.679 2.034a30 30 0 0 0-.718 3.213A40 40 0 0 0 6.662 21H3.5z"/><defs><linearGradient id="arc_f" x1="12" x2="12" y1="3" y2="21" gradientUnits="userSpaceOnUse"><stop stop-color="#d0d8e8"/><stop offset="1" stop-color="#7a8faa"/></linearGradient></defs></svg></div>
+    <div><div>Arc Testnet</div><div style="font-size:.78rem;color:var(--text3);margin-top:1px;">faucet.arc.fun</div></div>
+  </a>
+  <a href="https://sepoliafaucet.com" target="_blank" class="nan-dd-item" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;color:var(--text);font-size:1rem;font-weight:700;font-family:Inter,sans-serif;text-decoration:none;transition:background .15s;" onmouseover="this.style.background='rgba(112,0,255,.08)'" onmouseout="this.style.background='transparent'">
+    <img src="https://cryptologos.cc/logos/ethereum-eth-logo.png" width="28" height="28" style="border-radius:50%;flex-shrink:0;background:#fff;padding:2px;" onerror="this.style.display='none'"/>
+    <div><div>ETH Sepolia</div><div style="font-size:.78rem;color:var(--text3);margin-top:1px;">sepoliafaucet.com</div></div>
+  </a>
+  <a href="https://faucet.quicknode.com/base/sepolia" target="_blank" class="nan-dd-item" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;color:var(--text);font-size:1rem;font-weight:700;font-family:Inter,sans-serif;text-decoration:none;transition:background .15s;" onmouseover="this.style.background='rgba(112,0,255,.08)'" onmouseout="this.style.background='transparent'">
+    <img src="https://avatars.githubusercontent.com/u/108554348" width="28" height="28" style="border-radius:50%;flex-shrink:0;" onerror="this.style.display='none'"/>
+    <div><div>Base Sepolia</div><div style="font-size:.78rem;color:var(--text3);margin-top:1px;">quicknode.com</div></div>
+  </a>
+  <a href="https://faucet.quicknode.com/arbitrum/sepolia" target="_blank" class="nan-dd-item" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;color:var(--text);font-size:1rem;font-weight:700;font-family:Inter,sans-serif;text-decoration:none;transition:background .15s;" onmouseover="this.style.background='rgba(112,0,255,.08)'" onmouseout="this.style.background='transparent'">
+    <img src="https://cryptologos.cc/logos/arbitrum-arb-logo.png" width="28" height="28" style="border-radius:50%;flex-shrink:0;" onerror="this.style.display='none'"/>
+    <div><div>Arbitrum Sepolia</div><div style="font-size:.78rem;color:var(--text3);margin-top:1px;">quicknode.com</div></div>
+  </a>
+  <a href="https://faucet.quicknode.com/optimism/sepolia" target="_blank" class="nan-dd-item" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;color:var(--text);font-size:1rem;font-weight:700;font-family:Inter,sans-serif;text-decoration:none;transition:background .15s;" onmouseover="this.style.background='rgba(112,0,255,.08)'" onmouseout="this.style.background='transparent'">
+    <img src="https://cryptologos.cc/logos/optimism-ethereum-op-logo.png" width="28" height="28" style="border-radius:50%;flex-shrink:0;" onerror="this.style.display='none'"/>
+    <div><div>Optimism Sepolia</div><div style="font-size:.78rem;color:var(--text3);margin-top:1px;">quicknode.com</div></div>
+  </a>
+  <a href="https://faucet.avax.network" target="_blank" class="nan-dd-item" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;color:var(--text);font-size:1rem;font-weight:700;font-family:Inter,sans-serif;text-decoration:none;transition:background .15s;" onmouseover="this.style.background='rgba(112,0,255,.08)'" onmouseout="this.style.background='transparent'">
+    <img src="https://cryptologos.cc/logos/avalanche-avax-logo.png" width="28" height="28" style="border-radius:50%;flex-shrink:0;" onerror="this.style.display='none'"/>
+    <div><div>Avalanche Fuji</div><div style="font-size:.78rem;color:var(--text3);margin-top:1px;">faucet.avax.network</div></div>
+  </a>
+</div>
+<script>
+// Faucet dropdown toggle
+function nanToggleFaucet(btn){
+  var dd=document.getElementById('nan-faucet-dd');
+  var tradeDd=document.getElementById('nan-trade-dd');
+  var rect=btn.getBoundingClientRect();
+  var open=dd.style.display!=='block';
+  dd.style.display=open?'block':'none';
+  dd.style.top=(rect.bottom+4)+'px';
+  dd.style.left=rect.left+'px';
+  if(tradeDd) tradeDd.style.display='none';
+}
+
+// Patch openBankPicker to centre on desktop
+(function(){
+  var _orig = window.openBankPicker;
+  if(!_orig) return;
+  window.openBankPicker = function(){
+    _orig.apply(this, arguments);
+    if(window.innerWidth < 769) return;
+    var sheet = document.getElementById('bankPickerSheet');
+    if(sheet){
+      sheet.style.cssText = 'display:flex !important;flex-direction:column !important;position:fixed !important;top:50% !important;left:50% !important;right:auto !important;bottom:auto !important;transform:translate(-50%,-50%) !important;width:380px !important;max-width:380px !important;height:auto !important;max-height:60vh !important;background:var(--bg) !important;border:1px solid var(--border2) !important;border-radius:24px !important;z-index:2147483647 !important;overflow:hidden !important;box-shadow:0 24px 64px rgba(0,0,0,.6) !important;padding:0 !important;margin:0 !important;';
+    }
+  };
+})();
 </script>
 </body>
 
