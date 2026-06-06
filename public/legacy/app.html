@@ -215,7 +215,7 @@ html,body{background:var(--bg);}
       <button onclick="goPage('home')" id="tnav-home" class="tnav-btn">Home</button>
       <button onclick="goPage('market')" id="tnav-market" class="tnav-btn">Market</button>
       <button id="tnav-trade-btn" class="tnav-btn" onclick="nanToggleDd('trade',this)">Trade <span class="nan-caret" style="font-size:10px;margin-left:3px;display:inline-block;transition:transform .2s;">&#9660;</span></button>
-      <button id="tnav-more" class="tnav-btn" onclick="nanToggleDd('more',this)">More <span class="nan-caret" style="font-size:10px;margin-left:3px;display:inline-block;transition:transform .2s;">&#9660;</span></button>
+      
       <button id="tnav-ai" style="display:none;align-items:center;gap:5px;background:rgba(109,40,217,.15);border:1px solid rgba(109,40,217,.3);border-radius:100px;padding:6px 12px;font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;color:#c084fc;cursor:pointer;white-space:nowrap;">✦ AI</button>
     </div>
     </div>
@@ -2706,12 +2706,7 @@ function startQRScan() {
     <div><div style="font-size:1rem;font-weight:700;color:var(--text);">Earn</div><div style="font-size:.75rem;color:var(--text3);">4.80% APY · No lockup</div></div>
   </div>
 </div>
-<div id="nan-more-dd" style="position:fixed;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:8px;min-width:210px;z-index:999999;display:none;">
-  <div class="nan-dd-item" onclick="goPage('history');nanCloseDds()">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-    <span style="font-size:1rem;font-weight:700;color:var(--text);">History</span>
-  </div>
-  <div class="nan-dd-item" onclick="goPage('naira');nanCloseDds()">
+<div class="nan-dd-item" onclick="goPage('naira');nanCloseDds()">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
     <span style="font-size:1rem;font-weight:700;color:var(--text);">Naira — NGN</span>
   </div>
