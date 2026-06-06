@@ -2210,7 +2210,7 @@ async function doBridge(){
     await refreshBalances();
   }catch(err){
     toast((err?.info?.error?.message||err?.reason||err?.message||'Bridge failed').slice(0,140),'error',8000);
-  }finally{btn.innerHTML='Bridge USDC via CCTP';btn.disabled=false;_bridging=false;}
+  }finally{btn.innerHTML='Bridge USDC via CCTP';btn.disabled=false;_bridging=false;checkNetwork();}
 }
 
 async function pollIrisAttestation(txHash, destChain) {
@@ -2303,6 +2303,8 @@ async function pollIrisAttestation(txHash, destChain) {
         toast('Unknown destination chain: ' + destChain, 'error', 6000);
         return;
       }
+
+      _bridging = true; // suppress wrong-network banner during mint phase
 
       const mintEl = document.getElementById('mintStatus');
       if (mintEl) { mintEl.style.display = 'block'; mintEl.textContent = '⏳ Switching wallet to ' + destConfig.chainName + '…'; }
