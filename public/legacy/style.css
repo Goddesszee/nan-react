@@ -3707,21 +3707,29 @@ input[style*="background: none"] {
    NOTIFICATION PANEL — VISIBILITY + BACKDROP FIXES
    ══════════════════════════════════════════════════════════════════════════════ */
 
-/* Dark backdrop behind panel on mobile so content underneath doesn't bleed through */
-#nanNotifPanel::before {
-  content: '';
+/* ── Backdrop ── */
+#nanNotifBackdrop {
+  display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.0);
-  z-index: -1;
-  pointer-events: none;
+  background: rgba(0,0,0,.6) !important;
+  z-index: 10998 !important;
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+#nanNotifBackdrop.open {
+  display: block !important;
 }
 
-/* Panel itself — stronger shadow, ensure it sits above everything */
+/* Panel itself */
 #nanNotifPanel {
-  box-shadow: 0 12px 48px rgba(0,0,0,.5), 0 2px 8px rgba(0,0,0,.3) !important;
-  z-index: 10000 !important;
-  border: 1.5px solid rgba(112,0,255,.3) !important;
+  box-shadow: 0 16px 48px rgba(0,0,0,.6), 0 2px 8px rgba(0,0,0,.4) !important;
+  z-index: 10999 !important;
+  border: 1.5px solid rgba(112,0,255,.35) !important;
+  background: #0f102a !important;
+}
+#nanNotifPanel.open {
+  display: flex !important;
 }
 
 /* Light mode panel — needs dark enough background to be readable */
@@ -3763,7 +3771,7 @@ input[style*="background: none"] {
   color: #444444 !important;
 }
 
-/* Mobile: make panel full-width slide down instead of floating corner popover */
+/* Mobile: full-width panel from topbar */
 @media (max-width: 768px) {
   #nanNotifPanel {
     right: 0 !important;
@@ -3771,10 +3779,10 @@ input[style*="background: none"] {
     top: 57px !important;
     width: 100% !important;
     max-width: 100% !important;
-    max-height: 70vh !important;
-    border-radius: 0 0 18px 18px !important;
-    border-left: none !important;
-    border-right: none !important;
+    max-height: 72vh !important;
+    border-radius: 0 0 20px 20px !important;
+    border-left: 1.5px solid rgba(112,0,255,.35) !important;
+    border-right: 1.5px solid rgba(112,0,255,.35) !important;
     border-top: none !important;
   }
 }
