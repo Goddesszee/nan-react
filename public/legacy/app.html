@@ -2151,41 +2151,99 @@ html,body{background:var(--bg);}
   </div>
 
 <!-- ══ PAYMENT REQUEST VIEW PAGE ══ -->
-  <div class="page" id="page-payreq-view" style="flex-direction:column;">
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
-      <button onclick="goPage('payreq')" style="width:32px;height:32px;border-radius:9px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">←</button>
-      <div>
-        <div class="page-title" style="margin-bottom:0;" id="prViewTitle">Request</div>
-        <div style="font-size:1rem;font-weight:600;" id="prViewStatus">⏳ Pending</div>
-      </div>
-    </div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:14px;text-align:center;">
-      <div style="font-size:2rem;font-weight:800;color:var(--text);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;margin-bottom:6px;" id="prViewAmt">—</div>
-      <div style="font-size:1rem;font-weight:600;color:var(--text);" id="prViewLabel2">—</div>
-    </div>
-    <div class="card" style="margin-bottom:12px;">
-      <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="font-size:1rem;color:var(--text);">Your address</span><span style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:var(--text);" id="prViewFrom">—</span></div>
-      <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="font-size:1rem;color:var(--text);">Created</span><span style="font-size:1rem;color:var(--text);" id="prViewDate">—</span></div>
-      <div style="display:flex;justify-content:space-between;margin-bottom:8px;" id="prViewNoteRow"><span style="font-size:1rem;color:var(--text);">Note</span><span style="font-size:1rem;color:var(--text);" id="prViewNote">—</span></div>
-      <div style="display:flex;justify-content:space-between;"><span style="font-size:1rem;color:var(--text);">Expires</span><span style="font-size:1rem;color:var(--text);" id="prViewExpiry">Never</span></div>
-    </div>
-    <div class="card" style="margin-bottom:12px;">
-      <div style="font-size:.875rem;color:var(--text);margin-bottom:8px;font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;">SHAREABLE LINK</div>
-      <!-- Hidden input used for mobile-safe select+copy -->
-      <input id="prViewLinkInput" readonly style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;" type="text"/>
-      <div style="font-size:.78rem;color:var(--text);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;word-break:break-all;margin-bottom:10px;padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:8px;" id="prViewLink"></div>
-      <div style="display:flex;gap:8px;margin-bottom:10px;">
-        <button id="prCopyBtn" onclick="copyPRLink()" style="flex:1;padding:10px;background:#7000ff;border:none;border-radius:10px;color:#f3e8ff;font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;">📋 Copy Link</button>
-        <button onclick="sharePRLink()" style="flex:1;padding:10px;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.25);border-radius:10px;color:var(--success);font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;">↗ Share</button>
-      </div>
-      <div style="display:flex;justify-content:center;" id="prViewQR"></div>
-    </div>
-    <div style="display:flex;gap:8px;">
-      <button id="prMarkPaidBtn" onclick="markPRAsPaid()" style="flex:1;padding:10px;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.25);border-radius:10px;color:var(--success);font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;cursor:pointer;">✓ Mark as Paid</button>
-      <button onclick="deletePR()" style="padding:9px 12px;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:10px;color:var(--danger);font-family:'Inter',sans-serif;font-size:.875rem;cursor:pointer;">🗑</button>
+<div class="page" id="page-payreq-view" style="display:none;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:100px;">
+
+  <!-- Back + title row -->
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-shrink:0;">
+    <button onclick="goPage('payreq')" style="width:36px;height:36px;border-radius:10px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">←</button>
+    <div style="min-width:0;">
+      <div style="font-size:1.1rem;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="prViewTitle">Request</div>
+      <div style="font-size:.85rem;font-weight:600;" id="prViewStatus">⏳ Pending</div>
     </div>
   </div>
+
+  <!-- Amount hero -->
+  <div style="background:linear-gradient(135deg,rgba(112,0,255,.12),rgba(168,85,247,.06));border:1px solid rgba(112,0,255,.25);border-radius:18px;padding:22px 16px;margin-bottom:12px;text-align:center;flex-shrink:0;">
+    <div style="font-size:2.2rem;font-weight:800;color:var(--text);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;margin-bottom:4px;line-height:1.1;" id="prViewAmt">—</div>
+    <div style="font-size:.95rem;font-weight:600;color:var(--text2);" id="prViewLabel2">—</div>
+  </div>
+
+  <!-- Details card -->
+  <div class="card" style="margin-bottom:12px;flex-shrink:0;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;gap:8px;">
+      <span style="font-size:.85rem;color:var(--text2);flex-shrink:0;">Your address</span>
+      <span style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:.82rem;color:var(--text);text-align:right;word-break:break-all;" id="prViewFrom">—</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <span style="font-size:.85rem;color:var(--text2);">Created</span>
+      <span style="font-size:.85rem;color:var(--text);" id="prViewDate">—</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;" id="prViewNoteRow">
+      <span style="font-size:.85rem;color:var(--text2);">Note</span>
+      <span style="font-size:.85rem;color:var(--text);text-align:right;" id="prViewNote">—</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:.85rem;color:var(--text2);">Expires</span>
+      <span style="font-size:.85rem;color:var(--text);" id="prViewExpiry">Never</span>
+    </div>
+  </div>
+
+  <!-- Shareable link card -->
+  <div class="card" style="margin-bottom:12px;flex-shrink:0;">
+    <div style="font-size:.72rem;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;">Shareable Link</div>
+
+    <!-- Hidden input for Android copy -->
+    <input id="prViewLinkInput" type="text" readonly
+      style="position:fixed;top:-9999px;left:0;width:90vw;font-size:16px;opacity:0;pointer-events:none;z-index:-1;"/>
+
+    <!-- Link display — tap to select all on mobile -->
+    <div id="prViewLink"
+      onclick="selectAllLinkText(this)"
+      style="font-size:.72rem;color:var(--accent3);font-family:'Inter',sans-serif;word-break:break-all;padding:10px 12px;background:rgba(112,0,255,.06);border:1px solid rgba(112,0,255,.2);border-radius:10px;margin-bottom:12px;cursor:pointer;line-height:1.5;user-select:all;-webkit-user-select:all;"></div>
+
+    <!-- Copy + Share buttons — full width, tall enough to tap easily -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+      <button id="prCopyBtn"
+        style="padding:14px 8px;background:#7000ff;border:none;border-radius:12px;color:#f3e8ff;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;"
+        ontouchstart="handleCopyTouch(event)"
+        onclick="copyPRLink()">📋 Copy Link</button>
+      <button
+        style="padding:14px 8px;background:rgba(52,211,153,.1);border:1.5px solid rgba(52,211,153,.3);border-radius:12px;color:var(--success);font-family:'Inter',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;"
+        onclick="sharePRLink()">↗ Share</button>
+    </div>
+
+    <!-- QR code -->
+    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+      <div style="font-size:.72rem;color:var(--text3);">Scan to open pay page</div>
+      <div id="prViewQR"></div>
+    </div>
+  </div>
+
+  <!-- How to pay (non-NAN users) -->
+  <div class="card" style="margin-bottom:12px;flex-shrink:0;background:rgba(112,0,255,.04);border-color:rgba(112,0,255,.18);">
+    <div style="font-size:.72rem;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;">Anyone can pay — no NAN needed</div>
+    <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;">
+      <div style="width:22px;height:22px;border-radius:50%;background:rgba(112,0,255,.2);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:#a855f7;flex-shrink:0;">1</div>
+      <div style="font-size:.82rem;color:var(--text2);">Share the link or QR code above with the payer</div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;">
+      <div style="width:22px;height:22px;border-radius:50%;background:rgba(112,0,255,.2);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:#a855f7;flex-shrink:0;">2</div>
+      <div style="font-size:.82rem;color:var(--text2);">They open the link — no account required</div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:10px;">
+      <div style="width:22px;height:22px;border-radius:50%;background:rgba(112,0,255,.2);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:#a855f7;flex-shrink:0;">3</div>
+      <div style="font-size:.82rem;color:var(--text2);">They send USDC from any wallet (MetaMask, Trust, Coinbase…) on Arc Testnet</div>
+    </div>
+  </div>
+
+  <!-- Mark paid / delete -->
+  <div style="display:flex;gap:8px;flex-shrink:0;">
+    <button id="prMarkPaidBtn" onclick="markPRAsPaid()"
+      style="flex:1;padding:13px;background:rgba(52,211,153,.1);border:1.5px solid rgba(52,211,153,.3);border-radius:12px;color:var(--success);font-family:'Inter',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;">✓ Mark as Paid</button>
+    <button onclick="deletePR()"
+      style="padding:12px 16px;background:rgba(248,113,113,.08);border:1.5px solid rgba(248,113,113,.2);border-radius:12px;color:var(--danger);font-family:'Inter',sans-serif;font-size:.9rem;cursor:pointer;">🗑</button>
+  </div>
+
 </div>
 
 <!-- ══ NEW PAYMENT REQUEST PAGE ══ -->
