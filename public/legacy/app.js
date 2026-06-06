@@ -4958,49 +4958,70 @@ function renderPaymentRequests(){
     return `<div onclick="viewPaymentRequest('${pr.id}')" style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--border);cursor:pointer;" onmouseover="this.style.background='rgba(168,85,247,.04)'" onmouseout="this.style.background=''"><div style="display:flex;align-items:center;gap:10px;"><div style="width:36px;height:36px;border-radius:10px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">🧾</div><div><div style="font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:2px;">${pr.label}</div><div style="font-size:.72rem;color:var(--text3);">${new Date(pr.createdAt).toLocaleDateString()}</div></div></div><div style="text-align:right;"><div style="font-size:.88rem;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace;">${amtText}</div><div style="font-size:.68rem;font-weight:600;color:${statusColor};">${statusLabel}</div></div></div>`;
   }).join('');
 }
+function selectAllLinkText(el){
+  // Tap the link text to select all on mobile so user can manually copy if needed
+  try{
+    const range=document.createRange();
+    range.selectNodeContents(el);
+    const sel=window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }catch(e){}
+}
+
+function handleCopyTouch(e){
+  // ontouchstart fires synchronously inside gesture — most reliable on Android
+  e.preventDefault();
+  const link=document.getElementById('prViewLink').textContent.trim();
+  if(!link)return;
+  _doCopy(link, ()=>{
+    const btn=document.getElementById('prCopyBtn');
+    if(btn){const orig=btn.innerHTML;btn.innerHTML='✓ Copied!';setTimeout(()=>btn.innerHTML=orig,2000);}
+    toast('✓ Link copied!','success',2000);
+  });
+}
+
 function copyPRLink(){
   const link=document.getElementById('prViewLink').textContent.trim();
   if(!link)return;
-  // Use hidden input already in the DOM — most reliable on Android Chrome
-  const inp=document.getElementById('prViewLinkInput');
-  if(inp){
-    inp.value=link;
-    inp.style.cssText='position:fixed;top:50%;left:0;width:100%;opacity:0;font-size:16px;';
-    inp.removeAttribute('disabled');
-    inp.focus();
-    inp.select();
-    inp.setSelectionRange(0,link.length);
-    let ok=false;
-    try{ok=document.execCommand('copy');}catch(e){}
-    inp.style.cssText='position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;';
-    if(ok){toast('✓ Link copied!','success',2000);return;}
-  }
-  // Fallback: clipboard API (desktop / iOS 13.4+)
-  if(navigator.clipboard&&window.isSecureContext){
-    navigator.clipboard.writeText(link).then(()=>toast('✓ Link copied!','success',2000)).catch(()=>_execCopy(link));
-  }else{
-    _execCopy(link);
-  }
+  _doCopy(link, ()=>{
+    const btn=document.getElementById('prCopyBtn');
+    if(btn){const orig=btn.innerHTML;btn.innerHTML='✓ Copied!';setTimeout(()=>btn.innerHTML=orig,2000);}
+    toast('✓ Link copied!','success',2000);
+  });
 }
-function _mobileCopy(text,onSuccess){
+
+function _doCopy(text, onDone){
+  // Strategy 1: use the fixed hidden input (Android Chrome execCommand)
   const inp=document.getElementById('prViewLinkInput');
   if(inp){
     inp.value=text;
-    inp.style.cssText='position:fixed;top:50%;left:0;width:100%;opacity:0;font-size:16px;';
+    inp.style.cssText='position:fixed;top:40%;left:5%;width:90%;font-size:16px;opacity:0.01;z-index:99999;pointer-events:none;';
     inp.removeAttribute('disabled');
-    inp.focus();inp.select();inp.setSelectionRange(0,text.length);
-    let ok=false;try{ok=document.execCommand('copy');}catch(e){}
-    inp.style.cssText='position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;';
-    if(ok){if(onSuccess)onSuccess();return;}
+    inp.focus();
+    inp.select();
+    inp.setSelectionRange(0,text.length);
+    let ok=false;
+    try{ok=document.execCommand('copy');}catch(e){}
+    inp.style.cssText='position:fixed;top:-9999px;left:0;width:90vw;font-size:16px;opacity:0;pointer-events:none;z-index:-1;';
+    if(ok){if(onDone)onDone();return;}
   }
+  // Strategy 2: Clipboard API (iOS Safari 13.4+, desktop Chrome)
   if(navigator.clipboard&&window.isSecureContext){
-    navigator.clipboard.writeText(text).then(()=>{if(onSuccess)onSuccess();}).catch(()=>_execCopy(text,onSuccess));
-  }else{_execCopy(text,onSuccess);}
+    navigator.clipboard.writeText(text).then(()=>{if(onDone)onDone();}).catch(()=>_execCopy(text,onDone));
+  }else{
+    _execCopy(text,onDone);
+  }
 }
+
+function _mobileCopy(text,onSuccess){
+  _doCopy(text,onSuccess);
+}
+
 function _execCopy(text,cb){
   const ta=document.createElement('textarea');
   ta.value=text;
-  ta.style.cssText='position:fixed;top:50%;left:0;width:100%;opacity:0;font-size:16px;';
+  ta.style.cssText='position:fixed;top:40%;left:5%;width:90%;opacity:0.01;font-size:16px;z-index:99999;';
   document.body.appendChild(ta);
   ta.focus();ta.select();ta.setSelectionRange(0,text.length);
   try{document.execCommand('copy');}catch(e){}
