@@ -1347,46 +1347,86 @@ function setType(type,el){
   if(type==='arcname')inp.placeholder='yourname.arc';
   validateSend();
 }
-async function onRecipInput(){
-  const val=document.getElementById('recipInput').value.trim();
-  // Auto-detect type from input
-  if(val.startsWith('0x')) recipType='address';
-  else if(val.endsWith('.arc')||(!val.includes('.')&&val.length>0&&!val.includes('@'))) recipType='arcname';
-  if(val!==lastResolvedInput){resolvedTo=null;lastResolvedInput='';}
+async // Debounce timer for arc name lookup
+let _arcLookupTimer = null;
+
+function onRecipInput(){
+  const val = document.getElementById('recipInput').value.trim();
+
+  // Auto-detect type
+  if(val.startsWith('0x'))         recipType = 'address';
+  else if(val.endsWith('.arc') ||
+    (!val.includes('.') && val.length > 0 && !val.includes('@')))
+                                   recipType = 'arcname';
+
+  if(val !== lastResolvedInput){ resolvedTo = null; lastResolvedInput = ''; }
   hideRes();
-  if(!val){validateSend();return;}
-  if(recipType==='address'){
-    if(val.length===42&&val.startsWith('0x')){
-      if(ethers.isAddress(val)){resolvedTo=val;lastResolvedInput=val;showOk('✓ Valid address');}
-      else showNo('Invalid address checksum');
-    }else if(val.startsWith('0x')&&val.length>2)showNo('Address must be 42 chars');
-  }else if(recipType==='arcname'){
-    const name=val.toLowerCase().replace('.arc','');
-    // Check local first (fast)
-    const found=arcNames.find(n=>n.name===name);
-    if(found){
-      resolvedTo=found.owner;lastResolvedInput=val;
-      showOk('✓ '+name+'.arc → '+short(found.owner));
-    }else{
-      // Fall back to on-chain lookup
-      try{
-        const readProvider=getArcProvider();
-        const nameContract=new ethers.Contract(NAME_REGISTRY,NAME_ABI,readProvider);
-        const addr=await nameContract.resolve(name);
-        if(addr&&addr!=='0x0000000000000000000000000000000000000000'){
-          resolvedTo=addr;lastResolvedInput=val;
-          showOk('✓ '+name+'.arc → '+short(addr));
-        }else{
-          showNo('Arc name not found — register it in the Name tab');
-        }
-      }catch(e){
-        showNo('Arc name not found — register it in the Name tab');
+  if(!val){ validateSend(); return; }
+
+  // Address — validate instantly, no RPC needed
+  if(recipType === 'address'){
+    if(val.length === 42 && val.startsWith('0x')){
+      if(ethers.isAddress(val)){
+        resolvedTo = val; lastResolvedInput = val;
+        showOk('✓ Valid address');
+      } else {
+        showNo('Invalid address checksum');
       }
+    } else if(val.startsWith('0x') && val.length > 2){
+      showNo('Address must be 42 chars — ' + val.length + '/42');
     }
+    validateSend();
+    return;
+  }
+
+  // .arc name — check cache first, then debounce the RPC call
+  if(recipType === 'arcname'){
+    const name = val.toLowerCase().replace('.arc','');
+
+    // 1. Local cache hit — instant
+    const cached = arcNames.find(n => n.name === name);
+    if(cached){
+      resolvedTo = cached.owner; lastResolvedInput = val;
+      showOk('✓ ' + name + '.arc → ' + short(cached.owner));
+      validateSend();
+      return;
+    }
+
+    // 2. Show "searching" while waiting
+    showSearching('Searching ' + name + '.arc…');
+
+    // 3. Debounce — only fire RPC after 500ms of no typing
+    clearTimeout(_arcLookupTimer);
+    _arcLookupTimer = setTimeout(async () => {
+      const currentVal = document.getElementById('recipInput').value.trim();
+      if(currentVal !== val) return; // user kept typing — stale, abort
+      try{
+        const readProvider = getArcProvider();
+        const nameContract = new ethers.Contract(NAME_REGISTRY, NAME_ABI, readProvider);
+        const addr = await nameContract.resolve(name);
+        // Check again — user might have typed while RPC was in flight
+        const stillVal = document.getElementById('recipInput').value.trim();
+        if(stillVal !== val) return;
+        if(addr && addr !== '0x0000000000000000000000000000000000000000'){
+          resolvedTo = addr; lastResolvedInput = val;
+          // Cache result locally so next time is instant
+          if(!arcNames.find(n => n.name === name)){
+            arcNames.push({ name, owner: addr });
+          }
+          showOk('✓ ' + name + '.arc → ' + short(addr));
+        } else {
+          showNo('Arc name not found — register at arcnames.xyz');
+        }
+      } catch(e){
+        showNo('Arc name not found — register at arcnames.xyz');
+      }
+      validateSend();
+    }, 500);
   }
   validateSend();
 }
 function showOk(t){const b=document.getElementById('resolvedBar');b.className='res-bar ok';b.style.display='flex';document.getElementById('resolvedTxt').textContent=t;}
+function showSearching(t){const b=document.getElementById('resolvedBar');b.className='res-bar';b.style.display='flex';b.style.background='rgba(112,0,255,.06)';b.style.borderColor='rgba(112,0,255,.2)';document.getElementById('resolvedTxt').style.color='var(--accent3)';document.getElementById('resolvedTxt').textContent=t;}
 function showNo(t){const b=document.getElementById('resolvedBar');b.className='res-bar no';b.style.display='flex';document.getElementById('resolvedTxt').textContent=t;}
 function hideRes(){document.getElementById('resolvedBar').style.display='none';}
 function toggleSendToken(){sendToken=sendToken==='USDC'?'EURC':'USDC';document.getElementById('sendTokenLabel').textContent=sendToken;updateSendAvailable();validateSend();}
