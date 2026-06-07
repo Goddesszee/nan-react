@@ -1105,6 +1105,20 @@ function loadCachedBalances(){
   if(sk) sk.style.display = 'none';
   if(rw) rw.style.display = 'block';
 
+  // ── Load cached multichain balances ──
+  try {
+    const mcRaw = localStorage.getItem('nan_mc_cache_'+userAddr);
+    if(mcRaw) {
+      const mcCache = JSON.parse(mcRaw);
+      Object.entries(mcCache).forEach(([chainId, bal]) => {
+        const homeBal = document.getElementById('homeChainBal-'+chainId);
+        const homeSub = document.getElementById('homeChainSub-'+chainId);
+        if(homeBal) homeBal.textContent = parseFloat(bal).toFixed(2);
+        if(homeSub) homeSub.textContent = '≈ $'+parseFloat(bal).toFixed(2);
+      });
+    }
+  } catch(e) {}
+
   console.log('[cache] Painted balances instantly — USDC:'+uFmt+' EURC:'+eFmt);
 }
 
@@ -4866,6 +4880,7 @@ window.addEventListener('load',()=>{
     setInterval(async()=>{ if(userAddr){ if(!isCircleWallet)await checkNetwork(); if(onArcNetwork||isCircleWallet){await refreshBalances();} } }, 6000);
     if(userAddr){ startOrderEngine(); startIncomingPoller(); }
     if(userAddr&&!isCircleWallet&&signer&&onArcNetwork) setTimeout(ensureSwapApprovals,2000);
+    setTimeout(()=>{ if(userAddr) _mcRefreshSilent(); },4000);
     document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&userAddr)refreshBalances(); });
     return;
   }
@@ -4956,6 +4971,7 @@ window.addEventListener('load',()=>{
   },6000);
   if(userAddr){ startOrderEngine(); startIncomingPoller(); }
   if(userAddr&&!isCircleWallet&&signer&&onArcNetwork) setTimeout(ensureSwapApprovals,2000);
+  setTimeout(()=>{ if(userAddr) _mcRefreshSilent(); },4000);
   document.addEventListener('visibilitychange',()=>{
     if(!document.hidden&&userAddr)refreshBalances();
   });
@@ -5818,6 +5834,31 @@ async function mcFetchBalance(chain, address) {
   }
 }
 
+
+// Silently fetch multichain balances in background — updates home rows + cache
+async function _mcRefreshSilent() {
+  if(!userAddr) return;
+  const addr = userAddr || circleWalletAddress;
+  try {
+    const results = await Promise.all(MC_CHAINS.map(async c => {
+      const bal = await mcFetchBalance(c, addr);
+      return { chain: c, bal };
+    }));
+    const mcCache = {};
+    results.forEach(({ chain, bal }) => {
+      if(bal === null) return;
+      mcCache[chain.id] = bal;
+      const homeBal = document.getElementById('homeChainBal-'+chain.id);
+      const homeSub = document.getElementById('homeChainSub-'+chain.id);
+      if(homeBal) homeBal.textContent = bal.toFixed(2);
+      if(homeSub) homeSub.textContent = '≈ $'+bal.toFixed(2);
+    });
+    localStorage.setItem('nan_mc_cache_'+userAddr, JSON.stringify(mcCache));
+    localStorage.setItem('nan_mc_cache_ts_'+userAddr, Date.now().toString());
+    console.log('[mc] Silent refresh done');
+  } catch(e) { console.log('[mc silent]', e.message); }
+}
+
 async function mcRefresh() {
   const addr = userAddr || circleWalletAddress;
   if (!addr) { toast('Connect wallet first', 'error'); return; }
@@ -5877,8 +5918,22 @@ async function mcRefresh() {
       }
       total += bal;
       if (bal > 0) chainsWithBal++;
+
+      // ── Update home page chain row ──
+      const homeBal = document.getElementById('homeChainBal-'+chain.id);
+      const homeSub = document.getElementById('homeChainSub-'+chain.id);
+      if (homeBal) homeBal.textContent = bal !== null ? bal.toFixed(2) : '—';
+      if (homeSub) homeSub.textContent = bal !== null ? '≈ $'+bal.toFixed(2) : '';
     }
   });
+
+  // ── Save to localStorage so home rows load instantly next visit ──
+  try {
+    const mcCache = {};
+    results.forEach(({ chain, bal }) => { if (bal !== null) mcCache[chain.id] = bal; });
+    localStorage.setItem('nan_mc_cache_'+userAddr, JSON.stringify(mcCache));
+    localStorage.setItem('nan_mc_cache_ts_'+userAddr, Date.now().toString());
+  } catch(e) {}
 
   totalEl.textContent = total.toFixed(2) + ' USDC';
   chainsEl.textContent = chainsWithBal + ' chain' + (chainsWithBal !== 1 ? 's' : '') + ' with balance · $' + total.toFixed(2);
