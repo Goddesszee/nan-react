@@ -3915,8 +3915,10 @@ NAN WALLET FEATURES:
 
 CIRCLE AGENT WALLET:
 - Status: ${agentWalletAddr ? 'Connected — '+agentWalletAddr : 'Not connected'}
+- Balance: ${agentWalletBalance || (agentWalletAddr ? 'fetching...' : 'N/A')}
 - A separate MPC wallet that can send, pay services, and act autonomously
 - Use agent-* actions when user refers to "agent wallet"
+- NEVER guess the agent wallet balance — always trigger agent-balance action to get real data
 
 RECENT TRANSACTIONS:
 ${txHistory.slice(0,5).map(t=>`${t.type} ${t.amount} ${t.token||''} - ${new Date(t.ts).toLocaleDateString()}`).join('\n')||'None yet'}
@@ -6651,6 +6653,29 @@ var agentWalletEmail    = localStorage.getItem('nan_agent_email') || null;
 var agentWalletAddr     = localStorage.getItem('nan_agent_addr') || null;
 var agentRequestId      = null;
 var agentPollTimer      = null;
+var agentWalletBalance  = null; // cached balance string e.g. "100 USDC"
+
+async function agentRefreshBalance(){
+  var balEl = document.getElementById('agentBalDisplay');
+  if(balEl) balEl.textContent = '⏳';
+  await fetchAgentBalance();
+  if(balEl) balEl.textContent = agentWalletBalance || '0 USDC';
+}
+
+async function fetchAgentBalance(){
+  if(!agentWalletAddr) return;
+  try{
+    const r = await fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'balance',address:agentWalletAddr,chain:'ARC-TESTNET'})});
+    const d = await r.json();
+    if(d.balance && d.balance.data && d.balance.data.balances){
+      const lines = d.balance.data.balances.filter(b=>parseFloat(b.amount)>0).map(b=>b.token.symbol+': '+parseFloat(b.amount).toFixed(2));
+      agentWalletBalance = lines.join(', ') || '0 USDC';
+    }
+    // Update UI display
+    var balEl = document.getElementById('agentBalDisplay');
+    if(balEl) balEl.textContent = agentWalletBalance || '0 USDC';
+  } catch(e){}
+}
 
 // ── Page state ───────────────────────────────────────────────────────────────
 function agentPageRefresh() {
@@ -6672,6 +6697,9 @@ function agentPageRefresh() {
     if (status) status.textContent = 'Connected \u00b7 Arc Testnet';
     if (badge)  { badge.textContent = 'Active'; badge.style.cssText = 'font-size:.72rem;padding:3px 9px;border-radius:100px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#4ade80;font-weight:600;'; }
     if (addr)   addr.textContent = 'Arc: ' + agentWalletAddr;
+    // Show cached balance if available
+    var balEl = document.getElementById('agentBalDisplay');
+    if(balEl) balEl.textContent = agentWalletBalance || '—';
   } else {
     if (status) status.textContent = 'Not connected';
     if (badge)  { badge.textContent = 'Offline'; badge.style.cssText = 'font-size:.72rem;padding:3px 9px;border-radius:100px;background:rgba(107,114,128,.1);border:1px solid var(--border);color:var(--text3);font-weight:600;'; }
@@ -6743,6 +6771,7 @@ async function agentVerifyOtp() {
           localStorage.setItem('nan_agent_addr',  agentWalletAddr);
         }
         agentPageRefresh();
+        fetchAgentBalance();
         if(typeof showToast==='function') showToast('Agent Wallet connected!', 'success', 4000);
       } else if (d.error) {
         clearInterval(agentPollTimer);
@@ -6792,19 +6821,7 @@ async function agentFund() {
 
 async function agentCheckBalance() {
   if (!agentWalletAddr) return;
-  agentShowResult('Checking balance...');
-  try {
-    const r = await fetch(AGENT_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'balance', address: agentWalletAddr, chain: 'ARC-TESTNET' }) });
-    const d = await r.json();
-    const bal = d.balance;
-    let msg = 'Agent Wallet Balance:\n';
-    if(bal && bal.data && bal.data.balances){
-      bal.data.balances.forEach(b=>{
-        if(b.token && parseFloat(b.amount)>0) msg += b.token.symbol+': '+parseFloat(b.amount).toFixed(6)+'\n';
-      });
-    } else { msg += JSON.stringify(bal||d,null,2); }
-    agentShowResult(msg.trim());
-  } catch (e) { agentShowResult('Error: ' + e.message); }
+  await agentRefreshBalance();
 }
 
 async function agentSend() {
@@ -6896,4 +6913,5 @@ async function agentDisconnect() {
 (function agentInit() {
   agentWalletEmail = localStorage.getItem('nan_agent_email') || null;
   agentWalletAddr  = localStorage.getItem('nan_agent_addr')  || null;
+  if(agentWalletAddr) setTimeout(fetchAgentBalance, 2000);
 })();
