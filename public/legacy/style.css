@@ -3859,3 +3859,275 @@ input[style*="background: none"] {
 
 
 .home-bal-chips{flex-wrap:wrap !important;max-width:200px !important;justify-content:flex-end !important;}
+
+
+/* ════════════════════════════════════════════════════════════════
+   NAN WALLET — UI POLISH TO 10/10
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── 1. Consistent font scale system ──────────────────────────── */
+:root {
+  --fs-xs:   .68rem;   /* 10.9px — timestamps, meta */
+  --fs-sm:   .75rem;   /* 12px   — labels, captions */
+  --fs-base: .875rem;  /* 14px   — body text */
+  --fs-md:   1rem;     /* 16px   — default */
+  --fs-lg:   1.125rem; /* 18px   — subheadings */
+  --fs-xl:   1.5rem;   /* 24px   — headings */
+  --fs-2xl:  2rem;     /* 32px   — balance amounts */
+  --fs-3xl:  2.6rem;   /* 41.6px — hero balance */
+  --lh-tight: 1.2;
+  --lh-base:  1.5;
+  --lh-loose: 1.7;
+}
+
+/* ── 2. Page transitions — slide in from right ─────────────────── */
+@keyframes nanPageIn {
+  from { opacity: 0; transform: translateX(18px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes nanPageInUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes nanFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.page.active {
+  animation: nanPageIn 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+/* Bottom-sheet pages slide up */
+#page-payreq-view.active,
+#page-payreq-new.active,
+#page-pay-now.active {
+  animation: nanPageInUp 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+/* ── 3. Prefers-color-scheme — auto dark/light ─────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #07081a;
+    --surface: #111122;
+    --card: #0f102a;
+    --text: #ffffff;
+    --text2: #a0a0b0;
+    --text3: #555566;
+    --border: rgba(255,255,255,.07);
+  }
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #fafafa;
+    --surface: #f0f0f5;
+    --card: #ffffff;
+    --text: #111111;
+    --text2: #555555;
+    --text3: #999999;
+    --border: rgba(0,0,0,.08);
+  }
+}
+
+/* ── 4. Reduced motion — respect user preference ───────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .page.active { animation: nanFadeIn 0.15s ease both; }
+}
+
+/* ── 5. Focus-visible for keyboard navigation ──────────────────── */
+*:focus { outline: none; }
+*:focus-visible {
+  outline: 2px solid rgba(112,0,255,.7) !important;
+  outline-offset: 2px !important;
+  border-radius: 6px !important;
+}
+button:focus-visible, a:focus-visible {
+  outline: 2px solid rgba(112,0,255,.7) !important;
+  outline-offset: 3px !important;
+}
+
+/* ── 6. Font loading fallback ──────────────────────────────────── */
+body {
+  font-family: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont,
+               'Segoe UI', system-ui, sans-serif !important;
+}
+.mono, .addr, input[type="text"].mono {
+  font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code',
+               ui-monospace, 'Cascadia Code', monospace !important;
+}
+
+/* ── 7. Screen reader text for SVG icons ───────────────────────── */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important; height: 1px !important;
+  padding: 0 !important; margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0,0,0,0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* ── 8. Pull-to-refresh indicator ──────────────────────────────── */
+#pullRefreshIndicator {
+  position: fixed;
+  top: 57px; left: 0; right: 0;
+  height: 0;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  background: var(--bg);
+  transition: height 0.2s ease;
+  z-index: 500;
+  font-size: var(--fs-sm);
+  color: var(--accent3);
+  font-weight: 600;
+  gap: 6px;
+}
+#pullRefreshIndicator.pulling { height: 44px; }
+#pullRefreshIndicator.refreshing { height: 44px; }
+#pullRefreshIndicator svg {
+  transition: transform 0.3s ease;
+}
+#pullRefreshIndicator.pulling svg { transform: rotate(180deg); }
+@keyframes nanSpin {
+  to { transform: rotate(360deg); }
+}
+#pullRefreshIndicator.refreshing svg {
+  animation: nanSpin 0.7s linear infinite;
+}
+
+/* ── 9. QR code wrapper — styled ───────────────────────────────── */
+#qrBox canvas, #qrBox img {
+  border-radius: 12px !important;
+  box-shadow: 0 4px 20px rgba(112,0,255,.15) !important;
+}
+#qrBox {
+  padding: 12px !important;
+  background: #ffffff !important;
+  border-radius: 20px !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,.25), 0 0 0 1px rgba(112,0,255,.1) !important;
+}
+
+/* ── 10. Empty states — all list pages ─────────────────────────── */
+.nan-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  gap: 10px;
+  text-align: center;
+}
+.nan-empty-icon {
+  font-size: 2.2rem;
+  opacity: .4;
+  margin-bottom: 4px;
+}
+.nan-empty-title {
+  font-size: var(--fs-base);
+  font-weight: 700;
+  color: var(--text2);
+}
+.nan-empty-sub {
+  font-size: var(--fs-sm);
+  color: var(--text3);
+  line-height: var(--lh-loose);
+  max-width: 220px;
+}
+
+/* ── 11. Micro-interactions — button active state ──────────────── */
+.btn:active,
+button.btn:active,
+.nav-btn:active,
+.dnav-btn:active,
+.mob-action-ico:active {
+  transform: scale(0.97) !important;
+  transition: transform 0.08s ease !important;
+}
+.mob-asset-row:active {
+  background: rgba(112,0,255,.05) !important;
+  transition: background 0.1s ease !important;
+}
+
+/* ── 12. Smooth scrolling everywhere ───────────────────────────── */
+html { scroll-behavior: smooth; }
+.page { scroll-behavior: smooth; }
+
+/* ── 13. Better input styling ─────────────────────────────────── */
+input::placeholder { color: var(--text3) !important; opacity: 1 !important; }
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none !important; }
+input[type="number"] { -moz-appearance: textfield !important; }
+
+/* ── 14. Selection colour ─────────────────────────────────────── */
+::selection { background: rgba(112,0,255,.25) !important; color: var(--text) !important; }
+
+/* ── 15. Print — hide everything except key info ─────────────── */
+@media print {
+  body { background: #fff !important; }
+  .bottom-nav, #desktopNav, #globalTopBar,
+  #aiBtn, #agentPanel, #nanNotifBackdrop, #nanNotifPanel,
+  .btn { display: none !important; }
+  .page { position: static !important; display: block !important; }
+  #page-home { display: block !important; }
+}
+
+/* ── 16. Lazy image loading indicator ────────────────────────── */
+img { loading: lazy; }
+img[loading="lazy"] { background: var(--surface); min-height: 1px; }
+
+/* ── 17. Keyboard shortcut hint pill (desktop only) ──────────── */
+@media (min-width: 769px) {
+  .kb-hint {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .6rem;
+    font-weight: 700;
+    color: var(--text3);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 5px;
+    margin-left: auto;
+    letter-spacing: .02em;
+    font-family: ui-monospace, monospace;
+  }
+}
+@media (max-width: 768px) {
+  .kb-hint { display: none !important; }
+}
+
+/* ── 18. Swipe back hint animation (mobile) ──────────────────── */
+@keyframes nanSwipeHint {
+  0%   { transform: translateX(0); opacity: .5; }
+  50%  { transform: translateX(8px); opacity: 1; }
+  100% { transform: translateX(0); opacity: .5; }
+}
+.back-btn:hover .back-arrow,
+.back-btn:focus .back-arrow {
+  animation: nanSwipeHint 0.8s ease 2;
+}
+
+/* ── 19. Consistent card hover on desktop ────────────────────── */
+@media (min-width: 769px) {
+  .mob-asset-row:hover {
+    background: rgba(112,0,255,.04) !important;
+    transition: background .15s ease !important;
+    cursor: pointer !important;
+  }
+  .card:hover {
+    border-color: rgba(112,0,255,.2) !important;
+    transition: border-color .2s ease !important;
+  }
+}
+
+/* ── 20. Sticky balance card on scroll (mobile) ──────────────── */
+@media (max-width: 768px) {
+  #page-home {
+    scroll-padding-top: 57px;
+  }
+}
+
