@@ -1436,7 +1436,7 @@ function showConfirm(){
   const amt=parseFloat(document.getElementById('amtInput').value);
   const actualTo=(resolvedTo&&lastResolvedInput===raw)?resolvedTo:null;
   if(!actualTo){toast('Recipient not resolved','error');return;}
-  const via=recipType==='address'?'Wallet address':recipType==='x'?'Twitter handle':'Discord handle';
+  const via=(isCircleWallet?'Circle Wallet':'MetaMask')+' · Arc Testnet';
   document.getElementById('confAmt').textContent=amt.toFixed(2)+' '+sendToken;
   document.getElementById('confTo').textContent=short(actualTo)+(recipType!=='address'?' ('+raw+')':'');
   document.getElementById('confVia').textContent=via;
