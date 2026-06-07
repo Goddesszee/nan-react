@@ -3945,10 +3945,12 @@ RULES:
   bridge:        <ACTION>{"action":"navigate","tab":"bridge"}</ACTION>
   name:          <ACTION>{"action":"navigate","tab":"arcname"}</ACTION>
   history:       <ACTION>{"action":"navigate","tab":"history"}</ACTION>
+- ALWAYS include <ACTION> tag when user wants to DO something — never just describe it
 - Use agent-send/agent-balance/agent-history/agent-fund when user says "agent wallet" or "agent"
 - Use regular send/swap for main wallet actions
-- ACTION block is COMPLETELY INVISIBLE to user — NEVER write 'ACTION:' or show JSON in your text reply
-- Your text reply must be plain conversational English only — no JSON, no code, no tags`;
+- The ACTION block is COMPLETELY INVISIBLE to user — NEVER write ACTION or JSON in your text
+- Your text reply must be plain English only — confirm what you're about to do, then add ACTION tag
+- Example: "Sure, sending 3 USDC from your agent wallet now!" + <ACTION>{"action":"agent-send","amount":3,"token":"USDC","to":"AGENT_SELF"}</ACTION>`;
 
   try{
     const res=await fetch('https://nan-production.up.railway.app/api/chat',{
@@ -3974,6 +3976,10 @@ RULES:
     clean=clean.replace(/ACTION:\s*\{[\s\S]*?\}/g,'').trim();
     clean=clean.replace(/\. ACTION:\s*\{[\s\S]*?\}/g,'').trim();
     agentMsgs[agentMsgs.length-1]={role:'assistant',content:clean,action};
+    // Auto-execute agent wallet actions immediately (no button needed)
+    if(action && action.action && action.action.startsWith('agent-')){
+      setTimeout(()=>executeAgentAction(action), 500);
+    }
     // Speak the AI response
     speakResponse(clean);
   }catch(err){
@@ -3987,7 +3993,16 @@ function executeAgentAction(action){
   switch(action.action){
     case 'agent-send':
       if(!agentWalletAddr){addAgentMsg('⚠️ Agent wallet not connected. Go to Agent page to connect first.');renderAgentMsgs();return;}
-      addAgentMsg('⏳ Sending '+action.amount+' '+(action.token||'USDC')+' from agent wallet...');
+      // If no destination or user said "to my agent wallet", send from main wallet to agent wallet
+      if(!action.to || action.to==='AGENT_SELF' || action.to===agentWalletAddr){
+        // Send FROM main wallet TO agent wallet
+        addAgentMsg('⏳ Sending '+action.amount+' '+(action.token||'USDC')+' from main wallet to agent wallet...');
+        renderAgentMsgs();
+        goPage('send');
+        setTimeout(()=>{document.getElementById('recipInput').value=agentWalletAddr;document.getElementById('amtInput').value=action.amount||'';sendToken=action.token||'USDC';document.getElementById('sendTokenLabel').textContent=sendToken;validateSend();},300);
+        break;
+      }
+      addAgentMsg('⏳ Sending '+action.amount+' '+(action.token||'USDC')+' from agent wallet to '+(action.to||'').slice(0,10)+'...');
       renderAgentMsgs();
       fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'transfer',from:agentWalletAddr,to:action.to,amount:String(action.amount),chain:'ARC-TESTNET'})})
         .then(r=>r.json()).then(d=>{addAgentMsg(d.success?'✅ Sent! TX: '+(d.txHash||d.transactionId||'pending'):'❌ '+(d.error||'Transfer failed'));renderAgentMsgs();})
@@ -3997,7 +4012,22 @@ function executeAgentAction(action){
       if(!agentWalletAddr){addAgentMsg('⚠️ Agent wallet not connected.');renderAgentMsgs();return;}
       addAgentMsg('⏳ Checking agent wallet balance...');renderAgentMsgs();
       fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'balance',address:agentWalletAddr,chain:'ARC-TESTNET'})})
-        .then(r=>r.json()).then(d=>{addAgentMsg('💰 Agent Wallet Balance:\n'+JSON.stringify(d.balance||d,null,2));renderAgentMsgs();})
+        .then(r=>r.json()).then(d=>{
+          const bal = d.balance;
+          let msg = '💰 Agent Wallet Balance:\n';
+          if(bal && bal.data && bal.data.balances){
+            bal.data.balances.forEach(b=>{
+              if(b.token && parseFloat(b.amount)>0){
+                msg += b.token.symbol+': '+parseFloat(b.amount).toFixed(6)+'\n';
+              }
+            });
+          } else if(typeof bal === 'object'){
+            msg += JSON.stringify(bal,null,2);
+          } else {
+            msg += String(bal||d.error||'No balance data');
+          }
+          addAgentMsg(msg.trim());renderAgentMsgs();
+        })
         .catch(e=>{addAgentMsg('❌ Error: '+e.message);renderAgentMsgs();});
       break;
     case 'agent-history':
@@ -6766,7 +6796,14 @@ async function agentCheckBalance() {
   try {
     const r = await fetch(AGENT_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'balance', address: agentWalletAddr, chain: 'ARC-TESTNET' }) });
     const d = await r.json();
-    agentShowResult(d.balance !== undefined ? 'Agent Wallet Balance:\n' + JSON.stringify(d.balance, null, 2) : JSON.stringify(d, null, 2));
+    const bal = d.balance;
+    let msg = 'Agent Wallet Balance:\n';
+    if(bal && bal.data && bal.data.balances){
+      bal.data.balances.forEach(b=>{
+        if(b.token && parseFloat(b.amount)>0) msg += b.token.symbol+': '+parseFloat(b.amount).toFixed(6)+'\n';
+      });
+    } else { msg += JSON.stringify(bal||d,null,2); }
+    agentShowResult(msg.trim());
   } catch (e) { agentShowResult('Error: ' + e.message); }
 }
 
