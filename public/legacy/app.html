@@ -1657,24 +1657,13 @@ html,body{background:var(--bg);}
       </div>
     </div>
 
-    <!-- Rate bar -->
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:16px;">
-      <span id="swapRate" style="font-size:1rem;font-weight:600;color:var(--text);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;">1 USDC ≈ 0.9258 EURC</span>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span style="font-size:.9rem;font-weight:500;color:var(--text);">⛽ ~0.009</span>
-        <span style="font-size:.9rem;color:var(--text);">·</span>
-        <span style="font-size:.9rem;font-weight:500;color:var(--text);">0.1%</span>
-        <span style="font-size:.9rem;color:var(--success);display:flex;align-items:center;gap:4px;font-weight:600;"><span style="width:6px;height:6px;border-radius:50%;background:var(--success);display:inline-block;"></span>live</span>
-        <button onclick="fetchLiveFX()" style="background:none;border:none;color:var(--text);font-size:1rem;cursor:pointer;padding:0;">↻</button>
-      </div>
+    <!-- Rate bar — clean -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:12px;">
+      <span id="swapRate" style="font-size:.9rem;font-weight:600;color:var(--text);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;">1 USDC ≈ 0.9258 EURC</span>
+      <button onclick="fetchLiveFX();checkPoolLiquidity();" style="background:none;border:none;color:var(--accent3);font-size:.85rem;cursor:pointer;padding:4px 8px;border-radius:6px;font-weight:600;">↻</button>
     </div>
-
-    <!-- Pool health + live rate -->
-    <div id="swapPoolBadge" style="display:none;align-items:center;gap:6px;padding:8px 12px;background:rgba(112,0,255,.06);border:1px solid rgba(112,0,255,.15);border-radius:10px;margin-bottom:10px;font-size:.76rem;font-weight:600;"></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:0 2px;margin-bottom:12px;">
-      <span id="swapLiveRate" style="font-size:.72rem;color:var(--text3);"></span>
-      <button onclick="checkPoolLiquidity()" style="background:none;border:none;color:var(--accent3);font-size:.72rem;font-weight:700;cursor:pointer;padding:0;">↻ Refresh rate</button>
-    </div>
+    <div id="swapPoolBadge" style="display:none;align-items:center;gap:6px;padding:7px 12px;background:rgba(112,0,255,.06);border:1px solid rgba(112,0,255,.15);border-radius:10px;margin-bottom:10px;font-size:.78rem;font-weight:600;"></div>
+    <span id="swapLiveRate" style="display:none;"></span>
 
     <button class="btn" id="swapBtn" onclick="doSwap()" style="width:100%;height:52px;font-size:1rem;font-weight:700;border-radius:16px;">Swap</button>
   </div>
