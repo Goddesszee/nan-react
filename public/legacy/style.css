@@ -1077,14 +1077,14 @@ a:hover{color:var(--text);}
   .page{
     position:fixed !important;
     top:64px !important;
-    left:0 !important;
+    left:220px !important;
     right:0 !important;
     bottom:0 !important;
     width:auto !important;max-width:none !important;
     display:none !important;
     overflow-y:auto !important;overflow-x:hidden !important;
     flex-direction:column !important;align-items:center !important;
-    padding:16px 0 48px !important;
+    padding:32px 0 48px !important;
     animation:none !important;isolation:auto !important;transform:none !important;
   }
   .page.active{display:flex !important;}
@@ -3822,3 +3822,40 @@ input[style*="background: none"] {
     border-top: none !important;
   }
 }
+
+
+/* ── Mobile: prevent content stretching on large phones (Galaxy Ultra, etc) ── */
+@media (min-width: 481px) and (max-width: 768px) {
+  .page {
+    align-items: center;
+  }
+  .page > * {
+    max-width: 480px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
+
+
+
+/* ── Desktop bridge: two-column layout ── */
+@media (min-width: 769px) {
+  #page-bridge > * {
+    max-width: 700px !important;
+  }
+  /* Gateway card full width */
+  #page-bridge .card:first-of-type {
+    max-width: 700px !important;
+  }
+  /* Right column (amount + button) sits beside gateway in a mini grid */
+  #bridgeRightCol {
+    display: contents;
+  }
+  /* Stack FROM↓TO + AMOUNT side by side */
+  #page-bridge > div > div:not([id]) {
+    max-width: 700px !important;
+  }
+}
+
+
+.home-bal-chips{flex-wrap:wrap !important;max-width:200px !important;justify-content:flex-end !important;}
