@@ -1098,10 +1098,14 @@ html,body{background:var(--bg);}
       <div id="agentConnectedSection" style="display:none;">
         <div id="agentArcAddr" style="font-size:.75rem;color:var(--text3);font-family:monospace;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:9px 12px;word-break:break-all;margin-bottom:10px;"></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-          <button onclick="agentFund()" style="padding:10px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#c084fc;font-size:.82rem;font-weight:600;cursor:pointer;">Faucet</button>
-          <button onclick="agentCheckBalance()" style="padding:10px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#c084fc;font-size:.82rem;font-weight:600;cursor:pointer;">Balance</button>
-          <button onclick="agentDiscover()" style="padding:10px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#c084fc;font-size:.82rem;font-weight:600;cursor:pointer;">Marketplace</button>
-          <button onclick="agentDisconnect()" style="padding:10px;border-radius:11px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#f87171;font-size:.82rem;font-weight:600;cursor:pointer;">Disconnect</button>
+          <button onclick="agentFund()" style="padding:10px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#7000ff;font-size:.875rem;font-weight:600;cursor:pointer;">💧 Faucet</button>
+          <button onclick="agentCheckBalance()" style="padding:10px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#7000ff;font-size:.875rem;font-weight:600;cursor:pointer;">💰 Balance</button>
+          <button onclick="agentSend()" style="padding:10px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#7000ff;font-size:.875rem;font-weight:600;cursor:pointer;">↑ Send</button>
+          <button onclick="agentHistory()" style="padding:10px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#7000ff;font-size:.875rem;font-weight:600;cursor:pointer;">📋 History</button>
+          <button onclick="agentSetSpendingLimit()" style="padding:10px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#7000ff;font-size:.875rem;font-weight:600;cursor:pointer;">🛡 Limits</button>
+          <button onclick="agentDiscover()" style="padding:10px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#7000ff;font-size:.875rem;font-weight:600;cursor:pointer;">🔍 Marketplace</button>
+          <button onclick="agentPayService()" style="padding:10px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#7000ff;font-size:.875rem;font-weight:600;cursor:pointer;grid-column:span 2;">⚡ Pay x402 Service</button>
+          <button onclick="agentDisconnect()" style="padding:10px;border-radius:11px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#ef4444;font-size:.875rem;font-weight:600;cursor:pointer;grid-column:span 2;">Disconnect</button>
         </div>
       </div>
     </div>
