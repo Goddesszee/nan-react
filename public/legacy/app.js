@@ -6709,16 +6709,81 @@ async function agentCheckBalance() {
   try {
     const r = await fetch(AGENT_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'balance', address: agentWalletAddr, chain: 'ARC-TESTNET' }) });
     const d = await r.json();
-    agentShowResult(d.balance || d);
+    agentShowResult(d.balance !== undefined ? 'Agent Wallet Balance:\n' + JSON.stringify(d.balance, null, 2) : JSON.stringify(d, null, 2));
+  } catch (e) { agentShowResult('Error: ' + e.message); }
+}
+
+async function agentSend() {
+  if (!agentWalletAddr) return;
+  const to = prompt('Send to address:');
+  if (!to || !to.startsWith('0x')) { agentShowResult('Invalid address'); return; }
+  const amt = prompt('Amount (USDC):');
+  if (!amt || isNaN(amt) || parseFloat(amt) <= 0) { agentShowResult('Invalid amount'); return; }
+  agentShowResult('Sending ' + amt + ' USDC...');
+  try {
+    const r = await fetch(AGENT_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'transfer', from: agentWalletAddr, to, amount: amt, chain: 'ARC-TESTNET' }) });
+    const d = await r.json();
+    agentShowResult(d.success ? 'Sent! TX: ' + (d.txHash || d.transactionId || 'pending') : (d.error || 'Transfer failed'));
+  } catch (e) { agentShowResult('Error: ' + e.message); }
+}
+
+async function agentHistory() {
+  if (!agentWalletAddr) return;
+  agentShowResult('Loading transaction history...');
+  try {
+    const r = await fetch(AGENT_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'tx-list', address: agentWalletAddr, chain: 'ARC-TESTNET' }) });
+    const d = await r.json();
+    if (d.transactions?.length) {
+      const lines = d.transactions.slice(0, 10).map(t =>
+        (t.type || 'tx') + ' ' + (t.amount || '') + ' ' + (t.token || '') + ' — ' + (t.state || t.status || '') + ' (' + (t.createDate || t.ts || '').slice(0,10) + ')'
+      );
+      agentShowResult('Recent Transactions:\n' + lines.join('\n'));
+    } else {
+      agentShowResult('No transactions yet');
+    }
+  } catch (e) { agentShowResult('Error: ' + e.message); }
+}
+
+async function agentSetSpendingLimit() {
+  if (!agentWalletAddr) return;
+  const perTx = prompt('Max per transaction (USDC):', '10');
+  if (!perTx) return;
+  const daily = prompt('Daily limit (USDC):', '50');
+  if (!daily) return;
+  agentShowResult('Setting spending limits...');
+  try {
+    const r = await fetch(AGENT_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'set-policy', address: agentWalletAddr, chain: 'ARC-TESTNET', perTx, daily }) });
+    const d = await r.json();
+    agentShowResult(d.success ? 'Spending limits set! Per-tx: $' + perTx + ' Daily: $' + daily : (d.error || 'Failed to set limits'));
   } catch (e) { agentShowResult('Error: ' + e.message); }
 }
 
 async function agentDiscover() {
-  agentShowResult('Searching Agent Marketplace...');
+  const query = prompt('Search marketplace (e.g. financial, weather, AI):', 'financial') || 'financial';
+  agentShowResult('Searching Agent Marketplace for "' + query + '"...');
   try {
-    const r = await fetch(AGENT_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'services-search', query: 'financial' }) });
+    const r = await fetch(AGENT_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'services-search', query }) });
     const d = await r.json();
-    agentShowResult(d.services?.length ? d.services.map(s => (s.name || s.url)).join('\n') : 'No services found yet on marketplace');
+    if (d.services?.length) {
+      const lines = d.services.map(s => (s.name || s.url || JSON.stringify(s)));
+      agentShowResult('Services found:\n' + lines.join('\n'));
+    } else {
+      agentShowResult('No services found for "' + query + '"');
+    }
+  } catch (e) { agentShowResult('Error: ' + e.message); }
+}
+
+async function agentPayService() {
+  if (!agentWalletAddr) return;
+  const url = prompt('Service URL to pay (x402):');
+  if (!url) return;
+  const amt = prompt('Payment amount (USDC):', '0.01');
+  if (!amt) return;
+  agentShowResult('Paying service...');
+  try {
+    const r = await fetch(AGENT_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'pay-service', address: agentWalletAddr, serviceUrl: url, amount: amt, chain: 'ARC-TESTNET' }) });
+    const d = await r.json();
+    agentShowResult(d.success ? 'Payment sent! Response:\n' + JSON.stringify(d.result || d, null, 2) : (d.error || 'Payment failed'));
   } catch (e) { agentShowResult('Error: ' + e.message); }
 }
 
