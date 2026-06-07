@@ -3913,6 +3913,11 @@ NAN WALLET FEATURES:
 - Email login creates a real Circle Developer-Controlled Wallet on Arc Testnet
 - All transactions on Arc Testnet — real on-chain!
 
+CIRCLE AGENT WALLET:
+- Status: ${agentWalletAddr ? 'Connected — '+agentWalletAddr : 'Not connected'}
+- A separate MPC wallet that can send, pay services, and act autonomously
+- Use agent-* actions when user refers to "agent wallet"
+
 RECENT TRANSACTIONS:
 ${txHistory.slice(0,5).map(t=>`${t.type} ${t.amount} ${t.token||''} - ${new Date(t.ts).toLocaleDateString()}`).join('\n')||'None yet'}
 
@@ -3924,17 +3929,24 @@ RULES:
 - Keep replies under 80 words, friendly and enthusiastic  
 - NEVER show raw JSON, code, or ACTION tags in your text
 - If user wants to DO something, add <ACTION> AFTER your text reply:
-  send:     <ACTION>{"action":"send","amount":1,"token":"USDC","to":"0x..."}</ACTION>
-  swap:     <ACTION>{"action":"swap","amount":1,"from":"USDC","to":"EURC"}</ACTION>
-  limit:    <ACTION>{"action":"limit","amount":50,"sellToken":"USDC","buyToken":"EURC","targetRate":0.95,"condition":"gte"}</ACTION>
-  schedule: <ACTION>{"action":"schedule","amount":20,"token":"USDC","to":"0x...","when":"friday"}</ACTION>
-  standing: <ACTION>{"action":"standing","amount":100,"token":"USDC","to":"0x...","freq":"monthly"}</ACTION>
-  cancel:   <ACTION>{"action":"cancel_all"}</ACTION>
-  list:     <ACTION>{"action":"list_orders"}</ACTION>
-  lend:     <ACTION>{"action":"navigate","tab":"lend"}</ACTION>
-  bridge:   <ACTION>{"action":"navigate","tab":"bridge"}</ACTION>
-  name:     <ACTION>{"action":"navigate","tab":"arcname"}</ACTION>
-  history:  <ACTION>{"action":"navigate","tab":"history"}</ACTION>
+  send:          <ACTION>{"action":"send","amount":1,"token":"USDC","to":"0x..."}</ACTION>
+  agent-send:    <ACTION>{"action":"agent-send","amount":1,"token":"USDC","to":"0x..."}</ACTION>
+  agent-balance: <ACTION>{"action":"agent-balance"}</ACTION>
+  agent-history: <ACTION>{"action":"agent-history"}</ACTION>
+  agent-fund:    <ACTION>{"action":"agent-fund"}</ACTION>
+  agent-pay:     <ACTION>{"action":"agent-pay","serviceUrl":"https://...","amount":"0.01"}</ACTION>
+  swap:          <ACTION>{"action":"swap","amount":1,"from":"USDC","to":"EURC"}</ACTION>
+  limit:         <ACTION>{"action":"limit","amount":50,"sellToken":"USDC","buyToken":"EURC","targetRate":0.95,"condition":"gte"}</ACTION>
+  schedule:      <ACTION>{"action":"schedule","amount":20,"token":"USDC","to":"0x...","when":"friday"}</ACTION>
+  standing:      <ACTION>{"action":"standing","amount":100,"token":"USDC","to":"0x...","freq":"monthly"}</ACTION>
+  cancel:        <ACTION>{"action":"cancel_all"}</ACTION>
+  list:          <ACTION>{"action":"list_orders"}</ACTION>
+  lend:          <ACTION>{"action":"navigate","tab":"lend"}</ACTION>
+  bridge:        <ACTION>{"action":"navigate","tab":"bridge"}</ACTION>
+  name:          <ACTION>{"action":"navigate","tab":"arcname"}</ACTION>
+  history:       <ACTION>{"action":"navigate","tab":"history"}</ACTION>
+- Use agent-send/agent-balance/agent-history/agent-fund when user says "agent wallet" or "agent"
+- Use regular send/swap for main wallet actions
 - ACTION block is invisible to user — never mention it`;
 
   try{
@@ -3968,6 +3980,46 @@ RULES:
 
 function executeAgentAction(action){
   switch(action.action){
+    case 'agent-send':
+      if(!agentWalletAddr){addAgentMsg('⚠️ Agent wallet not connected. Go to Agent page to connect first.');renderAgentMsgs();return;}
+      addAgentMsg('⏳ Sending '+action.amount+' '+(action.token||'USDC')+' from agent wallet...');
+      renderAgentMsgs();
+      fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'transfer',from:agentWalletAddr,to:action.to,amount:String(action.amount),chain:'ARC-TESTNET'})})
+        .then(r=>r.json()).then(d=>{addAgentMsg(d.success?'✅ Sent! TX: '+(d.txHash||d.transactionId||'pending'):'❌ '+(d.error||'Transfer failed'));renderAgentMsgs();})
+        .catch(e=>{addAgentMsg('❌ Error: '+e.message);renderAgentMsgs();});
+      break;
+    case 'agent-balance':
+      if(!agentWalletAddr){addAgentMsg('⚠️ Agent wallet not connected.');renderAgentMsgs();return;}
+      addAgentMsg('⏳ Checking agent wallet balance...');renderAgentMsgs();
+      fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'balance',address:agentWalletAddr,chain:'ARC-TESTNET'})})
+        .then(r=>r.json()).then(d=>{addAgentMsg('💰 Agent Wallet Balance:\n'+JSON.stringify(d.balance||d,null,2));renderAgentMsgs();})
+        .catch(e=>{addAgentMsg('❌ Error: '+e.message);renderAgentMsgs();});
+      break;
+    case 'agent-history':
+      if(!agentWalletAddr){addAgentMsg('⚠️ Agent wallet not connected.');renderAgentMsgs();return;}
+      addAgentMsg('⏳ Loading agent wallet history...');renderAgentMsgs();
+      fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'tx-list',address:agentWalletAddr,chain:'ARC-TESTNET'})})
+        .then(r=>r.json()).then(d=>{
+          const txs=d.transactions||[];
+          const lines=txs.slice(0,10).map(t=>(t.type||'tx')+' '+(t.amount||'')+' '+(t.token||'')+' — '+(t.state||t.status||'')+' ('+(t.createDate||'').slice(0,10)+')');
+          addAgentMsg(lines.length?'📋 Agent Wallet History:\n'+lines.join('\n'):'📋 No transactions yet on agent wallet');
+          renderAgentMsgs();
+        }).catch(e=>{addAgentMsg('❌ Error: '+e.message);renderAgentMsgs();});
+      break;
+    case 'agent-fund':
+      if(!agentWalletAddr){addAgentMsg('⚠️ Agent wallet not connected.');renderAgentMsgs();return;}
+      addAgentMsg('⏳ Requesting faucet for agent wallet...');renderAgentMsgs();
+      fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'fund',address:agentWalletAddr,chain:'ARC-TESTNET'})})
+        .then(r=>r.json()).then(d=>{addAgentMsg(d.success?'✅ Faucet success! 2 USDC sent to agent wallet.':'❌ '+(d.error||'Faucet failed'));renderAgentMsgs();})
+        .catch(e=>{addAgentMsg('❌ Error: '+e.message);renderAgentMsgs();});
+      break;
+    case 'agent-pay':
+      if(!agentWalletAddr){addAgentMsg('⚠️ Agent wallet not connected.');renderAgentMsgs();return;}
+      addAgentMsg('⏳ Paying service '+action.serviceUrl+'...');renderAgentMsgs();
+      fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'pay-service',address:agentWalletAddr,serviceUrl:action.serviceUrl,amount:String(action.amount||'0.01'),chain:'ARC-TESTNET'})})
+        .then(r=>r.json()).then(d=>{addAgentMsg(d.success?'✅ Payment sent!\n'+JSON.stringify(d.result||d,null,2):'❌ '+(d.error||'Payment failed'));renderAgentMsgs();})
+        .catch(e=>{addAgentMsg('❌ Error: '+e.message);renderAgentMsgs();});
+      break;
     case 'send':
       agentOpen=false;document.getElementById('agentPanel').style.display='none';
       goPage('send');
