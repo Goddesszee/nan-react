@@ -3833,6 +3833,7 @@ function renderAgentMsgs(){
   `).join('');
 }
 function renderAgentChips(){
+  if(!document.getElementById('agentChips')) return;
   if(agentMsgs.length>1){document.getElementById('agentChips').innerHTML='';return;}
   // Context-aware chips based on current wallet state
   const chips=[];
@@ -6290,7 +6291,7 @@ function startIncomingPoller() {
       'p': 'payreq',
       '/': () => document.getElementById('nanNotifBtn')?.click(),
     };
-    const action = shortcuts[e.key.toLowerCase()];
+    const action = e.key ? shortcuts[e.key.toLowerCase()] : null;
     if (!action) return;
     e.preventDefault();
     if (typeof action === 'function') action();
