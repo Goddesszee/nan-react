@@ -42,6 +42,7 @@ function goPage(name) {
     'pay-now':  'page-pay-now',
     multichain: 'page-multichain',
     market:     'page-market',
+    'agent-wallet': 'page-agent-wallet',
   };
 
   const navMap = {
@@ -60,6 +61,7 @@ function goPage(name) {
     'payreq-new': 'nav-more',
     multichain:  'nav-more',
     market:      'nav-market',
+    'agent-wallet': 'nav-agent',
   };
 
   const pageId = pageMap[name] || ('page-' + name);
@@ -78,6 +80,7 @@ function goPage(name) {
     history: 'dnav-history',
     more: 'dnav-more', arcname: 'dnav-more', bulk: 'dnav-more',
     naira: 'dnav-more', payreq: 'dnav-more', 'payreq-new': 'dnav-more',
+    'agent-wallet': 'dnav-more',
   };
   document.querySelectorAll('#desktopNav .dnav-btn').forEach(b => b.classList.remove('active'));
   const dnavId = desktopNavMap[name] || 'dnav-more';
@@ -97,6 +100,7 @@ function goPage(name) {
   if (name === 'payreq') renderPaymentRequests();
   if (name === 'multichain') { if(typeof mcRefresh==='function') setTimeout(mcRefresh, 100); }
   if (name === 'payreq-new') initNewPRForm();
+  if (name === 'agent-wallet') setTimeout(function(){ if(typeof agentPageRefresh==='function') agentPageRefresh(); }, 80);
 }
 
 // ── Show page (called internally by app.js) ──
