@@ -4018,11 +4018,9 @@ function executeAgentAction(action){
           const bal = d.balance;
           let msg = '💰 Agent Wallet Balance:\n';
           if(bal && bal.data && bal.data.balances){
-            bal.data.balances.forEach(b=>{
-              if(b.token && parseFloat(b.amount)>0){
-                msg += b.token.symbol+': '+parseFloat(b.amount).toFixed(6)+'\n';
-              }
-            });
+            const seen={};
+            bal.data.balances.forEach(b=>{const sym=b.token?.symbol;if(sym&&(!seen[sym]||b.token.isNative===false))seen[sym]=b;});
+            Object.values(seen).forEach(b=>{if(parseFloat(b.amount)>0)msg+=b.token.symbol+': '+parseFloat(b.amount).toFixed(2)+'\n';});
           } else if(typeof bal === 'object'){
             msg += JSON.stringify(bal,null,2);
           } else {
@@ -6668,12 +6666,14 @@ async function fetchAgentBalance(){
     const r = await fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'balance',address:agentWalletAddr,chain:'ARC-TESTNET'})});
     const d = await r.json();
     if(d.balance && d.balance.data && d.balance.data.balances){
-      const lines = d.balance.data.balances.filter(b=>parseFloat(b.amount)>0).map(b=>b.token.symbol+': '+parseFloat(b.amount).toFixed(2));
-      agentWalletBalance = lines.join(', ') || '0 USDC';
+      const seen={};
+      d.balance.data.balances.forEach(b=>{const sym=b.token?.symbol;if(sym&&(!seen[sym]||b.token.isNative===false))seen[sym]=b;});
+      const lines=Object.values(seen).filter(b=>parseFloat(b.amount)>0).map(b=>b.token.symbol+': '+parseFloat(b.amount).toFixed(2));
+      agentWalletBalance = lines.join(' · ') || '0 USDC';
     }
     // Update UI display
     var balEl = document.getElementById('agentBalDisplay');
-    if(balEl) balEl.textContent = agentWalletBalance || '0 USDC';
+    if(balEl) balEl.innerHTML = '<span style="background:rgba(112,0,255,.12);border:1px solid rgba(112,0,255,.2);border-radius:8px;padding:2px 10px;font-size:1.3rem;font-weight:800;color:var(--text);">' + (agentWalletBalance || '0 USDC') + '</span>';
   } catch(e){}
 }
 
@@ -6696,7 +6696,7 @@ function agentPageRefresh() {
   if (connected) {
     if (status) status.textContent = 'Connected \u00b7 Arc Testnet';
     if (badge)  { badge.textContent = 'Active'; badge.style.cssText = 'font-size:.72rem;padding:3px 9px;border-radius:100px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#4ade80;font-weight:600;'; }
-    if (addr)   addr.textContent = 'Arc: ' + agentWalletAddr;
+    if (addr)   addr.innerHTML = '<span style="color:var(--text2);font-family:monospace;">Arc: ' + agentWalletAddr.slice(0,6)+'...'+agentWalletAddr.slice(-4) + '</span><button onclick="navigator.clipboard.writeText(\''+agentWalletAddr+'\').then(()=>{this.textContent=\'✓\';setTimeout(()=>this.textContent=\'Copy\',1500)})" style="padding:2px 8px;border-radius:6px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#7000ff;font-size:.7rem;font-weight:600;cursor:pointer;">Copy</button>';
     // Show cached balance if available
     var balEl = document.getElementById('agentBalDisplay');
     if(balEl) balEl.textContent = agentWalletBalance || '—';
@@ -6824,78 +6824,88 @@ async function agentCheckBalance() {
   await agentRefreshBalance();
 }
 
-async function agentSend() {
+function agentSend() {
   if (!agentWalletAddr) return;
-  const to = prompt('Send to address:');
-  if (!to || !to.startsWith('0x')) { agentShowResult('Invalid address'); return; }
-  const amt = prompt('Amount (USDC):');
-  if (!amt || isNaN(amt) || parseFloat(amt) <= 0) { agentShowResult('Invalid amount'); return; }
-  agentShowResult('Sending ' + amt + ' USDC...');
-  try {
-    const r = await fetch(AGENT_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'transfer', from: agentWalletAddr, to, amount: amt, chain: 'ARC-TESTNET' }) });
-    const d = await r.json();
-    agentShowResult(d.success ? 'Sent! TX: ' + (d.txHash || d.transactionId || 'pending') : (d.error || 'Transfer failed'));
-  } catch (e) { agentShowResult('Error: ' + e.message); }
+  const id = 'agentPanelSend';
+  if (document.getElementById(id)) { document.getElementById(id).remove(); return; }
+  const el = document.createElement('div');
+  el.id = id;
+  el.style.cssText = 'background:var(--surface);border:1px solid rgba(112,0,255,.25);border-radius:14px;padding:14px;margin-bottom:12px;';
+  el.innerHTML = `
+    <div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:10px;">Send from Agent Wallet</div>
+    <input id="agentSendTo" placeholder="Recipient address (0x...)" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-family:'Inter var','Inter',sans-serif;box-sizing:border-box;margin-bottom:8px;"/>
+    <div style="display:flex;gap:8px;margin-bottom:10px;">
+      <input id="agentSendAmt" placeholder="Amount" type="number" min="0" step="any" style="flex:1;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-family:'Inter var','Inter',sans-serif;box-sizing:border-box;"/>
+      <select id="agentSendToken" style="padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-family:'Inter var','Inter',sans-serif;"><option>USDC</option><option>EURC</option></select>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button onclick="(function(){const to=document.getElementById('agentSendTo').value.trim();const amt=document.getElementById('agentSendAmt').value;const tok=document.getElementById('agentSendToken').value;if(!to.startsWith('0x')){agentShowResult('Invalid address');return;}if(!amt||isNaN(amt)||parseFloat(amt)<=0){agentShowResult('Invalid amount');return;}document.getElementById('agentPanelSend').remove();agentShowResult('Sending '+amt+' '+tok+'...');fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'transfer',from:agentWalletAddr,to,amount:String(amt),chain:'ARC-TESTNET'})}).then(r=>r.json()).then(d=>agentShowResult(d.success?'✅ Sent! TX: '+(d.txHash||d.transactionId||'pending'):'❌ '+(d.error||'Transfer failed'))).catch(e=>agentShowResult('❌ '+e.message));})()" style="flex:1;padding:11px;border-radius:10px;background:#7000ff;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;">Send</button>
+      <button onclick="document.getElementById('agentPanelSend').remove()" style="padding:11px 16px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;">Cancel</button>
+    </div>`;
+  const grid = document.querySelector('[onclick="agentFund()"]')?.closest('[style*="grid-template-columns"]');
+  if (grid) grid.parentElement.insertBefore(el, grid);
+  document.getElementById('agentSendTo')?.focus();
 }
 
 async function agentHistory() {
   if (!agentWalletAddr) return;
-  agentShowResult('Loading transaction history...');
+  const id = 'agentPanelHistory';
+  if (document.getElementById(id)) { document.getElementById(id).remove(); return; }
+  const el = document.createElement('div');
+  el.id = id;
+  el.style.cssText = 'background:var(--surface);border:1px solid rgba(112,0,255,.25);border-radius:14px;padding:14px;margin-bottom:12px;';
+  el.innerHTML = `<div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:10px;">Recent Transactions</div><div id="agentHistoryList" style="font-size:.82rem;color:var(--text3);line-height:1.8;">Loading...</div><button onclick="document.getElementById('agentPanelHistory').remove()" style="margin-top:10px;width:100%;padding:11px 16px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;">Close</button>`;
+  const grid = document.querySelector('[onclick="agentFund()"]')?.closest('[style*="grid-template-columns"]');
+  if (grid) grid.parentElement.insertBefore(el, grid);
   try {
     const r = await fetch(AGENT_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'tx-list', address: agentWalletAddr, chain: 'ARC-TESTNET' }) });
     const d = await r.json();
+    const listEl = document.getElementById('agentHistoryList');
+    if (!listEl) return;
     if (d.transactions?.length) {
-      const lines = d.transactions.slice(0, 10).map(t =>
-        (t.type || 'tx') + ' ' + (t.amount || '') + ' ' + (t.token || '') + ' — ' + (t.state || t.status || '') + ' (' + (t.createDate || t.ts || '').slice(0,10) + ')'
-      );
-      agentShowResult('Recent Transactions:\n' + lines.join('\n'));
+      listEl.innerHTML = d.transactions.slice(0, 10).map(t => `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);"><div><span style="font-size:.78rem;font-weight:700;color:var(--text);text-transform:capitalize;">${t.type||'tx'}</span><span style="font-size:.75rem;color:var(--text3);margin-left:6px;">${(t.createDate||t.ts||'').slice(0,10)}</span></div><span style="font-size:.82rem;font-weight:700;color:#7000ff;">${t.amount||''} ${t.token||'USDC'}</span></div>`).join('');
     } else {
-      agentShowResult('No transactions yet');
+      listEl.textContent = 'No transactions yet.';
     }
-  } catch (e) { agentShowResult('Error: ' + e.message); }
+  } catch (e) { const listEl = document.getElementById('agentHistoryList'); if(listEl) listEl.textContent = 'Error: ' + e.message; }
 }
 
-async function agentSetSpendingLimit() {
+function agentSetSpendingLimit() {
   if (!agentWalletAddr) return;
-  const perTx = prompt('Max per transaction (USDC):', '10');
-  if (!perTx) return;
-  const daily = prompt('Daily limit (USDC):', '50');
-  if (!daily) return;
-  agentShowResult('Setting spending limits...');
-  try {
-    const r = await fetch(AGENT_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'set-policy', address: agentWalletAddr, chain: 'ARC-TESTNET', perTx, daily }) });
-    const d = await r.json();
-    agentShowResult(d.success ? 'Spending limits set! Per-tx: $' + perTx + ' Daily: $' + daily : (d.error || 'Failed to set limits'));
-  } catch (e) { agentShowResult('Error: ' + e.message); }
+  const id = 'agentPanelLimits';
+  if (document.getElementById(id)) { document.getElementById(id).remove(); return; }
+  const el = document.createElement('div');
+  el.id = id;
+  el.style.cssText = 'background:var(--surface);border:1px solid rgba(112,0,255,.25);border-radius:14px;padding:14px;margin-bottom:12px;';
+  el.innerHTML = `<div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:10px;">Set Spending Limits</div><input id="agentLimitPerTx" placeholder="Max per transaction (USDC)" type="number" min="0" step="any" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-family:'Inter var','Inter',sans-serif;box-sizing:border-box;margin-bottom:8px;" value="10"/><input id="agentLimitDaily" placeholder="Daily limit (USDC)" type="number" min="0" step="any" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-family:'Inter var','Inter',sans-serif;box-sizing:border-box;margin-bottom:10px;" value="50"/><div style="display:flex;gap:8px;"><button onclick="(function(){const perTx=document.getElementById('agentLimitPerTx').value;const daily=document.getElementById('agentLimitDaily').value;if(!perTx||!daily){agentShowResult('Enter both limits');return;}document.getElementById('agentPanelLimits').remove();agentShowResult('Setting limits...');fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'set-policy',address:agentWalletAddr,chain:'ARC-TESTNET',perTx,daily})}).then(r=>r.json()).then(d=>agentShowResult(d.success?'✅ Limits set! Per-tx: $'+perTx+' · Daily: $'+daily:'❌ '+(d.error||'Failed'))).catch(e=>agentShowResult('❌ '+e.message));})()" style="flex:1;padding:11px;border-radius:10px;background:#7000ff;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;">Set Limits</button><button onclick="document.getElementById('agentPanelLimits').remove()" style="padding:11px 16px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;">Cancel</button></div>`;
+  const grid = document.querySelector('[onclick="agentFund()"]')?.closest('[style*="grid-template-columns"]');
+  if (grid) grid.parentElement.insertBefore(el, grid);
+  document.getElementById('agentLimitPerTx')?.focus();
 }
 
-async function agentDiscover() {
-  const query = prompt('Search marketplace (e.g. financial, weather, AI):', 'financial') || 'financial';
-  agentShowResult('Searching Agent Marketplace for "' + query + '"...');
-  try {
-    const r = await fetch(AGENT_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'services-search', query }) });
-    const d = await r.json();
-    if (d.services?.length) {
-      const lines = d.services.map(s => (s.name || s.url || JSON.stringify(s)));
-      agentShowResult('Services found:\n' + lines.join('\n'));
-    } else {
-      agentShowResult('No services found for "' + query + '"');
-    }
-  } catch (e) { agentShowResult('Error: ' + e.message); }
+function agentDiscover() {
+  const id = 'agentPanelMarket';
+  if (document.getElementById(id)) { document.getElementById(id).remove(); return; }
+  const el = document.createElement('div');
+  el.id = id;
+  el.style.cssText = 'background:var(--surface);border:1px solid rgba(112,0,255,.25);border-radius:14px;padding:14px;margin-bottom:12px;';
+  el.innerHTML = `<div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:10px;">Agent Marketplace</div><div style="display:flex;gap:8px;margin-bottom:8px;"><input id="agentMarketQuery" placeholder="Search services (e.g. financial, AI, data)" style="flex:1;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-family:'Inter var','Inter',sans-serif;box-sizing:border-box;" value="financial"/><button onclick="(function(){const q=document.getElementById('agentMarketQuery').value||'financial';const list=document.getElementById('agentMarketList');list.innerHTML='<span style=&quot;color:var(--text3)&quot;>Searching...</span>';fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'services-search',query:q})}).then(r=>r.json()).then(d=>{if(d.services?.length){list.innerHTML=d.services.map(s=>'<div style=&quot;padding:8px 0;border-bottom:1px solid var(--border);&quot;><div style=&quot;font-size:.82rem;font-weight:700;color:var(--text);&quot;>'+(s.name||s.url||'')+'</div><div style=&quot;font-size:.75rem;color:var(--text3);&quot;>'+(s.url||'')+'</div></div>').join('');}else{list.innerHTML='<span style=&quot;color:var(--text3);font-size:.82rem;&quot;>No services found.</span>';}}).catch(e=>{list.innerHTML='<span style=&quot;color:#ef4444;font-size:.82rem;&quot;>Error: '+e.message+'</span>';});})()" style="padding:10px 14px;border-radius:10px;background:#7000ff;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;">Search</button></div><div id="agentMarketList" style="font-size:.82rem;max-height:160px;overflow-y:auto;color:var(--text3);"></div><button onclick="document.getElementById('agentPanelMarket').remove()" style="margin-top:10px;width:100%;padding:11px 16px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;">Close</button>`;
+  const grid = document.querySelector('[onclick="agentFund()"]')?.closest('[style*="grid-template-columns"]');
+  if (grid) grid.parentElement.insertBefore(el, grid);
+  document.getElementById('agentMarketQuery')?.focus();
 }
 
-async function agentPayService() {
+function agentPayService() {
   if (!agentWalletAddr) return;
-  const url = prompt('Service URL to pay (x402):');
-  if (!url) return;
-  const amt = prompt('Payment amount (USDC):', '0.01');
-  if (!amt) return;
-  agentShowResult('Paying service...');
-  try {
-    const r = await fetch(AGENT_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'pay-service', address: agentWalletAddr, serviceUrl: url, amount: amt, chain: 'ARC-TESTNET' }) });
-    const d = await r.json();
-    agentShowResult(d.success ? 'Payment sent! Response:\n' + JSON.stringify(d.result || d, null, 2) : (d.error || 'Payment failed'));
-  } catch (e) { agentShowResult('Error: ' + e.message); }
+  const id = 'agentPanelPay';
+  if (document.getElementById(id)) { document.getElementById(id).remove(); return; }
+  const el = document.createElement('div');
+  el.id = id;
+  el.style.cssText = 'background:var(--surface);border:1px solid rgba(34,197,94,.25);border-radius:14px;padding:14px;margin-bottom:12px;';
+  el.innerHTML = `<div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:10px;">Pay x402 Service</div><input id="agentPayUrl" placeholder="Service URL (https://...)" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-family:'Inter var','Inter',sans-serif;box-sizing:border-box;margin-bottom:8px;"/><div style="display:flex;gap:8px;margin-bottom:10px;"><input id="agentPayAmt" placeholder="Amount" type="number" min="0" step="any" style="flex:1;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-family:'Inter var','Inter',sans-serif;box-sizing:border-box;" value="0.01"/><div style="padding:10px 14px;border-radius:10px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);color:#22c55e;font-size:.82rem;font-weight:700;display:flex;align-items:center;">USDC</div></div><div style="display:flex;gap:8px;"><button onclick="(function(){const url=document.getElementById('agentPayUrl').value.trim();const amt=document.getElementById('agentPayAmt').value;if(!url.startsWith('http')){agentShowResult('Enter a valid URL');return;}document.getElementById('agentPanelPay').remove();agentShowResult('Paying service...');fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'pay-service',address:agentWalletAddr,serviceUrl:url,amount:String(amt),chain:'ARC-TESTNET'})}).then(r=>r.json()).then(d=>agentShowResult(d.success?'✅ Paid! '+JSON.stringify(d.result||d):'❌ '+(d.error||'Payment failed'))).catch(e=>agentShowResult('❌ '+e.message));})()" style="flex:1;padding:11px;border-radius:10px;background:#22c55e;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;">Pay Now</button><button onclick="document.getElementById('agentPanelPay').remove()" style="padding:11px 16px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;">Cancel</button></div>`;
+  const grid = document.querySelector('[onclick="agentFund()"]')?.closest('[style*="grid-template-columns"]');
+  if (grid) grid.parentElement.insertBefore(el, grid);
+  document.getElementById('agentPayUrl')?.focus();
 }
 
 async function agentDisconnect() {
