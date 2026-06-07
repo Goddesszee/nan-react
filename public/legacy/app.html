@@ -3176,12 +3176,16 @@ function startQRScan() {
 function nanToggleDd(name,btn){
   var dd=document.getElementById('nan-'+name+'-dd');
   if(!dd) return;
+  // ensure dd is direct child of body to escape any stacking context
+  if(dd.parentElement!==document.body) document.body.appendChild(dd);
   var other=document.getElementById(name==='trade'?'nan-more-dd':'nan-trade-dd');
   var rect=btn.getBoundingClientRect();
   var open=dd.style.display!=='block';
   dd.style.display=open?'block':'none';
   dd.style.top=(rect.bottom+4)+'px';
   dd.style.left=rect.left+'px';
+  dd.style.width='210px';
+  dd.style.zIndex='9999999';
   if(other) other.style.display='none';
   btn.querySelectorAll('.nan-caret').forEach(function(c){c.style.transform=open?'rotate(180deg)':''});
 }
