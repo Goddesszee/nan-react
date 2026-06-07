@@ -6653,7 +6653,7 @@ async function agentVerifyOtp() {
           localStorage.setItem('nan_agent_addr',  agentWalletAddr);
         }
         agentPageRefresh();
-        showToast('Agent Wallet connected!', 'success', 4000);
+        if(typeof showToast==='function') showToast('Agent Wallet connected!', 'success', 4000);
       } else if (d.error) {
         clearInterval(agentPollTimer);
         agentResetLogin();
@@ -6661,7 +6661,7 @@ async function agentVerifyOtp() {
       } else if (attempts > 20) {
         clearInterval(agentPollTimer);
         // Use known address if we have it
-        if (agentWalletAddr) { agentPageRefresh(); showToast('Agent Wallet reconnected', 'success', 3000); }
+        if (agentWalletAddr) { agentPageRefresh(); if(typeof showToast==='function') showToast('Agent Wallet reconnected', 'success', 3000); }
         else { agentResetLogin(); agentShowResult('Timed out — please try again'); }
       }
     }, 5000);
@@ -6725,18 +6725,10 @@ async function agentDisconnect() {
   agentWalletAddr = null;
   localStorage.removeItem('nan_agent_addr');
   agentPageRefresh();
-  showToast('Agent Wallet disconnected', 'info', 3000);
+  if(typeof showToast==='function') showToast('Agent Wallet disconnected', 'info', 3000);
 }
 
-// ── Auto-refresh page when navigating to it ───────────────────────────────────
-(function patchGoPage() {
-  const _orig = window.goPage;
-  if (typeof _orig !== 'function') return;
-  window.goPage = function(tab) {
-    _orig(tab);
-    if (tab === 'agent-wallet') setTimeout(function(){ agentPageRefresh(); }, 80);
-  };
-})();
+// goPage routing handled by ui.js pageMap
 
 // ── Init: restore session from localStorage ───────────────────────────────────
 (function agentInit() {
