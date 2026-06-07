@@ -3947,7 +3947,8 @@ RULES:
   history:       <ACTION>{"action":"navigate","tab":"history"}</ACTION>
 - Use agent-send/agent-balance/agent-history/agent-fund when user says "agent wallet" or "agent"
 - Use regular send/swap for main wallet actions
-- ACTION block is invisible to user — never mention it`;
+- ACTION block is COMPLETELY INVISIBLE to user — NEVER write 'ACTION:' or show JSON in your text reply
+- Your text reply must be plain conversational English only — no JSON, no code, no tags`;
 
   try{
     const res=await fetch('https://nan-production.up.railway.app/api/chat',{
@@ -3967,7 +3968,11 @@ RULES:
     const actionMatch=reply.match(/<ACTION>([\s\S]*?)<\/ACTION>/);
     let action=null;
     try{if(actionMatch)action=JSON.parse(actionMatch[1].trim());}catch{}
-    const clean=reply.replace(/<ACTION>[\s\S]*?<\/ACTION>/g,'').trim();
+    // Strip <ACTION> tags and any raw ACTION: {...} leakage from model
+    let clean=reply.replace(/<ACTION>[\s\S]*?<\/ACTION>/g,'').trim();
+    // Also strip raw "ACTION:{...}" without tags that model sometimes outputs
+    clean=clean.replace(/ACTION:\s*\{[\s\S]*?\}/g,'').trim();
+    clean=clean.replace(/\. ACTION:\s*\{[\s\S]*?\}/g,'').trim();
     agentMsgs[agentMsgs.length-1]={role:'assistant',content:clean,action};
     // Speak the AI response
     speakResponse(clean);
