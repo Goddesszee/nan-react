@@ -1079,6 +1079,7 @@ function loadCachedBalances(){
   const homeUsdcBal = document.getElementById('homeUsdcBal');
   const homeEurcBal = document.getElementById('homeEurcBal');
   if(homeBalAmt) homeBalAmt.textContent = '$'+totalUsd.toFixed(2);
+  window._arcBaseBalance = totalUsd; // store for multichain total
   if(homeBalNgn) homeBalNgn.textContent = '≈ ₦'+Math.round(totalUsd*NGN_RATE).toLocaleString()+' NGN';
   if(homeUsdcBal) homeUsdcBal.textContent = uFmt+' USDC';
   if(homeEurcBal) homeEurcBal.textContent = eFmt+' EURC';
@@ -1285,6 +1286,7 @@ async function refreshBalances(){
     const homeUsdcBal=document.getElementById('homeUsdcBal');
     const homeEurcBal=document.getElementById('homeEurcBal');
     if(homeBalAmt)homeBalAmt.textContent=isNaN(totalUsd)?'$0.00':'$'+totalUsd.toFixed(2);
+    window._arcBaseBalance = isNaN(totalUsd)?0:totalUsd;
     // Hide skeleton, show balance
     const _sk=document.getElementById('balSkelWrap');const _rw=document.getElementById('balRealWrap');
     if(_sk)_sk.style.display='none';if(_rw)_rw.style.display='block';
