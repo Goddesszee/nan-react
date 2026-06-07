@@ -2016,16 +2016,16 @@ async function doSwap(){
   if(!userAddr&&signer){userAddr=await signer.getAddress();}
   if(!userAddr&&!isCircleWallet){const _s=await getDynamicSigner();if(_s)userAddr=await _s.getAddress();}
   if(!userAddr){toast('Connect wallet first','error');return;}
-  // Auto-switch to Arc if on wrong network
-  if(!isCircleWallet&&wp){
-    const _cid=await wp.request({method:'eth_chainId'});
-    if(_cid.toLowerCase()!==ARC_HEX.toLowerCase()){
-      toast('Switching to Arc Testnet…','info',3000);
-      await switchToArc();
-      const _cid2=await wp.request({method:'eth_chainId'});
-      if(_cid2.toLowerCase()!==ARC_HEX.toLowerCase()){toast('Please switch to Arc Testnet in your wallet','error');return;}
-      provider=new ethers.BrowserProvider(wp);signer=await provider.getSigner();onArcNetwork=true;
-    }
+  // Use cached onArcNetwork flag — only check RPC if flag says we're off-network
+  if(!isCircleWallet&&wp&&!onArcNetwork){
+    try{
+      const _cid=await wp.request({method:'eth_chainId'});
+      if(_cid.toLowerCase()!==ARC_HEX.toLowerCase()){
+        toast('Switching to Arc Testnet…','info',2000);
+        await switchToArc();
+        provider=new ethers.BrowserProvider(wp);signer=await provider.getSigner();onArcNetwork=true;
+      } else { onArcNetwork=true; }
+    }catch(_){}
   }
   const fromAmt=parseFloat(document.getElementById('swapFrom').value);
   if(!fromAmt||fromAmt<=0){toast('Enter an amount','error');return;}
@@ -2056,12 +2056,11 @@ async function doSwap(){
 
       let data = null;
       try {
-        // Try primary with 4s timeout — if slow, parallel fallback kicks in
+        // Race both endpoints simultaneously — whichever responds first wins
         data = await Promise.race([
           _fetchSwap('https://nan-production.up.railway.app/api/appkit/swap', _swapBody),
-          _timeout(4000).catch(() =>
-            _fetchSwap('https://nan-production.up.railway.app/api/circle-wallets', _swapBody2)
-          )
+          _fetchSwap('https://nan-production.up.railway.app/api/circle-wallets', _swapBody2),
+          _timeout(8000),
         ]);
       } catch(_) {
         // Both failed — try fallback directly
@@ -2091,8 +2090,11 @@ async function doSwap(){
     }
   }
   try{
-    // Get signer fresh if not set
-    if (!signer) { signer = await getDynamicSigner(); }
+    // Use cached signer — getDynamicSigner already called on connect
+    if (!signer) {
+      signer = await getDynamicSigner();
+      if(!signer){toast('Wallet not connected','error');btn.innerHTML='Swap';btn.disabled=false;return;}
+    }
     if(signer){
       const swapContract = new ethers.Contract(SWAP_CONTRACT, SWAP_ABI, signer);
       const tokenAddr    = isUSDCtoEURC ? USDC_ADDR : EURC_ADDR;
@@ -4882,7 +4884,7 @@ window.addEventListener('load',()=>{
     setInterval(fetchLiveFX, 60000);
     setInterval(async()=>{ if(userAddr){ if(!isCircleWallet)await checkNetwork(); if(onArcNetwork||isCircleWallet){await refreshBalances();} } }, 6000);
     if(userAddr){ startOrderEngine(); startIncomingPoller(); }
-    if(userAddr&&!isCircleWallet&&signer&&onArcNetwork) setTimeout(ensureSwapApprovals,2000);
+    if(userAddr&&!isCircleWallet&&signer&&onArcNetwork) ensureSwapApprovals();
     setTimeout(()=>{ if(userAddr) _mcRefreshSilent(); },4000);
     document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&userAddr)refreshBalances(); });
     return;
@@ -4973,7 +4975,7 @@ window.addEventListener('load',()=>{
     }
   },6000);
   if(userAddr){ startOrderEngine(); startIncomingPoller(); }
-  if(userAddr&&!isCircleWallet&&signer&&onArcNetwork) setTimeout(ensureSwapApprovals,2000);
+  if(userAddr&&!isCircleWallet&&signer&&onArcNetwork) ensureSwapApprovals();
   setTimeout(()=>{ if(userAddr) _mcRefreshSilent(); },4000);
   document.addEventListener('visibilitychange',()=>{
     if(!document.hidden&&userAddr)refreshBalances();
