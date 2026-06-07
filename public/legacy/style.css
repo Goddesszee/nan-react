@@ -4313,3 +4313,58 @@ input, button { line-height: 1.4; }
 a { color: var(--accent3) !important; text-decoration: none !important; }
 a:hover { text-decoration: underline !important; color: var(--accent4) !important; }
 
+
+
+/* ── Send page: input visibility in dark mode (mobile) ─────────── */
+@media (max-width: 768px) {
+  /* Address input */
+  [data-theme="dark"] #recipInput,
+  :root:not([data-theme="light"]) #recipInput {
+    background: rgba(255,255,255,.06) !important;
+    border-color: rgba(112,0,255,.35) !important;
+    color: #ffffff !important;
+  }
+  [data-theme="dark"] #recipInput:focus,
+  :root:not([data-theme="light"]) #recipInput:focus {
+    border-color: rgba(112,0,255,.7) !important;
+    background: rgba(112,0,255,.08) !important;
+  }
+
+  /* Amount box wrapper */
+  [data-theme="dark"] #amtWrap,
+  :root:not([data-theme="light"]) #amtWrap {
+    background: rgba(255,255,255,.05) !important;
+    border-color: rgba(112,0,255,.35) !important;
+  }
+
+  /* Amount input text */
+  [data-theme="dark"] #amtInput,
+  :root:not([data-theme="light"]) #amtInput {
+    color: #ffffff !important;
+    caret-color: #a855f7 !important;
+  }
+
+  /* Token buttons */
+  [data-theme="dark"] #topt-usdc,
+  [data-theme="dark"] #topt-eurc,
+  :root:not([data-theme="light"]) #topt-usdc,
+  :root:not([data-theme="light"]) #topt-eurc {
+    background: rgba(255,255,255,.04) !important;
+    border-color: rgba(255,255,255,.12) !important;
+    color: #cccccc !important;
+  }
+  [data-theme="dark"] #topt-usdc.active,
+  :root:not([data-theme="light"]) #topt-usdc.active {
+    background: rgba(112,0,255,.15) !important;
+    border-color: rgba(112,0,255,.6) !important;
+    color: #ffffff !important;
+  }
+
+  /* Unified card on send page */
+  [data-theme="dark"] #page-send > div,
+  :root:not([data-theme="light"]) #page-send > div {
+    background: #0f102a !important;
+    border-color: rgba(112,0,255,.2) !important;
+  }
+}
+
