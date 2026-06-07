@@ -216,6 +216,16 @@ const CCTP_TRANSMITTER_ABI = [
   'function receiveMessage(bytes message, bytes attestation) external returns (bool success)',
 ];
 // ═══════════════════════════════════════════
+// GATEWAY CONSTANTS
+// ═══════════════════════════════════════════
+const GATEWAY_CONTRACT = '0x0077777d7EBA4688BDeF3E311b846F25870A19B9';
+const GATEWAY_DOMAIN   = 26; // Arc Testnet domain per Circle docs
+const GATEWAY_ABI = [
+  'function depositForBurn(uint256 amount, uint32 destinationDomain, bytes32 mintRecipient, address burnToken) external',
+  'function balanceOf(address) view returns (uint256)',
+];
+
+// ═══════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════
 let provider=null, signer=null, userAddr=null, wp=null;
@@ -1436,6 +1446,17 @@ function updateSendAvailable(){
   if(el)el.textContent=isNaN(bal)?'—':bal.toFixed(2);
   // Update token switcher badge
   document.getElementById('sendTokenLabel').textContent=sendToken;
+  // Show gateway balance hint if USDC and user has gateway balance
+  if(sendToken==='USDC' && gatewayBalance && parseFloat(gatewayBalance.total)>0){
+    const hint=document.getElementById('gatewayBalHint');
+    if(hint){
+      hint.textContent='+ '+parseFloat(gatewayBalance.total).toFixed(2)+' USDC in Gateway';
+      hint.style.display='block';
+    }
+  } else {
+    const hint=document.getElementById('gatewayBalHint');
+    if(hint) hint.style.display='none';
+  }
 }
 function setSendTokenDirect(tok,el){
   sendToken=tok;
@@ -2189,7 +2210,7 @@ function initBridgeUI(){
   if(userAddr) refreshGatewayBalance();
   // Show deposit section only for Circle wallet users
   const depSec=document.getElementById('gatewayDepositSection');
-  if(depSec) depSec.style.display=isCircleWallet?'block':'none';
+  if(depSec) depSec.style.display=userAddr?'block':'none'; // show for all wallet types
 }
 function initSwapUI(){
   document.getElementById('swapModeBanner').style.display='none';
@@ -2342,6 +2363,7 @@ async function doBridge(){
     const txHash=data.burnTxHash||null;
     addTx({hash:txHash,to:destAddr,toRaw:'Bridge→'+destChain,amount:amt.toFixed(6),type:'bridge',token:'USDC',ts:Date.now(),confirmed:data.state==='success',source:'appkit-bridge',destChain});
     if(data.state==='success'){toast('✅ Bridge complete! USDC arrived on '+destChain,'success',8000);
+    setTimeout(()=>refreshGatewayBalance(), 3000);
     addNotification('✅ Bridge complete', 'USDC arrived on '+destChain, 'bridge');}
     else{toast('✓ Bridge submitted via App Kit — CCTP processing…','success',6000);
     addNotification('🌉 Bridge submitted', 'CCTP bridge processing — USDC on the way', 'bridge');}
@@ -4037,31 +4059,74 @@ let lendDuration=1, lendFee=2;
 let gatewayBalance={total:'0.00',balances:{}};
 
 async function depositToGateway() {
-  if (!circleWalletId) return toast('Connect with email wallet to deposit to Gateway','warning');
-  const _wId = circleWalletId;
-  const amount = document.getElementById('gatewayDepositAmt')?.value;
-  if (!amount || parseFloat(amount) < 1) return toast('Enter at least 1 USDC','warning');
-  toast('Approving Gateway contract...','info');
+  const amtInput = document.getElementById('gatewayDepositAmt');
+  const amount = amtInput?.value;
+  if (!amount || parseFloat(amount) < 1) { toast('Enter at least 1 USDC','error'); return; }
+  const amt = parseFloat(amount);
+  const btn = document.querySelector('[onclick="depositToGateway()"]');
+  if(btn){ btn.disabled=true; btn.textContent='Depositing…'; }
+
+  // ── Circle Wallet path ──
+  if (isCircleWallet && circleWalletId) {
+    try {
+      const r = await fetch('https://nan-production.up.railway.app/api/gateway-deposit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ walletId: circleWalletId, walletAddress: circleWalletAddress, amount }),
+      });
+      const data = await r.json();
+      if (!data.success) throw new Error(data.error || 'Deposit failed');
+      toast('✅ Gateway deposit submitted! Balance updates in ~20 mins','success',8000);
+      if(amtInput) amtInput.value = '';
+      setTimeout(() => refreshGatewayBalance(), 5000);
+    } catch(err) {
+      toast('Gateway deposit failed: ' + err.message.slice(0,100),'error');
+    } finally {
+      if(btn){ btn.disabled=false; btn.textContent='Deposit'; }
+    }
+    return;
+  }
+
+  // ── MetaMask path — depositForBurn on CCTP Token Messenger ──
+  if (!signer || !onArcNetwork) {
+    toast('Connect MetaMask on Arc Testnet first','error');
+    if(btn){ btn.disabled=false; btn.textContent='Deposit'; }
+    return;
+  }
   try {
-    const r = await fetch('https://nan-production.up.railway.app/api/gateway-deposit', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ walletId: _wId, walletAddress: circleWalletAddress, amount }),
-    });
-    const data = await r.json();
-    if (!data.success) return toast(data.error || 'Deposit failed','error');
-    toast('✅ Deposit submitted! Gateway balance updates in up to 20 mins per Circle docs','success',8000);
-    // Poll gateway balance every 2 min for up to 20 min
-    let polls=0;
-    const gp=setInterval(async()=>{
-      polls++;
-      await refreshGatewayBalance();
-      if(polls>=10)clearInterval(gp);
-    },120000);
+    const amtAtomic = ethers.parseUnits(amt.toFixed(6), 6);
+    const usdcC = new ethers.Contract(USDC_ADDR, ERC20_ABI, signer);
+    // Check balance
+    const bal = await usdcC.balanceOf(userAddr);
+    if(bal < amtAtomic) throw new Error('Insufficient USDC balance');
+    // Approve CCTP messenger to spend
+    if(btn) btn.textContent = 'Approving…';
+    const approveTx = await usdcC.approve(CCTP_TOKEN_MESSENGER, ethers.MaxUint256, arcGasOpts());
+    await approveTx.wait(0);
+    // depositForBurn — burns USDC on Arc and mints on Gateway
+    if(btn) btn.textContent = 'Depositing…';
+    const recipientPadded = '0x' + userAddr.replace('0x','').toLowerCase().padStart(64,'0');
+    const messenger = new ethers.Contract(CCTP_TOKEN_MESSENGER, CCTP_ABI, signer);
+    const burnTx = await messenger.depositForBurn(
+      amtAtomic,
+      GATEWAY_DOMAIN,
+      recipientPadded,
+      USDC_ADDR,
+      arcGasOpts()
+    );
+    await burnTx.wait(0);
+    toast('✅ Gateway deposit submitted! Balance updates in ~20 mins','success',8000);
+    addTx({hash:burnTx.hash,to:GATEWAY_CONTRACT,toRaw:'Gateway Deposit',amount:amt.toFixed(6),type:'out',token:'USDC',ts:Date.now(),confirmed:true,source:'gateway'});
+    if(amtInput) amtInput.value = '';
+    setTimeout(() => refreshGatewayBalance(), 5000);
   } catch(err) {
-    toast('Gateway deposit error: ' + err.message,'error');
+    const msg = err.message?.includes('user rejected') ? 'Transaction cancelled' : err.message?.slice(0,100);
+    toast('Gateway deposit failed: ' + msg,'error');
+  } finally {
+    if(btn){ btn.disabled=false; btn.textContent='Deposit'; }
   }
 }
+
 
 async function refreshGatewayBalance(){
   if(!userAddr) return;
