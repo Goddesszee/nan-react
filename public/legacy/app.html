@@ -1096,24 +1096,47 @@ html,body{background:var(--bg);}
 
       <!-- Connected -->
       <div id="agentConnectedSection" style="display:none;">
-        <div id="agentArcAddr" style="font-size:.75rem;color:var(--text3);font-family:monospace;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:9px 12px;word-break:break-all;margin-bottom:10px;"></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-          <button onclick="agentFund()" style="padding:10px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#7000ff;font-size:.875rem;font-weight:600;cursor:pointer;">💧 Faucet</button>
-          <button onclick="agentCheckBalance()" style="padding:10px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#7000ff;font-size:.875rem;font-weight:600;cursor:pointer;">💰 Balance</button>
-          <button onclick="agentSend()" style="padding:10px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#7000ff;font-size:.875rem;font-weight:600;cursor:pointer;">↑ Send</button>
-          <button onclick="agentHistory()" style="padding:10px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#7000ff;font-size:.875rem;font-weight:600;cursor:pointer;">📋 History</button>
-          <button onclick="agentSetSpendingLimit()" style="padding:10px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#7000ff;font-size:.875rem;font-weight:600;cursor:pointer;">🛡 Limits</button>
-          <button onclick="agentDiscover()" style="padding:10px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#7000ff;font-size:.875rem;font-weight:600;cursor:pointer;">🔍 Marketplace</button>
-          <button onclick="agentPayService()" style="padding:10px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#7000ff;font-size:.875rem;font-weight:600;cursor:pointer;grid-column:span 2;">⚡ Pay x402 Service</button>
-          <button onclick="agentDisconnect()" style="padding:10px;border-radius:11px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#ef4444;font-size:.875rem;font-weight:600;cursor:pointer;grid-column:span 2;">Disconnect</button>
+        <!-- Address + live balance -->
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:12px;">
+          <div id="agentArcAddr" style="font-size:.72rem;color:var(--text3);font-family:monospace;word-break:break-all;margin-bottom:8px;"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div>
+              <div style="font-size:.72rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.08em;">Balance</div>
+              <div id="agentBalDisplay" style="font-size:1.4rem;font-weight:800;color:var(--text);letter-spacing:-.02em;">—</div>
+            </div>
+            <button onclick="agentRefreshBalance()" style="padding:6px 12px;border-radius:100px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#7000ff;font-size:.78rem;font-weight:600;cursor:pointer;">↻ Refresh</button>
+          </div>
         </div>
+        <!-- Result box inline -->
+        <div id="agentResultBox" style="display:none;background:rgba(112,0,255,.06);border:1px solid rgba(112,0,255,.2);border-radius:12px;padding:12px;margin-bottom:12px;">
+          <div id="agentResultText" style="font-size:.82rem;color:var(--text);line-height:1.6;font-family:monospace;white-space:pre-wrap;word-break:break-all;"></div>
+        </div>
+        <!-- Action grid -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px;">
+          <button onclick="agentFund()" style="padding:12px 6px;border-radius:12px;background:rgba(112,0,255,.08);border:1px solid rgba(112,0,255,.15);color:#7000ff;font-size:.78rem;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;">
+            <span style="font-size:1.2rem;">💧</span>Faucet
+          </button>
+          <button onclick="agentSend()" style="padding:12px 6px;border-radius:12px;background:rgba(112,0,255,.08);border:1px solid rgba(112,0,255,.15);color:#7000ff;font-size:.78rem;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;">
+            <span style="font-size:1.2rem;">↑</span>Send
+          </button>
+          <button onclick="agentHistory()" style="padding:12px 6px;border-radius:12px;background:rgba(112,0,255,.08);border:1px solid rgba(112,0,255,.15);color:#7000ff;font-size:.78rem;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;">
+            <span style="font-size:1.2rem;">📋</span>History
+          </button>
+          <button onclick="agentSetSpendingLimit()" style="padding:12px 6px;border-radius:12px;background:rgba(112,0,255,.08);border:1px solid rgba(112,0,255,.15);color:#7000ff;font-size:.78rem;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;">
+            <span style="font-size:1.2rem;">🛡</span>Limits
+          </button>
+          <button onclick="agentDiscover()" style="padding:12px 6px;border-radius:12px;background:rgba(112,0,255,.08);border:1px solid rgba(112,0,255,.15);color:#7000ff;font-size:.78rem;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;">
+            <span style="font-size:1.2rem;">🔍</span>Market
+          </button>
+          <button onclick="agentPayService()" style="padding:12px 6px;border-radius:12px;background:rgba(112,0,255,.08);border:1px solid rgba(112,0,255,.15);color:#7000ff;font-size:.78rem;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;">
+            <span style="font-size:1.2rem;">⚡</span>Pay x402
+          </button>
+        </div>
+        <button onclick="agentDisconnect()" style="width:100%;padding:10px;border-radius:12px;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);color:#ef4444;font-size:.875rem;font-weight:600;cursor:pointer;">Disconnect</button>
       </div>
     </div>
 
-    <!-- Result box -->
-    <div id="agentResultBox" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:13px;margin-bottom:12px;">
-      <div id="agentResultText" style="font-size:.8rem;color:var(--text);line-height:1.6;font-family:monospace;white-space:pre-wrap;word-break:break-all;"></div>
-    </div>
+
 
     <!-- Info -->
     <div style="display:flex;flex-direction:column;gap:8px;">
