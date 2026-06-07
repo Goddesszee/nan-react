@@ -1413,7 +1413,11 @@ function onRecipInput(){
       try{
         const readProvider = getArcProvider();
         const nameContract = new ethers.Contract(NAME_REGISTRY, NAME_ABI, readProvider);
-        const addr = await nameContract.resolve(name);
+        // 5s timeout — never hang forever
+        const addr = await Promise.race([
+          nameContract.resolve(name),
+          new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 5000))
+        ]);
         // Check again — user might have typed while RPC was in flight
         const stillVal = document.getElementById('recipInput').value.trim();
         if(stillVal !== val) return;
@@ -1428,7 +1432,8 @@ function onRecipInput(){
           showNo('Arc name not found — register at arcnames.xyz');
         }
       } catch(e){
-        showNo('Arc name not found — register at arcnames.xyz');
+        if(e.message === 'timeout') showNo('Lookup timed out — check connection');
+        else showNo('Arc name not found — register at arcnames.xyz');
       }
       validateSend();
     }, 500);
@@ -6325,9 +6330,9 @@ function renderQRStyled(elementId, text) {
 // NAN NOTIFICATIONS — In-app bell + Web Push
 // ══════════════════════════════════════════════════════════════════════════════
 
-const NAN_NOTIF_KEY = 'nan_notifications_v1';
-const NAN_PUSH_ADDR_KEY = 'nan_push_addr';
-let nanNotifOpen = false;
+var NAN_NOTIF_KEY = 'nan_notifications_v1';
+var NAN_PUSH_ADDR_KEY = 'nan_push_addr';
+var nanNotifOpen = false; // var avoids TDZ error when called before full init
 
 // ── Storage helpers ───────────────────────────────────────────────────────────
 function loadNotifications() {
