@@ -158,13 +158,9 @@ async function getDynamicSigner() {
 
 // Arc gas helper — EVM gwei units, settled in USDC not ETH
 function arcGasOpts(){
-  // Arc Testnet is gasless. MetaMask rejects gasPrice:0 directly,
-  // so we pass gasPrice:1 (1 wei) — Arc accepts it and charges nothing.
-  // gasLimit:300000 covers all swap/approve/bridge operations on Arc.
-  return {
-    gasPrice: ethers.parseUnits('0.000000001','gwei'), // 1 wei — accepted by MetaMask
-    gasLimit: 300000,
-  };
+  // Arc Testnet is gasless — only set gasLimit.
+  // Do NOT set gasPrice — let MetaMask read it from Arc RPC (returns 0).
+  return { gasLimit: 500000 };
 }
 const SWAP_ABI = [
   'function swapUSDCtoEURC(uint256) external returns (uint256)',
@@ -2096,44 +2092,31 @@ async function doSwap(){
       signer = await getDynamicSigner();
       if(!signer){toast('Wallet not connected','error');btn.innerHTML='Swap';btn.disabled=false;return;}
     }
-    if(signer){
-      const swapContract = new ethers.Contract(SWAP_CONTRACT, SWAP_ABI, signer);
-      const tokenAddr    = isUSDCtoEURC ? USDC_ADDR : EURC_ADDR;
-      const tokenContract= new ethers.Contract(tokenAddr, ERC20_ABI, signer);
-      const amtIn        = ethers.parseUnits(fromAmt.toFixed(6), 6);
-      const alreadyOk    = isUSDCtoEURC ? _swapApproved.USDC : _swapApproved.EURC;
-
-      // Only check allowance if not pre-approved — saves one RPC round-trip
-      if(!alreadyOk) {
-        const currentAllowance = await tokenContract.allowance(userAddr, SWAP_CONTRACT);
-        if(currentAllowance < amtIn) {
-          btn.innerHTML = '<span class="spinner"></span>Approving…';
-          // Approve MaxUint256 so this never happens again
-          const approveTx = await tokenContract.approve(SWAP_CONTRACT, ethers.MaxUint256, arcGasOpts());
-          await approveTx.wait(0); // Arc sub-second — no need to wait for 1 confirmation
-          if(isUSDCtoEURC) _swapApproved.USDC = true;
-          else             _swapApproved.EURC = true;
-        } else {
-          if(isUSDCtoEURC) _swapApproved.USDC = true;
-          else             _swapApproved.EURC = true;
-        }
-      }
-      btn.innerHTML = '<span class="spinner"></span>Swapping…';
-      const swapTx = isUSDCtoEURC
-        ? await swapContract.swapUSDCtoEURC(amtIn, arcGasOpts())
-        : await swapContract.swapEURCtoUSDC(amtIn, arcGasOpts());
-      // wait(0) = don't wait for confirmation — Arc finalises in <1s
-      // Show success immediately, balance refreshes in background
-      const outAmt = (fromAmt * (isUSDCtoEURC ? FX : (1/FX)) * 0.999).toFixed(4);
-      toast('✓ Swapped '+fromAmt.toFixed(2)+' '+tokenIn+' → '+outAmt+' '+tokenOut+'!','success',6000);
-      addNotification('✓ Swap complete', 'Swapped '+fromAmt.toFixed(2)+' '+tokenIn+' → '+outAmt+' '+tokenOut, 'swap');
-      addTx({hash:swapTx.hash,to:SWAP_CONTRACT,toRaw:'NANSwap',amount:fromAmt.toFixed(6),type:'out',token:tokenIn,ts:Date.now(),confirmed:true,source:'swap'});
-      document.getElementById('swapFrom').value = '';
-      document.getElementById('swapTo').value   = '';
-      // Confirm in background — don't block UI
-      swapTx.wait(1).then(() => refreshBalances()).catch(() => refreshBalances());
-      setTimeout(() => refreshBalances(), 3000);
+    // Always check allowance — one fast eth_call, prevents all silent reverts
+    const swapContract  = new ethers.Contract(SWAP_CONTRACT, SWAP_ABI, signer);
+    const tokenAddr     = isUSDCtoEURC ? USDC_ADDR : EURC_ADDR;
+    const tokenContract = new ethers.Contract(tokenAddr, ERC20_ABI, signer);
+    const amtIn         = ethers.parseUnits(fromAmt.toFixed(6), 6);
+    const currentAllow  = await tokenContract.allowance(userAddr, SWAP_CONTRACT);
+    if(currentAllow < amtIn){
+      btn.innerHTML = '<span class="spinner"></span>Approving…';
+      const approveTx = await tokenContract.approve(SWAP_CONTRACT, ethers.MaxUint256, arcGasOpts());
+      await approveTx.wait(0);
+      if(isUSDCtoEURC) _swapApproved.USDC = true;
+      else             _swapApproved.EURC = true;
     }
+    btn.innerHTML = '<span class="spinner"></span>Swapping…';
+    const swapTx = isUSDCtoEURC
+      ? await swapContract.swapUSDCtoEURC(amtIn, arcGasOpts())
+      : await swapContract.swapEURCtoUSDC(amtIn, arcGasOpts());
+    const outAmt = (fromAmt * (isUSDCtoEURC ? FX : (1/FX)) * 0.999).toFixed(4);
+    toast('✓ Swapped '+fromAmt.toFixed(2)+' '+tokenIn+' → '+outAmt+' '+tokenOut+'!','success',6000);
+    addNotification('✓ Swap complete', 'Swapped '+fromAmt.toFixed(2)+' '+tokenIn+' → '+outAmt+' '+tokenOut, 'swap');
+    addTx({hash:swapTx.hash,to:SWAP_CONTRACT,toRaw:'NANSwap',amount:fromAmt.toFixed(6),type:'out',token:tokenIn,ts:Date.now(),confirmed:true,source:'swap'});
+    document.getElementById('swapFrom').value = '';
+    document.getElementById('swapTo').value   = '';
+    swapTx.wait(1).then(()=>refreshBalances()).catch(()=>refreshBalances());
+    setTimeout(()=>refreshBalances(), 3000);
   }catch(err){
     console.error('Swap error:', err);
     // Extract meaningful revert reason
