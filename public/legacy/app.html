@@ -1257,7 +1257,10 @@ html,body{background:var(--bg);}
         <!-- Available balance — only here, not repeated above -->
         <div style="display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid rgba(255,255,255,.05);">
           <span style="font-size:.72rem;color:var(--text3);">Available</span>
-          <span style="font-size:.82rem;font-weight:700;color:var(--accent3);" id="sendAvailable">— USDC</span>
+          <div style="text-align:right;">
+            <span style="font-size:.82rem;font-weight:700;color:var(--accent3);display:block;" id="sendAvailable">— USDC</span>
+            <span id="gatewayBalHint" style="display:none;font-size:.68rem;color:rgba(168,85,247,.7);margin-top:2px;"></span>
+          </div>
         </div>
       </div>
 
@@ -1711,7 +1714,8 @@ html,body{background:var(--bg);}
         <!-- Deposit section — Circle wallet only -->
         <div id="gatewayDepositSection" style="display:none;">
           <div style="height:1px;background:var(--border);margin-bottom:12px;"></div>
-          <div style="font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:8px;">Deposit USDC to Gateway</div>
+          <div style="font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:4px;">Deposit USDC to Gateway</div>
+          <div style="font-size:.72rem;color:var(--text3);margin-bottom:8px;">Works with Circle wallet and MetaMask</div>
           <div style="display:flex;gap:8px;">
             <input id="gatewayDepositAmt" type="number" inputmode="decimal" min="1" step="1" placeholder="Amount (min 1)"
               style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:16px;outline:none;"/>
