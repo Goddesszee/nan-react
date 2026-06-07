@@ -6556,11 +6556,11 @@ function urlBase64ToUint8Array(base64String) {
 // CIRCLE AGENT STACK
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const AGENT_API = 'https://nan-production.up.railway.app/api/agent-stack';
-let agentWalletEmail    = localStorage.getItem('nan_agent_email') || null;
-let agentWalletAddr     = localStorage.getItem('nan_agent_addr') || null;
-let agentRequestId      = null;
-let agentPollTimer      = null;
+var AGENT_API = 'https://nan-production.up.railway.app/api/agent-stack';
+var agentWalletEmail    = localStorage.getItem('nan_agent_email') || null;
+var agentWalletAddr     = localStorage.getItem('nan_agent_addr') || null;
+var agentRequestId      = null;
+var agentPollTimer      = null;
 
 // ── Page state ───────────────────────────────────────────────────────────────
 function agentPageRefresh() {
@@ -6734,7 +6734,7 @@ async function agentDisconnect() {
   if (typeof _orig !== 'function') return;
   window.goPage = function(tab) {
     _orig(tab);
-    if (tab === 'agent-wallet') agentPageRefresh();
+    if (tab === 'agent-wallet') setTimeout(function(){ agentPageRefresh(); }, 80);
   };
 })();
 
