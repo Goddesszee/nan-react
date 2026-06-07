@@ -4062,7 +4062,7 @@ let lendDuration=1, lendFee=2;
 // ═══════════════════════════════════════════
 // CIRCLE GATEWAY — Unified USDC Balance
 // ═══════════════════════════════════════════
-let gatewayBalance={total:'0.00',balances:{}};
+var gatewayBalance={total:'0.00',balances:{}};
 
 async function depositToGateway() {
   const amtInput = document.getElementById('gatewayDepositAmt');
@@ -5084,9 +5084,9 @@ window.addEventListener('load',()=>{
 // PAYMENT REQUESTS ENGINE
 // ═══════════════════════════════════════════
 var paymentRequests=[];
-let currentPRToken='USDC';
-let currentPRExpiry=0;
-let activePRId=null;
+var currentPRToken='USDC';
+var currentPRExpiry=0;
+var activePRId=null;
 
 function loadPaymentRequests(){
   try{
