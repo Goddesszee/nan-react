@@ -158,9 +158,11 @@ async function getDynamicSigner() {
 
 // Arc gas helper — EVM gwei units, settled in USDC not ETH
 function arcGasOpts(){
+  // Arc Testnet is gasless — gasPrice: 0
+  // Using legacy gasPrice format for broadest wallet compatibility
   return {
-    maxFeePerGas: ethers.parseUnits('20','gwei'),
-    maxPriorityFeePerGas: ethers.parseUnits('1','gwei'),
+    gasPrice: 0,
+    gasLimit: 500000,
   };
 }
 const SWAP_ABI = [
