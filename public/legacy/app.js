@@ -1411,12 +1411,13 @@ function onRecipInput(){
       const currentVal = document.getElementById('recipInput').value.trim();
       if(currentVal !== val) return; // user kept typing — stale, abort
       try{
-        const readProvider = getArcProvider();
+        // Use fresh provider for name resolution — cached provider can have stale state
+        const readProvider = new ethers.JsonRpcProvider(ARC_RPC, { chainId: ARC_CHAIN_ID, name: 'arc-testnet', ensAddress: null });
         const nameContract = new ethers.Contract(NAME_REGISTRY, NAME_ABI, readProvider);
-        // 5s timeout — never hang forever
+        // 6s timeout — never hang forever
         const addr = await Promise.race([
           nameContract.resolve(name),
-          new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 5000))
+          new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 6000))
         ]);
         // Check again — user might have typed while RPC was in flight
         const stillVal = document.getElementById('recipInput').value.trim();
@@ -1436,7 +1437,7 @@ function onRecipInput(){
         else showNo('Arc name not found — register at arcnames.xyz');
       }
       validateSend();
-    }, 500);
+    }, 400);
   }
   validateSend();
 }
@@ -5082,7 +5083,7 @@ window.addEventListener('load',()=>{
 // ═══════════════════════════════════════════
 // PAYMENT REQUESTS ENGINE
 // ═══════════════════════════════════════════
-let paymentRequests=[];
+var paymentRequests=[];
 let currentPRToken='USDC';
 let currentPRExpiry=0;
 let activePRId=null;
@@ -5537,7 +5538,7 @@ function deletePR(){
 
 
 // ══ NAN ADMIN DASHBOARD ══
-let _secretTaps=0,_secretTimer=null,_adminUnlocked=false;
+var _secretTaps=0,_secretTimer=null,_adminUnlocked=false;
 
 function handleSecretTap(){
   _secretTaps++;
