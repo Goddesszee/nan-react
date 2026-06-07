@@ -1049,7 +1049,7 @@ html,body{background:var(--bg);}
 
   <!-- ══ AGENT WALLET PAGE ══ -->
 <div class="page" id="page-agent-wallet">
-  <div style="padding:16px 0;">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;padding:20px;">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
       <button onclick="goPage('more')" style="background:none;border:none;cursor:pointer;color:var(--text);padding:4px;">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
@@ -1075,7 +1075,7 @@ html,body{background:var(--bg);}
 
       <!-- Login -->
       <div id="agentLoginSection">
-        <div style="font-size:.82rem;color:var(--text3);line-height:1.55;margin-bottom:12px;">Connect your Circle Agent Wallet — user-controlled, gas-free, with spending limits.</div>
+        <div style="font-size:.9rem;font-weight:500;color:var(--text);line-height:1.6;margin-bottom:12px;">Connect your Circle Agent Wallet. User-controlled, gas-free, with spending limits.</div>
         <input id="agentEmailInput" type="email" placeholder="Your email address" style="width:100%;padding:11px 13px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:.9rem;font-family:'Inter var','Inter',sans-serif;box-sizing:border-box;margin-bottom:8px;"/>
         <button id="agentLoginBtn" onclick="agentLoginInit()" style="width:100%;padding:12px;border-radius:12px;background:#7000ff;border:none;color:#fff;font-size:.9rem;font-weight:600;cursor:pointer;font-family:'Inter var','Inter',sans-serif;">Connect Agent Wallet</button>
       </div>
@@ -1114,12 +1114,12 @@ html,body{background:var(--bg);}
     <!-- Info -->
     <div style="display:flex;flex-direction:column;gap:8px;">
       <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:13px;">
-        <div style="font-size:.82rem;font-weight:600;color:var(--text);margin-bottom:5px;">What is an Agent Wallet?</div>
-        <div style="font-size:.78rem;color:var(--text3);line-height:1.55;">User-controlled MPC wallet — you keep custody, operate autonomously with spending limits. Gas is sponsored on all chains.</div>
+        <div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:6px;">What is an Agent Wallet?</div>
+        <div style="font-size:.9rem;font-weight:500;color:var(--text);line-height:1.6;">User-controlled MPC wallet. You keep custody and operate autonomously with spending limits. Gas is sponsored on all chains.</div>
       </div>
       <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:13px;">
-        <div style="font-size:.82rem;font-weight:600;color:var(--text);margin-bottom:5px;">Nanopayments</div>
-        <div style="font-size:.78rem;color:var(--text3);line-height:1.55;">Pay APIs and services with sub-cent USDC via x402 protocol through Circle Gateway.</div>
+        <div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:6px;">Nanopayments</div>
+        <div style="font-size:.9rem;font-weight:500;color:var(--text);line-height:1.6;">Pay APIs and services with sub-cent USDC via x402 protocol through Circle Gateway.</div>
       </div>
     </div>
   </div>
