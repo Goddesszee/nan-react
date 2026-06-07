@@ -5168,7 +5168,45 @@ function viewPaymentRequest(id){
   const qrBox=document.getElementById('prViewQR');
   if(qrBox){qrBox.innerHTML='';try{new QRCode(qrBox,{text:link,width:120,height:120,colorDark:'#111111',colorLight:'#ffffff'});}catch{}}
   document.getElementById('prMarkPaidBtn').style.display=pr.status==='paid'?'none':'block';
+  _loadPRUnifiedBalance();
   goPage('payreq-view');
+}
+async function _loadPRUnifiedBalance(){
+  const totalEl=document.getElementById('prUnifiedTotal');
+  const chainsEl=document.getElementById('prUnifiedChains');
+  const emptyEl=document.getElementById('prUnifiedEmpty');
+  if(!totalEl||!chainsEl)return;
+  totalEl.textContent='…';
+  chainsEl.innerHTML='';
+  if(emptyEl)emptyEl.style.display='none';
+  try{
+    const addr=circleWalletAddress||userAddr;
+    if(!addr){totalEl.textContent='—';return;}
+    const res=await fetch('https://nan-production.up.railway.app/api/gateway',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'getBalance',address:addr}),
+    });
+    const data=await res.json();
+    if(data.success){
+      totalEl.textContent=parseFloat(data.total||0).toFixed(2);
+      const entries=Object.entries(data.balances||{}).filter(([,v])=>parseFloat(v)>0);
+      if(entries.length===0){
+        if(emptyEl)emptyEl.style.display='block';
+      }else{
+        chainsEl.innerHTML=entries.map(([chain,amount])=>`
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:rgba(112,0,255,.05);border:1px solid rgba(112,0,255,.12);border-radius:9px;">
+            <span style="font-size:.78rem;color:var(--text2);">${chain.replace(/_/g,' ')}</span>
+            <span style="font-size:.78rem;font-weight:700;color:var(--accent3);">${parseFloat(amount).toFixed(2)} USDC</span>
+          </div>`).join('');
+      }
+    }else{
+      totalEl.textContent='—';
+      if(emptyEl){emptyEl.style.display='block';emptyEl.textContent='Gateway unavailable';}
+    }
+  }catch(e){
+    if(totalEl)totalEl.textContent='—';
+    console.log('[prUnified]',e.message);
+  }
 }
 function renderPaymentRequests(){
   loadPaymentRequests();
