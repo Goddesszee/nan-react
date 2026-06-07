@@ -154,7 +154,7 @@ html,body{background:var(--bg);}
         color: #ede9fe !important;
         border-color: rgba(112,0,255,.3) !important;
       }
-      [data-theme=dark] #bankSearchInput::placeholder { color: #666 !important; }
+      [data-theme=dark] #bankSearchInput::placeholder { color: var(--text3) !important; }
       [data-theme=dark] #bankOptionsList > div { color: #ede9fe !important; }
       [data-theme=dark] #bankOptionsList > div:hover { background: rgba(112,0,255,.12) !important; }
       [data-theme=dark] #bankPickerLabel { color: #ede9fe !important; }
@@ -255,7 +255,7 @@ html,body{background:var(--bg);}
 
 /* Light nav */
 [data-theme="light"] .nav-pill-wrap{background:rgba(0,0,0,.04) !important;border:1px solid rgba(0,0,0,.08) !important;}
-[data-theme="light"] .nav-btn{color:#888 !important;}
+[data-theme="light"] .nav-btn{color:var(--text2) !important;}
 [data-theme="light"] .nav-btn.active{background:rgba(112,0,255,.08) !important;color:#7000ff !important;border:1px solid rgba(112,0,255,.15) !important;}
 
 /* Primary button — same in both themes */
@@ -264,9 +264,9 @@ html,body{background:var(--bg);}
 /* Light mode: fix inline-styled white text */
 [data-theme="light"] *[style*="color:rgba(255,255,255,.5)"],
 [data-theme="light"] *[style*="color:rgba(255,255,255,.45)"],
-[data-theme="light"] *[style*="color:rgba(255,255,255,.4)"]{color:#888 !important;}
+[data-theme="light"] *[style*="color:var(--text2)"]{color:var(--text2) !important;}
 [data-theme="light"] *[style*="color:rgba(255,255,255,.7)"],
-[data-theme="light"] *[style*="color:rgba(255,255,255,.75)"]{color:#555 !important;}
+[data-theme="light"] *[style*="color:rgba(255,255,255,.75)"]{color:var(--text3) !important;}
 [data-theme="light"] *[style*="color:rgba(255,255,255,.8)"],
 [data-theme="light"] *[style*="color:rgba(255,255,255,.85)"],
 [data-theme="light"] *[style*="color:rgba(255,255,255,.9)"],
@@ -988,7 +988,7 @@ html,body{background:var(--bg);}
   <nav id="desktopNav" style="display:none;">
     <div class="dnav-logo-row">
       <div class="dnav-logo" style="display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" width="58" height="58"><rect width="36" height="36" rx="6" fill="#7000ff"/><rect x="7" y="7" width="22" height="22" rx="3" fill="#ffffff"/><rect x="11" y="11" width="14" height="14" rx="2" fill="#000000"/><text x="18" y="19" font-family="Inter,system-ui,sans-serif" font-size="10" font-weight="900" fill="#ffffff" text-anchor="middle" dominant-baseline="middle">N</text></svg></div>
-                  <div><div style="font-size:.875rem;font-weight:700;color:#7000ff;">Code sent!</div><div style="font-size:.8rem;color:rgba(255,255,255,.4);">Enter the 6-digit code below</div></div>
+                  <div><div style="font-size:.875rem;font-weight:700;color:#7000ff;">Code sent!</div><div style="font-size:.8rem;color:var(--text2);">Enter the 6-digit code below</div></div>
                 </div>
                 <div style="display:flex;gap:8px;">
                   <input id="otpInput" type="text" inputmode="numeric" maxlength="6" placeholder="000000" style="flex:1;padding:12px 14px;font-size:1.3rem;letter-spacing:.4em;text-align:center;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid rgba(112,0,255,.2);color:#fff;font-family:'Inter',sans-serif;box-sizing:border-box;outline:none;" onfocus="this.style.borderColor='rgba(112,0,255,.6)'" onblur="this.style.borderColor='rgba(112,0,255,.2)'"/>
@@ -1349,15 +1349,15 @@ html,body{background:var(--bg);}
     <!-- APY Hero -->
     <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:10px;">
       
-      <div style="font-size:.875rem;color:rgba(255,255,255,.5);letter-spacing:.15em;text-transform:uppercase;margin-bottom:6px;">Annual interest rate</div>
+      <div style="font-size:.875rem;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;">Annual interest rate</div>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;">
         <div style="font-size:2.5rem;font-weight:800;color:#f0f0f0;letter-spacing:-.04em;line-height:1;">4.80%</div>
         <div style="display:flex;flex-direction:column;gap:5px;align-items:flex-end;">
-          <div style="font-size:1rem;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:rgba(255,255,255,.8);padding:3px 10px;border-radius:100px;">Withdraw anytime</div>
-          <div style="font-size:1rem;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:rgba(255,255,255,.8);padding:3px 10px;border-radius:100px;">No lockup</div>
+          <div style="font-size:1rem;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:var(--text);padding:3px 10px;border-radius:100px;">Withdraw anytime</div>
+          <div style="font-size:1rem;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:var(--text);padding:3px 10px;border-radius:100px;">No lockup</div>
         </div>
       </div>
-      <div style="font-size:1rem;color:rgba(255,255,255,.45);margin-top:8px;">On every dollar you save</div>
+      <div style="font-size:1rem;color:var(--text3);margin-top:8px;">On every dollar you save</div>
     </div>
 
     <!-- Your savings -->
@@ -1365,7 +1365,7 @@ html,body{background:var(--bg);}
       <div>
         <div style="font-size:.875rem;color:var(--text);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;">Your savings</div>
         <div style="font-size:1.2rem;font-weight:700;color:#f0f0f0;" id="suppliedAmt">0.00 USDC</div>
-        <div style="font-size:1rem;color:rgba(255,255,255,.5);margin-top:3px;" id="accruedInterest">+0.#111111 earned</div>
+        <div style="font-size:1rem;color:var(--text3);margin-top:3px;" id="accruedInterest">+0.#111111 earned</div>
       </div>
       <div style="text-align:right;">
         <div style="font-size:.875rem;color:var(--text);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;">Borrowed</div>
@@ -1394,7 +1394,7 @@ html,body{background:var(--bg);}
         </div>
         <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:1rem;color:var(--text);">
           <span>Available: <span id="supplyAvail">—</span> USDC</span>
-          <span style="color:rgba(255,255,255,.5);">+4.80% / year</span>
+          <span style="color:var(--text3);">+4.80% / year</span>
         </div>
       </div>
       <div class="field"><div class="flbl" style="display:none;">Asset</div>
@@ -1819,8 +1819,8 @@ html,body{background:var(--bg);}
     <div class="card" id="bridgeStatusCard" style="display:none;">
       <div class="card-title"><div class="cticon">⟳</div>Bridge Status</div>
       <div id="bridgeStatusContent">
-        <div id="attestStatus" style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:var(--text);line-height:2;"></div>
-        <div id="mintStatus" style="display:none;font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:var(--text);line-height:2;"></div>
+        <div id="attestStatus" style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:var(--text);line-height:1.6;"></div>
+        <div id="mintStatus" style="display:none;font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:var(--text);line-height:1.6;"></div>
       </div>
     </div>
 
@@ -2947,7 +2947,7 @@ window.addEventListener('load', function() {
         <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:.06;pointer-events:none;">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" width="100" height="100"><rect width="36" height="36" rx="6" fill="#ffffff"/><rect x="7" y="7" width="22" height="22" rx="3" fill="#7000ff"/><rect x="11" y="11" width="14" height="14" rx="2" fill="#ffffff"/><text x="18" y="19" font-family="Inter,system-ui,sans-serif" font-size="10" font-weight="900" fill="#7000ff" text-anchor="middle" dominant-baseline="middle">N</text></svg>
         </div>
-        <div style="font-size:.7rem;color:rgba(255,255,255,.6);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;">Total USDC</div>
+        <div style="font-size:.7rem;color:var(--text2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;">Total USDC</div>
         <div style="font-size:2.2rem;font-weight:800;color:#fff;letter-spacing:-.02em;" id="mcTotalBal">—</div>
         <div style="font-size:.8rem;color:rgba(255,255,255,.5);margin-top:4px;" id="mcTotalChains">Loading...</div>
       </div>
