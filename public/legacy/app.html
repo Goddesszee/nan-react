@@ -437,7 +437,7 @@ html,body{background:var(--bg);}
     <div id="topbarNav" style="display:none;align-items:center;gap:2px;">
       <button onclick="goPage('home')" id="tnav-home" class="tnav-btn">Home</button>
       <button onclick="goPage('market')" id="tnav-market" class="tnav-btn">Market</button>
-      <button id="tnav-trade-btn" class="tnav-btn" onclick="nanToggleDd('trade',this)">Trade <span class="nan-caret" style="font-size:10px;margin-left:3px;display:inline-block;transition:transform .2s;">&#9660;</span></button>
+      <button id="tnav-trade-btn" class="tnav-btn" onclick="event.stopPropagation();nanToggleDd('trade',this)">Trade <span class="nan-caret" style="font-size:10px;margin-left:3px;display:inline-block;transition:transform .2s;">&#9660;</span></button>
       <button onclick="goPage('agent-wallet')" id="tnav-agent" class="tnav-btn" style="display:flex;align-items:center;gap:4px;">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><circle cx="12" cy="14" r="2"/></svg>
         Agent
@@ -3355,7 +3355,7 @@ function nanToggleFaucet(btn){
 </div>
 
 <!-- Trade dropdown — must be direct child of body to escape overflow:hidden containers -->
-<div id="nan-trade-dd" style="position:fixed;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:8px;min-width:210px;z-index:999999;display:none;">
+<div id="nan-trade-dd" onclick="event.stopPropagation()" style="position:fixed;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:8px;min-width:210px;z-index:999999;display:none;">
   <div class="nan-dd-item" onclick="goPage('swap');nanCloseDds()">
     <div style="width:32px;height:32px;border-radius:9px;background:#7000ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg></div>
     <div><div style="font-size:1rem;font-weight:700;color:var(--text);">Swap</div><div style="font-size:.75rem;color:var(--text3);">USDC ↔ EURC on Arc</div></div>
