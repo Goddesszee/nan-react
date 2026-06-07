@@ -3230,6 +3230,8 @@ document.addEventListener('click',function(e){
   function showTopbarBtns(){
     var hist=document.getElementById('nan-history-btn');
     if(hist) hist.style.display='flex';
+    var faucet=document.getElementById('navFaucetBtn');
+    if(faucet) faucet.style.display='flex';
   }
   document.addEventListener('walletConnected',showTopbarBtns);
   document.addEventListener('balanceUpdated',showTopbarBtns);
