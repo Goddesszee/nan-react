@@ -1176,7 +1176,7 @@ html,body{background:var(--bg);}
     <!-- ══ SEND PAGE ══ -->
   <div class="page" id="page-send">
 
-    <!-- Status banners (kept for JS) -->
+    <!-- Status banners (kept for JS — outside card so they show above it) -->
     <div id="onboardChecklist" style="display:none;"></div>
     <div class="rpc-error" id="rpcError" style="display:none;">⚠ Could not fetch balances. <a href="#" onclick="refreshBalances();return false;" style="margin-left:6px;">Retry</a></div>
     <div class="tx-polling" id="txPolling" style="display:none;">
@@ -1192,6 +1192,14 @@ html,body{background:var(--bg);}
     </div>
     <div id="walletSourceBadge" style="display:none;"></div>
     <div style="display:none;"></div>
+
+    <!-- ══ Unified card — same style as Bridge, Earn, Swap ══ -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;padding:20px;">
+
+    <!-- Page header -->
+    <div style="margin-bottom:16px;">
+      <div style="font-size:1.125rem;font-weight:700;color:var(--text);letter-spacing:-.02em;">Send & Receive</div>
+    </div>
 
     <!-- ── Tab switcher ── -->
     <div style="display:flex;gap:3px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;padding:3px;margin-bottom:20px;">
@@ -1284,6 +1292,8 @@ html,body{background:var(--bg);}
         <span style="font-size:.78rem;color:var(--text2);line-height:1.5;">Only send <strong>USDC or EURC</strong> on <strong>Arc Testnet</strong> to this address.</span>
       </div>
     </div>
+
+    </div><!-- ── end unified card ── -->
 
     <!-- Confirm card -->
     <div class="confirm-wrap" id="confirmCard">
