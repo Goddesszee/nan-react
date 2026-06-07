@@ -572,6 +572,7 @@ function updateBalDisplay(){
   const lbl=document.getElementById('balCurrencyLabel');
   const amt=document.getElementById('balAmt');
   const usd=document.getElementById('balUsd');
+  if(!lbl||!amt||!usd)return;
   if(balCurrency==='USD'){
     // Show total USD value (USDC + EURC converted)
     amt.textContent='$'+totalUsd.toFixed(2);
@@ -1260,12 +1261,12 @@ async function refreshBalances(){
     const u=parseFloat(usdcBal).toFixed(2);
     const e=parseFloat(eurcBal).toFixed(2);
     updateBalDisplay();
-    document.getElementById('usdcBal2').textContent=u;
-    document.getElementById('eurcBal2').textContent=e;
+    const _u2=document.getElementById('usdcBal2');if(_u2)_u2.textContent=u;
+    const _e2=document.getElementById('eurcBal2');if(_e2)_e2.textContent=e;
     const emptyHint=document.getElementById('emptyBalHint');
     if(emptyHint){emptyHint.style.display=(parseFloat(u)===0&&parseFloat(e)===0)?'flex':'none';}
-    document.getElementById('swapFromBal').textContent=swapFlipped?e:u;
-    document.getElementById('swapToBal').textContent=swapFlipped?u:e;
+    const _sfb=document.getElementById('swapFromBal');if(_sfb)_sfb.textContent=swapFlipped?e:u;
+    const _stb=document.getElementById('swapToBal');if(_stb)_stb.textContent=swapFlipped?u:e;
     // Update home page balance card
     // Use stable FX: only update if we have a fresh rate, otherwise keep last known
     // This prevents balance flickering on refresh due to FX changes
@@ -6449,3 +6450,4 @@ function urlBase64ToUint8Array(base64String) {
     initPushNotifications();
   }
 })();
+
