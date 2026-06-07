@@ -1571,11 +1571,14 @@ function showReceipt(){
   if(existing)existing.remove();
   const modal=document.createElement('div');
   modal.id='receiptModal';
-  modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(12px);animation:fadeIn .2s ease;';
+  modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:2147483640;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);animation:fadeIn .2s ease;';
+  // Hide success card so it doesn't bleed through
+  const sc=document.getElementById('successCard');
+  if(sc) sc.style.visibility='hidden';
   modal.innerHTML=`
     <div style="max-width:400px;width:100%;position:relative;animation:scaleIn .25s cubic-bezier(.34,1.56,.64,1);">
       <!-- Receipt card -->
-      <div id="receiptCard" style="background:#0a0a0a;border:1px solid rgba(112,0,255,.5);border-radius:24px;overflow:hidden;box-shadow:0 0 80px rgba(112,0,255,.25),0 30px 60px rgba(0,0,0,.6);">
+      <div id="receiptCard" style=document.documentElement.getAttribute("data-theme")==="light" ? "background:#ffffff;border:1px solid rgba(112,0,255,.3);border-radius:24px;overflow:hidden;box-shadow:0 0 60px rgba(112,0,255,.15),0 20px 40px rgba(0,0,0,.15);" : "background:#0f102a;border:1px solid rgba(112,0,255,.5);border-radius:24px;overflow:hidden;box-shadow:0 0 80px rgba(112,0,255,.25),0 30px 60px rgba(0,0,0,.6);">
         <!-- Purple gradient header -->
         <div style="background:linear-gradient(135deg,#3b0764,#7000ff,#4c1d95);padding:28px 24px 24px;position:relative;overflow:hidden;">
           <!-- Animated circles decoration -->
@@ -1589,12 +1592,12 @@ function showReceipt(){
               </div>
               <div>
                 <div style="font-size:.8rem;font-weight:800;color:#fff;letter-spacing:.06em;">NAN WALLET</div>
-                <div style="font-size:.65rem;color:rgba(255,255,255,.6);letter-spacing:.1em;">ARC TESTNET</div>
+                <div style="font-size:.65rem;color:rgba(255,255,255,.75);letter-spacing:.1em;">ARC TESTNET</div>
               </div>
             </div>
             <div style="text-align:right;">
-              <div style="font-size:.65rem;color:rgba(255,255,255,.6);font-family:monospace;">${dateStr}</div>
-              <div style="font-size:.65rem;color:rgba(255,255,255,.6);font-family:monospace;">${timeStr}</div>
+              <div style="font-size:.65rem;color:rgba(255,255,255,.75);font-family:monospace;">${dateStr}</div>
+              <div style="font-size:.65rem;color:rgba(255,255,255,.75);font-family:monospace;">${timeStr}</div>
             </div>
           </div>
           <!-- Big checkmark + amount -->
@@ -1613,7 +1616,7 @@ function showReceipt(){
           <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
             <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(112,0,255,.07);border:1px solid rgba(112,0,255,.15);border-radius:10px;">
               <span style="font-size:.75rem;color:#a855f7;font-weight:600;letter-spacing:.04em;">NETWORK</span>
-              <span style="font-size:.75rem;color:#e9d5ff;font-family:monospace;display:flex;align-items:center;gap:5px;"><span style="width:6px;height:6px;background:#22c55e;border-radius:50%;display:inline-block;box-shadow:0 0 5px #22c55e;"></span>Arc Testnet</span>
+              <span style="font-size:.75rem;color:var(--text);font-family:monospace;display:flex;align-items:center;gap:5px;"><span style="width:6px;height:6px;background:#22c55e;border-radius:50%;display:inline-block;box-shadow:0 0 5px #22c55e;"></span>Arc Testnet</span>
             </div>
             <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(112,0,255,.07);border:1px solid rgba(112,0,255,.15);border-radius:10px;">
               <span style="font-size:.75rem;color:#a855f7;font-weight:600;letter-spacing:.04em;">STATUS</span>
@@ -1621,11 +1624,11 @@ function showReceipt(){
             </div>
             <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(112,0,255,.07);border:1px solid rgba(112,0,255,.15);border-radius:10px;">
               <span style="font-size:.75rem;color:#a855f7;font-weight:600;letter-spacing:.04em;">GAS FEE</span>
-              <span style="font-size:.75rem;color:#e9d5ff;font-family:monospace;">$0.00 🎉</span>
+              <span style="font-size:.75rem;color:var(--text);font-family:monospace;">$0.00 🎉</span>
             </div>
             <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(112,0,255,.07);border:1px solid rgba(112,0,255,.15);border-radius:10px;">
               <span style="font-size:.75rem;color:#a855f7;font-weight:600;letter-spacing:.04em;">TX HASH</span>
-              ${isReal?`<a href="${ARC_EXP}/tx/${hash}" target="_blank" style="font-size:.7rem;color:#a855f7;font-family:monospace;text-decoration:none;">${shortHash} ↗</a>`:`<span style="font-size:.7rem;color:#e9d5ff;font-family:monospace;">${shortHash}</span>`}
+              ${isReal?`<a href="${ARC_EXP}/tx/${hash}" target="_blank" style="font-size:.7rem;color:#a855f7;font-family:monospace;text-decoration:none;">${shortHash} ↗</a>`:`<span style="font-size:.7rem;color:var(--text);font-family:monospace;">${shortHash}</span>`}
             </div>
           </div>
 
@@ -1665,7 +1668,7 @@ function showReceipt(){
         </div>
       </div>
       <!-- Close -->
-      <button onclick="document.getElementById('receiptModal').remove()" style="position:absolute;top:-14px;right:-14px;width:32px;height:32px;background:#1a1a1a;border:1px solid rgba(255,255,255,.15);border-radius:50%;color:#fff;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>
+      <button onclick="document.getElementById('receiptModal').remove();var sc=document.getElementById('successCard');if(sc)sc.style.visibility='';" style="position:absolute;top:-14px;right:-14px;width:32px;height:32px;background:#1a1a1a;border:1px solid rgba(255,255,255,.15);border-radius:50%;color:#fff;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>
     </div>
   `;
   document.body.appendChild(modal);
@@ -5804,7 +5807,7 @@ function injectMobileWelcome(){
   el.id = 'mobileWelcome';
   el.onclick = () => handleSecretTap();
   el.style.cssText = 'display:none;align-items:center;gap:10px;cursor:pointer;';
-  el.innerHTML = '<div style="width:32px;height:32px;border-radius:8px;background:#7000ff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;color:#fff;flex-shrink:0;">'+initial+'</div><div><div style="font-size:11px;color:var(--text3);line-height:1;margin-bottom:2px;">Welcome back</div><div id="mobileWelcomeName" style="font-size:14px;font-weight:700;color:var(--text);line-height:1.2;">'+name+'</div></div>';
+  el.innerHTML = '<div style="width:38px;height:38px;border-radius:10px;background:#7000ff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;color:#fff;flex-shrink:0;">'+initial+'</div><div><div style="font-size:.72rem;color:var(--text2);line-height:1;margin-bottom:3px;font-weight:500;">Welcome back</div><div id="mobileWelcomeName" style="font-size:1rem;font-weight:700;color:var(--text);line-height:1.2;">'+name+'</div></div>';
   const tapZone = document.getElementById('secretTapZone');
   if(tapZone) brand.insertBefore(el, tapZone);
   else brand.prepend(el);
