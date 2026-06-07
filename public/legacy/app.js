@@ -6261,7 +6261,10 @@ async function triggerPushNotification(toAddr, title, body) {
   try {
     await fetch('https://nan-production.up.railway.app/api/push-send', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-nan-secret': 'nan-internal-2025',
+      },
       body: JSON.stringify({ addr: toAddr, title, body, url: '/app.html' })
     });
   } catch(e) { console.log('[push-trigger]', e.message); }
