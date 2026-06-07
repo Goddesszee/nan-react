@@ -6064,6 +6064,130 @@ function startIncomingPoller() {
   setInterval(checkIncomingTransfers, 15000);
 }
 
+
+// ══════════════════════════════════════════════════════════════════════════════
+// UI POLISH — Pull-to-refresh, Keyboard shortcuts, Swipe-back, Empty states
+// ══════════════════════════════════════════════════════════════════════════════
+
+// ── Pull-to-refresh (mobile home page) ───────────────────────────────────────
+(function initPullToRefresh() {
+  if (window.innerWidth > 768) return;
+  let startY = 0, pulling = false, threshold = 80;
+  const ind = document.getElementById('pullRefreshIndicator');
+  const txt = document.getElementById('pullRefreshText');
+
+  document.addEventListener('touchstart', e => {
+    const page = document.getElementById('page-home');
+    if (!page || !page.classList.contains('active')) return;
+    if (page.scrollTop > 5) return; // only when at top
+    startY = e.touches[0].clientY;
+    pulling = true;
+  }, { passive: true });
+
+  document.addEventListener('touchmove', e => {
+    if (!pulling || !ind) return;
+    const dy = e.touches[0].clientY - startY;
+    if (dy > 10 && dy < threshold + 20) {
+      ind.classList.add('pulling');
+      if (txt) txt.textContent = dy > threshold ? '↑ Release to refresh' : '↓ Pull to refresh';
+    }
+  }, { passive: true });
+
+  document.addEventListener('touchend', e => {
+    if (!pulling || !ind) return;
+    const dy = e.changedTouches[0].clientY - startY;
+    if (dy >= threshold) {
+      ind.classList.remove('pulling');
+      ind.classList.add('refreshing');
+      if (txt) txt.textContent = 'Refreshing…';
+      refreshBalances().finally(() => {
+        setTimeout(() => {
+          ind.classList.remove('refreshing');
+        }, 800);
+      });
+    } else {
+      ind.classList.remove('pulling');
+    }
+    pulling = false;
+    startY = 0;
+  }, { passive: true });
+})();
+
+// ── Swipe to go back (mobile) ─────────────────────────────────────────────────
+(function initSwipeBack() {
+  if (window.innerWidth > 768) return;
+  let startX = 0, startY = 0;
+  document.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+  }, { passive: true });
+  document.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - startX;
+    const dy = Math.abs(e.changedTouches[0].clientY - startY);
+    // Right swipe from left edge (within 40px) — go back
+    if (startX < 40 && dx > 80 && dy < 60) {
+      if (window._currentPage && window._currentPage !== 'home') {
+        goBack();
+      }
+    }
+  }, { passive: true });
+})();
+
+// ── Keyboard shortcuts (desktop) ─────────────────────────────────────────────
+(function initKeyboardShortcuts() {
+  if (window.innerWidth <= 768) return;
+  document.addEventListener('keydown', e => {
+    // Don't fire when typing in an input
+    if (['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)) return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const shortcuts = {
+      'h': 'home',
+      's': 'send',
+      'w': 'swap',
+      'b': 'bridge',
+      'm': 'market',
+      'e': 'lend',
+      'y': 'history',
+      'p': 'payreq',
+      '/': () => document.getElementById('nanNotifBtn')?.click(),
+    };
+    const action = shortcuts[e.key.toLowerCase()];
+    if (!action) return;
+    e.preventDefault();
+    if (typeof action === 'function') action();
+    else if (typeof goPage === 'function') goPage(action);
+  });
+})();
+
+// ── Empty states helper ───────────────────────────────────────────────────────
+function nanEmptyState(icon, title, sub) {
+  return `<div class="nan-empty">
+    <div class="nan-empty-icon">${icon}</div>
+    <div class="nan-empty-title">${title}</div>
+    <div class="nan-empty-sub">${sub}</div>
+  </div>`;
+}
+
+// ── QR code purple styling override ──────────────────────────────────────────
+function renderQRStyled(elementId, text) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  el.innerHTML = '';
+  try {
+    new QRCode(el, {
+      text,
+      width: 160, height: 160,
+      colorDark: '#3b0088',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M,
+    });
+    // Add purple ring via CSS class
+    el.style.cssText = 'padding:12px;background:#fff;border-radius:20px;box-shadow:0 8px 32px rgba(112,0,255,.2),0 0 0 1px rgba(112,0,255,.15);display:inline-block;';
+  } catch(e) {
+    console.log('[QR]', e.message);
+  }
+}
+
 // ══════════════════════════════════════════════════════════════════════════════
 // NAN NOTIFICATIONS — In-app bell + Web Push
 // ══════════════════════════════════════════════════════════════════════════════
