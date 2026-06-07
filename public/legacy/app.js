@@ -158,11 +158,12 @@ async function getDynamicSigner() {
 
 // Arc gas helper — EVM gwei units, settled in USDC not ETH
 function arcGasOpts(){
-  // Arc Testnet is gasless — gasPrice: 0
-  // Using legacy gasPrice format for broadest wallet compatibility
+  // Arc Testnet is gasless. MetaMask rejects gasPrice:0 directly,
+  // so we pass gasPrice:1 (1 wei) — Arc accepts it and charges nothing.
+  // gasLimit:300000 covers all swap/approve/bridge operations on Arc.
   return {
-    gasPrice: 0,
-    gasLimit: 500000,
+    gasPrice: ethers.parseUnits('0.000000001','gwei'), // 1 wei — accepted by MetaMask
+    gasLimit: 300000,
   };
 }
 const SWAP_ABI = [
