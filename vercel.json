@@ -6,17 +6,62 @@
     {
       "source": "/legacy/(.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
-        { "key": "Pragma", "value": "no-cache" },
-        { "key": "Expires", "value": "0" }
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        },
+        {
+          "key": "Pragma",
+          "value": "no-cache"
+        },
+        {
+          "key": "Expires",
+          "value": "0"
+        }
+      ]
+    },
+    {
+      "source": "/sw.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        },
+        {
+          "key": "Content-Type",
+          "value": "application/javascript"
+        },
+        {
+          "key": "Service-Worker-Allowed",
+          "value": "/"
+        }
       ]
     }
   ],
   "rewrites": [
-    { "source": "/legacy/app.js", "destination": "/legacy/app.js" },
-    { "source": "/legacy/ui.js", "destination": "/legacy/ui.js" },
-    { "source": "/legacy/style.css", "destination": "/legacy/style.css" },
-    { "source": "/legacy/app.html", "destination": "/legacy/app.html" },
-    { "source": "/((?!legacy).*)", "destination": "/index.html" }
+    {
+      "source": "/sw.js",
+      "destination": "/sw.js"
+    },
+    {
+      "source": "/legacy/app.js",
+      "destination": "/legacy/app.js"
+    },
+    {
+      "source": "/legacy/ui.js",
+      "destination": "/legacy/ui.js"
+    },
+    {
+      "source": "/legacy/style.css",
+      "destination": "/legacy/style.css"
+    },
+    {
+      "source": "/legacy/app.html",
+      "destination": "/legacy/app.html"
+    },
+    {
+      "source": "/((?!legacy|sw\\.js).*)",
+      "destination": "/index.html"
+    }
   ]
 }
