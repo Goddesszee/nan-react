@@ -1357,7 +1357,7 @@ function setType(type,el){
   if(type==='arcname')inp.placeholder='yourname.arc';
   validateSend();
 }
-async // Debounce timer for arc name lookup
+// Debounce timer for arc name lookup
 var _arcLookupTimer = null;
 
 function onRecipInput(){
@@ -4262,8 +4262,8 @@ function updateBorrowMax(){
 function initLendUI(){
   // Update max borrow display
   const maxBorrow = lendPositions ? Math.max(0, (lendPositions.supplied*0.75) - lendPositions.borrowed) : 0;
-  const onChainCol = lendPositions.collateral||0;
-  const maxBorrowDisplay = Math.max(0, onChainCol*0.75 - lendPositions.borrowed);
+  const onChainCol = lendPositions ? (lendPositions.collateral||0) : 0;
+  const maxBorrowDisplay = Math.max(0, onChainCol*0.75 - (lendPositions ? lendPositions.borrowed : 0));
   const maxEl = document.getElementById('borrowMaxDisplay');
   if(maxEl){
     if(onChainCol===0) maxEl.textContent = 'Supply USDC to enable borrowing';
@@ -5943,7 +5943,7 @@ function injectMobileWelcome(){
 // ═══════════════════════════════════════════
 // MULTICHAIN BALANCE
 // ═══════════════════════════════════════════
-const MC_CHAINS = [
+var MC_CHAINS = [
   { id:'ARC',          name:'Arc Testnet',      color:'#0a0f1e', rpc:'https://rpc.testnet.arc.network',    usdc:'0x3600000000000000000000000000000000000000', decimals:6,  icon:'<img src="https://testnet.arcscan.app/assets/configs/og_image.png" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\'">' },
   { id:'ETH-SEPOLIA',  name:'Ethereum Sepolia', color:'#627EEA', rpc:'https://ethereum-sepolia-rpc.publicnode.com', usdc:'0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238', decimals:6, icon:'<img src="https://coin-images.coingecko.com/coins/images/279/small/ethereum.png?1696501628" style="width:100%;height:100%;object-fit:cover;">' },
   { id:'BASE-SEPOLIA', name:'Base Sepolia',     color:'#0052FF', rpc:'https://sepolia.base.org',            usdc:'0x036CbD53842c5426634e7929541eC2318f3dCF7e', decimals:6,  icon:'<img src="https://coin-images.coingecko.com/asset_platforms/images/131/small/base-network.png?1710164297" style="width:100%;height:100%;object-fit:cover;">' },
