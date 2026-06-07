@@ -1078,7 +1078,7 @@ function loadCachedBalances(){
   const homeBalNgn = document.getElementById('homeBalNgn');
   const homeUsdcBal = document.getElementById('homeUsdcBal');
   const homeEurcBal = document.getElementById('homeEurcBal');
-  if(homeBalAmt) homeBalAmt.textContent = totalUsd.toFixed(2);
+  if(homeBalAmt) homeBalAmt.textContent = '$'+totalUsd.toFixed(2);
   if(homeBalNgn) homeBalNgn.textContent = '≈ ₦'+Math.round(totalUsd*NGN_RATE).toLocaleString()+' NGN';
   if(homeUsdcBal) homeUsdcBal.textContent = uFmt+' USDC';
   if(homeEurcBal) homeEurcBal.textContent = eFmt+' EURC';
@@ -1284,7 +1284,7 @@ async function refreshBalances(){
     const homeBalNgn=document.getElementById('homeBalNgn');
     const homeUsdcBal=document.getElementById('homeUsdcBal');
     const homeEurcBal=document.getElementById('homeEurcBal');
-    if(homeBalAmt)homeBalAmt.textContent=isNaN(totalUsd)?'0.00':totalUsd.toFixed(2);
+    if(homeBalAmt)homeBalAmt.textContent=isNaN(totalUsd)?'$0.00':'$'+totalUsd.toFixed(2);
     // Hide skeleton, show balance
     const _sk=document.getElementById('balSkelWrap');const _rw=document.getElementById('balRealWrap');
     if(_sk)_sk.style.display='none';if(_rw)_rw.style.display='block';
@@ -1358,7 +1358,7 @@ function setType(type,el){
   validateSend();
 }
 async // Debounce timer for arc name lookup
-let _arcLookupTimer = null;
+var _arcLookupTimer = null;
 
 function onRecipInput(){
   const val = document.getElementById('recipInput').value.trim();
@@ -4055,9 +4055,9 @@ async function connectSpecific(walletType){
 // ═══════════════════════════════════════════
 // LEND & BORROW (on-chain — NANLendingPool)
 // ═══════════════════════════════════════════
-let lendPositions={supplied:0,borrowed:0,interest:0};
+var lendPositions={supplied:0,borrowed:0,interest:0};
 let lendAsset='USDC';
-let lendDuration=1, lendFee=2;
+var lendDuration=1, lendFee=2;
 
 // ═══════════════════════════════════════════
 // CIRCLE GATEWAY — Unified USDC Balance
