@@ -3286,6 +3286,7 @@ function nanToggleFaucet(btn){
     if(!window.updateHomeScreen) return setTimeout(patchHome,500);
     var _orig=window.updateHomeScreen;
     window.updateHomeScreen=function(){
+      window._arcBaseBalance = null; // reset so multichain can recalculate
       _orig.apply(this,arguments);
       setTimeout(function(){
         var chainMap={'ETH Sepolia':'ETH-SEPOLIA','Base':'BASE-SEPOLIA','Arbitrum':'ARB-SEPOLIA','Optimism':'OP-SEPOLIA','Avalanche':'AVAX-FUJI'};
@@ -3304,10 +3305,12 @@ function nanToggleFaucet(btn){
           if(divs[1]&&usd) divs[1].textContent=usd;
         });
         if(multiTotal===0) return;
-        var arcTotal=parseFloat(document.getElementById('homeBalAmt')?.textContent?.replace(/[^0-9.]/g,''))||0;
-        var grand=arcTotal+multiTotal;
+        // Use the base Arc balance stored separately to avoid compounding
+        var arcBase = parseFloat(window._arcBaseBalance||0);
+        if(!arcBase) return; // wait for arc balance to be set
+        var grand = arcBase + multiTotal;
         var el=document.getElementById('homeBalAmt');
-        if(el) el.textContent=grand.toFixed(2);
+        if(el) el.textContent='$'+grand.toFixed(2);
         var ngn=document.getElementById('homeBalNgn');
         var rate=window.fxRate||1620;
         if(ngn) ngn.textContent='≈ ₦'+Math.round(grand*rate).toLocaleString()+' NGN';
