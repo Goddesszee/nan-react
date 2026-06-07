@@ -1557,6 +1557,17 @@ html,body{background:var(--bg);}
         <span style="color:var(--text);font-size:1rem;">›</span>
       </div>
 
+      <div onclick="goPage('agent-wallet')" style="display:flex;align-items:center;gap:14px;padding:13px 15px;cursor:pointer;transition:background .15s;border-top:1px solid var(--border);" onmouseover="this.style.background='rgba(112,0,255,.08)'" onmouseout="this.style.background='transparent'">
+        <div style="width:36px;height:36px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7000ff" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><circle cx="12" cy="14" r="2"/></svg>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:1rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;">Agent Wallet <span style="font-size:.72rem;background:rgba(112,0,255,.15);border:1px solid rgba(112,0,255,.3);color:#c084fc;border-radius:100px;padding:2px 7px;font-weight:700;">NEW</span></div>
+          <div style="font-size:.85rem;color:var(--text3);margin-top:2px;">Circle Agent Stack</div>
+        </div>
+        <span style="color:var(--text);font-size:1rem;">›</span>
+      </div>
+
     </div>
 
     <!-- Account section -->
@@ -2437,6 +2448,84 @@ html,body{background:var(--bg);}
       <button onclick="document.getElementById('floatingOtpStep').style.display='none';document.getElementById('floatingEmailStep').style.display='block';" style="width:100%;background:none;border:none;color:#9ca3af;padding:10px;font-size:1rem;cursor:pointer;margin-top:4px;">← Change email</button>
     </div>
     <div style="text-align:center;font-size:1rem;color:#6b7280;margin-top:14px;">Non-custodial · Your keys · <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:4px;display:inline-block;flex-shrink:0;border-radius:3px;background:#0d1b2e;padding:1px;"><path fill="url(#arc_logo2)" d="M3.5 20.999c.146-4.407.893-8.519 2.142-11.717C7.223 5.231 9.513 3 12.088 3s4.865 2.231 6.447 6.283c.822 2.107 1.427 4.61 1.786 7.334q.048.366.087.737.015.024.013.041s.21 1.317.256 3.604h-.024c-.313-.256-4-3.153-10.112-2.314.093-1.035.22-2.04.383-3.005l.027-.146a24.5 24.5 0 0 1 6.104.57q-.007-.056-.017-.115c-.33-2.06-.819-3.945-1.448-5.556-1.029-2.635-2.371-4.271-3.502-4.271-1.132 0-2.474 1.636-3.503 4.271q-.375.958-.679 2.034a30 30 0 0 0-.718 3.213A40 40 0 0 0 6.662 21H3.5z"/><defs><linearGradient id="arc_logo2" x1="12" x2="12" y1="3" y2="21" gradientUnits="userSpaceOnUse"><stop stop-color="#d0d8e8"/><stop offset="1" stop-color="#7a8faa"/></linearGradient></defs></svg>Testnet</div>
+  </div>
+</div>
+
+<!-- ══ AGENT WALLET PAGE ══ -->
+<div class="page" id="page-agent-wallet">
+  <div style="padding:16px 0;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+      <button onclick="goPage('more')" style="background:none;border:none;cursor:pointer;color:var(--text);padding:4px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div>
+        <div style="font-size:1.1rem;font-weight:700;color:var(--text);">Agent Wallet</div>
+        <div style="font-size:.8rem;color:var(--text3);">Circle Agent Stack</div>
+      </div>
+    </div>
+
+    <!-- Status card -->
+    <div style="background:var(--card);border:1px solid rgba(112,0,255,.2);border-radius:18px;padding:18px;margin-bottom:14px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+        <div style="width:40px;height:40px;border-radius:12px;background:rgba(112,0,255,.12);border:1px solid rgba(112,0,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7000ff" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><circle cx="12" cy="14" r="2"/></svg>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:.95rem;font-weight:700;color:var(--text);">Circle Agent Wallet</div>
+          <div id="agentWalletStatus" style="font-size:.78rem;color:var(--text3);margin-top:2px;">Not connected</div>
+        </div>
+        <div id="agentWalletBadge" style="font-size:.72rem;padding:3px 9px;border-radius:100px;background:rgba(107,114,128,.1);border:1px solid var(--border);color:var(--text3);font-weight:600;">Offline</div>
+      </div>
+
+      <!-- Login -->
+      <div id="agentLoginSection">
+        <div style="font-size:.82rem;color:var(--text3);line-height:1.55;margin-bottom:12px;">Connect your Circle Agent Wallet — user-controlled, gas-free, with spending limits.</div>
+        <input id="agentEmailInput" type="email" placeholder="Your email address" style="width:100%;padding:11px 13px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:.9rem;font-family:'Inter var','Inter',sans-serif;box-sizing:border-box;margin-bottom:8px;"/>
+        <button id="agentLoginBtn" onclick="agentLoginInit()" style="width:100%;padding:12px;border-radius:12px;background:#7000ff;border:none;color:#fff;font-size:.9rem;font-weight:600;cursor:pointer;font-family:'Inter var','Inter',sans-serif;">Connect Agent Wallet</button>
+      </div>
+
+      <!-- OTP -->
+      <div id="agentOtpSection" style="display:none;">
+        <div style="font-size:.82rem;color:var(--text3);margin-bottom:10px;">Check your email for the OTP code:</div>
+        <input id="agentOtpInput" type="text" placeholder="ABC-123456" maxlength="12" style="width:100%;padding:11px 13px;border-radius:12px;border:1px solid rgba(112,0,255,.4);background:var(--surface);color:var(--text);font-size:1.1rem;font-family:'Inter var','Inter',monospace;letter-spacing:4px;box-sizing:border-box;text-align:center;margin-bottom:8px;"/>
+        <button onclick="agentVerifyOtp()" style="width:100%;padding:12px;border-radius:12px;background:#7000ff;border:none;color:#fff;font-size:.9rem;font-weight:600;cursor:pointer;font-family:'Inter var','Inter',sans-serif;margin-bottom:6px;">Verify Code</button>
+        <button onclick="agentResetLogin()" style="width:100%;padding:10px;border-radius:12px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.82rem;cursor:pointer;font-family:'Inter var','Inter',sans-serif;">Back</button>
+      </div>
+
+      <!-- Pending -->
+      <div id="agentPendingSection" style="display:none;text-align:center;padding:10px 0;">
+        <div style="font-size:.88rem;color:var(--text3);">Verifying and loading wallets...</div>
+        <div style="font-size:.75rem;color:var(--text3);margin-top:4px;">This takes about 10 seconds</div>
+      </div>
+
+      <!-- Connected -->
+      <div id="agentConnectedSection" style="display:none;">
+        <div id="agentArcAddr" style="font-size:.75rem;color:var(--text3);font-family:monospace;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:9px 12px;word-break:break-all;margin-bottom:10px;"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <button onclick="agentFund()" style="padding:10px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#c084fc;font-size:.82rem;font-weight:600;cursor:pointer;">Faucet</button>
+          <button onclick="agentCheckBalance()" style="padding:10px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#c084fc;font-size:.82rem;font-weight:600;cursor:pointer;">Balance</button>
+          <button onclick="agentDiscover()" style="padding:10px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#c084fc;font-size:.82rem;font-weight:600;cursor:pointer;">Marketplace</button>
+          <button onclick="agentDisconnect()" style="padding:10px;border-radius:11px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#f87171;font-size:.82rem;font-weight:600;cursor:pointer;">Disconnect</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Result box -->
+    <div id="agentResultBox" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:13px;margin-bottom:12px;">
+      <div id="agentResultText" style="font-size:.8rem;color:var(--text);line-height:1.6;font-family:monospace;white-space:pre-wrap;word-break:break-all;"></div>
+    </div>
+
+    <!-- Info -->
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:13px;">
+        <div style="font-size:.82rem;font-weight:600;color:var(--text);margin-bottom:5px;">What is an Agent Wallet?</div>
+        <div style="font-size:.78rem;color:var(--text3);line-height:1.55;">User-controlled MPC wallet — you keep custody, operate autonomously with spending limits. Gas is sponsored on all chains.</div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:13px;">
+        <div style="font-size:.82rem;font-weight:600;color:var(--text);margin-bottom:5px;">Nanopayments</div>
+        <div style="font-size:.78rem;color:var(--text3);line-height:1.55;">Pay APIs and services with sub-cent USDC via x402 protocol through Circle Gateway.</div>
+      </div>
+    </div>
   </div>
 </div>
 
