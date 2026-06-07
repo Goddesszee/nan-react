@@ -366,6 +366,17 @@ html,body{background:var(--bg);}
   overflow:hidden;
   max-height:72vh;
 }
+@media(min-width:769px){
+  #nanNotifPanel{
+    top:64px !important;
+    left:220px !important;
+    max-width:420px !important;
+    width:420px !important;
+    border-radius:0 0 16px 0 !important;
+    max-height:60vh !important;
+  }
+  #nanNotifBackdrop{ top:64px !important; left:220px !important; }
+}
 #nanNotifPanel.open{display:flex;}
 #nanNotifHeader{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 12px;border-bottom:1px solid var(--border);background:rgba(112,0,255,.06);}
 #nanNotifHeader span{font-size:.9rem;font-weight:700;color:var(--text);letter-spacing:.02em;}
@@ -1723,7 +1734,7 @@ html,body{background:var(--bg);}
         <div style="font-size:1rem;font-weight:700;color:var(--text);display:flex;align-items:center;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:4px;display:inline-block;flex-shrink:0;border-radius:3px;background:#6d28d9;padding:1px;"><path fill="rgba(255,255,255,0.85)" d="M3.5 20.999c.146-4.407.893-8.519 2.142-11.717C7.223 5.231 9.513 3 12.088 3s4.865 2.231 6.447 6.283c.822 2.107 1.427 4.61 1.786 7.334q.048.366.087.737.015.024.013.041s.21 1.317.256 3.604h-.024c-.313-.256-4-3.153-10.112-2.314.093-1.035.22-2.04.383-3.005l.027-.146a24.5 24.5 0 0 1 6.104.57q-.007-.056-.017-.115c-.33-2.06-.819-3.945-1.448-5.556-1.029-2.635-2.371-4.271-3.502-4.271-1.132 0-2.474 1.636-3.503 4.271q-.375.958-.679 2.034a30 30 0 0 0-.718 3.213A40 40 0 0 0 6.662 21H3.5z"/><defs><linearGradient id="arc_logo" x1="12" x2="12" y1="3" y2="21" gradientUnits="userSpaceOnUse"><stop stop-color="#d0d8e8"/><stop offset="1" stop-color="#7a8faa"/></linearGradient></defs></svg>Arc Testnet</div>
       </div>
 
-      <div style="text-align:center;font-size:1rem;color:var(--text);margin:2px 0 10px;">↓</div>
+      <div style="text-align:center;font-size:1rem;color:var(--text);margin:2px 0 10px;" class="bridge-arrow">↓</div>
 
       <!-- To network -->
       <div style="font-size:.8rem;font-weight:700;color:var(--text);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">To network</div>
@@ -1761,7 +1772,8 @@ html,body{background:var(--bg);}
       </div>
     </div>
 
-    <!-- Amount card -->
+    <!-- Amount card — on desktop this is in the right column via bridgeFormGrid CSS -->
+    <div id="bridgeRightCol">
     <div class="card" style="margin-bottom:10px;">
       <div style="font-size:.8rem;font-weight:700;color:var(--text);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">Amount</div>
       <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:14px;">
@@ -1789,6 +1801,7 @@ html,body{background:var(--bg);}
 
     <!-- Bridge button -->
     <button class="btn" id="bridgeBtn" onclick="doBridge()" style="margin-bottom:10px;">Bridge USDC →</button>
+    </div><!-- end bridgeRightCol -->
 
 
 
