@@ -8345,9 +8345,23 @@ async function agentConfirmedSend(to, amount, token) {
   addAgentMsg('⏳ Sending '+amount+' '+token+' from agent wallet to '+to.slice(0,6)+'...'+to.slice(-4)+'...');
   renderAgentMsgs();
   try {
-    const r = await fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'transfer',fromAddress:agentWalletAddr,toAddress:to,amount:String(amount),chain:'ARC-TESTNET'})});
-    const d = await r.json();
+    // Determine if this is a Circle Programmable Wallet (agent-wallets) or CLI wallet (agent-stack)
+    const storedAgentWallet = JSON.parse(localStorage.getItem('nan_agent_wallet_'+userAddr)||'null');
+    const isCircleAgentWallet = storedAgentWallet?.walletId && storedAgentWallet?.walletAddress;
+    
+    let r, d;
+    if(isCircleAgentWallet){
+      // Circle Programmable Wallet — use agent-wallets transfer API
+      r = await fetch('https://nan-production.up.railway.app/api/agent-wallets',{
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({action:'transfer', userAddress:userAddr, toAddress:to, amount:String(amount), token:token||'USDC'})
+      });
+    } else {
+      // CLI wallet (owner) — use agent-stack transfer
+      r = await fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action:'transfer',fromAddress:agentWalletAddr,toAddress:to,amount:String(amount),chain:'ARC-TESTNET'})});
+    }
+    d = await r.json();
     if(d.success){
       addAgentMsg('✅ Sent! TX: '+(d.txHash||d.transactionId||'pending'));
       // Receipt button
