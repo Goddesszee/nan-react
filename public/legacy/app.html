@@ -106,146 +106,12 @@ html,body{background:var(--bg);}
 #app-root{background:var(--bg);}
 .bottom-nav{background:var(--nav-bg) !important;border-top:1px solid var(--border) !important;}
     /* ── MOBILE DARK MODE & DROPDOWN FIXES ── */
-    @media (max-width: 768px) {
-      /* Dollar sign fix — removed ::before, JS sets $ already */
-      
-      /* Faucet button */
-      #navFaucetBtn { display:none !important; }
-      #navFaucetBtn .tb-btn-text { display:none !important; }
-      
-      /* Faucet dropdown items readable */
-      #nan-faucet-dd a > div > div:first-child { font-size:13px !important; font-weight:600 !important; }
-      #nan-faucet-dd a > div > div:last-child { font-size:11px !important; }
-      #nan-faucet-dd a { padding:8px 10px !important; }
-      #nan-faucet-dd img { width:22px !important; height:22px !important; }
-
-      /* Market search */
-      #page-market .mkt-search, #page-market .mkt-search input { background: var(--surface) !important; color: var(--text) !important; }
-
-      /* Chain dropdown dark mode */
-      [data-theme=dark] .chain-dropdown-list { background: #12132a !important; border-color: rgba(112,0,255,.25) !important; }
-      [data-theme=dark] .chain-dropdown-item { color: var(--text) !important; background: #12132a !important; }
-      [data-theme=dark] .chain-dropdown-item:hover { background: rgba(112,0,255,.15) !important; }
-      [data-theme=dark] .chain-dropdown-btn { color: var(--text) !important; background: rgba(255,255,255,.04) !important; border-color: rgba(112,0,255,.25) !important; }
-
-      /* Bank picker mobile - smaller floating card */
-      #bankPickerSheet {
-        left: 5% !important;
-        right: 5% !important;
-        bottom: 70px !important;
-        width: 90% !important;
-        max-height: 55vh !important;
-        border-radius: 16px !important;
-        border: 1px solid var(--border) !important;
-        box-shadow: 0 8px 32px rgba(0,0,0,.3) !important;
-      }
-      #bankOptionsList { max-height: 35vh !important; overflow-y: auto !important; }
-      #bankSearchInput { background: var(--surface) !important; color: var(--text) !important; }
-      
-      /* ── Bank picker: DARK mode ── */
-      [data-theme=dark] #bankPickerSheet {
-        background: #0f102a !important;
-        border-color: rgba(112,0,255,.3) !important;
-        color: #ede9fe !important;
-      }
-      [data-theme=dark] #bankSearchInput {
-        background: rgba(255,255,255,.06) !important;
-        color: #ede9fe !important;
-        border-color: rgba(112,0,255,.3) !important;
-      }
-      [data-theme=dark] #bankSearchInput::placeholder { color: var(--text3) !important; }
-      [data-theme=dark] #bankOptionsList > div { color: #ede9fe !important; }
-      [data-theme=dark] #bankOptionsList > div:hover { background: rgba(112,0,255,.12) !important; }
-      [data-theme=dark] #bankPickerLabel { color: #ede9fe !important; }
-      [data-theme=dark] [id*=bankList], [data-theme=dark] [class*=bank-list],
-      [data-theme=dark] [id*=bankDd], [data-theme=dark] [id*=bank-dd] {
-        background: #0f102a !important; color: #ede9fe !important;
-      }
-      [data-theme=dark] input[placeholder*=bank],
-      [data-theme=dark] input[placeholder*=Bank] {
-        background: rgba(255,255,255,.06) !important;
-        color: #ede9fe !important;
-        border-color: rgba(112,0,255,.3) !important;
-      }
-
-      /* ── Bank picker: LIGHT mode ── */
-      [data-theme=light] #bankPickerSheet {
-        background: #ffffff !important;
-        border-color: rgba(112,0,255,.2) !important;
-        color: #111 !important;
-      }
-      [data-theme=light] #bankSearchInput {
-        background: #f5f5f5 !important;
-        color: #111 !important;
-        border-color: rgba(112,0,255,.25) !important;
-      }
-      [data-theme=light] #bankSearchInput::placeholder { color: #aaa !important; }
-      [data-theme=light] #bankOptionsList > div { color: #111 !important; background: #fff !important; }
-      [data-theme=light] #bankOptionsList > div:hover { background: rgba(112,0,255,.06) !important; }
-      [data-theme=light] #bankPickerLabel { color: #111 !important; }
-
-      /* ── Faucet dropdown ── */
-      #nan-faucet-dd a > div > div { color: #111 !important; }
-      [data-theme=dark] #nan-faucet-dd {
-        background: #0f102a !important;
-        border-color: rgba(112,0,255,.25) !important;
-      }
-      [data-theme=dark] #nan-faucet-dd a > div > div { color: #ede9fe !important; }
-    }
+    
 
     /* ── MOBILE BALANCE DOLLAR FIX ── */
-    @media (max-width: 768px) {
-      /* homeBalAmt::before removed — JS sets $ */
-      
-      #navFaucetBtn { display:flex !important; align-items:center; justify-content:center; width:32px !important; height:32px !important; border-radius:50% !important; padding:0 !important; background:#6d28d9 !important; border:none !important; color:#fff !important; font-size:16px !important; min-width:unset !important; }
-      #navFaucetBtn .tb-btn-text { display:none !important; }
-      #page-market .mkt-search, #page-market .mkt-search input { background: var(--surface) !important; color: var(--text) !important; }
-    }
+    
     /* ── MOBILE ONLY STYLES ─────────────────────────── */
-    @media (max-width: 768px) {
-      #globalTopBar { padding: 8px 14px !important; min-height: 52px !important; }
-      .brand-logo svg { width: 34px !important; height: 34px !important; }
-      #mobileAddrPill { font-size: 11px !important; font-weight: 600 !important; padding: 5px 10px !important; border-radius: 100px !important; background: rgba(109,40,217,.08) !important; border: 1px solid rgba(109,40,217,.2) !important; color: #6d28d9 !important; max-width: 110px !important; }
-      .net-pill { font-size: 10px !important; font-weight: 600 !important; padding: 3px 7px !important; border-radius: 100px !important; }
-      .net-pill-full { display: none !important; }
-      .net-pill-short { display: inline !important; }
-      .tb-icon-btn { width: 30px !important; height: 30px !important; border-radius: 50% !important; padding: 0 !important; }
-      .tb-btn-text { display: none !important; }
-      #navFaucetBtn { display: flex !important; align-items: center !important; justify-content: center !important; width: 32px !important; height: 32px !important; border-radius: 50% !important; padding: 0 !important; background: #6d28d9 !important; border: none !important; color: #fff !important; font-size: 14px !important; }
-      .desktop-only-btn { display: none !important; }
-      div[style*=font-size:2.8rem] { font-size: 2.4rem !important; }
-      #homeBalAmt { font-size: 2.4rem !important; }
-      #page-market .mkt-wrap { border-radius: 16px !important; }
-      #page-market .mkt-inner { padding: 12px !important; }
-      #page-market .mbal { padding: 12px 14px !important; margin-bottom: 10px !important; }
-      #page-market .mbal-lbl { font-size: 10px !important; }
-      #page-market .mbal-amt { font-size: 1.6rem !important; }
-      #page-market .mbal-ngn { font-size: 12px !important; }
-      #page-market .msl { font-size: 11px !important; margin-bottom: 8px !important; opacity: 1 !important; }
-      #page-market .mleg-item { font-size: 12px !important; }
-      #page-market .moc { padding: 14px !important; }
-      #page-market .moc-name { font-size: 15px !important; font-weight: 700 !important; }
-      #page-market .moc-desc { font-size: 12px !important; }
-      #page-market .msn { font-size: 13px !important; font-weight: 700 !important; }
-      #page-market .msd { font-size: 11px !important; }
-      #page-market .msi { width: 36px !important; height: 36px !important; margin-bottom: 8px !important; }
-      #page-market .msc { padding: 13px !important; border-radius: 13px !important; }
-      #page-market .mrn { font-size: 14px !important; font-weight: 700 !important; }
-      #page-market .mrs { font-size: 12px !important; }
-      #page-market .mrp { font-size: 13px !important; font-weight: 700 !important; }
-      #page-market .mri { width: 38px !important; height: 38px !important; border-radius: 10px !important; }
-      #page-market .mrow { padding: 12px 0 !important; gap: 11px !important; }
-      #page-market .mrow-wrap { padding: 0 12px !important; border-radius: 13px !important; }
-      #page-market .live-tag { font-size: 11px !important; padding: 2px 7px !important; }
-      #page-market .mcta { padding: 13px !important; border-radius: 13px !important; }
-      #page-market .mcta-t { font-size: 14px !important; font-weight: 700 !important; }
-      #page-market .mcta-s { font-size: 12px !important; }
-      #page-market .mkt-search input { font-size: 14px !important; }
-      #bridgeAmt { font-size: 15px !important; font-weight: 600 !important; width: 100% !important; min-width: 0 !important; }
-      #page-bridge #bridgeBtn { font-size: 16px !important; font-weight: 700 !important; padding: 16px !important; border-radius: 14px !important; width: 100% !important; }
-      #page-bridge .chain-dropdown-btn { font-size: 15px !important; padding: 10px 13px !important; border-radius: 12px !important; }
-      #gatewayTotal { font-size: 24px !important; font-weight: 700 !important; }
-    }
+    
 
 
 /* Dark nav */
@@ -3209,56 +3075,9 @@ function startQRScan() {
 .nan-dd-item:hover{background:rgba(112,0,255,.08);}
 
 /* ══ MOBILE TOPBAR CLEANUP ══ */
-@media(max-width:767px){
-  #themeToggle{display:none!important;}
-  #disconnectTopBtnMobile{display:none!important;}
-  #disconnectTopBtn{display:none!important;}
-  #nanNotifBtn{display:none!important;}
-  /* Hide faucet text, keep icon small */
-  .tb-btn-text{display:none!important;}
-}
+
 /* ══ MOBILE SIDE DRAWER ══ */
-@media(max-width:767px){
-  #nanDrawerBurger{display:flex!important;}
-  #nav-bridge{display:none!important;}
-  
-  .nav-pill-wrap{justify-content:space-around;}
-  .net-pill{display:flex!important;align-items:center;font-size:10px!important;padding:3px 7px!important;border-radius:6px!important;}
-  #connectTopBtn{display:flex!important;font-family:'Inter var','Inter',monospace!important;font-size:10.5px!important;color:rgba(255,255,255,.5)!important;background:rgba(255,255,255,.05)!important;border:1px solid rgba(255,255,255,.08)!important;border-radius:20px!important;padding:5px 10px!important;white-space:nowrap;}
-  #globalTopBar{gap:0!important;padding:0 13px!important;}
-  .nan-drow{display:flex;align-items:center;gap:12px;width:100%;padding:11px 20px;background:none;border:none;cursor:pointer;font-family:'Inter var','Inter',sans-serif;font-size:13.5px;font-weight:600;color:rgba(255,255,255,.5);text-align:left;position:relative;transition:background .12s;}
-  .nan-drow:active,.nan-drow.nan-drow-active{background:rgba(112,0,255,.08)!important;color:#fff!important;}
-  .nan-drow.nan-drow-active::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:3px;background:#7000ff;border-radius:0 2px 2px 0;}
-  .nan-drow.nan-drow-active .nan-drow-ic{background:rgba(112,0,255,.14)!important;border-color:rgba(112,0,255,.28)!important;}
-  .nan-drow.nan-drow-active .nan-drow-lbl{color:#fff!important;}
-  .nan-drow-ic{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(112,0,255,.07);border:1px solid rgba(112,0,255,.13);color:rgba(168,85,247,.8);}
-  .nan-drow-lbl{flex:1;}
-  #nanDrawer{transition:transform .22s cubic-bezier(.4,0,.2,1);transform:translateX(-100%);}
-  #nanDrawer.nan-drawer-open{transform:translateX(0)!important;}
-  #nanDrawerOverlay{transition:opacity .22s;opacity:0;}
-  #nanDrawerOverlay.nan-drawer-open{opacity:1!important;}
-  /* Burger lines - theme aware */
-  .nan-burger-line{display:block;width:18px;height:2px;border-radius:2px;background:var(--text);}
-  /* Drawer bg always dark regardless of theme */
-  #nanDrawer{background:#0d0d0d!important;color:#fff!important;}
-  [data-theme=light] #nanDrawer{background:#ffffff!important;border-right-color:rgba(112,0,255,.15)!important;}
-  [data-theme=light] #nanDrawer *{color-scheme:light;}
-  [data-theme=light] .nan-drow{color:rgba(0,0,0,.5)!important;}
-  [data-theme=light] .nan-drow.nan-drow-active{color:#111!important;background:rgba(112,0,255,.07)!important;}
-  [data-theme=light] .nan-drow.nan-drow-active .nan-drow-lbl{color:#111!important;}
-  [data-theme=light] .nan-drow-ic{background:rgba(112,0,255,.07)!important;border-color:rgba(112,0,255,.12)!important;color:#7000ff!important;}
-  [data-theme=light] #nanDrawer [style*="border-bottom:1px solid rgba(255,255,255,.05)"]{border-bottom-color:rgba(0,0,0,.07)!important;}
-  [data-theme=light] #nanDrawer [style*="border-top:1px solid rgba(255,255,255,.05)"]{border-top-color:rgba(0,0,0,.07)!important;}
-  [data-theme=light] #nanDrawer [style*="background:rgba(255,255,255,.07)"]{background:rgba(0,0,0,.07)!important;border-color:rgba(0,0,0,.12)!important;}
-  [data-theme=light] #nanDrawerAddr{color:rgba(0,0,0,.4)!important;}
-  [data-theme=light] #nanDrawer [style*="font-size:15px;font-weight:700;color:#fff"]{color:#111!important;}
-  [data-theme=light] #nanDrawer [style*="color:rgba(255,255,255,.2)"]{color:rgba(0,0,0,.3)!important;}
-  [data-theme=light] #nanDrawer .nan-drow-lbl{color:rgba(0,0,0,.55)!important;}
-  [data-theme=light] #nanDrawer [style*="color:rgba(239,68,68,.7)"]{color:rgba(220,38,38,.8)!important;}
-  #nanDrawer *{color-scheme:dark;}
-  /* Light mode: drawer overlay slightly lighter */
-  [data-theme=light] #nanDrawerOverlay{background:rgba(0,0,0,.45);}
-}
+
 </style>
 <script>
 
@@ -3495,7 +3314,7 @@ function nanToggleFaucet(btn){
       <div style="font-size:9.5px;font-weight:700;color:rgba(255,255,255,.2);letter-spacing:.12em;text-transform:uppercase;padding:10px 20px 5px;">Features</div>
       <button class="nan-drow" id="drow-agent-wallet" onclick="nanCloseDrawer();goPage('agent-wallet')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><circle cx="12" cy="14" r="2"/></svg></span><span class="nan-drow-lbl">Agent Wallet</span><span style="font-size:9px;font-weight:700;background:rgba(112,0,255,.15);border:1px solid rgba(112,0,255,.25);color:#a855f7;border-radius:5px;padding:2px 6px;margin-left:auto;flex-shrink:0;">Circle</span></button>
       <button class="nan-drow" id="drow-arcname" onclick="nanCloseDrawer();goPage('arcname')"><span class="nan-drow-ic"><svg width="15" height="9" viewBox="0 0 40 20" fill="none"><path d="M16,10 C16,4 8,4 8,10 C8,16 16,16 20,10 C24,4 32,4 32,10 C32,16 24,16 20,10 Z" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="nan-drow-lbl">.arc Name</span></button>
-      <button class="nan-drow" id="drow-lend" onclick="nanCloseDrawer();goPage('lend')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></span><span class="nan-drow-lbl">Earn</span></button>
+      
       <button class="nan-drow" id="drow-bridge" onclick="nanCloseDrawer();goPage('bridge')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16"/><path d="M4 8h16"/><path d="M4 12h8"/><circle cx="18" cy="16" r="4"/><path d="M18 14v4M16 16h4"/></svg></span><span class="nan-drow-lbl">Bridge</span></button>
       <button class="nan-drow" onclick="nanCloseDrawer();goPage('naira')"><span class="nan-drow-ic" style="font-size:14px;background:rgba(112,0,255,.07);border:1px solid rgba(112,0,255,.13);">🇳🇬</span><span class="nan-drow-lbl">Naira Ramp</span></button>
       
