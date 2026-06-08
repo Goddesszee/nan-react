@@ -979,9 +979,9 @@ html,body{background:var(--bg);}
         Market
       </button>
 
-      <button class="nav-btn" id="nav-earn" onclick="goPage('lend')">
-        <span class="ni"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
-        Earn
+      <button class="nav-btn" id="nav-agent" onclick="goPage('agent-wallet')">
+        <span class="ni"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><circle cx="12" cy="14" r="2"/></svg></span>
+        Agent
       </button>
       
 
@@ -3206,7 +3206,7 @@ function startQRScan() {
 @media(max-width:767px){
   #nanDrawerBurger{display:flex!important;}
   #nav-bridge{display:none!important;}
-  #nav-agent{display:none!important;}
+  
   .nav-pill-wrap{justify-content:space-around;}
   .net-pill{display:flex!important;align-items:center;font-size:10px!important;padding:3px 7px!important;border-radius:6px!important;}
   #connectTopBtn{display:flex!important;font-family:'Inter var','Inter',monospace!important;font-size:10.5px!important;color:rgba(255,255,255,.5)!important;background:rgba(255,255,255,.05)!important;border:1px solid rgba(255,255,255,.08)!important;border-radius:20px!important;padding:5px 10px!important;white-space:nowrap;}
@@ -3480,10 +3480,11 @@ function nanToggleFaucet(btn){
       <div style="font-size:9.5px;font-weight:700;color:rgba(255,255,255,.2);letter-spacing:.12em;text-transform:uppercase;padding:10px 20px 5px;">Features</div>
       <button class="nan-drow" id="drow-agent-wallet" onclick="nanCloseDrawer();goPage('agent-wallet')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><circle cx="12" cy="14" r="2"/></svg></span><span class="nan-drow-lbl">Agent Wallet</span><span style="font-size:9px;font-weight:700;background:rgba(112,0,255,.15);border:1px solid rgba(112,0,255,.25);color:#a855f7;border-radius:5px;padding:2px 6px;margin-left:auto;flex-shrink:0;">Circle</span></button>
       <button class="nan-drow" id="drow-arcname" onclick="nanCloseDrawer();goPage('arcname')"><span class="nan-drow-ic"><svg width="15" height="9" viewBox="0 0 40 20" fill="none"><path d="M16,10 C16,4 8,4 8,10 C8,16 16,16 20,10 C24,4 32,4 32,10 C32,16 24,16 20,10 Z" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="nan-drow-lbl">.arc Name</span></button>
+      <button class="nan-drow" id="drow-lend" onclick="nanCloseDrawer();goPage('lend')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></span><span class="nan-drow-lbl">Earn</span></button>
       <button class="nan-drow" id="drow-bridge" onclick="nanCloseDrawer();goPage('bridge')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16"/><path d="M4 8h16"/><path d="M4 12h8"/><circle cx="18" cy="16" r="4"/><path d="M18 14v4M16 16h4"/></svg></span><span class="nan-drow-lbl">Bridge</span></button>
       <button class="nan-drow" onclick="nanCloseDrawer();goPage('naira')"><span class="nan-drow-ic" style="font-size:14px;background:rgba(112,0,255,.07);border:1px solid rgba(112,0,255,.13);">🇳🇬</span><span class="nan-drow-lbl">Naira Ramp</span></button>
-      <button class="nan-drow" onclick="nanCloseDrawer();goPage('more')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></span><span class="nan-drow-lbl">Ajo Savings</span></button>
-      <button class="nan-drow" onclick="nanCloseDrawer();goPage('more')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span><span class="nan-drow-lbl">Bill Pay</span></button>
+      
+      
       <div style="height:1px;background:rgba(255,255,255,.05);margin:8px 20px;"></div>
       <div style="font-size:9.5px;font-weight:700;color:rgba(255,255,255,.2);letter-spacing:.12em;text-transform:uppercase;padding:10px 20px 5px;">Settings</div>
 
