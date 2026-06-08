@@ -4331,23 +4331,11 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
   .net-pill-full       { display: none !important; }
   .net-pill-short      { display: inline !important; }
   /* Address pill */
-  #connectTopBtn, #mobileAddrPill {
-    display: flex !important;
-    font-family: 'Inter var','Inter',monospace !important;
-    font-size: 10.5px !important;
-    color: rgba(255,255,255,.5) !important;
-    background: rgba(255,255,255,.05) !important;
-    border: 1px solid rgba(255,255,255,.08) !important;
-    border-radius: 20px !important;
-    padding: 5px 10px !important;
-    white-space: nowrap !important;
-  }
-  [data-theme=light] #connectTopBtn,
-  [data-theme=light] #mobileAddrPill {
-    color: rgba(0,0,0,.5) !important;
-    background: rgba(0,0,0,.04) !important;
-    border-color: rgba(0,0,0,.1) !important;
-  }
+  /* Hide connectTopBtn on mobile — drawer shows address */
+  #connectTopBtn,
+  #connectTopBtn.connected { display: none !important; }
+  #mobileAddrPill { display: none !important; }
+  /* connectTopBtn hidden on mobile in both themes */
   /* Burger */
   #nanDrawerBurger { display: flex !important; }
   .nan-burger-line { display: block; width: 18px; height: 2px; border-radius: 2px; background: var(--text); }
@@ -4505,18 +4493,16 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
   .mob-actions > div > div:nth-child(2) .mob-action-ico svg {
     stroke: #ffffff !important;
   }
-  /* Payment + Payroll = ghost */
-  .mob-action-ghost,
+  /* All 4 action icons solid purple */
   .mob-actions > div > div:nth-child(3) .mob-action-ico,
   .mob-actions > div > div:nth-child(4) .mob-action-ico {
-    background: rgba(112,0,255,.08) !important;
-    border: 1px solid rgba(112,0,255,.2) !important;
-    box-shadow: none !important;
+    background: #7000ff !important;
+    border: none !important;
+    box-shadow: 0 4px 14px rgba(112,0,255,.35) !important;
   }
-  .mob-action-ghost svg,
   .mob-actions > div > div:nth-child(3) .mob-action-ico svg,
   .mob-actions > div > div:nth-child(4) .mob-action-ico svg {
-    stroke: #a855f7 !important;
+    stroke: #ffffff !important;
   }
   .mob-actions span {
     font-size: .6rem !important;
