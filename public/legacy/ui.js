@@ -102,6 +102,13 @@ function goPage(name) {
   if (name === 'multichain') { if(typeof mcRefresh==='function') setTimeout(mcRefresh, 100); }
   if (name === 'payreq-new') initNewPRForm();
   if (name === 'agent-wallet') setTimeout(function(){ if(typeof agentPageRefresh==='function') agentPageRefresh(); }, 80);
+  if (name === 'agent-ai') setTimeout(function(){
+    if(typeof renderAgentMsgs==='function') renderAgentMsgs();
+    if(typeof renderAgentChips==='function') renderAgentChips();
+    if(typeof scrollAgentBottom==='function') scrollAgentBottom();
+    const inp = document.getElementById('agentInput');
+    if(inp) inp.focus();
+  }, 80);
 }
 
 // ── Show page (called internally by app.js) ──
