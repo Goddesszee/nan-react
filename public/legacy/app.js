@@ -7859,7 +7859,6 @@ async function checkAgentSession(){
           window.agentWalletAddr = agentWalletAddr;
           console.log('[agent] Restored wallet from localStorage:', agentWalletAddr.slice(0,10));
           agentPageRefresh();
-          // Update green dot
           const dot = document.getElementById('aiBtnDot');
           const dotD = document.getElementById('aiBtnDesktopDot');
           if(dot) dot.style.display='block';
@@ -7868,6 +7867,29 @@ async function checkAgentSession(){
         }
       }catch(e){}
     }
+
+    // Try silent restore from Redis via agent-wallets API
+    try{
+      const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets',{
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({action:'get-or-create', userAddress: userAddr}),
+        signal: AbortSignal.timeout(8000)
+      });
+      const d = await r.json();
+      if(d.success && d.wallet?.walletAddress){
+        agentWalletAddr = d.wallet.walletAddress;
+        window.agentWalletAddr = agentWalletAddr;
+        agentWalletBalance = d.balance ? `${d.balance.USDC} USDC` : '0 USDC';
+        localStorage.setItem('nan_agent_wallet_'+userAddr, JSON.stringify(d.wallet));
+        agentPageRefresh();
+        const dot = document.getElementById('aiBtnDot');
+        const dotD = document.getElementById('aiBtnDesktopDot');
+        if(dot) dot.style.display='block';
+        if(dotD) dotD.style.display='inline-block';
+        console.log('[agent] Auto-restored from Redis:', agentWalletAddr.slice(0,10));
+        return;
+      }
+    }catch(e){ console.log('[agent] Silent restore failed:', e.message); }
   }
   if(!agentWalletEmail || !agentWalletAddr || _agentReconnecting) return;
   try{
@@ -8083,12 +8105,18 @@ async function agentLoginInit() {
         return;
       }
     } catch(e) {
-      console.log('[agent] Circle wallet create failed, falling back to CLI:', e.message);
+      console.log('[agent] Circle wallet create failed:', e.message);
+      if(isCircleWallet){
+        agentShowResult('Could not create agent wallet: '+e.message.slice(0,80));
+        if (btn) { btn.textContent = 'Connect Agent Wallet'; btn.disabled = false; }
+        return;
+      }
     }
     if (btn) { btn.textContent = 'Connect Agent Wallet'; btn.disabled = false; }
+    if(isCircleWallet) return; // Circle users don't use CLI
   }
 
-  // Fallback: existing CLI-based flow (for owner wallet)
+  // Fallback: existing CLI-based flow (for owner wallet / MetaMask users)
   const input = document.getElementById('agentEmailInput');
   const email = (input && input.value.trim()) || agentWalletEmail || '';
   if (!email.includes('@')) { agentShowResult('Please enter a valid email address'); return; }
