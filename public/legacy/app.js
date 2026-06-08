@@ -4107,8 +4107,15 @@ RULES:
         if(sendTo.startsWith('0x') && !sendTo.match(/^0x[a-fA-F0-9]{40}$/)){
           sendTo = sendTo.replace(/^0x/,'');
         }
-        action={action:'agent-send',amount:parseFloat(sendM[1]),token:sendM[2].toUpperCase(),to:sendTo};
-        console.log('[agent] fallback action inferred:', action);
+        // Reject truncated addresses like "86B2...366a" — these are display only
+        if(sendTo.includes('...') || (sendTo.startsWith('0x') && sendTo.length < 42)){
+          // Try to find the arc name instead
+          const arcM = reply.match(/\b([\w]+\.arc)\b/i);
+          if(arcM) sendTo = arcM[1].replace('.arc','').toLowerCase()+'.arc';
+          else { action = null; } // can't determine recipient, let arc resolution handle it
+        }
+        if(sendTo) action={action:'agent-send',amount:parseFloat(sendM[1]),token:sendM[2].toUpperCase(),to:sendTo};
+        if(action) console.log('[agent] fallback action inferred:', action);
       }
       // payreq-create
       if(!action){
@@ -8037,7 +8044,23 @@ async function agentLoadWallets() {
 async function agentConfirmedSend(to, amount, token) {
   // Validate address before sending
   if(!/^0x[a-fA-F0-9]{40}$/.test(to)){
-    addAgentMsg('❌ Invalid address: '+to+'\n\nPlease provide a valid 0x address.');
+    // If it looks like an arc name, try to resolve it
+    if(!to.startsWith('0x') && (to.endsWith('.arc') || /^[a-z0-9]+$/.test(to))){
+      addAgentMsg('🔍 Resolving '+to+'...');
+      renderAgentMsgs();
+      try{
+        const arcName = to.replace('.arc','').toLowerCase();
+        const rp = new ethers.JsonRpcProvider(ARC_RPC,{chainId:ARC_CHAIN_ID,name:'arc-testnet',ensAddress:null});
+        const nc = new ethers.Contract(NAME_REGISTRY,NAME_ABI,rp);
+        const addr = await Promise.race([nc.resolve(arcName),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),6000))]);
+        if(addr && addr!=='0x0000000000000000000000000000000000000000'){
+          addAgentMsg('✓ Resolved '+arcName+'.arc → '+addr.slice(0,6)+'...'+addr.slice(-4));
+          renderAgentMsgs();
+          return agentConfirmedSend(addr, amount, token);
+        }
+      }catch(e){}
+    }
+    addAgentMsg('❌ Invalid address: '+to+'\n\nPlease provide a valid 0x address or .arc name.');
     renderAgentMsgs();
     return;
   }
