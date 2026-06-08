@@ -7874,6 +7874,12 @@ async function agentLoadWallets() {
 
 // ── Actions ──────────────────────────────────────────────────────────────────
 async function agentConfirmedSend(to, amount, token) {
+  // Validate address before sending
+  if(!/^0x[a-fA-F0-9]{40}$/.test(to)){
+    addAgentMsg('❌ Invalid address: '+to+'\n\nPlease provide a valid 0x address.');
+    renderAgentMsgs();
+    return;
+  }
   addAgentMsg('⏳ Sending '+amount+' '+token+' from agent wallet to '+to.slice(0,6)+'...'+to.slice(-4)+'...');
   renderAgentMsgs();
   try {
