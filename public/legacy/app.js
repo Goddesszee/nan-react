@@ -4031,6 +4031,8 @@ RULES:
     // Also strip raw "ACTION:{...}" without tags that model sometimes outputs
     clean=clean.replace(/ACTION:\s*\{[\s\S]*?\}/g,'').trim();
     clean=clean.replace(/\. ACTION:\s*\{[\s\S]*?\}/g,'').trim();
+    // Strip bare JSON blocks that leaked through (e.g. {"action":"send",...})
+    clean=clean.replace(/\{\"action\":[\s\S]*?\}/g,'').trim();
     agentMsgs[agentMsgs.length-1]={role:'assistant',content:clean,action};
     // Auto-execute agent wallet actions immediately (no button needed)
     if(action && action.action && action.action.startsWith('agent-')){
@@ -4047,6 +4049,51 @@ RULES:
 
 function executeAgentAction(action){
   switch(action.action){
+    case 'send':
+      // Main wallet send — navigate to send page with arc name resolution
+      (async()=>{
+        var to = action.to || '';
+        var token = action.token || 'USDC';
+        var amount = action.amount;
+        // Resolve .arc name if needed
+        if(to && !to.startsWith('0x') && (to.endsWith('.arc') || !to.includes('.'))){
+          var arcName = to.replace('.arc','').toLowerCase();
+          addAgentMsg('🔍 Resolving '+arcName+'.arc...');
+          renderAgentMsgs();
+          try {
+            var readProvider = new ethers.JsonRpcProvider(ARC_RPC,{chainId:ARC_CHAIN_ID,name:'arc-testnet',ensAddress:null});
+            var nameContract = new ethers.Contract(NAME_REGISTRY,NAME_ABI,readProvider);
+            var resolved = await Promise.race([
+              nameContract.resolve(arcName),
+              new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),6000))
+            ]);
+            if(resolved && resolved!=='0x0000000000000000000000000000000000000000'){
+              to = resolved;
+              addAgentMsg('✓ Resolved '+arcName+'.arc → '+to.slice(0,6)+'...'+to.slice(-4));
+              renderAgentMsgs();
+            } else {
+              addAgentMsg('❌ Arc name "'+arcName+'.arc" not found.');
+              renderAgentMsgs();
+              return;
+            }
+          } catch(e) {
+            addAgentMsg('❌ Could not resolve arc name: '+e.message);
+            renderAgentMsgs();
+            return;
+          }
+        }
+        addAgentMsg('📤 Opening send — prefilling '+amount+' '+token+' to '+to.slice(0,6)+'...'+to.slice(-4));
+        renderAgentMsgs();
+        goPage('send');
+        setTimeout(()=>{
+          document.getElementById('recipInput').value=to;
+          document.getElementById('amtInput').value=amount||'';
+          sendToken=token;
+          document.getElementById('sendTokenLabel').textContent=token;
+          validateSend();
+        },300);
+      })();
+      break;
     case 'agent-send':
       if(!agentWalletAddr){addAgentMsg('⚠️ Agent wallet not connected. Go to Agent page to connect first.');renderAgentMsgs();return;}
       // If no destination or user said "to my agent wallet", send from main wallet to agent wallet
