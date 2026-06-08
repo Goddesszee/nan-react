@@ -7549,21 +7549,19 @@ function agentSend() {
   const el = document.createElement('div');
   el.id = id;
   el.style.cssText = 'background:var(--surface);border:1px solid rgba(112,0,255,.25);border-radius:14px;padding:14px;margin-bottom:12px;';
-  el.innerHTML = `
-    <div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:10px;">Send from Agent Wallet</div>
-    <input id="agentSendTo" placeholder="Recipient address (0x...)" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-family:'Inter var','Inter',sans-serif;box-sizing:border-box;margin-bottom:8px;"/>
-    <div style="display:flex;gap:8px;margin-bottom:10px;">
-      <input id="agentSendAmt" placeholder="Amount" type="number" min="0" step="any" style="flex:1;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-family:'Inter var','Inter',sans-serif;box-sizing:border-box;"/>
-      <select id="agentSendToken" style="padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-family:'Inter var','Inter',sans-serif;"><option>USDC</option><option>EURC</option></select>
-    </div>
-    <div style="display:flex;gap:8px;">
-      <button onclick="(function(){const to=document.getElementById('agentSendTo').value.trim();const amt=document.getElementById('agentSendAmt').value;const tok=document.getElementById('agentSendToken').value;if(!to.startsWith('0x')){agentShowResult('Invalid address');return;}if(!amt||isNaN(amt)||parseFloat(amt)<=0){agentShowResult('Invalid amount');return;}document.getElementById('agentPanelSend').remove();agentShowResult('Sending '+amt+' '+tok+'...');fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'transfer',fromAddress:agentWalletAddr,toAddress:to,amount:String(amt),chain:'ARC-TESTNET'})}).then(r=>r.json()).then(d=>agentShowResult(d.success?'✅ Sent! TX: '+(d.txHash||d.transactionId||'pending'):'❌ '+(d.error||'Transfer failed'))).catch(e=>agentShowResult('❌ '+e.message));})()" style="flex:1;padding:11px;border-radius:10px;background:#7000ff;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;">Send</button>
-      <button onclick="document.getElementById('agentPanelSend').remove()" style="padding:11px 16px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;">Cancel</button>
-    </div>`;
+  el.innerHTML = '<div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:10px;">Send from Agent Wallet</div>'
+    + '<input id="agentSendTo" placeholder="Recipient address or .arc name" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:.85rem;font-family:Inter,sans-serif;box-sizing:border-box;margin-bottom:8px;"/>'
+    + '<input id="agentSendAmt" placeholder="Amount (USDC)" type="number" min="0" step="any" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:.85rem;font-family:Inter,sans-serif;box-sizing:border-box;margin-bottom:8px;"/>'
+    + '<select id="agentSendToken" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:.85rem;margin-bottom:10px;box-sizing:border-box;"><option>USDC</option><option>EURC</option></select>'
+    + '<div style="display:flex;gap:8px;">'
+    + '<button onclick="(function(){var to=document.getElementById(\'agentSendTo\').value.trim();var amt=document.getElementById(\'agentSendAmt\').value;var tok=document.getElementById(\'agentSendToken\').value;if(!to){agentShowResult(\'Enter recipient\');return;}if(!amt||isNaN(amt)||parseFloat(amt)<=0){agentShowResult(\'Enter valid amount\');return;}document.getElementById(\'agentPanelSend\').remove();agentConfirmedSend(to,parseFloat(amt),tok);})()" style="flex:1;padding:11px;border-radius:10px;background:#7000ff;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;">Send</button>'
+    + '<button onclick="document.getElementById(\'agentPanelSend\').remove()" style="padding:11px 16px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;">Cancel</button>'
+    + '</div>';
   const grid = document.querySelector('[onclick="agentFund()"]')?.closest('[style*="grid-template-columns"]');
   if (grid) grid.parentElement.insertBefore(el, grid);
   document.getElementById('agentSendTo')?.focus();
 }
+
 
 async function agentHistory() {
   if (!agentWalletAddr) return;
