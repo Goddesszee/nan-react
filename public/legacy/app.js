@@ -3833,7 +3833,7 @@ async function sendFloatingOTP(){
   const btn = document.querySelector('#floatingEmailStep button');
   btn.textContent = 'Sending…'; btn.disabled = true;
   try{
-    const res = await fetch('/api/otp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'send',email})});
+    const res = await fetch('https://nan-production.up.railway.app/api/otp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'send',email})});
     const data = await res.json();
     if(!data.success) throw new Error(data.error||'Failed');
     window._otpToken = data.token; window._otpExpiry = data.expiresAt;
@@ -3854,8 +3854,7 @@ async function verifyFloatingOTP(){
   const btn = btns[0];
   btn.textContent = 'Verifying…'; btn.disabled = true;
   try{
-    // Step 1: Verify OTP
-    const res = await fetch('/api/otp',{method:'POST',headers:{'Content-Type':'application/json'},
+    const res = await fetch('https://nan-production.up.railway.app/api/otp',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({action:'verify',email:otpEmail,otp,token:window._otpToken,expiresAt:window._otpExpiry})});
     const data = await res.json();
     if(!data.success) throw new Error(data.error||'Invalid code');
