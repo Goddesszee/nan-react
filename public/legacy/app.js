@@ -4184,11 +4184,20 @@ RULES:
       // agent-bills: airtime
       if(!action && /recharge|airtime|top.?up/i.test(reply)){
         const phoneM = reply.match(/0[7-9][01]\d{8}/);
-        const amtM = reply.match(/[₦#]?\s*([\d,]+)/);
+        // Amount must be explicitly stated with ₦ or be a short number (not a phone number)
+        const amtM = reply.match(/[₦#]\s*([\d,]+)/) || reply.match(/\b([\d,]{2,6})\s*(?:naira|NGN)?\b(?!\d{5})/);
         const netM = reply.match(/mtn|glo|airtel|9mobile|etisalat/i);
         if(phoneM && amtM){
-          action={action:'agent-bills',billType:'airtime',phone:phoneM[0],amount:parseFloat(amtM[1].replace(/,/g,'')),network:(netM?netM[0]:'mtn').toLowerCase()};
-          console.log('[agent] fallback airtime inferred:', action);
+          const amt = parseFloat(amtM[1].replace(/,/g,''));
+          // Reject if amount looks like a phone number (10-11 digits)
+          if(amt && String(Math.floor(amt)).length <= 6){
+            action={action:'agent-bills',billType:'airtime',phone:phoneM[0],amount:amt,network:(netM?netM[0]:'mtn').toLowerCase()};
+            console.log('[agent] fallback airtime inferred:', action);
+          }
+        }
+        // If phone found but no valid amount, ask for it
+        if(!action && phoneM){
+          action={action:'agent-bills',billType:'airtime',phone:phoneM[0],amount:null,network:(netM?netM[0]:'mtn').toLowerCase()};
         }
       }
       // agent-bills: electricity
@@ -4609,8 +4618,13 @@ function executeAgentAction(action){
           let confirmMsg = '';
           // Build payload based on bill type
           if(billType==='airtime'){
-            payload = { action:'buy-airtime', phone:action.phone, amount:action.amount, network:action.network||'mtn' };
-            confirmMsg = `📱 Recharge ₦${action.amount} airtime for ${action.phone} (${(action.network||'MTN').toUpperCase()})`;
+          if(!action.amount){
+            addAgentMsg(`📱 I'll recharge ${action.phone} (${(action.network||'MTN').toUpperCase()}). How much airtime? e.g. "₦500", "₦1000"`);
+            renderAgentMsgs();
+            return;
+          }
+          payload = { action:'buy-airtime', phone:action.phone, amount:action.amount, network:action.network||'mtn' };
+          confirmMsg = `📱 Recharge ₦${action.amount} airtime for ${action.phone} (${(action.network||'MTN').toUpperCase()})`;
           } else if(billType==='data'){
             payload = { action:'buy-data', phone:action.phone, variationCode:action.plan||action.variationCode, network:action.network||'mtn' };
             confirmMsg = `📶 Buy ${action.plan} data for ${action.phone} (${(action.network||'MTN').toUpperCase()})`;
