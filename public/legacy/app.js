@@ -3675,21 +3675,32 @@ function listOrders(){
 
 function formatOrderSummary(order){
   if(order.type==='limit'){
-    return `🎯 Limit: Sell ${order.amount} ${order.sellToken}→${order.buyToken} when rate ${order.condition==='gte'?'≥':'≤'} ${order.targetRate} (now: ${order.currentRate?.toFixed(4)||'?'})`;
+    return `🎯 Limit: Sell ${order.amount} ${order.sellToken}→${order.buyToken} when rate ${order.condition==='gte'?'≥':'≤'} ${order.targetRate} (now: ${order.currentRate?.toFixed(4)||'?'}) [ID: ${order.id}]`;
+  }
+  if(order.type==='fx-limit-offramp'){
+    return `💱 FX Limit: Offramp ${order.amount} USDC when NGN rate ${order.condition==='gte'?'≥':'≤'} ₦${order.targetRate?.toLocaleString()} [ID: ${order.id}]`;
   }
   if(order.type==='scheduled'){
-    return `⏰ Scheduled: Send ${order.amount} ${order.token} to ${order.to?.slice(0,10)}… on ${new Date(order.executeAt).toLocaleString()}`;
+    return `⏰ Scheduled: Send ${order.amount} ${order.token} to ${order.to?.slice(0,10)}… on ${new Date(order.executeAt).toLocaleString()} [ID: ${order.id}]`;
   }
   if(order.type==='agent-standing'){
-    return `🤖 Agent Standing: Send ${order.amount} ${order.token} from agent wallet to ${order.to?.slice(0,10)}… every ${order.freq} (next: ${new Date(order.nextRun).toLocaleString()})`;
+    const taskType = order.taskType||'send';
+    const desc = taskType==='swap'?`Swap ${order.amount} ${order.from}→${order.to}`:
+      taskType==='bridge'?`Bridge ${order.amount} USDC→${order.toChain}`:
+      `Send ${order.amount} ${order.token||'USDC'} to ${order.to?.slice(0,10)}…`;
+    return `🔄 Recurring: ${desc} every ${order.freq} (next: ${new Date(order.nextRun).toLocaleString()}) [ID: ${order.id}]`;
   }
   if(order.type==='agent-scheduled'){
-    return `🤖 Agent Scheduled: Send ${order.amount} ${order.token} from agent wallet to ${order.to?.slice(0,10)}… at ${new Date(order.executeAt).toLocaleString()}`;
+    const taskType = order.taskType||'send';
+    const desc = taskType==='swap'?`Swap ${order.amount} ${order.from}→${order.to}`:
+      taskType==='bridge'?`Bridge ${order.amount} USDC→${order.toChain}`:
+      `Send ${order.amount} ${order.token||'USDC'} to ${order.to?.slice(0,10)}…`;
+    return `⏰ Scheduled: ${desc} at ${new Date(order.executeAt).toLocaleString()} [ID: ${order.id}]`;
   }
   if(order.type==='standing'){
-    return `📅 Standing: Send ${order.amount} ${order.token} to ${order.to?.slice(0,10)}… every ${order.freq} (next: ${new Date(order.nextRun).toLocaleString()})`;
+    return `📅 Standing: Send ${order.amount} ${order.token} to ${order.to?.slice(0,10)}… every ${order.freq} (next: ${new Date(order.nextRun).toLocaleString()}) [ID: ${order.id}]`;
   }
-  return '';
+  return `📌 Order ${order.id}: ${order.type}`;
 }
 
 let agentMsgs=[{role:'assistant',content:"Hey! I'm NAN AI ✦  Ask me anything — crypto questions, DeFi, staking, CCTP bridging, or your live wallet. Try \"send 10 USDC\" and I'll set it up!"}];
@@ -4158,10 +4169,21 @@ RULES:
         action={action:'agent-payroll',group:groupM?groupM[1].trim():null};
         console.log('[agent] fallback payroll inferred:', action);
       }
+      // cancel_order
+      if(!action && /cancel.*order|delete.*order/i.test(reply)){
+        const idM = reply.match(/ord_[\w]+/i);
+        action={action:idM?'cancel_order':'cancel_all',id:idM?idM[0]:undefined};
+        console.log('[agent] fallback cancel inferred:', action);
+      }
+      // agent-ngn-rate
+      if(!action && /ngn.*rate|naira.*rate|rate.*naira|dollar.*naira|how far.*fx|fx.*order/i.test(reply)){
+        action={action:'agent-ngn-rate'};
+        console.log('[agent] fallback ngn-rate inferred');
+      }
     }
     agentMsgs[agentMsgs.length-1]={role:'assistant',content:clean,action};
     // Auto-execute agent wallet actions immediately (no button needed)
-    const autoActions = ['agent-send','agent-bulk-send','agent-balance','agent-history','agent-fund','agent-pay','agent-swap','agent-bridge','agent-multichain','agent-offramp','agent-payroll','fx-limit-offramp','payreq-create'];
+    const autoActions = ['agent-send','agent-bulk-send','agent-balance','agent-history','agent-fund','agent-pay','agent-swap','agent-bridge','agent-multichain','agent-offramp','agent-payroll','agent-ngn-rate','fx-limit-offramp','payreq-create','list_orders','cancel_order','cancel_all'];
     if(action && action.action && autoActions.includes(action.action)){
       setTimeout(()=>executeAgentAction(action), 500);
     }
@@ -4502,6 +4524,16 @@ function executeAgentAction(action){
               addAgentMsg('📊 Done! '+ok+' sent, '+fail+' failed.');
               renderAgentMsgs();
               setTimeout(fetchAgentBalance,2000);
+              // Send email receipt
+              if(userEmail && ok>0){
+                sendReceiptEmail({
+                  to: userEmail,
+                  subject: `NAN Wallet: Bulk send complete — ${ok}/${resolved.length} sent`,
+                  body: `Bulk send completed at ${new Date().toLocaleString()}\n\nResults:\n`+
+                    resolved.map((r,i)=>`${i+1}. ${r.amount} ${r.token} → ${r.to.slice(0,10)}... ${r.status==='done'?'✅':'❌'}`).join('\n')+
+                    `\n\nTotal sent: ${ok} of ${resolved.length}`
+                }).catch(()=>{});
+              }
             };
             const cancelBtn = document.createElement('button');
             cancelBtn.textContent='Cancel';
@@ -4591,15 +4623,52 @@ function executeAgentAction(action){
     case 'cancel_all':{
       const count=nanOrders.length;
       nanOrders=[];saveOrders();
-      // Delete all from server
       if(userAddr){fetch('https://nan-production.up.railway.app/api/orders?wallet='+userAddr,{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({wallet:userAddr,id:'all'})}).catch(()=>{});}
       addAgentMsg(`🗑️ Cancelled all ${count} pending order${count!==1?'s':''}. Your queue is clear!`);
+      break;}
+    case 'cancel_order':{
+      const orderId = action.id||action.orderId;
+      if(!orderId){addAgentMsg('❌ Please specify an order ID. Say "list my orders" to see IDs.');renderAgentMsgs();break;}
+      const before = nanOrders.length;
+      nanOrders = nanOrders.filter(o=>o.id!==orderId);
+      if(nanOrders.length < before){
+        saveOrders();
+        if(userAddr){fetch('https://nan-production.up.railway.app/api/orders?wallet='+userAddr,{method:'DELETE',headers:{'Content-Type':'application/json'},body:JSON.stringify({wallet:userAddr,id:orderId})}).catch(()=>{});}
+        addAgentMsg(`✅ Order ${orderId} cancelled.`);
+      } else {
+        addAgentMsg(`❌ Order ${orderId} not found. Say "list my orders" to see active orders.`);
+      }
+      renderAgentMsgs();
       break;}
     case 'list_orders':{
       const orders=listOrders();
       if(!orders.length){addAgentMsg('📋 No pending orders. Your queue is empty!');}
-      else{addAgentMsg('📋 Your pending orders:\n\n'+orders.map((o,i)=>`${i+1}. ${formatOrderSummary(o)}`).join('\n'));}
+      else{addAgentMsg('📋 Your pending orders:\n\n'+orders.map((o,i)=>`${i+1}. ${formatOrderSummary(o)}`).join('\n')+'\n\nTo cancel one say "cancel order [ID]"');}
       renderAgentMsgs();scrollAgentBottom();
+      break;}
+    case 'agent-ngn-rate':{
+      // Show live NGN rate
+      (async()=>{
+        addAgentMsg('📊 Fetching live NGN rate...');
+        renderAgentMsgs();
+        try{
+          const r = await fetch('https://open.er-api.com/v6/latest/USD');
+          const d = await r.json();
+          const rate = d?.rates?.NGN || 1620;
+          const fxOrders = nanOrders.filter(o=>o.type==='fx-limit-offramp'&&o.status==='pending');
+          let msg = `💱 Live NGN rate: ₦${rate.toFixed(0)} / $1 USDC`;
+          if(fxOrders.length){
+            msg += '\n\nYour FX limit orders:';
+            fxOrders.forEach(o=>{
+              const diff = o.targetRate - rate;
+              const pct = ((diff/rate)*100).toFixed(1);
+              msg += `\n• ${o.amount} USDC at ₦${o.targetRate.toLocaleString()} — ${diff>0?`₦${Math.abs(diff).toFixed(0)} away (${pct}% to go)`:'🎯 TARGET MET!'}`;
+            });
+          }
+          addAgentMsg(msg);
+        }catch(e){ addAgentMsg('❌ Could not fetch live rate: '+e.message); }
+        renderAgentMsgs();
+      })();
       break;}
   }
   renderAgentMsgs();scrollAgentBottom();
@@ -7160,6 +7229,19 @@ var agentWalletAddr     = localStorage.getItem('nan_agent_addr') || null;
 var agentRequestId      = null;
 var agentPollTimer      = null;
 var agentWalletBalance  = null; // cached balance string e.g. "100 USDC"
+var userEmail           = localStorage.getItem('nan_dynamic_email') || null; // logged-in user email
+
+// ── Email receipt helper ──────────────────────────────────────────────────────
+async function sendReceiptEmail({to, subject, body}){
+  if(!to) return;
+  try{
+    await fetch('https://nan-production.up.railway.app/api/send-email',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({to, subject, body})
+    });
+  }catch(e){ console.log('[receipt] Email send failed:', e.message); }
+}
 
 // Auto-start session health check if previously connected
 if(agentWalletEmail && agentWalletAddr){
@@ -7437,10 +7519,23 @@ async function agentConfirmedSend(to, amount, token) {
     const r = await fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({action:'transfer',fromAddress:agentWalletAddr,toAddress:to,amount:String(amount),chain:'ARC-TESTNET'})});
     const d = await r.json();
-    addAgentMsg(d.success?'✅ Sent! TX: '+(d.txHash||d.transactionId||'pending'):'❌ '+(d.error||'Transfer failed'));
+    if(d.success){
+      addAgentMsg('✅ Sent! TX: '+(d.txHash||d.transactionId||'pending'));
+      // Refresh balances immediately
+      setTimeout(fetchAgentBalance, 1500);
+      setTimeout(updateHomeScreen, 2000);
+      // Send email receipt if user email known
+      if(userEmail){
+        sendReceiptEmail({
+          to: userEmail,
+          subject: `NAN Wallet: Sent ${amount} ${token||'USDC'}`,
+          body: `You sent ${amount} ${token||'USDC'} from your Agent Wallet to ${to}\n\nTX: ${d.txHash||d.transactionId||'pending'}\nTime: ${new Date().toLocaleString()}`
+        }).catch(()=>{});
+      }
+    } else {
+      addAgentMsg('❌ '+(d.error||'Transfer failed'));
+    }
     renderAgentMsgs();
-    // Refresh agent balance after send
-    setTimeout(fetchAgentBalance, 2000);
   } catch(e) { addAgentMsg('❌ Error: '+e.message); renderAgentMsgs(); }
 }
 
