@@ -4181,10 +4181,40 @@ RULES:
         action={action:'navigate',tab:'market'};
         console.log('[agent] fallback navigate market inferred');
       }
+      // agent-bills: airtime
+      if(!action && /recharge|airtime|top.?up/i.test(reply)){
+        const phoneM = reply.match(/0[7-9][01]\d{8}/);
+        const amtM = reply.match(/[₦#]?\s*([\d,]+)/);
+        const netM = reply.match(/mtn|glo|airtel|9mobile|etisalat/i);
+        if(phoneM && amtM){
+          action={action:'agent-bills',billType:'airtime',phone:phoneM[0],amount:parseFloat(amtM[1].replace(/,/g,'')),network:(netM?netM[0]:'mtn').toLowerCase()};
+          console.log('[agent] fallback airtime inferred:', action);
+        }
+      }
+      // agent-bills: electricity
+      if(!action && /electricity|power|meter|disco|ekedc|ikedc|aedc|phed|kedco|bedc|eedc/i.test(reply)){
+        const meterM = reply.match(/\b\d{11,13}\b/);
+        const amtM = reply.match(/[₦#]?\s*([\d,]+)/);
+        const discoM = reply.match(/ekedc|ikedc|aedc|phed|kedco|bedc|eedc|ibadan|jos|kaduna/i);
+        if(meterM && amtM){
+          action={action:'agent-bills',billType:'electricity',meter:meterM[0],amount:parseFloat(amtM[1].replace(/,/g,'')),disco:(discoM?discoM[0]:'ekedc').toLowerCase()};
+          console.log('[agent] fallback electricity inferred:', action);
+        }
+      }
+      // agent-bills: cable TV
+      if(!action && /dstv|gotv|startimes|cable|subscription/i.test(reply)){
+        const cardM = reply.match(/\b\d{10,12}\b/);
+        const providerM = reply.match(/dstv|gotv|startimes/i);
+        const planM = reply.match(/compact|confam|premium|access|smallie|nova|basic/i);
+        if(cardM && providerM){
+          action={action:'agent-bills',billType:'cable',card:cardM[0],provider:(providerM[0]).toLowerCase(),plan:planM?planM[0].toLowerCase():'compact'};
+          console.log('[agent] fallback cable inferred:', action);
+        }
+      }
     }
     agentMsgs[agentMsgs.length-1]={role:'assistant',content:clean,action};
     // Auto-execute agent wallet actions immediately (no button needed)
-    const autoActions = ['agent-send','agent-bulk-send','agent-balance','agent-history','agent-fund','agent-pay','agent-swap','agent-bridge','agent-multichain','agent-offramp','agent-payroll','agent-ngn-rate','fx-limit-offramp','payreq-create','list_orders','cancel_order','cancel_all'];
+    const autoActions = ['agent-send','agent-bulk-send','agent-balance','agent-history','agent-fund','agent-pay','agent-swap','agent-bridge','agent-multichain','agent-offramp','agent-payroll','agent-ngn-rate','agent-bills','fx-limit-offramp','payreq-create','list_orders','cancel_order','cancel_all'];
     if(action && action.action && autoActions.includes(action.action)){
       setTimeout(()=>executeAgentAction(action), 500);
     }
@@ -4405,11 +4435,14 @@ function executeAgentAction(action){
       var agentFreq = action.freq||'weekly';
       var agentInterval = parseInterval(agentFreq);
       var agentNextRun = parseNextOccurrence(agentFreq);
-      var standTaskType = action.taskType||(action.toChain?'bridge':action.from&&action.from!==action.to?'swap':action.to?'send':'send');
+      var standTaskType = action.taskType||(action.toChain?'bridge':action.from&&action.from!==action.to?'swap':action.billType?'bills':action.to?'send':'send');
       var agentStandOrder = {
         id: genOrderId(), type:'agent-standing', status:'pending',
         taskType: standTaskType, amount: action.amount, token: action.token||'USDC',
         to: action.to, from: action.from||'USDC', toChain: action.toChain,
+        // bills fields
+        billType: action.billType, phone: action.phone, network: action.network,
+        meter: action.meter, disco: action.disco, card: action.card, provider: action.provider, plan: action.plan,
         interval: agentInterval, nextRun: agentNextRun, freq: agentFreq, fromAgent: true
       };
       nanOrders.push(agentStandOrder);
@@ -4563,7 +4596,83 @@ function executeAgentAction(action){
         renderAgentMsgs();
       },400);
       break;
-    case 'navigate':
+    case 'agent-bills':{
+      // Pay bills: airtime, data, electricity, cable TV
+      if(!agentWalletAddr){addAgentMsg('⚠️ Agent wallet not connected.');renderAgentMsgs();return;}
+      (async()=>{
+        const billType = action.billType||action.type||'airtime';
+        const BILLS_API = 'https://nan-production.up.railway.app/api/bills';
+        addAgentMsg('⏳ Processing your '+billType+' payment...');
+        renderAgentMsgs();
+        try{
+          let payload = { action: '' };
+          let confirmMsg = '';
+          // Build payload based on bill type
+          if(billType==='airtime'){
+            payload = { action:'buy-airtime', phone:action.phone, amount:action.amount, network:action.network||'mtn' };
+            confirmMsg = `📱 Recharge ₦${action.amount} airtime for ${action.phone} (${(action.network||'MTN').toUpperCase()})`;
+          } else if(billType==='data'){
+            payload = { action:'buy-data', phone:action.phone, variationCode:action.plan||action.variationCode, network:action.network||'mtn' };
+            confirmMsg = `📶 Buy ${action.plan} data for ${action.phone} (${(action.network||'MTN').toUpperCase()})`;
+          } else if(billType==='electricity'){
+            payload = { action:'pay-electricity', meterNumber:action.meter||action.meterNumber, amount:action.amount, disco:action.disco||action.provider||'ekedc', meterType:action.meterType||'prepaid' };
+            confirmMsg = `⚡ Pay ₦${action.amount} electricity for meter ${action.meter||action.meterNumber} (${(action.disco||'EKEDC').toUpperCase()})`;
+          } else if(billType==='cable'||billType==='dstv'||billType==='gotv'||billType==='startimes'){
+            payload = { action:'pay-cable', cardNumber:action.card||action.cardNumber, variationCode:action.plan||action.variationCode, provider:action.provider||billType, phone:action.phone||'08000000000' };
+            confirmMsg = `📺 Pay ${(action.provider||billType).toUpperCase()} ${action.plan} for card ${action.card||action.cardNumber}`;
+          }
+          // Get USDC cost estimate
+          const ngnRate = window.fxRate || 1620;
+          const usdcCost = action.amount ? (parseFloat(action.amount)/ngnRate).toFixed(4) : '~';
+          // Show confirm
+          addAgentMsg(`🧾 Confirm payment:\n${confirmMsg}\nCost: ≈ ${usdcCost} USDC (₦${action.amount||'?'} at ₦${ngnRate}/USDC)\n\nThis will deduct from your agent wallet.`);
+          renderAgentMsgs();
+          // Add confirm/cancel buttons
+          setTimeout(()=>{
+            const msgsEl = document.getElementById('agentMessages');
+            const last = msgsEl?.lastElementChild;
+            if(last){
+              const btns = document.createElement('div');
+              btns.style.cssText='display:flex;gap:8px;margin-top:10px;';
+              const confirmBtn = document.createElement('button');
+              confirmBtn.textContent='✓ Pay Now';
+              confirmBtn.style.cssText='padding:8px 18px;border-radius:10px;background:#7000ff;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
+              confirmBtn.onclick = async function(){
+                btns.remove();
+                addAgentMsg('💳 Processing payment...');
+                renderAgentMsgs();
+                try{
+                  const r = await fetch(BILLS_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+                  const d = await r.json();
+                  if(d.success){
+                    addAgentMsg('✅ Payment successful!\n'+d.message+(d.token?'\n🔑 Token: '+d.token:'')+'\nUSDC deducted: '+d.usdcCost+'\nTX ID: '+(d.txId||'N/A'));
+                    // Deduct USDC from agent wallet via transfer to self (testnet simulation)
+                    if(d.usdcCost && parseFloat(d.usdcCost)>0){
+                      await fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},
+                        body:JSON.stringify({action:'transfer',fromAddress:agentWalletAddr,toAddress:agentWalletAddr,amount:d.usdcCost,chain:'ARC-TESTNET'})
+                      }).catch(()=>{});
+                    }
+                    setTimeout(fetchAgentBalance, 2000);
+                    // Email receipt
+                    if(userEmail) sendReceiptEmail({to:userEmail,subject:'NAN Wallet: Bill Payment Receipt',body:`Payment successful!\n${confirmMsg}\nUSDC: ${d.usdcCost}\nTX ID: ${d.txId||'N/A'}\nTime: ${new Date().toLocaleString()}`}).catch(()=>{});
+                  } else {
+                    addAgentMsg('❌ Payment failed: '+(d.message||d.error||'Unknown error'));
+                  }
+                }catch(e){ addAgentMsg('❌ Error: '+e.message); }
+                renderAgentMsgs();
+              };
+              const cancelBtn = document.createElement('button');
+              cancelBtn.textContent='Cancel';
+              cancelBtn.style.cssText='padding:8px 14px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;';
+              cancelBtn.onclick=function(){ addAgentMsg('❌ Payment cancelled'); renderAgentMsgs(); btns.remove(); };
+              btns.appendChild(confirmBtn); btns.appendChild(cancelBtn);
+              last.appendChild(btns);
+            }
+          },100);
+        }catch(e){ addAgentMsg('❌ Error: '+e.message); renderAgentMsgs(); }
+      })();
+      break;
+    }
       agentOpen=false;document.getElementById('agentPanel').style.display='none';
       goPage(action.tab);break;
     case 'limit':{
