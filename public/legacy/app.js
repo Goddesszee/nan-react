@@ -3392,11 +3392,57 @@ function startOrderEngine(){
         if(order.type==='limit'){await checkLimitOrder(order);}
         else if(order.type==='scheduled'){await checkScheduledOrder(order);}
         else if(order.type==='standing'){await checkStandingOrder(order);}
+        else if(order.type==='agent-scheduled'){await checkAgentScheduledOrder(order);}
+        else if(order.type==='agent-standing'){await checkAgentStandingOrder(order);}
       }catch(e){console.log('Order check error:',e);}
     }
     nanOrders=nanOrders.filter(o=>o.status==='pending');
     saveOrders();
   },15000); // Check every 15 seconds
+}
+
+async function checkAgentScheduledOrder(order){
+  const now=Date.now();
+  if(now<order.executeAt)return;
+  if(!agentWalletAddr){return;}
+  order.status='executing';
+  toast('⏰ Agent scheduled send — '+order.amount+' '+order.token+' to '+order.to.slice(0,8)+'…','info',5000);
+  try{
+    const r=await fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'transfer',fromAddress:agentWalletAddr,toAddress:order.to,amount:String(order.amount),chain:'ARC-TESTNET'})});
+    const d=await r.json();
+    if(d.success){
+      order.status='done';
+      addAgentMsg('✅ Agent scheduled send complete! Sent '+order.amount+' '+order.token+' to '+order.to.slice(0,8)+'…');
+      renderAgentMsgs();
+    } else {
+      order.status='pending';
+      order.executeAt=now+60000;
+    }
+  }catch{order.status='pending';order.executeAt=now+60000;}
+}
+
+async function checkAgentStandingOrder(order){
+  const now=Date.now();
+  if(now<order.nextRun)return;
+  if(!agentWalletAddr){return;}
+  order.status='executing';
+  toast('🔄 Agent recurring send — '+order.amount+' '+order.token+' to '+order.to.slice(0,8)+'…','info',5000);
+  try{
+    const r=await fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'transfer',fromAddress:agentWalletAddr,toAddress:order.to,amount:String(order.amount),chain:'ARC-TESTNET'})});
+    const d=await r.json();
+    if(d.success){
+      order.status='pending';
+      order.nextRun=now+order.interval;
+      addAgentMsg('✅ Agent recurring send complete! Sent '+order.amount+' '+order.token+'. Next: '+new Date(order.nextRun).toLocaleString());
+      renderAgentMsgs();
+      saveOrders();
+    } else {
+      order.status='pending';
+      order.nextRun=now+60000;
+    }
+  }catch{order.status='pending';order.nextRun=now+60000;}
 }
 
 async function checkLimitOrder(order){
@@ -3575,6 +3621,12 @@ function formatOrderSummary(order){
   }
   if(order.type==='scheduled'){
     return `⏰ Scheduled: Send ${order.amount} ${order.token} to ${order.to?.slice(0,10)}… on ${new Date(order.executeAt).toLocaleString()}`;
+  }
+  if(order.type==='agent-standing'){
+    return `🤖 Agent Standing: Send ${order.amount} ${order.token} from agent wallet to ${order.to?.slice(0,10)}… every ${order.freq} (next: ${new Date(order.nextRun).toLocaleString()})`;
+  }
+  if(order.type==='agent-scheduled'){
+    return `🤖 Agent Scheduled: Send ${order.amount} ${order.token} from agent wallet to ${order.to?.slice(0,10)}… at ${new Date(order.executeAt).toLocaleString()}`;
   }
   if(order.type==='standing'){
     return `📅 Standing: Send ${order.amount} ${order.token} to ${order.to?.slice(0,10)}… every ${order.freq} (next: ${new Date(order.nextRun).toLocaleString()})`;
@@ -4106,6 +4158,40 @@ function executeAgentAction(action){
         .then(r=>r.json()).then(d=>{addAgentMsg(d.success?'✅ Payment sent!\n'+JSON.stringify(d.result||d,null,2):'❌ '+(d.error||'Payment failed'));renderAgentMsgs();})
         .catch(e=>{addAgentMsg('❌ Error: '+e.message);renderAgentMsgs();});
       break;
+    case 'agent-schedule':{
+      if(!agentWalletAddr){addAgentMsg('⚠️ Agent wallet not connected.');renderAgentMsgs();return;}
+      var agentSchedWhen = action.when||'tomorrow';
+      var agentSchedAt = parseWhen(agentSchedWhen);
+      if(!agentSchedAt){addAgentMsg('❌ Could not parse time: '+agentSchedWhen);renderAgentMsgs();break;}
+      var agentSchedOrder = {
+        id: genOrderId(), type:'agent-scheduled', status:'pending',
+        amount: action.amount, token: action.token||'USDC', to: action.to,
+        executeAt: agentSchedAt, when: agentSchedWhen,
+        fromAgent: true
+      };
+      nanOrders.push(agentSchedOrder);
+      saveOrders();
+      addAgentMsg('✅ Scheduled! Will send '+action.amount+' '+(action.token||'USDC')+' from agent wallet on '+new Date(agentSchedAt).toLocaleString());
+      renderAgentMsgs();
+      break;
+    }
+    case 'agent-standing':{
+      if(!agentWalletAddr){addAgentMsg('⚠️ Agent wallet not connected.');renderAgentMsgs();return;}
+      var agentFreq = action.freq||'weekly';
+      var agentInterval = parseInterval(agentFreq);
+      var agentNextRun = parseNextOccurrence(agentFreq);
+      var agentStandOrder = {
+        id: genOrderId(), type:'agent-standing', status:'pending',
+        amount: action.amount, token: action.token||'USDC', to: action.to,
+        interval: agentInterval, nextRun: agentNextRun, freq: agentFreq,
+        fromAgent: true
+      };
+      nanOrders.push(agentStandOrder);
+      saveOrders();
+      addAgentMsg('✅ Recurring order set! Will send '+action.amount+' '+(action.token||'USDC')+' from agent wallet every '+agentFreq+' (next: '+new Date(agentNextRun).toLocaleString()+')');
+      renderAgentMsgs();
+      break;
+    }
     case 'send':
       agentOpen=false;document.getElementById('agentPanel').style.display='none';
       goPage('send');
