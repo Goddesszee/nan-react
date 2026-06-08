@@ -3850,26 +3850,32 @@ async function sendFloatingOTP(){
 async function verifyFloatingOTP(){
   const otp = document.getElementById('floatingOtpInput').value.trim();
   if(!otp||otp.length<6){ toast('Enter the 6-digit code','error'); return; }
+  // Read email from DOM label — don't rely on global otpEmail which may be lost
+  const emailFromLabel = document.getElementById('floatingOtpEmailLabel')?.textContent?.trim();
+  const email = emailFromLabel || otpEmail || document.getElementById('floatingEmailInput')?.value?.trim();
+  if(!email){ toast('Session lost — enter your email again','error'); document.getElementById('floatingOtpStep').style.display='none'; document.getElementById('floatingEmailStep').style.display='block'; return; }
+  otpEmail = email; // re-set global in case it was lost
+
   const btns = document.querySelectorAll('#floatingOtpStep button');
   const btn = btns[0];
   btn.textContent = 'Verifying…'; btn.disabled = true;
   try{
+    // Step 1: Verify OTP
     const res = await fetch('https://nan-production.up.railway.app/api/otp',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'verify',email:otpEmail,otp,token:window._otpToken,expiresAt:window._otpExpiry})});
+      body:JSON.stringify({action:'verify',email,otp,token:window._otpToken,expiresAt:window._otpExpiry})});
     const data = await res.json();
-    if(!data.success) throw new Error(data.error||'Invalid code');
+    if(!data.success) throw new Error(data.error||'Invalid code — try again');
 
     // Step 2: Get or create Circle wallet
     btn.textContent = 'Setting up wallet…';
     const cwRes = await fetch('https://nan-production.up.railway.app/api/circle-wallets',{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'getWallet',email:otpEmail})});
+      body:JSON.stringify({action:'getWallet',email})});
     const cw = await cwRes.json();
 
-    // Handle both response shapes: {wallet:{id,address}} and {walletId,address}
     const walletId = cw.wallet?.id || cw.walletId;
     const walletAddr = cw.wallet?.address || cw.address;
-    if(!walletId || !walletAddr) throw new Error(cw.error||'Could not create wallet');
+    if(!walletId || !walletAddr) throw new Error(cw.error||'Wallet setup failed — please try again');
 
     circleWalletId = walletId;
     circleWalletAddress = walletAddr;
@@ -3881,11 +3887,13 @@ async function verifyFloatingOTP(){
     localStorage.setItem('circleWalletId', walletId);
     localStorage.setItem('circleWalletAddr', walletAddr);
     localStorage.setItem('nan_login_type', 'circle');
+    localStorage.setItem('nan_email', email);
     document.getElementById('floatingOtpModal').style.display='none';
-    resubscribePushOnConnect();
+    try{ resubscribePushOnConnect(); }catch(e){}
     await onConnected(true, false);
   } catch(e){
-    toast('Error: '+e.message,'error');
+    console.error('[verifyFloatingOTP]', e);
+    toast('Error: '+e.message,'error',6000);
     btn.textContent = 'Verify & Connect'; btn.disabled = false;
   }
 }
