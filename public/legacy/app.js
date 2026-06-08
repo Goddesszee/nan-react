@@ -7299,23 +7299,10 @@ async function checkAgentSession(){
 }
 
 async function autoReconnectAgent(){
-  if(!agentWalletEmail) return;
-  try{
-    // Step 1 — request new OTP
-    const r1 = await fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'login-init',email:agentWalletEmail}),
-      signal: AbortSignal.timeout(10000)
-    });
-    const d1 = await r1.json();
-    if(!d1.requestId){ _agentReconnecting=false; showAgentReconnectPrompt(); return; }
-    agentRequestId = d1.requestId;
-    // Step 2 — show OTP prompt (can't auto-complete without OTP)
-    showAgentReconnectPrompt();
-  } catch(e){
-    console.log('[agent] Auto-reconnect init failed:', e.message);
-    _agentReconnecting = false;
-    showAgentReconnectPrompt();
-  }
+  // Don't auto-send OTP — just show the reconnect prompt
+  // User clicks Reconnect to initiate OTP flow themselves
+  _agentReconnecting = false;
+  showAgentReconnectPrompt();
 }
 
 function showAgentReconnectPrompt(){
