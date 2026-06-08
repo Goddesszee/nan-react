@@ -3401,25 +3401,53 @@ function startOrderEngine(){
   },15000); // Check every 15 seconds
 }
 
+async function executeAgentTask(order){
+  const taskType = order.taskType||'send';
+  if(taskType==='send'){
+    const r=await fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'transfer',fromAddress:agentWalletAddr,toAddress:order.to,amount:String(order.amount),chain:'ARC-TESTNET'})});
+    const d=await r.json();
+    if(!d.success) throw new Error(d.error||'Transfer failed');
+    return 'Sent '+order.amount+' '+(order.token||'USDC')+' to '+(order.to||'').slice(0,8)+'…';
+  } else if(taskType==='swap'){
+    const wantFlip = (order.from||'USDC')==='EURC';
+    if(wantFlip!==swapFlipped) flipSwap();
+    document.getElementById('swapFrom').value=order.amount;
+    calcSwap();
+    await new Promise(r=>setTimeout(r,300));
+    await doSwap();
+    return 'Swapped '+order.amount+' '+(order.from||'USDC')+' → '+(order.to||'EURC');
+  } else if(taskType==='bridge'){
+    goPage('bridge');
+    await new Promise(r=>setTimeout(r,300));
+    document.getElementById('bridgeAmt').value=order.amount;
+    return 'Bridge initiated: '+order.amount+' USDC → '+(order.toChain||'ETH-SEPOLIA')+'. Please confirm on bridge page.';
+  } else if(taskType==='offramp'){
+    goPage('naira');
+    await new Promise(r=>setTimeout(r,300));
+    if(order.amount) document.getElementById('ngnWithdrawAmt').value=order.amount;
+    return 'Offramp ready: '+order.amount+' USDC. Complete bank details on naira page.';
+  }
+  throw new Error('Unknown taskType: '+taskType);
+}
+
 async function checkAgentScheduledOrder(order){
   const now=Date.now();
   if(now<order.executeAt)return;
   if(!agentWalletAddr){return;}
   order.status='executing';
-  toast('⏰ Agent scheduled send — '+order.amount+' '+order.token+' to '+order.to.slice(0,8)+'…','info',5000);
+  const taskType=order.taskType||'send';
+  toast('⏰ Executing scheduled '+taskType+' — '+order.amount+' USDC…','info',5000);
   try{
-    const r=await fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'transfer',fromAddress:agentWalletAddr,toAddress:order.to,amount:String(order.amount),chain:'ARC-TESTNET'})});
-    const d=await r.json();
-    if(d.success){
-      order.status='done';
-      addAgentMsg('✅ Agent scheduled send complete! Sent '+order.amount+' '+order.token+' to '+order.to.slice(0,8)+'…');
-      renderAgentMsgs();
-    } else {
-      order.status='pending';
-      order.executeAt=now+60000;
-    }
-  }catch{order.status='pending';order.executeAt=now+60000;}
+    const msg=await executeAgentTask(order);
+    order.status='done';
+    addAgentMsg('✅ Scheduled order complete! '+msg);
+    renderAgentMsgs();
+  }catch(e){
+    order.status='pending';
+    order.executeAt=now+60000;
+    console.log('Scheduled order failed, retrying in 1min:',e);
+  }
 }
 
 async function checkAgentStandingOrder(order){
@@ -3427,22 +3455,20 @@ async function checkAgentStandingOrder(order){
   if(now<order.nextRun)return;
   if(!agentWalletAddr){return;}
   order.status='executing';
-  toast('🔄 Agent recurring send — '+order.amount+' '+order.token+' to '+order.to.slice(0,8)+'…','info',5000);
+  const taskType=order.taskType||'send';
+  toast('🔄 Executing recurring '+taskType+' — '+order.amount+' USDC…','info',5000);
   try{
-    const r=await fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'transfer',fromAddress:agentWalletAddr,toAddress:order.to,amount:String(order.amount),chain:'ARC-TESTNET'})});
-    const d=await r.json();
-    if(d.success){
-      order.status='pending';
-      order.nextRun=now+order.interval;
-      addAgentMsg('✅ Agent recurring send complete! Sent '+order.amount+' '+order.token+'. Next: '+new Date(order.nextRun).toLocaleString());
-      renderAgentMsgs();
-      saveOrders();
-    } else {
-      order.status='pending';
-      order.nextRun=now+60000;
-    }
-  }catch{order.status='pending';order.nextRun=now+60000;}
+    const msg=await executeAgentTask(order);
+    order.status='pending';
+    order.nextRun=now+order.interval;
+    addAgentMsg('✅ Recurring order complete! '+msg+' Next: '+new Date(order.nextRun).toLocaleString());
+    renderAgentMsgs();
+    saveOrders();
+  }catch(e){
+    order.status='pending';
+    order.nextRun=now+60000;
+    console.log('Standing order failed, retrying in 1min:',e);
+  }
 }
 
 async function checkLimitOrder(order){
@@ -4282,15 +4308,20 @@ function executeAgentAction(action){
       var agentSchedWhen = action.when||'tomorrow';
       var agentSchedAt = parseWhen(agentSchedWhen);
       if(!agentSchedAt){addAgentMsg('❌ Could not parse time: '+agentSchedWhen);renderAgentMsgs();break;}
+      var taskType = action.taskType||(action.toChain?'bridge':action.from&&action.from!==action.to?'swap':action.to?'send':'send');
       var agentSchedOrder = {
         id: genOrderId(), type:'agent-scheduled', status:'pending',
-        amount: action.amount, token: action.token||'USDC', to: action.to,
-        executeAt: agentSchedAt, when: agentSchedWhen,
-        fromAgent: true
+        taskType, amount: action.amount, token: action.token||'USDC',
+        to: action.to, from: action.from||'USDC', toChain: action.toChain,
+        executeAt: agentSchedAt, when: agentSchedWhen, fromAgent: true
       };
       nanOrders.push(agentSchedOrder);
       saveOrders();
-      addAgentMsg('✅ Scheduled! Will send '+action.amount+' '+(action.token||'USDC')+' from agent wallet on '+new Date(agentSchedAt).toLocaleString());
+      const taskDesc = taskType==='swap'?'swap '+action.amount+' '+(action.from||'USDC')+' → '+(action.to||'EURC'):
+        taskType==='bridge'?'bridge '+action.amount+' USDC → '+(action.toChain||'ETH-SEPOLIA'):
+        taskType==='offramp'?'offramp '+action.amount+' USDC to your bank':
+        'send '+action.amount+' '+(action.token||'USDC')+' to '+((action.to||'').slice(0,10))+'…';
+      addAgentMsg('⏰ Scheduled! Will '+taskDesc+' on '+new Date(agentSchedAt).toLocaleString()+'. Order ID: '+agentSchedOrder.id);
       renderAgentMsgs();
       break;
     }
@@ -4299,15 +4330,20 @@ function executeAgentAction(action){
       var agentFreq = action.freq||'weekly';
       var agentInterval = parseInterval(agentFreq);
       var agentNextRun = parseNextOccurrence(agentFreq);
+      var standTaskType = action.taskType||(action.toChain?'bridge':action.from&&action.from!==action.to?'swap':action.to?'send':'send');
       var agentStandOrder = {
         id: genOrderId(), type:'agent-standing', status:'pending',
-        amount: action.amount, token: action.token||'USDC', to: action.to,
-        interval: agentInterval, nextRun: agentNextRun, freq: agentFreq,
-        fromAgent: true
+        taskType: standTaskType, amount: action.amount, token: action.token||'USDC',
+        to: action.to, from: action.from||'USDC', toChain: action.toChain,
+        interval: agentInterval, nextRun: agentNextRun, freq: agentFreq, fromAgent: true
       };
       nanOrders.push(agentStandOrder);
       saveOrders();
-      addAgentMsg('✅ Recurring order set! Will send '+action.amount+' '+(action.token||'USDC')+' from agent wallet every '+agentFreq+' (next: '+new Date(agentNextRun).toLocaleString()+')');
+      const standDesc = standTaskType==='swap'?'swap '+action.amount+' '+(action.from||'USDC')+' → '+(action.to||'EURC'):
+        standTaskType==='bridge'?'bridge '+action.amount+' USDC → '+(action.toChain||'ETH-SEPOLIA'):
+        standTaskType==='offramp'?'offramp '+action.amount+' USDC to your bank':
+        'send '+action.amount+' '+(action.token||'USDC')+' to '+((action.to||'').slice(0,10))+'…';
+      addAgentMsg('✅ Recurring order set! Will '+standDesc+' every '+agentFreq+' (next: '+new Date(agentNextRun).toLocaleString()+'). Order ID: '+agentStandOrder.id);
       renderAgentMsgs();
       break;
     }
