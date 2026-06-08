@@ -7495,12 +7495,22 @@ function agentPageRefresh() {
     if (status) status.textContent = 'Connected \u00b7 Arc Testnet';
     if (badge)  { badge.textContent = 'Active'; badge.style.cssText = 'font-size:.72rem;padding:3px 9px;border-radius:100px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#4ade80;font-weight:600;'; }
     if (addr)   addr.innerHTML = '<span style="color:var(--text2);font-family:monospace;">Arc: ' + agentWalletAddr.slice(0,6)+'...'+agentWalletAddr.slice(-4) + '</span><button onclick="navigator.clipboard.writeText(\''+agentWalletAddr+'\').then(()=>{this.textContent=\'✓\';setTimeout(()=>this.textContent=\'Copy\',1500)})" style="padding:2px 8px;border-radius:6px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#7000ff;font-size:.7rem;font-weight:600;cursor:pointer;">Copy</button>';
+    // Show green dot on AI FAB buttons
+    const dot = document.getElementById('aiBtnDot');
+    const dotD = document.getElementById('aiBtnDesktopDot');
+    if(dot) dot.style.display='block';
+    if(dotD) dotD.style.display='inline-block';
     // Show cached balance if available
     var balEl = document.getElementById('agentBalDisplay');
     if(balEl) balEl.textContent = agentWalletBalance || '—';
   } else {
     if (status) status.textContent = 'Not connected';
     if (badge)  { badge.textContent = 'Offline'; badge.style.cssText = 'font-size:.72rem;padding:3px 9px;border-radius:100px;background:rgba(107,114,128,.1);border:1px solid var(--border);color:var(--text3);font-weight:600;'; }
+    // Hide green dot
+    const dot = document.getElementById('aiBtnDot');
+    const dotD = document.getElementById('aiBtnDesktopDot');
+    if(dot) dot.style.display='none';
+    if(dotD) dotD.style.display='none';
   }
 }
 
