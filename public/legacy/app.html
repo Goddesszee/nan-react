@@ -65,7 +65,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20width%3D%2232%22%20height%3D%2232%22%20viewBox%3D%220%200%2032%2032%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M10%2C16%20C10%2C9%202%2C9%202%2C16%20C2%2C23%2010%2C23%2014%2C16%20C18%2C9%2026%2C9%2026%2C16%20C26%2C23%2018%2C23%2014%2C16%20Z%22%20fill%3D%22none%22%20stroke%3D%22%237000ff%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E"/>
 <link rel="preconnect" href="https://rsms.me/">
 <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
-<link rel="stylesheet" href="/legacy/style.css?v=1780904006"/>
+<link rel="stylesheet" href="/legacy/style.css?v=1780904100"/>
 <style>
 /* ══ THEME TOKENS — scoped per theme so neither fights the other ══ */
 :root,[data-theme="dark"]{
@@ -2620,8 +2620,8 @@ document.addEventListener('DOMContentLoaded',function(){
   }
 })();
 </script>
-<script src="/legacy/app.js?v=1780904006"></script>
-<script src="/legacy/ui.js?v=1780904006"></script>
+<script src="/legacy/app.js?v=1780904100"></script>
+<script src="/legacy/ui.js?v=1780904100"></script>
 
 <!-- ══ BANK PICKER MODAL ══ -->
 <div id="bankPickerOverlay" onclick="closeBankPicker()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:99990;backdrop-filter:blur(4px);"></div>
@@ -3089,27 +3089,35 @@ window.addEventListener('load', function() {
 </button>
 
 <!-- ══ AI Panel ══ -->
-<div id="agentPanel" style="display:none;position:fixed;top:0;right:0;bottom:0;left:auto;width:440px;max-width:96vw;background:var(--bg);border-left:1px solid rgba(109,40,217,.3);border-radius:0;z-index:2147483647;font-family:'Inter',sans-serif;overflow:hidden;">
-  <div style="position:absolute;top:0;left:0;right:0;background:var(--bg);border-bottom:1px solid rgba(168,85,247,.15);z-index:2;">
-    <div style="display:flex;justify-content:center;padding:10px 0 4px;"><div style="width:36px;height:4px;border-radius:2px;background:rgba(168,85,247,.3);"></div></div>
-    <div style="padding:8px 16px 12px;display:flex;align-items:center;justify-content:space-between;">
-      <div>
-        <div style="font-size:1rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;"><span style="width:8px;height:8px;border-radius:50%;background:#7000ff;display:inline-block;animation:pulse 2s infinite;"></span>✦ NAN AI</div>
-        <div style="font-size:13px;font-weight:500;color:var(--text2);margin-top:2px;">Live wallet data · Groq AI powered</div>
+<div id="agentPanel" style="display:none;"><!-- legacy compat --></div>
+
+<!-- ══ NAN AI PAGE ══ -->
+<div class="page" id="page-agent-ai">
+  <div style="display:flex;flex-direction:column;height:calc(100vh - 120px);max-width:700px;margin:0 auto;background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;">
+    <div style="padding:16px 18px 12px;border-bottom:1px solid rgba(168,85,247,.15);background:var(--card);flex-shrink:0;">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <button onclick="goPage(window._prevPage||'home')" style="background:none;border:none;cursor:pointer;color:var(--text);padding:4px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div>
+            <div style="font-size:1rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;"><span style="width:8px;height:8px;border-radius:50%;background:#7000ff;display:inline-block;animation:pulse 2s infinite;"></span>✦ NAN AI</div>
+            <div style="font-size:.78rem;font-weight:500;color:var(--text2);margin-top:1px;">Live wallet data · Groq AI powered</div>
+          </div>
+        </div>
+        <button id="voiceBtn" onclick="toggleVoice()" title="Speak to NAN AI" style="width:36px;height:36px;border-radius:10px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.3);color:var(--accent3);font-size:1rem;cursor:pointer;transition:all .2s;">🎤</button>
       </div>
-      <button id="agentCloseBtn" style="width:32px;height:32px;border-radius:9px;background:rgba(255,255,255,0.05);border:1px solid rgba(168,85,247,.2);color:var(--text);cursor:pointer;font-size:15px;">✕</button>
     </div>
-  </div>
-  <div id="agentMessages" style="position:absolute;top:72px;bottom:128px;left:0;right:0;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin;scrollbar-color:rgba(168,85,247,.3) transparent;"></div>
-  <div style="position:absolute;bottom:0;left:0;right:0;padding:10px 14px 16px;border-top:1px solid rgba(168,85,247,.12);background:var(--bg);">
-    <div style="display:flex;gap:6px;margin-bottom:9px;flex-wrap:wrap;" id="agentChips"></div>
-    <div style="display:flex;gap:8px;align-items:center;">
-      <button id="voiceBtn" onclick="toggleVoice()" title="Speak to NAN AI" style="width:42px;height:42px;border-radius:11px;background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.3);color:var(--accent3);font-size:1.1rem;cursor:pointer;flex-shrink:0;transition:all .2s;">🎤</button>
-      <input id="agentInput" placeholder="Ask anything or tap 🎤 to speak…" onkeydown="if(event.key==='Enter')sendAgentMsg()" style="flex:1;background:var(--surface);border:1px solid rgba(168,85,247,.25);border-radius:12px;padding:11px 14px;color:var(--text);font-size:16px;font-family:'Inter',sans-serif;outline:none;"/>
-      <button onclick="sendAgentMsg()" style="width:42px;height:42px;border-radius:11px;background:#7000ff;border:none;color:#f3e8ff;font-size:1.1rem;cursor:pointer;flex-shrink:0;">↑</button>
+    <div id="agentMessages" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin;scrollbar-color:rgba(168,85,247,.3) transparent;"></div>
+    <div style="padding:10px 14px 16px;border-top:1px solid rgba(168,85,247,.12);background:var(--card);flex-shrink:0;">
+      <div style="display:flex;gap:6px;margin-bottom:9px;flex-wrap:wrap;" id="agentChips"></div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input id="agentInput" placeholder="Ask anything or tap 🎤 to speak…" onkeydown="if(event.key==='Enter')sendAgentMsg()" style="flex:1;background:var(--surface);border:1px solid rgba(168,85,247,.25);border-radius:12px;padding:11px 14px;color:var(--text);font-size:16px;font-family:'Inter',sans-serif;outline:none;"/>
+        <button onclick="sendAgentMsg()" style="width:42px;height:42px;border-radius:11px;background:#7000ff;border:none;color:#f3e8ff;font-size:1.1rem;cursor:pointer;flex-shrink:0;">↑</button>
+      </div>
+      <div id="voiceStatus" style="display:none;text-align:center;font-size:.875rem;color:var(--accent3);margin-top:6px;animation:pulse 1s ease infinite;">🎤 Listening… speak now</div>
+      <div style="font-size:.75rem;color:var(--text3);text-align:center;margin-top:6px;">Powered by Groq · Live on-chain data · 🎤 Voice enabled</div>
     </div>
-    <div id="voiceStatus" style="display:none;text-align:center;font-size:.875rem;color:var(--accent3);margin-top:6px;animation:pulse 1s ease infinite;">🎤 Listening… speak now</div>
-    <div style="font-size:.875rem;color:var(--text);text-align:center;margin-top:6px;">Powered by Groq · Live on-chain data · 🎤 Voice enabled</div>
   </div>
 </div>
 
