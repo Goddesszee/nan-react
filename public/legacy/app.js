@@ -4158,6 +4158,27 @@ function executeAgentAction(action){
         .then(r=>r.json()).then(d=>{addAgentMsg(d.success?'✅ Payment sent!\n'+JSON.stringify(d.result||d,null,2):'❌ '+(d.error||'Payment failed'));renderAgentMsgs();})
         .catch(e=>{addAgentMsg('❌ Error: '+e.message);renderAgentMsgs();});
       break;
+    case 'payreq-create':{
+      // Navigate to payment request page and prefill
+      goPage('payreq-new');
+      setTimeout(()=>{
+        var labelEl = document.getElementById('prLabel');
+        var amtEl = document.getElementById('prAmount');
+        var noteEl = document.getElementById('prNote');
+        if(labelEl && action.label) labelEl.value = action.label;
+        if(amtEl && action.amount) amtEl.value = action.amount;
+        if(noteEl && action.note) noteEl.value = action.note;
+        // Set token
+        if(action.token === 'EURC') {
+          document.querySelectorAll('#page-payreq-new .topt').forEach(b => {
+            if(b.textContent.includes('EURC')) b.click();
+          });
+        }
+        addAgentMsg('📋 Payment request form ready! Amount: '+action.amount+' '+(action.token||'USDC')+(action.label?'\nLabel: '+action.label:'')+(action.note?'\nNote: '+action.note:'')+'\n\nReview and click Create to generate your pay link.');
+        renderAgentMsgs();
+      }, 400);
+      break;
+    }
     case 'agent-schedule':{
       if(!agentWalletAddr){addAgentMsg('⚠️ Agent wallet not connected.');renderAgentMsgs();return;}
       var agentSchedWhen = action.when||'tomorrow';
