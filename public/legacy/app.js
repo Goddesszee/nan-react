@@ -4176,10 +4176,10 @@ RULES:
         action={action:idM?'cancel_order':'cancel_all',id:idM?idM[0]:undefined};
         console.log('[agent] fallback cancel inferred:', action);
       }
-      // agent-ngn-rate
-      if(!action && /ngn.*rate|naira.*rate|rate.*naira|dollar.*naira|how far.*fx|fx.*order/i.test(reply)){
-        action={action:'agent-ngn-rate'};
-        console.log('[agent] fallback ngn-rate inferred');
+      // navigate to market
+      if(!action && /(?:go to|open|show|take me to).*market|nan market/i.test(reply)){
+        action={action:'navigate',tab:'market'};
+        console.log('[agent] fallback navigate market inferred');
       }
     }
     agentMsgs[agentMsgs.length-1]={role:'assistant',content:clean,action};
