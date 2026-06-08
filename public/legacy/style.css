@@ -4744,4 +4744,50 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
   #nanDrawerBurger { display: flex !important; flex-shrink: 0; }
 
 
+
+  /* ── Bridge page ── */
+  #page-bridge { padding: 0 !important; }
+  #page-bridge .chain-dropdown-btn {
+    font-size: .85rem !important;
+    padding: 10px 12px !important;
+    border-radius: 10px !important;
+    width: 100% !important;
+  }
+  #page-bridge #bridgeAmt {
+    font-size: 1.3rem !important;
+    font-weight: 700 !important;
+  }
+  #page-bridge #bridgeBtn {
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    padding: 15px !important;
+    border-radius: 14px !important;
+    width: 100% !important;
+    box-shadow: 0 6px 24px rgba(112,0,255,.4) !important;
+  }
+  /* Chain pills in gateway section */
+  #gatewayChains {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    flex-direction: row !important;
+    gap: 6px !important;
+    padding: 0 16px 14px !important;
+  }
+  #gatewayChains > div {
+    background: rgba(255,255,255,.04) !important;
+    border: 1px solid rgba(255,255,255,.07) !important;
+    border-radius: 8px !important;
+    padding: 5px 9px !important;
+    font-size: .7rem !important;
+    font-weight: 600 !important;
+    color: rgba(255,255,255,.45) !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+  }
+  #gatewayChains > div[style*="color:rgba(52,211,153"] {
+    border-color: rgba(52,211,153,.2) !important;
+    color: rgba(52,211,153,.8) !important;
+  }
+
 /* end @media(max-width:767px) */
