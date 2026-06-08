@@ -43,6 +43,7 @@ function goPage(name) {
     multichain: 'page-multichain',
     market:     'page-market',
     'agent-wallet': 'page-agent-wallet',
+    'agent-ai':     'page-agent-ai',
   };
 
   const navMap = {
