@@ -118,9 +118,10 @@ async function getDynamicSigner() {
   // Already have cached signer
   if (window.signer) return window.signer;
 
-  // For Circle wallet users (email login via Dynamic) — no injected provider needed
-  // All transactions go through the Circle API, not window.ethereum
-  if (isCircleWallet && circleWalletId) return null;
+  // For Circle wallet users (email login) — NEVER touch window.ethereum
+  if (isCircleWallet) return null;
+  if (circleWalletId) return null;
+  if (localStorage.getItem('nan_login_type') === 'circle') return null;
 
   // Try injected providers — priority: Rabby > Dynamic injected > EIP-6963 > others
   var injected = window.rabby
@@ -133,13 +134,10 @@ async function getDynamicSigner() {
   if (!injected) return null;
 
   try {
-    // Use eth_accounts first (no popup) — falls back to eth_requestAccounts if needed
+    // Use eth_accounts ONLY (no popup) — never use eth_requestAccounts automatically
     var accounts = [];
     try { accounts = await injected.request({ method: 'eth_accounts' }); } catch(e2) {}
-    if (!accounts || !accounts.length) {
-      accounts = await injected.request({ method: 'eth_requestAccounts' });
-    }
-    if (!accounts || !accounts.length) return null;
+    if (!accounts || !accounts.length) return null; // Don't popup — user must click Connect
 
     var prov = new ethers.BrowserProvider(injected);
     var s    = await prov.getSigner();
@@ -903,6 +901,7 @@ async function verifyOTP(){
         circleWalletAddress=cwData.wallet.address;
         localStorage.setItem('circleWalletId', cwData.wallet.id);
         localStorage.setItem('circleWalletAddr', cwData.wallet.address);
+        localStorage.setItem('nan_login_type', 'circle');
         userAddr=cwData.wallet.address;
         isCircleWallet=true;
         signer=null;
