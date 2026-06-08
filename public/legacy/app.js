@@ -4096,7 +4096,12 @@ RULES:
       // agent-send
       const sendM = reply.match(/send(?:ing)?\s+([\d.]+)\s+(USDC|EURC)\s+(?:[^\n]*?\s+)?to\s+([\w.]+)/i);
       if(sendM){
-        action={action:'agent-send',amount:parseFloat(sendM[1]),token:sendM[2].toUpperCase(),to:sendM[3].replace(/[.,!?]+$/,'')};
+        let sendTo = sendM[3].replace(/[.,!?]+$/,'');
+        // Strip 0x prefix if it's being used with an arc name (e.g. 0xaunty.arc → aunty.arc)
+        if(sendTo.startsWith('0x') && !sendTo.match(/^0x[a-fA-F0-9]{40}$/)){
+          sendTo = sendTo.replace(/^0x/,'');
+        }
+        action={action:'agent-send',amount:parseFloat(sendM[1]),token:sendM[2].toUpperCase(),to:sendTo};
         console.log('[agent] fallback action inferred:', action);
       }
       // payreq-create
@@ -4104,8 +4109,10 @@ RULES:
         const prM = reply.match(/(?:creat|generat|set up)[^\n]*?(?:payment request|pay(?:ment)? link)/i);
         if(prM){
           const amtM = reply.match(/([\d.]+)\s+(USDC|EURC)/i);
-          const labelM = reply.match(/(?:label|titled?)[:\s]+["']?([^"'\n,]+)["']?/i);
-          action={action:'payreq-create',amount:amtM?parseFloat(amtM[1]):null,token:amtM?amtM[2].toUpperCase():'USDC',label:labelM?labelM[1].trim():''};
+          // Clean label — prefer explicit label, else use amount description, else default
+          const labelM = reply.match(/(?:label|for|titled?)[:\s]+["']?([^"'\n,.]{3,40})["']?/i);
+          const cleanLabel = labelM ? labelM[1].trim() : (amtM ? `${amtM[1]} ${amtM[2]} Payment` : 'Payment Request');
+          action={action:'payreq-create',amount:amtM?parseFloat(amtM[1]):null,token:amtM?amtM[2].toUpperCase():'USDC',label:cleanLabel};
           console.log('[agent] fallback payreq inferred:', action);
         }
       }
@@ -4307,6 +4314,10 @@ function executeAgentAction(action){
       break;
     case 'agent-send':
       if(!agentWalletAddr){addAgentMsg('⚠️ Agent wallet not connected. Go to Agent page to connect first.');renderAgentMsgs();return;}
+      // Strip bad 0x prefix from arc names (e.g. 0xaunty.arc → aunty.arc)
+      if(action.to && action.to.startsWith('0x') && !action.to.match(/^0x[a-fA-F0-9]{40}$/)){
+        action.to = action.to.replace(/^0x/,'');
+      }
       // If no destination or user said "to my agent wallet", send from main wallet to agent wallet
       if(!action.to || action.to==='AGENT_SELF' || action.to===agentWalletAddr){
         addAgentMsg('⏳ Sending '+action.amount+' '+(action.token||'USDC')+' from main wallet to agent wallet...');
