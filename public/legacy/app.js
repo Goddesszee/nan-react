@@ -4272,6 +4272,20 @@ RULES:
       if(!action && /receipt|show receipt|generate receipt|get receipt/i.test(reply)){
         action={action:'agent-receipt',transactionType:'Last Transaction'};
       }
+      // agent-schedule
+      if(!action && /schedule|scheduled.*send|send.*later|tomorrow|next week|at \d/i.test(reply)){
+        const amtM = reply.match(/([\d.]+)\s*(USDC|EURC)/i);
+        const toM = reply.match(/to\s+([\w.]+)/i);
+        const whenM = reply.match(/tomorrow|next week|monday|tuesday|wednesday|thursday|friday|at\s+[\d:]+/i);
+        if(amtM) action={action:'agent-schedule',amount:parseFloat(amtM[1]),token:amtM[2]?.toUpperCase()||'USDC',to:toM?toM[1]:null,when:whenM?whenM[0]:'tomorrow'};
+      }
+      // agent-standing (recurring)
+      if(!action && /every\s+(day|week|month|monday|tuesday|wednesday|thursday|friday)|daily|weekly|monthly|recurring/i.test(reply)){
+        const amtM = reply.match(/([\d.]+)\s*(USDC|EURC)/i);
+        const toM = reply.match(/to\s+([\w.]+)/i);
+        const freqM = reply.match(/daily|weekly|monthly|every\s+\w+/i);
+        if(amtM) action={action:'agent-standing',amount:parseFloat(amtM[1]),token:amtM[2]?.toUpperCase()||'USDC',to:toM?toM[1]:null,freq:freqM?freqM[0]:'weekly'};
+      }
       // agent-ngn-rate
       if(!action && /ngn.*rate|naira.*rate|rate.*naira|dollar.*naira|how far.*fx/i.test(reply)){
         action={action:'agent-ngn-rate'};
@@ -4986,8 +5000,10 @@ function executeAgentAction(action){
       })();
       break;
     }
+    case 'navigate':
       agentOpen=false;
-      goPage(action.tab);break;
+      goPage(action.tab);
+      break;
     case 'limit':{
       const order=createOrder({type:'limit',amount:action.amount,sellToken:action.sellToken||'USDC',buyToken:action.buyToken||'EURC',targetRate:action.targetRate,condition:action.condition||'gte',currentRate:FX});
       addAgentMsg(`🎯 Limit order set! I'll sell ${action.amount} ${action.sellToken||'USDC'} → ${action.buyToken||'EURC'} when rate ${action.condition==='gte'?'reaches':'drops to'} ${action.targetRate}. Current rate: ${FX.toFixed(4)}. Order ID: ${order.id}`);
