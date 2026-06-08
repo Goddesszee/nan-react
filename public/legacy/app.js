@@ -4683,21 +4683,21 @@ function executeAgentAction(action){
     }
     case 'swap':
     case 'agent-swap':{
-      const swapAmt = action.amount || action.amountIn;
+      const swapAmt = parseFloat(action.amount || action.amountIn);
       const swapFrom = action.from || (action.to==='EURC'?'USDC':'USDC');
       const swapTo = action.to || (swapFrom==='USDC'?'EURC':'USDC');
       if(!swapAmt){ addAgentMsg('❌ Specify an amount to swap. e.g. "swap 10 USDC to EURC"'); renderAgentMsgs(); break; }
       if(!userAddr){ addAgentMsg('⚠️ Connect your wallet first.'); renderAgentMsgs(); break; }
-      // Show confirm then execute
-      const ngnRate = window.fxRate||1620;
-      addAgentMsg(`🔄 Confirm swap:\n${swapAmt} ${swapFrom} → ${swapTo}\nNetwork: Arc Testnet\n\nThis uses your main wallet.`);
+      const fromBal = parseFloat(swapFrom==='USDC'?usdcBal:eurcBal)||0;
+      if(swapAmt>fromBal){ addAgentMsg(`❌ Insufficient ${swapFrom} balance. You have ${fromBal.toFixed(2)} ${swapFrom}.`); renderAgentMsgs(); break; }
+      addAgentMsg(`🔄 Confirm swap:\n${swapAmt} ${swapFrom} → ${swapTo}\nNetwork: Arc Testnet`);
       renderAgentMsgs();
       setTimeout(()=>{
         const msgs = document.getElementById('agentMessages');
         const last = msgs?.lastElementChild;
         if(!last) return;
         const btns = document.createElement('div');
-        btns.style.cssText='display:flex;gap:8px;margin-top:10px;';
+        btns.style.cssText='display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;';
         const confirmBtn = document.createElement('button');
         confirmBtn.textContent='✓ Swap Now';
         confirmBtn.style.cssText='padding:8px 18px;border-radius:10px;background:#7000ff;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
@@ -4706,28 +4706,40 @@ function executeAgentAction(action){
           addAgentMsg('⏳ Executing swap...');
           renderAgentMsgs();
           try{
-            // Set up swap state and call doSwap directly
-            const wantFlip = swapFrom==='EURC' || swapTo==='USDC';
-            if(wantFlip !== swapFlipped) flipSwap();
-            document.getElementById('swapFrom').value = swapAmt;
-            calcSwap();
-            await new Promise(r=>setTimeout(r,300));
-            await doSwap();
-            addAgentMsg('✅ Swap initiated! Check your balance in a moment.');
+            // Execute swap directly via API/contract without needing swap page
+            if(isCircleWallet && circleWalletId){
+              const r = await fetch('https://nan-production.up.railway.app/api/circle-wallets',{
+                method:'POST', headers:{'Content-Type':'application/json'},
+                body: JSON.stringify({action:'swap', walletAddress:circleWalletAddress, tokenIn:swapFrom, tokenOut:swapTo, amountIn:String(swapAmt)})
+              });
+              const d = await r.json();
+              if(d.success||d.id||d.transactionId){
+                addAgentMsg(`✅ Swap successful!\n${swapAmt} ${swapFrom} → ${swapTo}\nTX: ${d.id||d.transactionId||'confirmed'}`);
+                setTimeout(updateHomeScreen, 2000);
+              } else {
+                throw new Error(d.error||d.message||'Swap failed');
+              }
+            } else {
+              // MetaMask — set swap page state then execute
+              const wantFlip = swapFrom==='EURC';
+              if(wantFlip !== swapFlipped) flipSwap();
+              document.getElementById('swapFrom').value = swapAmt;
+              calcSwap();
+              await new Promise(r=>setTimeout(r,200));
+              await doSwap();
+              addAgentMsg(`✅ Swap initiated! ${swapAmt} ${swapFrom} → ${swapTo}`);
+            }
           }catch(e){
-            addAgentMsg('❌ Swap failed: '+e.message.slice(0,100)+'\n\nTry from the Swap page directly.');
+            addAgentMsg('❌ Swap failed: '+e.message.slice(0,120));
           }
-          renderAgentMsgs();
+          renderAgentMsgs(); scrollAgentBottom();
+          setTimeout(updateHomeScreen,3000);
         };
         const cancelBtn = document.createElement('button');
         cancelBtn.textContent='Cancel';
         cancelBtn.style.cssText='padding:8px 14px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;';
         cancelBtn.onclick=()=>{ btns.remove(); addAgentMsg('Swap cancelled.'); renderAgentMsgs(); };
-        const pageBtn = document.createElement('button');
-        pageBtn.textContent='Open Swap Page';
-        pageBtn.style.cssText='padding:8px 14px;border-radius:10px;background:none;border:1px solid rgba(112,0,255,.3);color:#7000ff;font-size:.85rem;cursor:pointer;';
-        pageBtn.onclick=()=>{ btns.remove(); goPage('swap'); setTimeout(()=>{const wf=swapFrom==='EURC';if(wf!==swapFlipped)flipSwap();document.getElementById('swapFrom').value=swapAmt;calcSwap();},300); };
-        btns.appendChild(confirmBtn); btns.appendChild(cancelBtn); btns.appendChild(pageBtn);
+        btns.appendChild(confirmBtn); btns.appendChild(cancelBtn);
         last.appendChild(btns);
         scrollAgentBottom();
       },100);
