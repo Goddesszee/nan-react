@@ -7161,6 +7161,11 @@ var agentRequestId      = null;
 var agentPollTimer      = null;
 var agentWalletBalance  = null; // cached balance string e.g. "100 USDC"
 
+// Auto-start session health check if previously connected
+if(agentWalletEmail && agentWalletAddr){
+  setTimeout(()=>{ startAgentSessionCheck(); checkAgentSession(); }, 5000);
+}
+
 async function agentRefreshBalance(){
   var balEl = document.getElementById('agentBalDisplay');
   if(balEl) balEl.textContent = '⏳';
@@ -7185,6 +7190,98 @@ async function fetchAgentBalance(){
     // Update home page total to include agent wallet
     updateHomeWithAgentBalance();
   } catch(e){}
+}
+
+// ── Agent session health check — runs every 2 minutes ───────────────────────
+let _agentSessionCheckTimer = null;
+let _agentReconnecting = false;
+
+async function checkAgentSession(){
+  if(!agentWalletEmail || !agentWalletAddr || _agentReconnecting) return;
+  try{
+    const r = await fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'login-status',email:agentWalletEmail}),
+      signal: AbortSignal.timeout(8000)
+    });
+    const d = await r.json();
+    if(d.ready){
+      // Session alive — update address if changed
+      if(d.wallets?.['ARC-TESTNET']) agentWalletAddr = d.wallets['ARC-TESTNET'];
+      return;
+    }
+    // Session dead — try silent auto-reconnect
+    console.log('[agent] Session dead — attempting auto-reconnect...');
+    _agentReconnecting = true;
+    await autoReconnectAgent();
+  } catch(e){ console.log('[agent] Session check error:', e.message); }
+}
+
+async function autoReconnectAgent(){
+  if(!agentWalletEmail) return;
+  try{
+    // Step 1 — request new OTP
+    const r1 = await fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'login-init',email:agentWalletEmail}),
+      signal: AbortSignal.timeout(10000)
+    });
+    const d1 = await r1.json();
+    if(!d1.requestId){ _agentReconnecting=false; showAgentReconnectPrompt(); return; }
+    agentRequestId = d1.requestId;
+    // Step 2 — show OTP prompt (can't auto-complete without OTP)
+    showAgentReconnectPrompt();
+  } catch(e){
+    console.log('[agent] Auto-reconnect init failed:', e.message);
+    _agentReconnecting = false;
+    showAgentReconnectPrompt();
+  }
+}
+
+function showAgentReconnectPrompt(){
+  _agentReconnecting = false;
+  // Don't spam — only show once per session
+  if(window._reconnectPromptShown) return;
+  window._reconnectPromptShown = true;
+  // Show a non-intrusive banner at top of agent panel
+  const panel = document.getElementById('agentPanel');
+  if(!panel) return;
+  const existing = document.getElementById('agentReconnectBanner');
+  if(existing) return;
+  const banner = document.createElement('div');
+  banner.id = 'agentReconnectBanner';
+  banner.style.cssText = 'background:rgba(112,0,255,.12);border:1px solid rgba(112,0,255,.3);border-radius:10px;padding:10px 14px;margin:8px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px;';
+  banner.innerHTML = `
+    <span style="font-size:.8rem;color:var(--text2);">⚡ Agent session expired</span>
+    <button onclick="reconnectAgentFromBanner()" style="padding:6px 14px;border-radius:8px;background:#7000ff;border:none;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;">Reconnect</button>
+  `;
+  // Insert at top of agent messages
+  const msgs = document.getElementById('agentMessages');
+  if(msgs) msgs.insertBefore(banner, msgs.firstChild);
+  // Also show push notification if available
+  if(typeof sendPushNotification==='function') sendPushNotification('Agent session expired','Tap to reconnect your agent wallet');
+  toast('⚡ Agent wallet session expired — tap Reconnect in the AI chat','warning',8000);
+}
+
+async function reconnectAgentFromBanner(){
+  window._reconnectPromptShown = false;
+  const banner = document.getElementById('agentReconnectBanner');
+  if(banner) banner.remove();
+  // Navigate to agent page and trigger reconnect flow
+  goPage('agent-wallet');
+  setTimeout(()=>{
+    // Click the connect button automatically
+    const btn = document.getElementById('agentLoginBtn');
+    if(btn && agentWalletEmail){ btn.click(); }
+  },400);
+}
+
+function startAgentSessionCheck(){
+  if(_agentSessionCheckTimer) clearInterval(_agentSessionCheckTimer);
+  _agentSessionCheckTimer = setInterval(checkAgentSession, 2 * 60 * 1000); // every 2 mins
+  console.log('[agent] Session health check started');
+}
+
+function stopAgentSessionCheck(){
+  if(_agentSessionCheckTimer){ clearInterval(_agentSessionCheckTimer); _agentSessionCheckTimer=null; }
 }
 
 function updateHomeWithAgentBalance(){
@@ -7294,6 +7391,8 @@ async function agentVerifyOtp() {
         }
         agentPageRefresh();
         fetchAgentBalance();
+        startAgentSessionCheck();
+        window._reconnectPromptShown = false;
         if(typeof showToast==='function') showToast('Agent Wallet connected!', 'success', 4000);
       } else if (d.error) {
         clearInterval(agentPollTimer);
@@ -7539,6 +7638,8 @@ function agentPayService() {
 
 async function agentDisconnect() {
   clearInterval(agentPollTimer);
+  stopAgentSessionCheck();
+  window._reconnectPromptShown = false;
   try { await fetch(AGENT_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'logout', email: agentWalletEmail }) }); } catch {}
   agentWalletAddr = null;
   localStorage.removeItem('nan_agent_addr');
