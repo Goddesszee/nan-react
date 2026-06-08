@@ -4732,4 +4732,30 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
   }
 
 }
+
+  /* ── Kill purple balance card bg on mobile ── */
+  #page-home [style*="background:var(--card)"][style*="padding:22px"],
+  #page-home [style*="background:var(--card)"][style*="padding:20px"],
+  #page-home > div:first-child > div:first-child {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+  #page-home > div:first-child > div:first-child * {
+    color: var(--text) !important;
+  }
+  /* ── Hide brand logo on mobile ── */
+  #globalTopBar .brand-logo,
+  #globalTopBar #secretTapZone,
+  #globalTopBar .brand { display: none !important; }
+  /* ── Hide wallet address display on mobile ── */
+  #walAddr, .wal-addr,
+  #homeGreet, .home-greeting,
+  #homeGreetName, .home-name { display: none !important; }
+  /* ── Hide AI FAB on mobile ── */
+  #aiBtn { display: none !important; }
+  /* ── Burger takes brand place, push right side to end ── */
+  #nanDrawerBurger { display: flex !important; flex-shrink: 0; }
+
+
 /* end @media(max-width:767px) */
