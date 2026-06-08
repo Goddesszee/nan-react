@@ -419,6 +419,11 @@ html,body{background:var(--bg);}
 
   <!-- ══ TOP BAR ══ -->
   <div id="globalTopBar">
+    <button id="nanDrawerBurger" onclick="nanOpenDrawer()" style="display:none;background:none;border:none;cursor:pointer;padding:4px 8px 4px 0;flex-shrink:0;flex-direction:column;align-items:center;justify-content:center;gap:4.5px;" aria-label="Open menu">
+      <span style="display:block;width:18px;height:2px;background:rgba(255,255,255,.6);border-radius:2px;"></span>
+      <span style="display:block;width:18px;height:2px;background:rgba(255,255,255,.6);border-radius:2px;"></span>
+      <span style="display:block;width:18px;height:2px;background:rgba(255,255,255,.6);border-radius:2px;"></span>
+    </button>
     <div class="brand">
       <div class="brand-logo" id="secretTapZone" onclick="handleSecretTap()" style="display:flex;align-items:center;gap:1px;cursor:pointer;">
         <!-- Purple N + white AN (dark) -->
@@ -3197,6 +3202,28 @@ function startQRScan() {
 <style>
 .nan-dd-item{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;cursor:pointer;transition:background .15s;}
 .nan-dd-item:hover{background:rgba(112,0,255,.08);}
+
+/* ══ MOBILE SIDE DRAWER ══ */
+@media(max-width:767px){
+  #nanDrawerBurger{display:flex!important;}
+  #nav-bridge{display:none!important;}
+  #nav-agent{display:none!important;}
+  .nav-pill-wrap{justify-content:space-around;}
+  .net-pill{display:flex!important;align-items:center;font-size:10px!important;padding:3px 7px!important;border-radius:6px!important;}
+  #connectTopBtn{display:flex!important;font-family:'Inter var','Inter',monospace!important;font-size:10.5px!important;color:rgba(255,255,255,.5)!important;background:rgba(255,255,255,.05)!important;border:1px solid rgba(255,255,255,.08)!important;border-radius:20px!important;padding:5px 10px!important;white-space:nowrap;}
+  #globalTopBar{gap:0!important;padding:0 13px!important;}
+  .nan-drow{display:flex;align-items:center;gap:12px;width:100%;padding:11px 20px;background:none;border:none;cursor:pointer;font-family:'Inter var','Inter',sans-serif;font-size:13.5px;font-weight:600;color:rgba(255,255,255,.5);text-align:left;position:relative;transition:background .12s;}
+  .nan-drow:active,.nan-drow.nan-drow-active{background:rgba(112,0,255,.08)!important;color:#fff!important;}
+  .nan-drow.nan-drow-active::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:3px;background:#7000ff;border-radius:0 2px 2px 0;}
+  .nan-drow.nan-drow-active .nan-drow-ic{background:rgba(112,0,255,.14)!important;border-color:rgba(112,0,255,.28)!important;}
+  .nan-drow.nan-drow-active .nan-drow-lbl{color:#fff!important;}
+  .nan-drow-ic{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(112,0,255,.07);border:1px solid rgba(112,0,255,.13);color:rgba(168,85,247,.8);}
+  .nan-drow-lbl{flex:1;}
+  #nanDrawer{transition:transform .22s cubic-bezier(.4,0,.2,1);transform:translateX(-100%);}
+  #nanDrawer.nan-drawer-open{transform:translateX(0)!important;}
+  #nanDrawerOverlay{transition:opacity .22s;opacity:0;}
+  #nanDrawerOverlay.nan-drawer-open{opacity:1!important;}
+}
 </style>
 <script>
 
@@ -3407,6 +3434,80 @@ function nanToggleFaucet(btn){
     <div><div style="font-size:1rem;font-weight:700;color:var(--text);">Earn</div><div style="font-size:.75rem;color:var(--text3);">4.80% APY · No lockup</div></div>
   </div>
 </div>
+
+
+  <!-- ══ MOBILE SIDE DRAWER HTML ══ -->
+  <div id="nanDrawerOverlay" onclick="nanCloseDrawer()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;"></div>
+  <div id="nanDrawer" style="display:none;position:fixed;top:0;left:0;bottom:0;width:285px;background:#0a0a0a;border-right:1px solid rgba(112,0,255,.14);z-index:1001;flex-direction:column;overflow:hidden;">
+    <div style="padding:52px 20px 18px;border-bottom:1px solid rgba(255,255,255,.05);">
+      <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#7000ff,#a855f7);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#fff;margin-bottom:11px;">Z</div>
+      <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:3px;letter-spacing:-.3px;">Zara</div>
+      <div id="nanDrawerAddr" style="font-family:'Inter var','Inter',monospace;font-size:10.5px;color:rgba(255,255,255,.35);margin-bottom:10px;">0x6915…556d</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <span style="font-size:10px;font-weight:700;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#a855f7;border-radius:6px;padding:3px 8px;">Arc Testnet</span>
+        <span id="nanDrawerArcBadge" style="display:none;font-size:10px;font-weight:700;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.4);border-radius:6px;padding:3px 8px;">nan.arc</span>
+      </div>
+    </div>
+    <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:10px 0;">
+      <div style="font-size:9.5px;font-weight:700;color:rgba(255,255,255,.2);letter-spacing:.12em;text-transform:uppercase;padding:10px 20px 5px;">Main</div>
+      <button class="nan-drow" id="drow-home" onclick="nanCloseDrawer();goPage('home')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span class="nan-drow-lbl">Home</span></button>
+      <button class="nan-drow" id="drow-swap" onclick="nanCloseDrawer();goPage('swap')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg></span><span class="nan-drow-lbl">Swap</span></button>
+      <button class="nan-drow" id="drow-lend" onclick="nanCloseDrawer();goPage('lend')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></span><span class="nan-drow-lbl">Earn</span></button>
+      <button class="nan-drow" id="drow-market" onclick="nanCloseDrawer();goPage('market')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></span><span class="nan-drow-lbl">Market</span></button>
+      <button class="nan-drow" id="drow-history" onclick="nanCloseDrawer();goPage('history')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span><span class="nan-drow-lbl">History</span></button>
+      <div style="height:1px;background:rgba(255,255,255,.05);margin:8px 20px;"></div>
+      <div style="font-size:9.5px;font-weight:700;color:rgba(255,255,255,.2);letter-spacing:.12em;text-transform:uppercase;padding:10px 20px 5px;">Features</div>
+      <button class="nan-drow" id="drow-agent-wallet" onclick="nanCloseDrawer();goPage('agent-wallet')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><circle cx="12" cy="14" r="2"/></svg></span><span class="nan-drow-lbl">Agent Wallet</span><span style="font-size:9px;font-weight:700;background:rgba(112,0,255,.15);border:1px solid rgba(112,0,255,.25);color:#a855f7;border-radius:5px;padding:2px 6px;margin-left:auto;flex-shrink:0;">Circle</span></button>
+      <button class="nan-drow" id="drow-arcname" onclick="nanCloseDrawer();goPage('arcname')"><span class="nan-drow-ic"><svg width="15" height="9" viewBox="0 0 40 20" fill="none"><path d="M16,10 C16,4 8,4 8,10 C8,16 16,16 20,10 C24,4 32,4 32,10 C32,16 24,16 20,10 Z" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="nan-drow-lbl">.arc Name</span></button>
+      <button class="nan-drow" id="drow-bridge" onclick="nanCloseDrawer();goPage('bridge')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16"/><path d="M4 8h16"/><path d="M4 12h8"/><circle cx="18" cy="16" r="4"/><path d="M18 14v4M16 16h4"/></svg></span><span class="nan-drow-lbl">Bridge</span></button>
+      <button class="nan-drow" onclick="nanCloseDrawer();goPage('naira')"><span class="nan-drow-ic" style="font-size:14px;background:rgba(112,0,255,.07);border:1px solid rgba(112,0,255,.13);">🇳🇬</span><span class="nan-drow-lbl">Naira Ramp</span></button>
+      <button class="nan-drow" onclick="nanCloseDrawer();goPage('ajo')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></span><span class="nan-drow-lbl">Ajo Savings</span></button>
+      <button class="nan-drow" onclick="nanCloseDrawer();goPage('bills')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span><span class="nan-drow-lbl">Bill Pay</span></button>
+      <div style="height:1px;background:rgba(255,255,255,.05);margin:8px 20px;"></div>
+      <div style="font-size:9.5px;font-weight:700;color:rgba(255,255,255,.2);letter-spacing:.12em;text-transform:uppercase;padding:10px 20px 5px;">Settings</div>
+      <button class="nan-drow" onclick="nanCloseDrawer();goPage('more')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></span><span class="nan-drow-lbl">Network</span></button>
+      <button class="nan-drow" onclick="nanCloseDrawer();var t=document.getElementById('themeToggle');if(t)t.click();"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></span><span class="nan-drow-lbl">Appearance</span></button>
+    </div>
+    <div style="padding:12px 20px 28px;border-top:1px solid rgba(255,255,255,.05);">
+      <button class="nan-drow" onclick="nanCloseDrawer();disconnect()" style="width:100%;padding:10px 0;"><span class="nan-drow-ic" style="background:rgba(239,68,68,.07);border-color:rgba(239,68,68,.14);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(239,68,68,.7)" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span><span class="nan-drow-lbl" style="color:rgba(239,68,68,.7);">Disconnect</span></button>
+    </div>
+  </div>
+  <script>
+  function nanOpenDrawer(){
+    var overlay=document.getElementById('nanDrawerOverlay');
+    var drawer=document.getElementById('nanDrawer');
+    if(!overlay||!drawer)return;
+    overlay.style.display='block';
+    drawer.style.display='flex';
+    requestAnimationFrame(function(){requestAnimationFrame(function(){
+      overlay.classList.add('nan-drawer-open');
+      drawer.classList.add('nan-drawer-open');
+    });});
+    nanDrawerSetActive(window._nanCurrentPage||'home');
+    var addr=window.userAddr||localStorage.getItem('nan_dynamic_address')||'';
+    if(addr){var el=document.getElementById('nanDrawerAddr');if(el)el.textContent=addr.slice(0,6)+'…'+addr.slice(-4);}
+  }
+  function nanCloseDrawer(){
+    var overlay=document.getElementById('nanDrawerOverlay');
+    var drawer=document.getElementById('nanDrawer');
+    if(!overlay||!drawer)return;
+    overlay.classList.remove('nan-drawer-open');
+    drawer.classList.remove('nan-drawer-open');
+    setTimeout(function(){overlay.style.display='none';drawer.style.display='none';},230);
+  }
+  function nanDrawerSetActive(page){
+    document.querySelectorAll('.nan-drow').forEach(function(b){b.classList.remove('nan-drow-active');});
+    var el=document.getElementById('drow-'+page);
+    if(el)el.classList.add('nan-drow-active');
+  }
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')nanCloseDrawer();});
+  (function(){
+    var _orig=window.goPage;
+    if(typeof _orig==='function'){
+      window.goPage=function(p){window._nanCurrentPage=p;nanDrawerSetActive(p);return _orig.apply(this,arguments);};
+    }
+  })();
+  </script>
 
 </body>
 
