@@ -6107,7 +6107,19 @@ window.addEventListener('load',()=>{
   // Clean up any stale Dynamic SDK keys left over from previous app versions
   ['nan_dynamic_address','nan_dynamic_email','nan_dynamic_token'].forEach(k=>localStorage.removeItem(k));
 
-  if(_ct === 'email' && _verified === '1' && _em){
+  // Restore Circle wallet session if user already logged in (no connect param needed)
+  const _savedWalletId = localStorage.getItem('circleWalletId');
+  const _savedWalletAddr = localStorage.getItem('circleWalletAddr');
+  if(_savedWalletId && _savedWalletAddr && !_ct){
+    if(_land) _land.style.display='none';
+    circleWalletId=_savedWalletId;
+    circleWalletAddress=_savedWalletAddr;
+    userAddr=_savedWalletAddr;
+    isCircleWallet=true;
+    onArcNetwork=true;
+    provider=getArcProvider();
+    onConnected(true,false);
+  } else if(_ct === 'email' && _verified === '1' && _em){
     // OTP already verified on landing page — skip page-land, go straight to wallet
     if(_land) _land.style.display='none';
     // Show loading indicator
