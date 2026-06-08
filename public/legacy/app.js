@@ -4210,7 +4210,7 @@ RULES:
     }
     agentMsgs[agentMsgs.length-1]={role:'assistant',content:clean,action};
     // Auto-execute agent wallet actions immediately (no button needed)
-    const autoActions = ['agent-send','agent-bulk-send','agent-balance','agent-history','agent-fund','agent-pay','agent-swap','agent-bridge','agent-multichain','agent-offramp','agent-payroll','agent-ngn-rate','agent-bills','fx-limit-offramp','payreq-create','list_orders','cancel_order','cancel_all'];
+    const autoActions = ['agent-send','agent-bulk-send','agent-balance','agent-history','agent-fund','agent-pay','agent-swap','agent-bridge','agent-multichain','agent-offramp','agent-payroll','agent-ngn-rate','agent-bills','fx-limit-offramp','payreq-create','list_orders','cancel_order','cancel_all','agent-receipt'];
     if(action && action.action && autoActions.includes(action.action)){
       setTimeout(()=>executeAgentAction(action), 500);
     }
@@ -4647,6 +4647,19 @@ function executeAgentAction(action){
                   const d = await r.json();
                   if(d.success){
                     addAgentMsg('✅ Payment successful!\n'+d.message+(d.token?'\n🔑 Token: '+d.token:'')+'\nUSDC deducted: '+d.usdcCost+'\nTX ID: '+(d.txId||'N/A'));
+                    renderAgentMsgs();
+                    // Generate receipt button
+                    setTimeout(()=>{
+                      const msgs = document.getElementById('agentMessages');
+                      const last = msgs?.lastElementChild;
+                      if(last){
+                        const btn = document.createElement('button');
+                        btn.textContent = '🧾 Generate Receipt';
+                        btn.style.cssText = 'margin-top:8px;padding:7px 16px;border-radius:10px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.3);color:#7000ff;font-size:.82rem;font-weight:700;cursor:pointer;display:block;';
+                        btn.onclick = ()=>{ btn.remove(); generateAgentReceipt({type:billType==='airtime'?'Airtime Recharge':billType==='electricity'?'Electricity Bill':billType==='cable'?'Cable TV':billType,description:confirmMsg,amount:action.amount,usdcCost:d.usdcCost,txId:d.txId,token:d.token}); };
+                        last.appendChild(btn);
+                      }
+                    }, 100);
                     // Deduct USDC from agent wallet via transfer to self (testnet simulation)
                     if(d.usdcCost && parseFloat(d.usdcCost)>0){
                       await fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},
@@ -4757,6 +4770,19 @@ function executeAgentAction(action){
       else{addAgentMsg('📋 Your pending orders:\n\n'+orders.map((o,i)=>`${i+1}. ${formatOrderSummary(o)}`).join('\n')+'\n\nTo cancel one say "cancel order [ID]"');}
       renderAgentMsgs();scrollAgentBottom();
       break;}
+    case 'agent-receipt':{
+      // Generate receipt for last transaction
+      generateAgentReceipt({
+        type: action.transactionType || 'Transaction',
+        description: action.description || 'NAN Wallet Transaction',
+        amount: action.amount,
+        usdcCost: action.usdcCost,
+        txId: action.txId,
+        token: action.token,
+        to: action.to
+      });
+      break;
+    }
     case 'agent-ngn-rate':{
       // Show live NGN rate
       (async()=>{
@@ -7366,6 +7392,52 @@ async function agentRefreshBalance(){
   if(balEl) balEl.textContent = agentWalletBalance || '0 USDC';
 }
 
+function generateAgentReceipt(details){
+  // details: { type, amount, token, to, txId, usdcCost, description }
+  const time = new Date().toLocaleString();
+  const lines = [
+    '━━━━━━━━━━━━━━━━━━━━━━━━',
+    '    NAN WALLET RECEIPT',
+    '━━━━━━━━━━━━━━━━━━━━━━━━',
+    `📅 ${time}`,
+    `📋 Type: ${details.type||'Transaction'}`,
+    details.description ? `📝 ${details.description}` : null,
+    details.amount ? `💰 Amount: ₦${details.amount}` : null,
+    details.usdcCost ? `🔷 USDC: ${details.usdcCost}` : null,
+    details.to ? `📤 To: ${details.to}` : null,
+    details.txId ? `🔗 TX ID: ${details.txId}` : null,
+    details.token ? `🔑 Token: ${details.token}` : null,
+    '━━━━━━━━━━━━━━━━━━━━━━━━',
+    'nanarc.xyz · Arc Testnet',
+  ].filter(Boolean).join('\n');
+
+  addAgentMsg('🧾 Receipt:\n\n'+lines);
+  renderAgentMsgs();
+  scrollAgentBottom();
+
+  // Add copy button
+  setTimeout(()=>{
+    const msgs = document.getElementById('agentMessages');
+    const last = msgs?.lastElementChild;
+    if(last){
+      const btn = document.createElement('button');
+      btn.textContent = '📋 Copy Receipt';
+      btn.style.cssText = 'margin-top:8px;padding:7px 16px;border-radius:10px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.3);color:#7000ff;font-size:.82rem;font-weight:700;cursor:pointer;display:block;';
+      btn.onclick = ()=>{
+        navigator.clipboard.writeText(lines).then(()=>{ btn.textContent='✓ Copied!'; setTimeout(()=>btn.textContent='📋 Copy Receipt',2000); });
+      };
+      last.appendChild(btn);
+    }
+  }, 100);
+
+  // Email receipt
+  if(userEmail) sendReceiptEmail({
+    to: userEmail,
+    subject: `NAN Wallet Receipt — ${details.type||'Transaction'}`,
+    body: lines
+  }).catch(()=>{});
+}
+
 async function fetchAgentBalance(){
   if(!agentWalletAddr) return;
   try{
@@ -7629,6 +7701,18 @@ async function agentConfirmedSend(to, amount, token) {
     const d = await r.json();
     if(d.success){
       addAgentMsg('✅ Sent! TX: '+(d.txHash||d.transactionId||'pending'));
+      // Receipt button
+      setTimeout(()=>{
+        const msgs = document.getElementById('agentMessages');
+        const last = msgs?.lastElementChild;
+        if(last){
+          const btn = document.createElement('button');
+          btn.textContent = '🧾 Generate Receipt';
+          btn.style.cssText = 'margin-top:8px;padding:7px 16px;border-radius:10px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.3);color:#7000ff;font-size:.82rem;font-weight:700;cursor:pointer;display:block;';
+          btn.onclick = ()=>{ btn.remove(); generateAgentReceipt({type:'Agent Send',description:`Sent ${amount} ${token||'USDC'} to ${to.slice(0,10)}...`,usdcCost:amount,txId:d.txHash||d.transactionId}); };
+          last.appendChild(btn);
+        }
+      }, 100);
       // Refresh balances immediately
       setTimeout(fetchAgentBalance, 1500);
       setTimeout(updateHomeScreen, 2000);
