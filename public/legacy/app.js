@@ -4042,10 +4042,20 @@ RULES:
         action={action:'agent-send',amount:parseFloat(sendM[1]),token:sendM[2].toUpperCase(),to:sendM[3].replace(/[.,!?]+$/,'')};
         console.log('[agent] fallback action inferred:', action);
       }
+      // payreq-create: catch "create/generate a payment request for X TOKEN"
+      if(!action){
+        const prM = reply.match(/(?:creat|generat|set up)[^\n]*?(?:payment request|pay(?:ment)? link)[^\n]*?(?:for\s+([\d.]+)\s+(USDC|EURC))?/i);
+        if(prM){
+          const amtM = reply.match(/([\d.]+)\s+(USDC|EURC)/i);
+          const labelM = reply.match(/(?:label|for|titled?)[:\s]+["']?([^"'\n,]+)["']?/i);
+          action={action:'payreq-create',amount:amtM?parseFloat(amtM[1]):null,token:amtM?amtM[2].toUpperCase():'USDC',label:labelM?labelM[1].trim():''};
+          console.log('[agent] fallback payreq inferred:', action);
+        }
+      }
     }
     agentMsgs[agentMsgs.length-1]={role:'assistant',content:clean,action};
     // Auto-execute agent wallet actions immediately (no button needed)
-    if(action && action.action && action.action.startsWith('agent-')){
+    if(action && action.action && (action.action.startsWith('agent-') || action.action==='payreq-create')){
       setTimeout(()=>executeAgentAction(action), 500);
     }
     // Speak the AI response
