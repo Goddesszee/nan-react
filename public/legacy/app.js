@@ -3866,17 +3866,25 @@ async function verifyFloatingOTP(){
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({action:'getWallet',email:otpEmail})});
     const cw = await cwRes.json();
-    if(!cw.walletId) throw new Error('Could not create wallet');
 
-    circleWalletId=cw.walletId;
-    circleWalletAddress=cw.address;
-    circleWalletBlockchain=cw.blockchain;
-    circleUserToken=cw.userToken;
-    circleUserId=cw.userId;
-    localStorage.setItem('circleWalletId',cw.walletId);
-    localStorage.setItem('circleWalletAddr',cw.address);
+    // Handle both response shapes: {wallet:{id,address}} and {walletId,address}
+    const walletId = cw.wallet?.id || cw.walletId;
+    const walletAddr = cw.wallet?.address || cw.address;
+    if(!walletId || !walletAddr) throw new Error(cw.error||'Could not create wallet');
+
+    circleWalletId = walletId;
+    circleWalletAddress = walletAddr;
+    circleWalletBlockchain = cw.wallet?.blockchain || cw.blockchain;
+    circleUserToken = cw.userToken;
+    circleUserId = cw.userId;
+    isCircleWallet = true;
+    userAddr = walletAddr;
+    localStorage.setItem('circleWalletId', walletId);
+    localStorage.setItem('circleWalletAddr', walletAddr);
+    localStorage.setItem('nan_login_type', 'circle');
     document.getElementById('floatingOtpModal').style.display='none';
-    await onConnected(true,false);
+    resubscribePushOnConnect();
+    await onConnected(true, false);
   } catch(e){
     toast('Error: '+e.message,'error');
     btn.textContent = 'Verify & Connect'; btn.disabled = false;
