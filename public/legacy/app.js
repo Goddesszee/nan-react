@@ -4419,24 +4419,72 @@ function executeAgentAction(action){
         .catch(e=>{addAgentMsg('❌ Error: '+e.message);renderAgentMsgs();});
       break;
     case 'payreq-create':{
-      // Navigate to payment request page and prefill
-      goPage('payreq-new');
-      setTimeout(()=>{
-        var labelEl = document.getElementById('prLabel');
-        var amtEl = document.getElementById('prAmount');
-        var noteEl = document.getElementById('prNote');
-        if(labelEl && action.label) labelEl.value = action.label;
-        if(amtEl && action.amount) amtEl.value = action.amount;
-        if(noteEl && action.note) noteEl.value = action.note;
-        // Set token
-        if(action.token === 'EURC') {
-          document.querySelectorAll('#page-payreq-new .topt').forEach(b => {
-            if(b.textContent.includes('EURC')) b.click();
-          });
-        }
-        addAgentMsg('📋 Payment request form ready! Amount: '+action.amount+' '+(action.token||'USDC')+(action.label?'\nLabel: '+action.label:'')+(action.note?'\nNote: '+action.note:'')+'\n\nReview and click Create to generate your pay link.');
+      if(!userAddr){addAgentMsg('⚠️ Connect wallet first.');renderAgentMsgs();break;}
+      (async()=>{
+        const label = action.label || action.description || 'Payment Request';
+        const amt = action.amount ? parseFloat(action.amount) : null;
+        const token = action.token || 'USDC';
+        const note = action.note || '';
+        addAgentMsg('⏳ Creating payment request...');
         renderAgentMsgs();
-      }, 400);
+        try{
+          const tokenAddr = token==='EURC' ? EURC_ADDR : USDC_ADDR;
+          const amtAtomic = amt&&amt>0 ? ethers.parseUnits(amt.toFixed(6),6) : BigInt(0);
+          const expiresAt = 0;
+          let onChainId = null;
+          if(isCircleWallet && circleWalletId){
+            onChainId = 'circ_'+Date.now();
+            fetch('https://nan-production.up.railway.app/api/circle-wallets',{method:'POST',headers:{'Content-Type':'application/json'},
+              body:JSON.stringify({action:'contractCall',walletId:circleWalletId,
+                contractAddress:PAYREQ_CONTRACT,
+                functionSignature:'createRequest(address,uint256,string,string,uint256)',
+                params:[tokenAddr,amtAtomic.toString(),label,note,String(expiresAt)]})})
+            .catch(e=>console.warn('PR submit error:',e.message));
+          } else if(signer){
+            const c = new ethers.Contract(PAYREQ_CONTRACT, PAYREQ_ABI, signer);
+            const tx = await c.createRequest(tokenAddr, amtAtomic, label, note, expiresAt, arcGasOpts());
+            const receipt = await tx.wait(1);
+            const event = receipt?.logs?.find(l=>l.fragment?.name==='RequestCreated');
+            onChainId = event?.args?.id?.toString();
+            if(!onChainId){
+              await new Promise(r=>setTimeout(r,1000));
+              const ids = await c.getCreatorRequests(userAddr);
+              onChainId = ids.length>0 ? ids[ids.length-1].toString() : '0';
+            }
+          } else {
+            onChainId = 'local_'+Date.now();
+          }
+          const safeId = onChainId||('local_'+Date.now());
+          const pr = {id:'onchain_'+safeId, onChainId:safeId, to:userAddr, token, amount:amt, label, note,
+            creatorEmail:userEmail||'', expiresAt:null, status:'pending', createdAt:Date.now()};
+          paymentRequests.unshift(pr);
+          savePaymentRequests();
+          const link = buildPRLink(pr);
+          addAgentMsg('✅ Payment request created!\n\n📋 Label: '+label+(amt?'\n💰 Amount: '+amt+' '+token:'\n💰 Amount: Open')+'\n\n🔗 Link:\n'+link);
+          renderAgentMsgs();
+          setTimeout(()=>{
+            const msgs = document.getElementById('agentMessages');
+            const last = msgs?.lastElementChild;
+            if(last){
+              const btns = document.createElement('div');
+              btns.style.cssText='display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;';
+              const copyBtn = document.createElement('button');
+              copyBtn.textContent='📋 Copy Link';
+              copyBtn.style.cssText='padding:7px 14px;border-radius:10px;background:#7000ff;border:none;color:#fff;font-size:.82rem;font-weight:700;cursor:pointer;';
+              copyBtn.onclick=()=>{ navigator.clipboard.writeText(link).then(()=>{copyBtn.textContent='✓ Copied!';setTimeout(()=>copyBtn.textContent='📋 Copy Link',2000);}); };
+              const viewBtn = document.createElement('button');
+              viewBtn.textContent='👁 View';
+              viewBtn.style.cssText='padding:7px 14px;border-radius:10px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.3);color:#7000ff;font-size:.82rem;font-weight:700;cursor:pointer;';
+              viewBtn.onclick=()=>{ try{viewPaymentRequest(pr.id);}catch(e){goPage('payreq');} };
+              btns.appendChild(copyBtn); btns.appendChild(viewBtn);
+              last.appendChild(btns);
+            }
+          }, 100);
+        }catch(e){
+          addAgentMsg('❌ Failed: '+e.message);
+          renderAgentMsgs();
+        }
+      })();
       break;
     }
     case 'agent-schedule':{
