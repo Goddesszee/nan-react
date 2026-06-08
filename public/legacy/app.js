@@ -4036,8 +4036,8 @@ RULES:
     clean=clean.replace(/\{\"action\":[\s\S]*?\}/g,'').trim();
     // Fallback: infer action from reply text when model forgets ACTION tag
     if(!action && agentWalletAddr){
-      // agent-send: "send X TOKEN to Y" or "sending X TOKEN from agent"
-      const sendM = reply.match(/send(?:ing)?\s+([\d.]+)\s+(USDC|EURC)\s+(?:from\s+(?:agent|Agent)[^\n]*\s+)?to\s+([^\s.,]+)/i);
+      // agent-send: catch "send X TOKEN to Y" in any phrasing
+      const sendM = reply.match(/send(?:ing)?\s+([\d.]+)\s+(USDC|EURC)\s+(?:[^\n]*?\s+)?to\s+([\w.]+)/i);
       if(sendM){
         action={action:'agent-send',amount:parseFloat(sendM[1]),token:sendM[2].toUpperCase(),to:sendM[3].replace(/[.,!?]+$/,'')};
         console.log('[agent] fallback action inferred:', action);
