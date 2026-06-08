@@ -4036,26 +4036,55 @@ RULES:
     clean=clean.replace(/\{\"action\":[\s\S]*?\}/g,'').trim();
     // Fallback: infer action from reply text when model forgets ACTION tag
     if(!action && agentWalletAddr){
-      // agent-send: catch "send X TOKEN to Y" in any phrasing
+      // agent-send
       const sendM = reply.match(/send(?:ing)?\s+([\d.]+)\s+(USDC|EURC)\s+(?:[^\n]*?\s+)?to\s+([\w.]+)/i);
       if(sendM){
         action={action:'agent-send',amount:parseFloat(sendM[1]),token:sendM[2].toUpperCase(),to:sendM[3].replace(/[.,!?]+$/,'')};
         console.log('[agent] fallback action inferred:', action);
       }
-      // payreq-create: catch "create/generate a payment request for X TOKEN"
+      // payreq-create
       if(!action){
-        const prM = reply.match(/(?:creat|generat|set up)[^\n]*?(?:payment request|pay(?:ment)? link)[^\n]*?(?:for\s+([\d.]+)\s+(USDC|EURC))?/i);
+        const prM = reply.match(/(?:creat|generat|set up)[^\n]*?(?:payment request|pay(?:ment)? link)/i);
         if(prM){
           const amtM = reply.match(/([\d.]+)\s+(USDC|EURC)/i);
-          const labelM = reply.match(/(?:label|for|titled?)[:\s]+["']?([^"'\n,]+)["']?/i);
+          const labelM = reply.match(/(?:label|titled?)[:\s]+["']?([^"'\n,]+)["']?/i);
           action={action:'payreq-create',amount:amtM?parseFloat(amtM[1]):null,token:amtM?amtM[2].toUpperCase():'USDC',label:labelM?labelM[1].trim():''};
           console.log('[agent] fallback payreq inferred:', action);
         }
       }
+      // swap
+      if(!action){
+        const swapM = reply.match(/swap(?:ping)?\s+([\d.]+)\s+(USDC|EURC)\s+(?:to|for)\s+(USDC|EURC)/i);
+        if(swapM){
+          action={action:'agent-swap',amount:parseFloat(swapM[1]),from:swapM[2].toUpperCase(),to:swapM[3].toUpperCase()};
+          console.log('[agent] fallback swap inferred:', action);
+        }
+      }
+      // bridge
+      if(!action){
+        const bridgeM = reply.match(/bridge\s+([\d.]+)\s+USDC/i);
+        if(bridgeM){
+          const chainM = reply.match(/to\s+([\w\s-]+(?:sepolia|testnet|mainnet|base|arbitrum|optimism|avalanche))/i);
+          action={action:'agent-bridge',amount:parseFloat(bridgeM[1]),toChain:chainM?chainM[1].trim():''};
+          console.log('[agent] fallback bridge inferred:', action);
+        }
+      }
+      // multichain balance
+      if(!action && /multichain|multi.chain|all chain|cross.chain balance/i.test(reply)){
+        action={action:'agent-multichain'};
+        console.log('[agent] fallback multichain inferred');
+      }
+      // offramp/naira
+      if(!action && /offramp|withdraw.*(?:naira|NGN|bank)|send.*(?:naira|NGN|bank account)/i.test(reply)){
+        const amtM = reply.match(/([\d.]+)\s+USDC/i);
+        action={action:'agent-offramp',amount:amtM?parseFloat(amtM[1]):null};
+        console.log('[agent] fallback offramp inferred:', action);
+      }
     }
     agentMsgs[agentMsgs.length-1]={role:'assistant',content:clean,action};
     // Auto-execute agent wallet actions immediately (no button needed)
-    if(action && action.action && (action.action.startsWith('agent-') || action.action==='payreq-create')){
+    const autoActions = ['agent-send','agent-balance','agent-history','agent-fund','agent-pay','agent-swap','agent-bridge','agent-multichain','agent-offramp','payreq-create'];
+    if(action && action.action && autoActions.includes(action.action)){
       setTimeout(()=>executeAgentAction(action), 500);
     }
     // Speak the AI response
@@ -4288,7 +4317,52 @@ function executeAgentAction(action){
       setTimeout(()=>{document.getElementById('recipInput').value=action.to||'';document.getElementById('amtInput').value=action.amount||'';sendToken=action.token||'USDC';document.getElementById('sendTokenLabel').textContent=sendToken;validateSend();},200);break;
     case 'swap':
       agentOpen=false;document.getElementById('agentPanel').style.display='none';
-      goPage('swap');setTimeout(()=>{document.getElementById('swapFrom').value=action.amount||'';calcSwap();},200);break;
+      goPage('swap');
+      setTimeout(()=>{
+        // Handle direction: USDC→EURC (default) or EURC→USDC (flipped)
+        const wantFlip = action.from==='EURC' || action.to==='USDC';
+        if(wantFlip !== swapFlipped) flipSwap();
+        document.getElementById('swapFrom').value=action.amount||'';
+        calcSwap();
+      },300);
+      break;
+    case 'agent-swap':
+      agentOpen=false;document.getElementById('agentPanel').style.display='none';
+      goPage('swap');
+      setTimeout(()=>{
+        const wantFlip2 = action.from==='EURC' || action.to==='USDC';
+        if(wantFlip2 !== swapFlipped) flipSwap();
+        document.getElementById('swapFrom').value=action.amount||action.amountIn||'';
+        calcSwap();
+        addAgentMsg('📊 Swap page ready — '+action.amount+' '+(action.from||'USDC')+' → '+(action.to||'EURC')+'. Review and confirm.');
+        renderAgentMsgs();
+      },300);
+      break;
+    case 'agent-bridge':
+      agentOpen=false;document.getElementById('agentPanel').style.display='none';
+      goPage('bridge');
+      setTimeout(()=>{
+        if(action.amount) document.getElementById('bridgeAmt').value=action.amount;
+        addAgentMsg('🌉 Bridge page ready — '+action.amount+' USDC'+(action.toChain?' to '+action.toChain:'')+'. Select destination chain and confirm.');
+        renderAgentMsgs();
+      },300);
+      break;
+    case 'agent-multichain':
+      goPage('multichain');
+      setTimeout(()=>{ try{ mcRefresh(); }catch(e){} },300);
+      addAgentMsg('🌐 Checking your balances across all chains...');
+      renderAgentMsgs();
+      break;
+    case 'agent-offramp':
+      agentOpen=false;document.getElementById('agentPanel').style.display='none';
+      goPage('naira');
+      setTimeout(()=>{
+        if(action.amount) document.getElementById('ngnWithdrawAmt').value=action.amount;
+        if(action.bank) openBankPicker();
+        addAgentMsg('🏦 Offramp page ready'+(action.amount?' — '+action.amount+' USDC':'')+'. Select your bank and enter account number.');
+        renderAgentMsgs();
+      },400);
+      break;
     case 'navigate':
       agentOpen=false;document.getElementById('agentPanel').style.display='none';
       goPage(action.tab);break;
