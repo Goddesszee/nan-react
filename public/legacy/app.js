@@ -4034,6 +4034,15 @@ RULES:
     clean=clean.replace(/\. ACTION:\s*\{[\s\S]*?\}/g,'').trim();
     // Strip bare JSON blocks that leaked through (e.g. {"action":"send",...})
     clean=clean.replace(/\{\"action\":[\s\S]*?\}/g,'').trim();
+    // Fallback: infer action from reply text when model forgets ACTION tag
+    if(!action && agentWalletAddr){
+      // agent-send: "send X TOKEN to Y" or "sending X TOKEN from agent"
+      const sendM = reply.match(/send(?:ing)?\s+([\d.]+)\s+(USDC|EURC)\s+(?:from\s+(?:agent|Agent)[^\n]*\s+)?to\s+([^\s.,]+)/i);
+      if(sendM){
+        action={action:'agent-send',amount:parseFloat(sendM[1]),token:sendM[2].toUpperCase(),to:sendM[3].replace(/[.,!?]+$/,'')};
+        console.log('[agent] fallback action inferred:', action);
+      }
+    }
     agentMsgs[agentMsgs.length-1]={role:'assistant',content:clean,action};
     // Auto-execute agent wallet actions immediately (no button needed)
     if(action && action.action && action.action.startsWith('agent-')){
