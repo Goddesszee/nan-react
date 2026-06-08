@@ -1270,6 +1270,21 @@ html,body{background:var(--bg);}
       <div id="homeGreet" class="home-greeting"></div>
       <div id="homeGreetName" class="home-name"></div>
       <div id="skel-bal"></div>
+
+      <!-- Recent Transactions (mobile-only, shown via @media CSS) -->
+      <div class="mob-recent-section">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px 8px;">
+          <div style="font-size:.6rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.25);">Recent</div>
+          <button onclick="goPage('history')" style="font-size:.7rem;font-weight:600;color:rgba(112,0,255,.6);background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;">History →</button>
+        </div>
+        <div id="mobRecentList">
+          <div class="mob-tx-row">
+            <div class="mob-tx-ico mob-tx-out"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></div>
+            <div class="mob-tx-inf"><div class="mob-tx-name">Loading...</div><div class="mob-tx-date">—</div></div>
+            <div class="mob-tx-amt">—</div>
+          </div>
+        </div>
+      </div>
       <div onclick="goPage('naira')" id="nairaRow"></div>
     </div>
   </div>
@@ -3530,6 +3545,51 @@ function nanToggleFaucet(btn){
       window.goPage=function(p){window._nanCurrentPage=p;nanDrawerSetActive(p);return _orig.apply(this,arguments);};
     }
   })();
+
+/* ── Mobile Recent Transactions ── */
+function nanPopulateRecent(){
+  if(window.innerWidth > 767) return;
+  var list = document.getElementById('mobRecentList');
+  if(!list) return;
+  // Try to get from existing txHistory or txList global
+  var txs = window.txHistory || window.txList || window._txCache || [];
+  if(!txs.length){
+    list.innerHTML = '<div style="padding:12px 16px;font-size:.75rem;color:rgba(255,255,255,.25);text-align:center;">No recent transactions</div>';
+    return;
+  }
+  var recent = txs.slice(0,3);
+  list.innerHTML = recent.map(function(tx){
+    var isOut = tx.type==='send' || tx.direction==='out' || (tx.amount && tx.amount < 0);
+    var icon = isOut
+      ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>'
+      : '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>';
+    var amtClass = isOut ? 'mob-tx-amt neg' : 'mob-tx-amt pos';
+    var prefix = isOut ? '−' : '+';
+    var amt = tx.amount ? (prefix + '$' + Math.abs(parseFloat(tx.amount)).toFixed(2)) : '—';
+    var name = tx.label || tx.to || tx.description || (isOut ? 'Sent' : 'Received');
+    var date = tx.date || tx.timestamp ? new Date(tx.timestamp||tx.date).toLocaleDateString('en',{month:'short',day:'numeric'}) : '—';
+    return '<div class="mob-tx-row">'
+      + '<div class="mob-tx-ico ' + (isOut?'mob-tx-out':'mob-tx-in') + '">' + icon + '</div>'
+      + '<div class="mob-tx-inf"><div class="mob-tx-name">' + name + '</div><div class="mob-tx-date">' + date + '</div></div>'
+      + '<div class="' + amtClass + '">' + amt + '</div>'
+      + '</div>';
+  }).join('');
+}
+// Hook into existing balance refresh if available
+(function(){
+  var _origRefresh = window.refreshBalances || window.loadHome;
+  if(typeof _origRefresh === 'function'){
+    var key = window.refreshBalances ? 'refreshBalances' : 'loadHome';
+    window[key] = function(){
+      var r = _origRefresh.apply(this, arguments);
+      setTimeout(nanPopulateRecent, 800);
+      return r;
+    };
+  }
+  // Also run on page load
+  document.addEventListener('DOMContentLoaded', function(){ setTimeout(nanPopulateRecent, 1500); });
+})();
+
   </script>
 
 </body>
