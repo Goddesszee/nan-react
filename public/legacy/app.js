@@ -794,6 +794,7 @@ function detectWallet(){
   return window.ethereum||window.rabby||null;
 }
 async function checkNetwork(){
+  if(isCircleWallet){ onArcNetwork=true; return true; } // Circle wallets don't need MetaMask
   if(!wp){ onArcNetwork=true; return true; }
   try{
     const hex=await wp.request({method:'eth_chainId'});
@@ -1200,7 +1201,7 @@ async function onConnected(isEmail=false, isDev=false){
 
   if(!isEmail&&wp?.on){
     wp.on('accountsChanged',(a)=>{if(!a.length)disconnect();else location.reload();});
-    wp.on('chainChanged',async()=>{await checkNetwork();if(onArcNetwork){provider=new ethers.BrowserProvider(wp);signer=await provider.getSigner();await refreshBalances();}});
+    wp.on('chainChanged',async()=>{if(isCircleWallet)return;await checkNetwork();if(onArcNetwork){provider=new ethers.BrowserProvider(wp);signer=await provider.getSigner();await refreshBalances();}});
   }
 
   // Show onboarding for new users
@@ -2459,7 +2460,7 @@ async function doBridge(){
     await refreshBalances();
   }catch(err){
     toast((err?.info?.error?.message||err?.reason||err?.message||'Bridge failed').slice(0,140),'error',8000);
-  }finally{btn.innerHTML='Bridge USDC via CCTP';btn.disabled=false;_bridging=false;checkNetwork();}
+  }finally{btn.innerHTML='Bridge USDC via CCTP';btn.disabled=false;_bridging=false;if(!isCircleWallet)checkNetwork();}
 }
 
 async function pollIrisAttestation(txHash, destChain) {
