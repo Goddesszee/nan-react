@@ -4705,8 +4705,6 @@ function executeAgentAction(action){
       (async()=>{
         const billType = action.billType||action.type||'airtime';
         const BILLS_API = 'https://nan-production.up.railway.app/api/bills';
-        addAgentMsg('⏳ Processing your '+billType+' payment...');
-        renderAgentMsgs();
         try{
           let payload = { action: '' };
           let confirmMsg = '';
@@ -4788,6 +4786,7 @@ function executeAgentAction(action){
               cancelBtn.onclick=function(){ addAgentMsg('❌ Payment cancelled'); renderAgentMsgs(); btns.remove(); };
               btns.appendChild(confirmBtn); btns.appendChild(cancelBtn);
               last.appendChild(btns);
+              scrollAgentBottom();
             }
           },100);
         }catch(e){ addAgentMsg('❌ Error: '+e.message); renderAgentMsgs(); }
