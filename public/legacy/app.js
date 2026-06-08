@@ -3713,28 +3713,15 @@ function toggleAgent(){
   _agentToggleLock=true;
   setTimeout(()=>{_agentToggleLock=false;},600);
   try{
-    agentOpen=!agentOpen;
-    const panel=document.getElementById('agentPanel');
-    if(!panel)return;
-    if(agentOpen){
-      // Set each property individually — !important invalid in style.cssText
-      panel.style.display='flex';
-      panel.style.flexDirection='column';
-      panel.style.position='fixed';
-      panel.style.top='0';
-      panel.style.left='0';
-      panel.style.right='0';
-      panel.style.bottom='0';
-      panel.style.zIndex='2147483647';
-      panel.style.transform='none';
-      panel.classList.add('open');
+    agentOpen=true;
+    goPage('agent-ai');
+    setTimeout(()=>{
       try{renderAgentMsgs();}catch(e){}
       try{renderAgentChips();}catch(e){}
       try{scrollAgentBottom();}catch(e){}
-    }else{
-      panel.style.display='none';
-      panel.classList.remove('open');
-    }
+      const inp=document.getElementById('agentInput');
+      if(inp) inp.focus();
+    },100);
   }catch(e){}
 }
 
@@ -4465,11 +4452,11 @@ function executeAgentAction(action){
       break;
     }
     case 'send':
-      agentOpen=false;document.getElementById('agentPanel').style.display='none';
+      agentOpen=false;
       goPage('send');
       setTimeout(()=>{document.getElementById('recipInput').value=action.to||'';document.getElementById('amtInput').value=action.amount||'';sendToken=action.token||'USDC';document.getElementById('sendTokenLabel').textContent=sendToken;validateSend();},200);break;
     case 'swap':
-      agentOpen=false;document.getElementById('agentPanel').style.display='none';
+      agentOpen=false;
       goPage('swap');
       setTimeout(()=>{
         // Handle direction: USDC→EURC (default) or EURC→USDC (flipped)
@@ -4480,7 +4467,7 @@ function executeAgentAction(action){
       },300);
       break;
     case 'agent-swap':
-      agentOpen=false;document.getElementById('agentPanel').style.display='none';
+      agentOpen=false;
       goPage('swap');
       setTimeout(()=>{
         const wantFlip2 = action.from==='EURC' || action.to==='USDC';
@@ -4492,7 +4479,7 @@ function executeAgentAction(action){
       },300);
       break;
     case 'agent-bridge':
-      agentOpen=false;document.getElementById('agentPanel').style.display='none';
+      agentOpen=false;
       goPage('bridge');
       setTimeout(()=>{
         if(action.amount) document.getElementById('bridgeAmt').value=action.amount;
@@ -4596,7 +4583,7 @@ function executeAgentAction(action){
       renderAgentMsgs();
       break;
     case 'agent-offramp':
-      agentOpen=false;document.getElementById('agentPanel').style.display='none';
+      agentOpen=false;
       goPage('naira');
       setTimeout(()=>{
         if(action.amount) document.getElementById('ngnWithdrawAmt').value=action.amount;
@@ -4687,7 +4674,7 @@ function executeAgentAction(action){
       })();
       break;
     }
-      agentOpen=false;document.getElementById('agentPanel').style.display='none';
+      agentOpen=false;
       goPage(action.tab);break;
     case 'limit':{
       const order=createOrder({type:'limit',amount:action.amount,sellToken:action.sellToken||'USDC',buyToken:action.buyToken||'EURC',targetRate:action.targetRate,condition:action.condition||'gte',currentRate:FX});
@@ -4722,7 +4709,7 @@ function executeAgentAction(action){
     }
     case 'agent-payroll':{
       // Open bulk/payroll page — user fills details manually
-      agentOpen=false; document.getElementById('agentPanel').style.display='none';
+      agentOpen=false;
       goPage('bulk');
       setTimeout(()=>{
         // Load saved group if specified
