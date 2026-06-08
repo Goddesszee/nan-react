@@ -4637,42 +4637,138 @@ function executeAgentAction(action){
       renderAgentMsgs();
       break;
     }
-    case 'send':
-      agentOpen=false;
-      goPage('send');
-      setTimeout(()=>{document.getElementById('recipInput').value=action.to||'';document.getElementById('amtInput').value=action.amount||'';sendToken=action.token||'USDC';document.getElementById('sendTokenLabel').textContent=sendToken;validateSend();},200);break;
+    case 'send':{
+      if(!userAddr){ addAgentMsg('⚠️ Connect your wallet first.'); renderAgentMsgs(); break; }
+      (async()=>{
+        let to = action.to||'';
+        const amount = action.amount;
+        const token = action.token||'USDC';
+        // Resolve arc name
+        if(to && !to.startsWith('0x') && (to.endsWith('.arc')||!to.includes('.'))){
+          const arcName = to.replace('.arc','').toLowerCase();
+          addAgentMsg('🔍 Resolving '+arcName+'.arc...'); renderAgentMsgs();
+          try{
+            const rp = new ethers.JsonRpcProvider(ARC_RPC,{chainId:ARC_CHAIN_ID,name:'arc-testnet',ensAddress:null});
+            const nc = new ethers.Contract(NAME_REGISTRY,NAME_ABI,rp);
+            const resolved = await Promise.race([nc.resolve(arcName),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),6000))]);
+            if(resolved && resolved!=='0x0000000000000000000000000000000000000000'){
+              to=resolved;
+              addAgentMsg('✓ Resolved '+arcName+'.arc → '+to.slice(0,6)+'...'+to.slice(-4)); renderAgentMsgs();
+            } else { addAgentMsg('❌ Arc name not found: '+arcName+'.arc'); renderAgentMsgs(); return; }
+          }catch(e){ addAgentMsg('❌ Could not resolve: '+e.message); renderAgentMsgs(); return; }
+        }
+        if(!to){ addAgentMsg('❌ Specify a recipient address or .arc name.'); renderAgentMsgs(); return; }
+        addAgentMsg(`📤 Confirm send:\n${amount} ${token} → ${to.slice(0,6)}...${to.slice(-4)}\nNetwork: Arc Testnet`);
+        renderAgentMsgs();
+        setTimeout(()=>{
+          const msgs = document.getElementById('agentMessages');
+          const last = msgs?.lastElementChild;
+          if(!last) return;
+          const btns = document.createElement('div');
+          btns.style.cssText='display:flex;gap:8px;margin-top:10px;';
+          const confirmBtn = document.createElement('button');
+          confirmBtn.textContent='✓ Open Send Page';
+          confirmBtn.style.cssText='padding:8px 18px;border-radius:10px;background:#7000ff;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
+          confirmBtn.onclick=()=>{ btns.remove(); goPage('send'); setTimeout(()=>{ document.getElementById('recipInput').value=to; document.getElementById('amtInput').value=amount||''; sendToken=token; document.getElementById('sendTokenLabel').textContent=token; validateSend(); },200); };
+          const cancelBtn = document.createElement('button');
+          cancelBtn.textContent='Cancel';
+          cancelBtn.style.cssText='padding:8px 14px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;';
+          cancelBtn.onclick=()=>{ btns.remove(); addAgentMsg('Send cancelled.'); renderAgentMsgs(); };
+          btns.appendChild(confirmBtn); btns.appendChild(cancelBtn);
+          last.appendChild(btns);
+          scrollAgentBottom();
+        },100);
+      })();
+      break;
+    }
     case 'swap':
-      agentOpen=false;
-      goPage('swap');
+    case 'agent-swap':{
+      const swapAmt = action.amount || action.amountIn;
+      const swapFrom = action.from || (action.to==='EURC'?'USDC':'USDC');
+      const swapTo = action.to || (swapFrom==='USDC'?'EURC':'USDC');
+      if(!swapAmt){ addAgentMsg('❌ Specify an amount to swap. e.g. "swap 10 USDC to EURC"'); renderAgentMsgs(); break; }
+      if(!userAddr){ addAgentMsg('⚠️ Connect your wallet first.'); renderAgentMsgs(); break; }
+      // Show confirm then execute
+      const ngnRate = window.fxRate||1620;
+      addAgentMsg(`🔄 Confirm swap:\n${swapAmt} ${swapFrom} → ${swapTo}\nNetwork: Arc Testnet\n\nThis uses your main wallet.`);
+      renderAgentMsgs();
       setTimeout(()=>{
-        // Handle direction: USDC→EURC (default) or EURC→USDC (flipped)
-        const wantFlip = action.from==='EURC' || action.to==='USDC';
-        if(wantFlip !== swapFlipped) flipSwap();
-        document.getElementById('swapFrom').value=action.amount||'';
-        calcSwap();
-      },300);
+        const msgs = document.getElementById('agentMessages');
+        const last = msgs?.lastElementChild;
+        if(!last) return;
+        const btns = document.createElement('div');
+        btns.style.cssText='display:flex;gap:8px;margin-top:10px;';
+        const confirmBtn = document.createElement('button');
+        confirmBtn.textContent='✓ Swap Now';
+        confirmBtn.style.cssText='padding:8px 18px;border-radius:10px;background:#7000ff;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
+        confirmBtn.onclick = async function(){
+          btns.remove();
+          addAgentMsg('⏳ Executing swap...');
+          renderAgentMsgs();
+          try{
+            // Set up swap state and call doSwap directly
+            const wantFlip = swapFrom==='EURC' || swapTo==='USDC';
+            if(wantFlip !== swapFlipped) flipSwap();
+            document.getElementById('swapFrom').value = swapAmt;
+            calcSwap();
+            await new Promise(r=>setTimeout(r,300));
+            await doSwap();
+            addAgentMsg('✅ Swap initiated! Check your balance in a moment.');
+          }catch(e){
+            addAgentMsg('❌ Swap failed: '+e.message.slice(0,100)+'\n\nTry from the Swap page directly.');
+          }
+          renderAgentMsgs();
+        };
+        const cancelBtn = document.createElement('button');
+        cancelBtn.textContent='Cancel';
+        cancelBtn.style.cssText='padding:8px 14px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;';
+        cancelBtn.onclick=()=>{ btns.remove(); addAgentMsg('Swap cancelled.'); renderAgentMsgs(); };
+        const pageBtn = document.createElement('button');
+        pageBtn.textContent='Open Swap Page';
+        pageBtn.style.cssText='padding:8px 14px;border-radius:10px;background:none;border:1px solid rgba(112,0,255,.3);color:#7000ff;font-size:.85rem;cursor:pointer;';
+        pageBtn.onclick=()=>{ btns.remove(); goPage('swap'); setTimeout(()=>{const wf=swapFrom==='EURC';if(wf!==swapFlipped)flipSwap();document.getElementById('swapFrom').value=swapAmt;calcSwap();},300); };
+        btns.appendChild(confirmBtn); btns.appendChild(cancelBtn); btns.appendChild(pageBtn);
+        last.appendChild(btns);
+        scrollAgentBottom();
+      },100);
       break;
-    case 'agent-swap':
-      agentOpen=false;
-      goPage('swap');
+    }
+    case 'agent-bridge':{
+      const bridgeAmt = action.amount;
+      const bridgeDest = action.toChain||'ETH-SEPOLIA';
+      if(!bridgeAmt){ addAgentMsg('❌ Specify an amount to bridge. e.g. "bridge 10 USDC to Ethereum"'); renderAgentMsgs(); break; }
+      if(!userAddr){ addAgentMsg('⚠️ Connect your wallet first.'); renderAgentMsgs(); break; }
+      addAgentMsg(`🌉 Confirm bridge:\n${bridgeAmt} USDC → ${bridgeDest}\nNetwork: Arc Testnet via CCTP`);
+      renderAgentMsgs();
       setTimeout(()=>{
-        const wantFlip2 = action.from==='EURC' || action.to==='USDC';
-        if(wantFlip2 !== swapFlipped) flipSwap();
-        document.getElementById('swapFrom').value=action.amount||action.amountIn||'';
-        calcSwap();
-        addAgentMsg('📊 Swap page ready — '+action.amount+' '+(action.from||'USDC')+' → '+(action.to||'EURC')+'. Review and confirm.');
-        renderAgentMsgs();
-      },300);
+        const msgs = document.getElementById('agentMessages');
+        const last = msgs?.lastElementChild;
+        if(!last) return;
+        const btns = document.createElement('div');
+        btns.style.cssText='display:flex;gap:8px;margin-top:10px;';
+        const confirmBtn = document.createElement('button');
+        confirmBtn.textContent='✓ Bridge Now';
+        confirmBtn.style.cssText='padding:8px 18px;border-radius:10px;background:#7000ff;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
+        confirmBtn.onclick=()=>{
+          btns.remove();
+          goPage('bridge');
+          setTimeout(()=>{
+            if(bridgeAmt) document.getElementById('bridgeAmt').value=bridgeAmt;
+            // Set destination chain
+            addAgentMsg('🌉 Bridge page ready — click Bridge to confirm.');
+            renderAgentMsgs();
+          },300);
+        };
+        const cancelBtn = document.createElement('button');
+        cancelBtn.textContent='Cancel';
+        cancelBtn.style.cssText='padding:8px 14px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;';
+        cancelBtn.onclick=()=>{ btns.remove(); addAgentMsg('Bridge cancelled.'); renderAgentMsgs(); };
+        btns.appendChild(confirmBtn); btns.appendChild(cancelBtn);
+        last.appendChild(btns);
+        scrollAgentBottom();
+      },100);
       break;
-    case 'agent-bridge':
-      agentOpen=false;
-      goPage('bridge');
-      setTimeout(()=>{
-        if(action.amount) document.getElementById('bridgeAmt').value=action.amount;
-        addAgentMsg('🌉 Bridge page ready — '+action.amount+' USDC'+(action.toChain?' to '+action.toChain:'')+'. Select destination chain and confirm.');
-        renderAgentMsgs();
-      },300);
-      break;
+    }
     case 'agent-bulk-send':{
       // recipients: [{to, amount, token}] or top-level to/amount/token with recipients array
       if(!agentWalletAddr){
