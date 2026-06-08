@@ -596,7 +596,7 @@ function updateBalDisplay(){
   }
   // Also update the NGN equivalent
   const ngnEl=document.getElementById('balNgn');
-  if(ngnEl){const NGN_RATE=1622;ngnEl.textContent='≈ ₦'+Math.round(totalUsd*NGN_RATE).toLocaleString()+' NGN';}
+  if(ngnEl){const NGN_RATE=1622;ngnEl.textContent='≈ NGN'+Math.round(totalUsd*NGN_RATE).toLocaleString()+' NGN';}
 }
 function showBalSkeleton(){
   document.getElementById('balAmt').innerHTML='<span class="skel skel-bal"></span>';
@@ -1080,7 +1080,7 @@ function loadCachedBalances(){
   const homeEurcBal = document.getElementById('homeEurcBal');
   if(homeBalAmt) homeBalAmt.textContent = '$'+totalUsd.toFixed(2);
   window._arcBaseBalance = totalUsd; // store for multichain total
-  if(homeBalNgn) homeBalNgn.textContent = '≈ ₦'+Math.round(totalUsd*NGN_RATE).toLocaleString()+' NGN';
+  if(homeBalNgn) homeBalNgn.textContent = '≈ NGN'+Math.round(totalUsd*NGN_RATE).toLocaleString()+' NGN';
   if(homeUsdcBal) homeUsdcBal.textContent = uFmt+' USDC';
   if(homeEurcBal) homeEurcBal.textContent = eFmt+' EURC';
 
@@ -1290,7 +1290,7 @@ async function refreshBalances(){
     // Hide skeleton, show balance
     const _sk=document.getElementById('balSkelWrap');const _rw=document.getElementById('balRealWrap');
     if(_sk)_sk.style.display='none';if(_rw)_rw.style.display='block';
-    if(homeBalNgn)homeBalNgn.textContent='≈ ₦'+(isNaN(totalUsd)?'0':Math.round(totalUsd*NGN_RATE).toLocaleString())+' NGN';
+    if(homeBalNgn)homeBalNgn.textContent='≈ NGN'+(isNaN(totalUsd)?'0':Math.round(totalUsd*NGN_RATE).toLocaleString())+' NGN';
     if(homeUsdcBal)homeUsdcBal.textContent=u+' USDC';
     if(homeEurcBal)homeEurcBal.textContent=e+' EURC';
     // Update home page asset rows
@@ -1304,7 +1304,7 @@ async function refreshBalances(){
     if(haUsdcSub) haUsdcSub.textContent = '≈ $'+parseFloat(u).toFixed(2);
     if(haEurc)    haEurc.textContent    = e;
     if(haEurcSub) haEurcSub.textContent = '≈ $'+_eurcUsd;
-    if(haNgn)haNgn.textContent='₦0.00';
+    if(haNgn)haNgn.textContent='NGN0.00';
     updateSendAvailable();
     validateSend();
   }catch(err){
@@ -2254,7 +2254,7 @@ function updateBridgeSummary(){
   const NAMES={'ETH-SEPOLIA':'Ethereum Sepolia','BASE-SEPOLIA':'Base Sepolia','ARB-SEPOLIA':'Arbitrum Sepolia','OP-SEPOLIA':'OP Sepolia','AVAX-FUJI':'Avalanche Fuji','POLYGON-AMOY':'Polygon Amoy'};
   // Update ngn estimate
   const ngnEl=document.getElementById('bridgeNgnEst');
-  if(ngnEl) ngnEl.textContent='≈ ₦'+(amt*fxNGN).toLocaleString('en',{maximumFractionDigits:0});
+  if(ngnEl) ngnEl.textContent='≈ NGN'+(amt*fxNGN).toLocaleString('en',{maximumFractionDigits:0});
   // Update available balance
   const balEl=document.getElementById('bridgeAvailBal');
   if(balEl) balEl.textContent=(parseFloat(usdcBal)||0).toFixed(2)+' USDC';
@@ -4924,7 +4924,7 @@ function simulateNgnDeposit(){
   if(!amt){ toast('Enter an amount','error'); return; }
   const cur = parseFloat(document.getElementById('ngnBal').textContent)||0;
   document.getElementById('ngnBal').textContent = (cur+amt).toLocaleString();
-  toast('₦'+amt.toLocaleString()+' deposited (simulated)','success',3000);
+  toast('NGN'+amt.toLocaleString()+' deposited (simulated)','success',3000);
 }
 
 function setNairaTab(tab){
@@ -4935,7 +4935,7 @@ function setNairaTab(tab){
 }
 function calcNgnWithdraw(){
   const amt=parseFloat(document.getElementById('ngnWithdrawAmt').value)||0;
-  document.getElementById('ngnWithdrawUsdc').textContent='≈ '+(amt/NGN_USDC_RATE).toFixed(4)+' USDC deducted · Rate: ₦'+NGN_USDC_RATE+' / USDC';
+  document.getElementById('ngnWithdrawUsdc').textContent='≈ '+(amt/NGN_USDC_RATE).toFixed(4)+' USDC deducted · Rate: NGN'+NGN_USDC_RATE+' / USDC';
 }
 function verifyNgnAcct(){
   const num=document.getElementById('ngnAcctNum').value;
@@ -4951,7 +4951,7 @@ function doNgnWithdraw(){
   if(!amt){toast('Enter an amount','error');return;}
   if(!bank){toast('Select a bank','error');return;}
   if(acct.length!==10){toast('Enter a valid 10-digit account number','error');return;}
-  toast('₦'+amt.toLocaleString()+' withdrawal submitted to '+bank,'success',5000);
+  toast('NGN'+amt.toLocaleString()+' withdrawal submitted to '+bank,'success',5000);
 }
 function calcNgnConvert(){
   const amt=parseFloat(document.getElementById('ngnConvertFrom').value)||0;
@@ -4962,7 +4962,7 @@ function calcNgnConvert(){
 function flipNgnConvert(){
   ngnFlipped=!ngnFlipped;
   const el=document.getElementById('ngnFromToken');
-  el.innerHTML=ngnFlipped?(ngnToToken==='USDC'?'<span class="tok-dot usdc-dot"></span>USDC ▾':'<span class="tok-dot eurc-dot"></span>EURC ▾'):'₦ NGN <span style="font-size:.65rem;color:var(--text3);margin-left:2px;">▾</span>';
+  el.innerHTML=ngnFlipped?(ngnToToken==='USDC'?'<span class="tok-dot usdc-dot"></span>USDC ▾':'<span class="tok-dot eurc-dot"></span>EURC ▾'):'NGN NGN <span style="font-size:.65rem;color:var(--text3);margin-left:2px;">▾</span>';
   document.getElementById('ngnConvertFrom').value='';
   document.getElementById('ngnConvertTo').value='';
   document.getElementById('ngnConvertBtn').textContent=ngnFlipped?ngnToToken+' → NGN':'NGN → '+ngnToToken;
@@ -4971,7 +4971,7 @@ function toggleNgnToToken(){
   ngnToToken=ngnToToken==='USDC'?'EURC':'USDC';
   const el=document.getElementById('ngnToToken');
   el.innerHTML=ngnToToken==='USDC'?'<span class="tok-dot usdc-dot"></span>USDC <span style="font-size:.65rem;color:var(--text3);">▾</span>':'<span class="tok-dot eurc-dot"></span>EURC <span style="font-size:.65rem;color:var(--text3);">▾</span>';
-  document.getElementById('ngnRateDisplay').textContent='₦'+(ngnToToken==='USDC'?NGN_USDC_RATE:NGN_EURC_RATE)+' = 1 '+ngnToToken;
+  document.getElementById('ngnRateDisplay').textContent='NGN'+(ngnToToken==='USDC'?NGN_USDC_RATE:NGN_EURC_RATE)+' = 1 '+ngnToToken;
   document.getElementById('ngnToBalLabel').textContent='Bal: '+(ngnToToken==='USDC'?parseFloat(usdcBal).toFixed(2):parseFloat(eurcBal).toFixed(2))+' '+ngnToToken;
   document.getElementById('ngnConvertBtn').textContent='Convert NGN → '+ngnToToken;
   calcNgnConvert();
@@ -6902,7 +6902,7 @@ function agentPayService() {
   el.id = id;
   el.style.cssText = 'background:var(--surface);border:1px solid rgba(34,197,94,.25);border-radius:14px;padding:14px;margin-bottom:12px;';
   const NAN_X402 = 'https://nan-production.up.railway.app/api/x402/ngn-rate';
-  el.innerHTML = `<div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:4px;">Pay x402 Service</div><div style="font-size:.72rem;color:var(--text3);margin-bottom:10px;">Pay any x402-compatible API with USDC nanopayments</div><input id="agentPayUrl" placeholder="Service URL (https://...)" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-family:'Inter var','Inter',sans-serif;box-sizing:border-box;margin-bottom:6px;" value="${NAN_X402}"/><div style="font-size:.72rem;color:#22c55e;margin-bottom:8px;padding:6px 10px;background:rgba(34,197,94,.06);border-radius:8px;border:1px solid rgba(34,197,94,.15);">⚡ NAN NGN/USD Rate — $0.001 USDC per call · Arc Testnet</div><div style="display:flex;gap:8px;margin-bottom:10px;"><input id="agentPayAmt" placeholder="Amount" type="number" min="0" step="any" style="flex:1;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-family:'Inter var','Inter',sans-serif;box-sizing:border-box;" value="0.001"/><div style="padding:10px 14px;border-radius:10px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);color:#22c55e;font-size:.82rem;font-weight:700;display:flex;align-items:center;">USDC</div></div><div style="display:flex;gap:8px;"><button onclick="(function(){const url=document.getElementById('agentPayUrl').value.trim();const amt=document.getElementById('agentPayAmt').value;if(!url.startsWith('http')){agentShowResult('Enter a valid URL');return;}document.getElementById('agentPanelPay').remove();agentShowResult('⏳ Paying...');fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'pay-service',address:agentWalletAddr||'0xd83498B62d2ab0650A4Edfc7929c96804aA75F77',url,chain:'ARC-TESTNET',maxAmount:String(amt)})}).then(r=>r.json()).then(d=>{if(d.success&&d.result&&d.result.data){const r=d.result.data;agentShowResult('✅ Paid $'+amt+' USDC\n\n'+r.pair+': '+r.rate+'\n$1 = ₦'+r.rate+'\nSource: '+r.source+'\n'+r.timestamp.slice(0,10));}else{agentShowResult(d.success?'✅ Paid!':'❌ '+(d.error||'Payment failed'));}}).catch(e=>agentShowResult('❌ '+e.message));})()" style="flex:1;padding:11px;border-radius:10px;background:#22c55e;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;">Pay Now</button><button onclick="document.getElementById('agentPanelPay').remove()" style="padding:11px 16px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;">Cancel</button></div>`;
+  el.innerHTML = `<div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:4px;">Pay x402 Service</div><div style="font-size:.72rem;color:var(--text3);margin-bottom:10px;">Pay any x402-compatible API with USDC nanopayments</div><input id="agentPayUrl" placeholder="Service URL (https://...)" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-family:'Inter var','Inter',sans-serif;box-sizing:border-box;margin-bottom:6px;" value="${NAN_X402}"/><div style="font-size:.72rem;color:#22c55e;margin-bottom:8px;padding:6px 10px;background:rgba(34,197,94,.06);border-radius:8px;border:1px solid rgba(34,197,94,.15);">⚡ NAN NGN/USD Rate — $0.001 USDC per call · Arc Testnet</div><div style="display:flex;gap:8px;margin-bottom:10px;"><input id="agentPayAmt" placeholder="Amount" type="number" min="0" step="any" style="flex:1;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-family:'Inter var','Inter',sans-serif;box-sizing:border-box;" value="0.001"/><div style="padding:10px 14px;border-radius:10px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);color:#22c55e;font-size:.82rem;font-weight:700;display:flex;align-items:center;">USDC</div></div><div style="display:flex;gap:8px;"><button onclick="(function(){const url=document.getElementById('agentPayUrl').value.trim();const amt=document.getElementById('agentPayAmt').value;if(!url.startsWith('http')){agentShowResult('Enter a valid URL');return;}document.getElementById('agentPanelPay').remove();agentShowResult('⏳ Paying...');fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'pay-service',address:agentWalletAddr||'0xd83498B62d2ab0650A4Edfc7929c96804aA75F77',url,chain:'ARC-TESTNET',maxAmount:String(amt)})}).then(r=>r.json()).then(d=>{if(d.success&&d.result&&d.result.data){const r=d.result.data;agentShowResult('✅ Paid $'+amt+' USDC\n\n'+r.pair+': '+r.rate+'\n$1 = NGN'+r.rate+'\nSource: '+r.source+'\n'+r.timestamp.slice(0,10));}else{agentShowResult(d.success?'✅ Paid!':'❌ '+(d.error||'Payment failed'));}}).catch(e=>agentShowResult('❌ '+e.message));})()" style="flex:1;padding:11px;border-radius:10px;background:#22c55e;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;">Pay Now</button><button onclick="document.getElementById('agentPanelPay').remove()" style="padding:11px 16px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;">Cancel</button></div>`;
   const grid = document.querySelector('[onclick="agentFund()"]')?.closest('[style*="grid-template-columns"]');
   if (grid) grid.parentElement.insertBefore(el, grid);
   document.getElementById('agentPayUrl')?.focus();
