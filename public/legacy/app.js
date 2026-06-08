@@ -3370,7 +3370,15 @@ async function loadOrders(){
     const res=await fetch('https://nan-production.up.railway.app/api/orders?wallet='+userAddr);
     const data=await res.json();
     if(data.orders&&data.orders.length){
-      // Merge server orders with local
+      // Check for fx-triggered orders — Railway cron fired while we were away
+      const fxTriggered = data.orders.filter(o=>o.status==='fx-triggered');
+      for(const o of fxTriggered){
+        toast(`💱 FX Alert! NGN rate hit ₦${o.liveRate?.toFixed(0)||o.targetRate} — your ${o.amount} USDC offramp order triggered!`,'success',10000);
+        addAgentMsg(`💱 While you were away, the NGN rate hit ₦${o.liveRate?.toFixed(0)||o.targetRate} (your target: ₦${o.targetRate})!\n\nYour ${o.amount} USDC offramp order has been triggered. Opening the naira page now...`);
+        renderAgentMsgs();
+        setTimeout(()=>{goPage('naira');const el=document.getElementById('ngnWithdrawAmt');if(el)el.value=o.amount;},1000);
+      }
+      // Merge server orders with local — keep only pending
       const serverIds=new Set(data.orders.map(o=>o.id));
       const localOnly=nanOrders.filter(o=>!serverIds.has(o.id));
       nanOrders=[...data.orders,...localOnly].filter(o=>o.status==='pending');
