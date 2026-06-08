@@ -3997,18 +3997,69 @@ function executeAgentAction(action){
       if(!agentWalletAddr){addAgentMsg('⚠️ Agent wallet not connected. Go to Agent page to connect first.');renderAgentMsgs();return;}
       // If no destination or user said "to my agent wallet", send from main wallet to agent wallet
       if(!action.to || action.to==='AGENT_SELF' || action.to===agentWalletAddr){
-        // Send FROM main wallet TO agent wallet
         addAgentMsg('⏳ Sending '+action.amount+' '+(action.token||'USDC')+' from main wallet to agent wallet...');
         renderAgentMsgs();
         goPage('send');
         setTimeout(()=>{document.getElementById('recipInput').value=agentWalletAddr;document.getElementById('amtInput').value=action.amount||'';sendToken=action.token||'USDC';document.getElementById('sendTokenLabel').textContent=sendToken;validateSend();},300);
         break;
       }
-      addAgentMsg('⏳ Sending '+action.amount+' '+(action.token||'USDC')+' from agent wallet to '+(action.to||'').slice(0,10)+'...');
-      renderAgentMsgs();
-      fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'transfer',from:agentWalletAddr,to:action.to,amount:String(action.amount),chain:'ARC-TESTNET'})})
-        .then(r=>r.json()).then(d=>{addAgentMsg(d.success?'✅ Sent! TX: '+(d.txHash||d.transactionId||'pending'):'❌ '+(d.error||'Transfer failed'));renderAgentMsgs();})
-        .catch(e=>{addAgentMsg('❌ Error: '+e.message);renderAgentMsgs();});
+      // Resolve arc name if needed, then confirm, then send
+      (async()=>{
+        var to = action.to;
+        var token = action.token||'USDC';
+        var amount = action.amount;
+        // Resolve .arc name
+        if(to && !to.startsWith('0x') && (to.endsWith('.arc') || !to.includes('.'))){
+          var arcName = to.replace('.arc','').toLowerCase();
+          addAgentMsg('🔍 Resolving '+arcName+'.arc...');
+          renderAgentMsgs();
+          try {
+            var readProvider = new ethers.JsonRpcProvider(ARC_RPC,{chainId:ARC_CHAIN_ID,name:'arc-testnet',ensAddress:null});
+            var nameContract = new ethers.Contract(NAME_REGISTRY,NAME_ABI,readProvider);
+            var resolved = await Promise.race([
+              nameContract.resolve(arcName),
+              new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),6000))
+            ]);
+            if(resolved && resolved!=='0x0000000000000000000000000000000000000000'){
+              to = resolved;
+              addAgentMsg('✓ Resolved '+arcName+'.arc → '+to.slice(0,6)+'...'+to.slice(-4));
+              renderAgentMsgs();
+            } else {
+              addAgentMsg('❌ Arc name "'+arcName+'.arc" not found. Check the name and try again.');
+              renderAgentMsgs();
+              return;
+            }
+          } catch(e) {
+            addAgentMsg('❌ Could not resolve arc name: '+e.message);
+            renderAgentMsgs();
+            return;
+          }
+        }
+        // Store pending send and show confirm buttons
+        window._pendingAgentSend = {to, amount, token};
+        addAgentMsg('⚠️ Confirm send:\n' + amount + ' ' + token + ' from agent wallet\nTo: ' + to.slice(0,6) + '...' + to.slice(-4));
+        renderAgentMsgs();
+        // Add confirm/cancel buttons to last message
+        setTimeout(()=>{
+          var msgsContainer = document.getElementById('agentMessages');
+          var last = msgsContainer ? msgsContainer.lastElementChild : null;
+          if(last){
+            var btns = document.createElement('div');
+            btns.style.cssText = 'display:flex;gap:8px;margin-top:10px;';
+            var confirmBtn = document.createElement('button');
+            confirmBtn.textContent = '✓ Confirm';
+            confirmBtn.style.cssText = 'padding:8px 18px;border-radius:10px;background:#7000ff;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
+            confirmBtn.onclick = function(){ agentConfirmedSend(window._pendingAgentSend.to,window._pendingAgentSend.amount,window._pendingAgentSend.token); btns.remove(); };
+            var cancelBtn = document.createElement('button');
+            cancelBtn.textContent = 'Cancel';
+            cancelBtn.style.cssText = 'padding:8px 14px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;';
+            cancelBtn.onclick = function(){ window._pendingAgentSend=null; addAgentMsg('❌ Send cancelled'); renderAgentMsgs(); btns.remove(); };
+            btns.appendChild(confirmBtn);
+            btns.appendChild(cancelBtn);
+            last.appendChild(btns);
+          }
+        }, 100);
+      })();
       break;
     case 'agent-balance':
       if(!agentWalletAddr){addAgentMsg('⚠️ Agent wallet not connected.');renderAgentMsgs();return;}
@@ -6823,6 +6874,20 @@ async function agentLoadWallets() {
 }
 
 // ── Actions ──────────────────────────────────────────────────────────────────
+async function agentConfirmedSend(to, amount, token) {
+  addAgentMsg('⏳ Sending '+amount+' '+token+' from agent wallet to '+to.slice(0,6)+'...'+to.slice(-4)+'...');
+  renderAgentMsgs();
+  try {
+    const r = await fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'transfer',fromAddress:agentWalletAddr,toAddress:to,amount:String(amount),chain:'ARC-TESTNET'})});
+    const d = await r.json();
+    addAgentMsg(d.success?'✅ Sent! TX: '+(d.txHash||d.transactionId||'pending'):'❌ '+(d.error||'Transfer failed'));
+    renderAgentMsgs();
+    // Refresh agent balance after send
+    setTimeout(fetchAgentBalance, 2000);
+  } catch(e) { addAgentMsg('❌ Error: '+e.message); renderAgentMsgs(); }
+}
+
 async function agentFund() {
   if (!agentWalletAddr) return;
   agentShowResult('Requesting faucet...');
@@ -6853,7 +6918,7 @@ function agentSend() {
       <select id="agentSendToken" style="padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-family:'Inter var','Inter',sans-serif;"><option>USDC</option><option>EURC</option></select>
     </div>
     <div style="display:flex;gap:8px;">
-      <button onclick="(function(){const to=document.getElementById('agentSendTo').value.trim();const amt=document.getElementById('agentSendAmt').value;const tok=document.getElementById('agentSendToken').value;if(!to.startsWith('0x')){agentShowResult('Invalid address');return;}if(!amt||isNaN(amt)||parseFloat(amt)<=0){agentShowResult('Invalid amount');return;}document.getElementById('agentPanelSend').remove();agentShowResult('Sending '+amt+' '+tok+'...');fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'transfer',from:agentWalletAddr,to,amount:String(amt),chain:'ARC-TESTNET'})}).then(r=>r.json()).then(d=>agentShowResult(d.success?'✅ Sent! TX: '+(d.txHash||d.transactionId||'pending'):'❌ '+(d.error||'Transfer failed'))).catch(e=>agentShowResult('❌ '+e.message));})()" style="flex:1;padding:11px;border-radius:10px;background:#7000ff;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;">Send</button>
+      <button onclick="(function(){const to=document.getElementById('agentSendTo').value.trim();const amt=document.getElementById('agentSendAmt').value;const tok=document.getElementById('agentSendToken').value;if(!to.startsWith('0x')){agentShowResult('Invalid address');return;}if(!amt||isNaN(amt)||parseFloat(amt)<=0){agentShowResult('Invalid amount');return;}document.getElementById('agentPanelSend').remove();agentShowResult('Sending '+amt+' '+tok+'...');fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'transfer',fromAddress:agentWalletAddr,toAddress:to,amount:String(amt),chain:'ARC-TESTNET'})}).then(r=>r.json()).then(d=>agentShowResult(d.success?'✅ Sent! TX: '+(d.txHash||d.transactionId||'pending'):'❌ '+(d.error||'Transfer failed'))).catch(e=>agentShowResult('❌ '+e.message));})()" style="flex:1;padding:11px;border-radius:10px;background:#7000ff;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;">Send</button>
       <button onclick="document.getElementById('agentPanelSend').remove()" style="padding:11px 16px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;">Cancel</button>
     </div>`;
   const grid = document.querySelector('[onclick="agentFund()"]')?.closest('[style*="grid-template-columns"]');
