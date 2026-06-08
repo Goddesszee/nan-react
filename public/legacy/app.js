@@ -8007,8 +8007,9 @@ async function checkAgentSession(){
     });
     const d = await r.json();
     if(d.ready){
-      // Session alive — update address if changed
-      if(d.wallets?.['ARC-TESTNET']) agentWalletAddr = d.wallets['ARC-TESTNET'];
+      // Session alive — update address only if NOT already using a Circle Programmable Wallet
+      const storedCPW = localStorage.getItem('nan_agent_wallet_'+userAddr);
+      if(!storedCPW && d.wallets?.['ARC-TESTNET']) agentWalletAddr = d.wallets['ARC-TESTNET'];
       return;
     }
     // Session dead — try silent auto-reconnect
@@ -8273,7 +8274,9 @@ async function agentVerifyOtp() {
       const d = await r.json();
       if (d.ready) {
         clearInterval(agentPollTimer);
-        agentWalletAddr = d.wallets?.['ARC-TESTNET'] || agentWalletAddr;
+        // Only use CLI wallet address if no Circle Programmable Wallet exists
+        const storedCPW = localStorage.getItem('nan_agent_wallet_'+userAddr);
+        if(!storedCPW) agentWalletAddr = d.wallets?.['ARC-TESTNET'] || agentWalletAddr;
         if (agentWalletAddr) {
           localStorage.setItem('nan_agent_email', agentWalletEmail);
           localStorage.setItem('nan_agent_addr',  agentWalletAddr);
@@ -8308,6 +8311,9 @@ function agentResetLogin() {
 
 async function agentLoadWallets() {
   try {
+    // Don't overwrite if Circle Programmable Wallet already set
+    const storedCPW = localStorage.getItem('nan_agent_wallet_'+userAddr);
+    if(storedCPW) return;
     const r = await fetch(AGENT_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'login-status', email: agentWalletEmail }) });
     const d = await r.json();
     if (d.wallets?.['ARC-TESTNET']) {
