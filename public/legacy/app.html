@@ -420,9 +420,9 @@ html,body{background:var(--bg);}
   <!-- ══ TOP BAR ══ -->
   <div id="globalTopBar">
     <button id="nanDrawerBurger" onclick="nanOpenDrawer()" style="display:none;background:none;border:none;cursor:pointer;padding:4px 8px 4px 0;flex-shrink:0;flex-direction:column;align-items:center;justify-content:center;gap:4.5px;" aria-label="Open menu">
-      <span style="display:block;width:18px;height:2px;background:rgba(255,255,255,.6);border-radius:2px;"></span>
-      <span style="display:block;width:18px;height:2px;background:rgba(255,255,255,.6);border-radius:2px;"></span>
-      <span style="display:block;width:18px;height:2px;background:rgba(255,255,255,.6);border-radius:2px;"></span>
+      <span class="nan-burger-line"></span>
+      <span class="nan-burger-line"></span>
+      <span class="nan-burger-line"></span>
     </button>
     <div class="brand">
       <div class="brand-logo" id="secretTapZone" onclick="handleSecretTap()" style="display:flex;align-items:center;gap:1px;cursor:pointer;">
@@ -972,10 +972,7 @@ html,body{background:var(--bg);}
         <span class="ni"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg></span>
         Swap
       </button>
-      <button class="nav-btn" id="nav-bridge" onclick="goPage('bridge')">
-        <span class="ni"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16"/><path d="M4 8h16"/><path d="M4 12h8"/><circle cx="18" cy="16" r="4"/><path d="M18 14v4M16 16h4"/></svg></span>
-        Bridge
-      </button>
+
 
       <button class="nav-btn" id="nav-market" onclick="goPage('market')">
         <span class="ni"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></span>
@@ -990,11 +987,7 @@ html,body{background:var(--bg);}
         <span class="ni"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
         History
       </button>
-      <button class="nav-btn" id="nav-agent" onclick="goPage('agent-wallet')" style="position:relative;">
-        <span class="ni"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><circle cx="12" cy="14" r="2"/></svg></span>
-        Agent
-        <span style="position:absolute;top:4px;right:6px;width:6px;height:6px;border-radius:50%;background:#7000ff;"></span>
-      </button>
+
     </div>
   </nav>
 
@@ -3223,6 +3216,13 @@ function startQRScan() {
   #nanDrawer.nan-drawer-open{transform:translateX(0)!important;}
   #nanDrawerOverlay{transition:opacity .22s;opacity:0;}
   #nanDrawerOverlay.nan-drawer-open{opacity:1!important;}
+  /* Burger lines - theme aware */
+  .nan-burger-line{display:block;width:18px;height:2px;border-radius:2px;background:var(--text);}
+  /* Drawer bg always dark regardless of theme */
+  #nanDrawer{background:#0a0a0a!important;color:#fff!important;}
+  #nanDrawer *{color-scheme:dark;}
+  /* Light mode: drawer overlay slightly lighter */
+  [data-theme=light] #nanDrawerOverlay{background:rgba(0,0,0,.45);}
 }
 </style>
 <script>
@@ -3439,7 +3439,8 @@ function nanToggleFaucet(btn){
   <!-- ══ MOBILE SIDE DRAWER HTML ══ -->
   <div id="nanDrawerOverlay" onclick="nanCloseDrawer()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;"></div>
   <div id="nanDrawer" style="display:none;position:fixed;top:0;left:0;bottom:0;width:285px;background:#0a0a0a;border-right:1px solid rgba(112,0,255,.14);z-index:1001;flex-direction:column;overflow:hidden;">
-    <div style="padding:52px 20px 18px;border-bottom:1px solid rgba(255,255,255,.05);">
+    <div style="padding:52px 20px 18px;border-bottom:1px solid rgba(255,255,255,.05);position:relative;">
+      <button onclick="nanCloseDrawer()" style="position:absolute;top:16px;right:16px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;line-height:1;">✕</button>
       <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#7000ff,#a855f7);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#fff;margin-bottom:11px;">Z</div>
       <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:3px;letter-spacing:-.3px;">Zara</div>
       <div id="nanDrawerAddr" style="font-family:'Inter var','Inter',monospace;font-size:10.5px;color:rgba(255,255,255,.35);margin-bottom:10px;">0x6915…556d</div>
