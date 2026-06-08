@@ -1046,14 +1046,14 @@ html,body{background:var(--bg);}
           <span style="font-size:.875rem;font-weight:700;color:var(--text);">Receive</span>
         </div>
         <div onclick="goPage('payreq')" style="display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;padding:4px 10px;">
-          <div class="mob-action-ico mob-action-ghost" style="width:48px;height:48px;border-radius:14px;background:rgba(112,0,255,.08);border:1px solid rgba(112,0,255,.2);display:flex;align-items:center;justify-content:center;">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2.2" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          <div class="mob-action-ico" style="width:48px;height:48px;border-radius:14px;background:#7000ff;display:flex;align-items:center;justify-content:center;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
           </div>
           <span style="font-size:.875rem;font-weight:700;color:var(--text);">Payment</span>
         </div>
         <div onclick="goPage('bulk')" style="display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;padding:4px 10px;-webkit-tap-highlight-color:transparent;touch-action:manipulation;">
-          <div class="mob-action-ico mob-action-ghost" style="width:48px;height:48px;border-radius:14px;background:rgba(112,0,255,.08);border:1px solid rgba(112,0,255,.2);display:flex;align-items:center;justify-content:center;">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/><polyline points="17 8 21 12 17 16"/></svg>
+          <div class="mob-action-ico" style="width:48px;height:48px;border-radius:14px;background:#7000ff;display:flex;align-items:center;justify-content:center;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/><polyline points="17 8 21 12 17 16"/></svg>
           </div>
           <span style="font-size:.875rem;font-weight:700;color:var(--text);">Payroll</span>
         </div>
@@ -3322,7 +3322,7 @@ function nanToggleFaucet(btn){
       <div style="height:1px;background:rgba(255,255,255,.05);margin:8px 20px;"></div>
       <div style="font-size:9.5px;font-weight:700;color:rgba(255,255,255,.2);letter-spacing:.12em;text-transform:uppercase;padding:10px 20px 5px;">Settings</div>
 
-      <button class="nan-drow" onclick="nanCloseDrawer();toggleTheme();"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></span><span class="nan-drow-lbl">Appearance</span></button>
+      <button class="nan-drow" onclick="toggleTheme();nanCloseDrawer();"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></span><span class="nan-drow-lbl">Appearance</span></button>
       <button class="nan-drow" onclick="nanCloseDrawer();toggleNotifPanel(event)"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></span><span class="nan-drow-lbl">Notifications</span><span id="nanDrawerNotifBadge" style="display:none;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-left:auto;flex-shrink:0;"></span></button>
     </div>
     <div style="padding:12px 20px 28px;border-top:1px solid rgba(255,255,255,.05);">
