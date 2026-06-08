@@ -4344,6 +4344,13 @@ function executeAgentAction(action){
       if(action.to && action.to.startsWith('0x') && !action.to.match(/^0x[a-fA-F0-9]{40}$/)){
         action.to = action.to.replace(/^0x/,'');
       }
+      // If address is truncated (contains ...), extract arc name from last user message
+      if(action.to && (action.to.includes('...') || (action.to.startsWith('0x') && action.to.length < 42))){
+        const lastUserMsg = agentMsgs.filter(m=>m.role==='user').slice(-1)[0]?.content||'';
+        const arcM = lastUserMsg.match(/\b([\w]+\.arc)\b/i) || lastUserMsg.match(/\bto\s+([\w]+)(?:\.arc)?\b/i);
+        if(arcM) action.to = arcM[1].toLowerCase().replace(/\.arc$/,'') + '.arc';
+        else { addAgentMsg('❌ Could not determine recipient. Please use a full address or .arc name.'); renderAgentMsgs(); break; }
+      }
       // If no agent wallet, use main wallet via send page
       if(!agentWalletAddr){
         (async()=>{
