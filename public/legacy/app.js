@@ -4010,7 +4010,9 @@ RULES:
     const res=await fetch('https://nan-production.up.railway.app/api/chat',{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        system:context+`\n- USDC Supplied: ${lendPos} USDC\n- USDC Borrowed: ${borrowPos} USDC\n- .arc Names: ${myNames}\n- Pending Orders: ${pendingOrders}`,usdcBal:usdcBal,eurcBal:eurcBal,userAddress:userAddr,
+        usdcBal:usdcBal,eurcBal:eurcBal,userAddress:userAddr,
+        agentWallets:agentWalletAddr?{'ARC-TESTNET':agentWalletAddr}:null,
+        agentWalletActive:!!agentWalletAddr,
         messages:agentMsgs.slice(0,-1).filter(m=>!m.content.includes('spinner')).map(m=>({role:m.role,content:m.content}))
       }),
     });
