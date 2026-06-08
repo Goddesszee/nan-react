@@ -1,10 +1,3 @@
-// Dynamic wallet bootstrap — runs before anything else
-// Note: userAddr etc are declared later in app.js, we just pre-load from localStorage
-window._dynamicBootstrap = {
-  addr: localStorage.getItem('nan_dynamic_address') || null,
-  email: localStorage.getItem('nan_dynamic_email') || null,
-};
-
 // ═══════════════════════════════════════════
 // CONFIG — Arc Testnet
 // ═══════════════════════════════════════════
@@ -6111,90 +6104,8 @@ window.addEventListener('load',()=>{
   const _em = _lp.get('email');
   const _verified = _lp.get('verified');
 
-  // ── Dynamic wallet bootstrap ──────────────────────────────────────────────
-  // When user signs in via Dynamic (React landing), App.jsx writes nan_dynamic_address
-  // to localStorage and redirects here. We read it and auto-connect as a Circle wallet.
-  const _dynAddr  = localStorage.getItem('nan_dynamic_address');
-  const _dynEmail = localStorage.getItem('nan_dynamic_email');
-  const _dynToken = localStorage.getItem('nan_dynamic_token');
-  const _dynCircleWalletId = localStorage.getItem('circleWalletId');
-  const _dynCircleAddr     = localStorage.getItem('circleWalletAddr');
-
-  if (_dynAddr && _dynToken === 'dynamic_authenticated' && !_ct) {
-    // Hide landing immediately
-    if (_land) { _land.style.display = 'none'; _land.classList.remove('active'); }
-
-    if (_dynCircleWalletId && _dynCircleAddr) {
-      // Already have Circle wallet cached — restore session instantly
-      circleWalletId      = _dynCircleWalletId;
-      circleWalletAddress = _dynCircleAddr;
-      userAddr            = _dynCircleAddr;
-      otpEmail            = _dynEmail || '';
-      isCircleWallet      = true;
-      provider            = getArcProvider();
-      onArcNetwork        = true;
-      onConnected(true, false);
-    } else if (_dynEmail) {
-      // Have email but no Circle wallet yet — fetch/create it
-      otpEmail = _dynEmail;
-      document.body.insertAdjacentHTML('beforeend',
-        '<div id="dynLoader" style="position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;">'
-        +'<div style="width:44px;height:44px;border:3px solid rgba(112,0,255,.2);border-top-color:#7000ff;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px;"></div>'
-        +'<div style="color:var(--text3);font-size:.85rem;">Setting up wallet…</div>'
-        +'</div>');
-      fetch('https://nan-production.up.railway.app/api/circle-wallets', {
-        method: 'POST', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({action:'getWallet', email:_dynEmail})
-      }).then(r=>r.json()).then(cw=>{
-        const wData = cw.wallet || cw;
-        const wId   = wData.id || wData.walletId;
-        const wAddr = wData.address;
-        const loader = document.getElementById('dynLoader');
-        if (loader) loader.remove();
-        if (!wId) { toast('Wallet setup failed — '+( cw.error||'unknown'), 'error'); return; }
-        circleWalletId      = wId;
-        circleWalletAddress = wAddr;
-        userAddr            = wAddr;
-        isCircleWallet      = true;
-        provider            = getArcProvider();
-        onArcNetwork        = true;
-        localStorage.setItem('circleWalletId',   wId);
-        localStorage.setItem('circleWalletAddr', wAddr);
-        onConnected(true, false);
-      }).catch(e=>{
-        const loader = document.getElementById('dynLoader');
-        if (loader) loader.remove();
-        toast('Wallet error: '+e.message, 'error');
-      });
-    } else {
-      // Have address but no email — treat as external wallet address
-      userAddr     = _dynAddr;
-      isCircleWallet = false;
-      provider     = getArcProvider();
-      onArcNetwork = true;
-      // Try to get signer from injected provider
-      getDynamicSigner().then(s => {
-        if (s) {
-          signer = s;
-          // Also restore wp so bridge/swap/send work after page reload
-          if(!wp) wp = window.rabby || window.ethereum || null;
-          onConnected(false, false);
-        }
-        else { onConnected(false, false); }
-      }).catch(() => onConnected(false, false));
-    }
-
-    // Skip the rest of the init flow
-    initSwapUI(); initBridgeUI(); fetchLiveFX();
-    setInterval(fetchLiveFX, 60000);
-    setInterval(async()=>{ if(userAddr){ if(!isCircleWallet)await checkNetwork(); if(onArcNetwork||isCircleWallet){await refreshBalances();} } }, 6000);
-    if(userAddr){ startOrderEngine(); startIncomingPoller(); }
-    if(userAddr&&!isCircleWallet&&signer&&onArcNetwork) ensureSwapApprovals();
-    setTimeout(()=>{ if(userAddr) _mcRefreshSilent(); },4000);
-    document.addEventListener('visibilitychange',()=>{ if(!document.hidden&&userAddr)refreshBalances(); });
-    return;
-  }
-  // ── End Dynamic bootstrap ─────────────────────────────────────────────────
+  // Clean up any stale Dynamic SDK keys left over from previous app versions
+  ['nan_dynamic_address','nan_dynamic_email','nan_dynamic_token'].forEach(k=>localStorage.removeItem(k));
 
   if(_ct === 'email' && _verified === '1' && _em){
     // OTP already verified on landing page — skip page-land, go straight to wallet
@@ -6299,7 +6210,7 @@ function loadPaymentRequests(){
   try{
     let saved=localStorage.getItem('nan_payreqs_'+(userAddr||''));
     if(!saved||saved==='[]'){
-      const fallback=localStorage.getItem('circleWalletAddr')||localStorage.getItem('nan_dynamic_address')||'';
+      const fallback=localStorage.getItem('circleWalletAddr')||'';
       if(fallback)saved=localStorage.getItem('nan_payreqs_'+fallback);
       if(!saved||saved==='[]'){
         for(let i=0;i<localStorage.length;i++){
@@ -7769,7 +7680,7 @@ var agentWalletAddr     = localStorage.getItem('nan_agent_addr') || null;
 var agentRequestId      = null;
 var agentPollTimer      = null;
 var agentWalletBalance  = null; // cached balance string e.g. "100 USDC"
-var userEmail           = localStorage.getItem('nan_dynamic_email') || null; // logged-in user email
+var userEmail           = null; // logged-in user email
 
 // ── Email receipt helper ──────────────────────────────────────────────────────
 async function sendReceiptEmail({to, subject, body}){
