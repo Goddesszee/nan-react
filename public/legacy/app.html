@@ -2955,6 +2955,82 @@ window.addEventListener('load', function() {
     window.location.href = '/';
   };
 });
+</script><script>
+(function() {
+  var addr = window._nanDynamicAddr || localStorage.getItem('nan_dynamic_address');
+  if (!addr) return;
+
+  // Set up read provider via Arc RPC
+  try {
+    window.provider = new ethers.JsonRpcProvider('https://rpc.testnet.arc.network', {
+      chainId: 5042002, name: 'arc-testnet', ensAddress: null
+    });
+  } catch(e) {}
+
+  // Detect any injected EVM wallet (EIP-6963 + legacy)
+  var injected = null;
+  // EIP-6963: check all announced providers
+  if (window.evmproviders && Object.keys(window.evmproviders).length > 0) {
+    injected = Object.values(window.evmproviders)[0];
+  }
+  // Legacy: Rabby, MetaMask, Coinbase, Trust, etc
+  if (!injected) {
+    injected = window.rabby 
+      || window.ethereum 
+      || window.coinbaseWalletExtension
+      || window.trustwallet
+      || window.okxwallet
+      || null;
+  }
+
+  if (injected) {
+    window.wp = injected;
+    window.onArcNetwork = true;
+    try {
+      // Request accounts first so signer works
+      injected.request({ method: 'eth_requestAccounts' }).then(function(accounts) {
+        if (accounts && accounts.length > 0) {
+          var browserProv = new ethers.BrowserProvider(injected);
+          browserProv.getSigner().then(function(s) {
+            window.signer = s;
+            window.provider = browserProv;
+            // Update userAddr with the actual connected account
+            if (accounts[0] && !window.userAddr) {
+              window.userAddr = accounts[0];
+              localStorage.setItem('nan_dynamic_address', accounts[0]);
+            }
+          }).catch(function(e) { console.log('signer err:', e); });
+        }
+      }).catch(function(e) {
+        // Already connected, just get signer
+        try {
+          var browserProv = new ethers.BrowserProvider(injected);
+          browserProv.getSigner().then(function(s) {
+            window.signer = s;
+            window.provider = browserProv;
+          }).catch(function() {});
+        } catch(e2) {}
+      });
+    } catch(e) {}
+  } else {
+    window.wp = null;
+    window.signer = null;
+    window.onArcNetwork = true;
+  }
+
+  // Show bottom nav
+  var bn = document.getElementById('bottomNav');
+  if (bn) bn.classList.add('show');
+
+  // Call onConnected(isEmail=true) — skips checkNetwork, loads balances
+  if (typeof onConnected === 'function') {
+    onConnected(true, false).catch(function(e) {
+      console.error('onConnected error:', e);
+      if (typeof showPage === 'function') showPage('home');
+      if (typeof updateTopBar === 'function') updateTopBar(true);
+    });
+  }
+})();
 </script>
 
   <!-- ══ MULTICHAIN BALANCE PAGE ══ -->
