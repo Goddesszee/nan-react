@@ -4124,6 +4124,17 @@ RULES:
         action={action:'agent-multichain'};
         console.log('[agent] fallback multichain inferred');
       }
+      // agent-bulk-send: multiple recipients mentioned
+      if(!action){
+        const multiM = reply.match(/send(?:ing)?\s+([\d.]+)\s+(USDC|EURC)\s+(?:each\s+)?to\s+((?:[\w.]+(?:\.arc)?(?:\s*,\s*|\s+and\s+))+[\w.]+(?:\.arc)?)/i);
+        if(multiM){
+          const names = multiM[3].split(/[\s,]+(?:and\s+)?/).map(n=>n.trim().replace(/[.,!?]+$/,'')).filter(n=>n.length>2);
+          if(names.length>1){
+            action={action:'agent-bulk-send',amount:parseFloat(multiM[1]),token:multiM[2].toUpperCase(),recipients:names.map(to=>({to,amount:parseFloat(multiM[1]),token:multiM[2].toUpperCase()}))};
+            console.log('[agent] fallback bulk-send inferred:', action);
+          }
+        }
+      }
       // fx-limit-offramp
       if(!action && /sell.*(?:naira|NGN)|offramp.*when|convert.*NGN.*rate/i.test(reply)){
         const amtM = reply.match(/([\d.]+)\s*USDC/i);
@@ -4142,7 +4153,7 @@ RULES:
     }
     agentMsgs[agentMsgs.length-1]={role:'assistant',content:clean,action};
     // Auto-execute agent wallet actions immediately (no button needed)
-    const autoActions = ['agent-send','agent-balance','agent-history','agent-fund','agent-pay','agent-swap','agent-bridge','agent-multichain','agent-offramp','agent-payroll','fx-limit-offramp','payreq-create'];
+    const autoActions = ['agent-send','agent-bulk-send','agent-balance','agent-history','agent-fund','agent-pay','agent-swap','agent-bridge','agent-multichain','agent-offramp','agent-payroll','fx-limit-offramp','payreq-create'];
     if(action && action.action && autoActions.includes(action.action)){
       setTimeout(()=>executeAgentAction(action), 500);
     }
@@ -4416,6 +4427,85 @@ function executeAgentAction(action){
         renderAgentMsgs();
       },300);
       break;
+    case 'agent-bulk-send':{
+      // recipients: [{to, amount, token}] or top-level to/amount/token with recipients array
+      if(!agentWalletAddr){addAgentMsg('⚠️ Agent wallet not connected.');renderAgentMsgs();return;}
+      const recipients = action.recipients || (action.to ? [{to:action.to,amount:action.amount,token:action.token||'USDC'}] : []);
+      if(!recipients.length){addAgentMsg('❌ No recipients specified.');renderAgentMsgs();break;}
+      (async()=>{
+        addAgentMsg('📋 Preparing bulk send to '+recipients.length+' recipient'+( recipients.length>1?'s':'')+'...');
+        renderAgentMsgs();
+        const resolved = [];
+        // Resolve all arc names first
+        for(const rec of recipients){
+          let to = rec.to;
+          if(to && !to.startsWith('0x') && (to.endsWith('.arc') || !to.includes('.'))){
+            const arcName = to.replace('.arc','').toLowerCase();
+            addAgentMsg('🔍 Resolving '+arcName+'.arc...');
+            renderAgentMsgs();
+            try{
+              const rp = new ethers.JsonRpcProvider(ARC_RPC,{chainId:ARC_CHAIN_ID,name:'arc-testnet',ensAddress:null});
+              const nc = new ethers.Contract(NAME_REGISTRY,NAME_ABI,rp);
+              const addr = await Promise.race([nc.resolve(arcName), new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),6000))]);
+              if(addr && addr!=='0x0000000000000000000000000000000000000000'){
+                to = addr;
+                addAgentMsg('✓ '+arcName+'.arc → '+to.slice(0,6)+'...'+to.slice(-4));
+                renderAgentMsgs();
+              } else {
+                addAgentMsg('❌ '+arcName+'.arc not found — skipping');
+                renderAgentMsgs();
+                continue;
+              }
+            }catch(e){ addAgentMsg('❌ Could not resolve '+arcName+'.arc: '+e.message+' — skipping'); renderAgentMsgs(); continue; }
+          }
+          resolved.push({to, amount: rec.amount||action.amount, token: rec.token||action.token||'USDC', name: rec.name||rec.to});
+        }
+        if(!resolved.length){addAgentMsg('❌ No valid recipients after resolution.');renderAgentMsgs();return;}
+        // Show confirm summary
+        const total = resolved.reduce((s,r)=>s+parseFloat(r.amount||0),0);
+        addAgentMsg('⚠️ Confirm bulk send:\n'+resolved.map((r,i)=>`${i+1}. ${r.amount} ${r.token} → ${r.to.slice(0,6)}...${r.to.slice(-4)}`).join('\n')+'\n\nTotal: '+total.toFixed(2)+' USDC');
+        renderAgentMsgs();
+        // Add confirm/cancel buttons
+        setTimeout(()=>{
+          const msgsEl = document.getElementById('agentMessages');
+          const last = msgsEl?.lastElementChild;
+          if(last){
+            const btns = document.createElement('div');
+            btns.style.cssText='display:flex;gap:8px;margin-top:10px;';
+            const confirmBtn = document.createElement('button');
+            confirmBtn.textContent='✓ Confirm All';
+            confirmBtn.style.cssText='padding:8px 18px;border-radius:10px;background:#7000ff;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
+            confirmBtn.onclick = async function(){
+              btns.remove();
+              addAgentMsg('🚀 Sending to '+resolved.length+' recipients...');
+              renderAgentMsgs();
+              let ok=0, fail=0;
+              for(const r of resolved){
+                try{
+                  const res = await fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},
+                    body:JSON.stringify({action:'transfer',fromAddress:agentWalletAddr,toAddress:r.to,amount:String(r.amount),chain:'ARC-TESTNET'})});
+                  const d = await res.json();
+                  if(d.success){ ok++; addAgentMsg('✅ '+r.amount+' '+r.token+' → '+r.to.slice(0,6)+'...'+r.to.slice(-4)); }
+                  else { fail++; addAgentMsg('❌ Failed → '+r.to.slice(0,6)+'...'+r.to.slice(-4)+': '+(d.error||'error')); }
+                }catch(e){ fail++; addAgentMsg('❌ Error → '+r.to.slice(0,6)+'...'+r.to.slice(-4)+': '+e.message); }
+                renderAgentMsgs();
+                await new Promise(res=>setTimeout(res,1500)); // small delay between txs
+              }
+              addAgentMsg('📊 Done! '+ok+' sent, '+fail+' failed.');
+              renderAgentMsgs();
+              setTimeout(fetchAgentBalance,2000);
+            };
+            const cancelBtn = document.createElement('button');
+            cancelBtn.textContent='Cancel';
+            cancelBtn.style.cssText='padding:8px 14px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;';
+            cancelBtn.onclick=function(){ window._pendingAgentSend=null; addAgentMsg('❌ Bulk send cancelled'); renderAgentMsgs(); btns.remove(); };
+            btns.appendChild(confirmBtn); btns.appendChild(cancelBtn);
+            last.appendChild(btns);
+          }
+        },100);
+      })();
+      break;
+    }
     case 'agent-multichain':
       goPage('multichain');
       setTimeout(()=>{ try{ mcRefresh(); }catch(e){} },300);
