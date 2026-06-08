@@ -122,8 +122,9 @@ async function getDynamicSigner() {
   if (isCircleWallet) return null;
   if (circleWalletId) return null;
   if (localStorage.getItem('nan_login_type') === 'circle') return null;
+  if (localStorage.getItem('circleWalletId')) return null; // already logged in via email
 
-  // Try injected providers — priority: Rabby > Dynamic injected > EIP-6963 > others
+  // Try injected providers
   var injected = window.rabby
     || window.ethereum
     || (window.evmproviders && Object.values(window.evmproviders)[0])
@@ -134,10 +135,10 @@ async function getDynamicSigner() {
   if (!injected) return null;
 
   try {
-    // Use eth_accounts ONLY (no popup) — never use eth_requestAccounts automatically
+    // eth_accounts only — never popup automatically
     var accounts = [];
     try { accounts = await injected.request({ method: 'eth_accounts' }); } catch(e2) {}
-    if (!accounts || !accounts.length) return null; // Don't popup — user must click Connect
+    if (!accounts || !accounts.length) return null;
 
     var prov = new ethers.BrowserProvider(injected);
     var s    = await prov.getSigner();
