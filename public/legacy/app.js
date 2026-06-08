@@ -6674,7 +6674,21 @@ async function fetchAgentBalance(){
     // Update UI display
     var balEl = document.getElementById('agentBalDisplay');
     if(balEl) balEl.innerHTML = '<span style="background:rgba(112,0,255,.12);border:1px solid rgba(112,0,255,.2);border-radius:8px;padding:2px 10px;font-size:1.3rem;font-weight:800;color:var(--text);">' + (agentWalletBalance || '0 USDC') + '</span>';
+    // Update home page total to include agent wallet
+    updateHomeWithAgentBalance();
   } catch(e){}
+}
+
+function updateHomeWithAgentBalance(){
+  if(!agentWalletAddr || !window._arcBaseBalance) return;
+  var agentTotal = parseFloat((agentWalletBalance||'0').replace(/[^0-9.]/g,'')) || 0;
+  if(!agentTotal) return;
+  var grand = window._arcBaseBalance + agentTotal;
+  var el = document.getElementById('homeBalAmt');
+  if(el) el.textContent = '$' + grand.toFixed(2);
+  var ngn = document.getElementById('homeBalNgn');
+  var rate = window.fxRate || window.NGN_RATE || 1620;
+  if(ngn) ngn.textContent = '\u2248 \u20a6' + Math.round(grand * rate).toLocaleString() + ' NGN';
 }
 
 // ── Page state ───────────────────────────────────────────────────────────────
@@ -6883,16 +6897,109 @@ function agentSetSpendingLimit() {
   document.getElementById('agentLimitPerTx')?.focus();
 }
 
+// NAN's own x402 services shown in marketplace
+var NAN_X402_SERVICES = [
+  {
+    name: 'NGN/USD Rate',
+    desc: 'Live Nigerian Naira to USD exchange rate',
+    url: 'https://nan-production.up.railway.app/api/x402/ngn-rate',
+    price: '$0.001 USDC',
+    icon: '🇳🇬'
+  },
+  {
+    name: 'Arc Token Prices',
+    desc: 'USDC/EURC prices in USD, EUR and NGN on Arc Testnet',
+    url: 'https://nan-production.up.railway.app/api/x402/arc-price',
+    price: '$0.001 USDC',
+    icon: '💱'
+  },
+  {
+    name: 'Wallet Stats',
+    desc: 'Live USDC/EURC balances for any Arc Testnet address',
+    url: 'https://nan-production.up.railway.app/api/x402/wallet-stats',
+    price: '$0.001 USDC',
+    icon: '📊'
+  }
+];
+
 function agentDiscover() {
   const id = 'agentPanelMarket';
   if (document.getElementById(id)) { document.getElementById(id).remove(); return; }
   const el = document.createElement('div');
   el.id = id;
   el.style.cssText = 'background:var(--surface);border:1px solid rgba(112,0,255,.25);border-radius:14px;padding:14px;margin-bottom:12px;';
-  el.innerHTML = `<div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:10px;">Agent Marketplace</div><div style="display:flex;gap:8px;margin-bottom:8px;"><input id="agentMarketQuery" placeholder="Search services (e.g. financial, AI, data)" style="flex:1;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-family:'Inter var','Inter',sans-serif;box-sizing:border-box;" value="financial"/><button onclick="(function(){const q=document.getElementById('agentMarketQuery').value||'financial';const list=document.getElementById('agentMarketList');list.innerHTML='<span style=&quot;color:var(--text3)&quot;>Searching...</span>';fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'services-search',query:q})}).then(r=>r.json()).then(d=>{if(d.services?.length){list.innerHTML=d.services.map(s=>'<div style=&quot;padding:8px 0;border-bottom:1px solid var(--border);&quot;><div style=&quot;font-size:.82rem;font-weight:700;color:var(--text);&quot;>'+(s.name||s.url||'')+'</div><div style=&quot;font-size:.75rem;color:var(--text3);&quot;>'+(s.url||'')+'</div></div>').join('');}else{list.innerHTML='<span style=&quot;color:var(--text3);font-size:.82rem;&quot;>No services found.</span>';}}).catch(e=>{list.innerHTML='<span style=&quot;color:#ef4444;font-size:.82rem;&quot;>Error: '+e.message+'</span>';});})()" style="padding:10px 14px;border-radius:10px;background:#7000ff;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;">Search</button></div><div id="agentMarketList" style="font-size:.82rem;max-height:160px;overflow-y:auto;color:var(--text3);"></div><button onclick="document.getElementById('agentPanelMarket').remove()" style="margin-top:10px;width:100%;padding:11px 16px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;">Close</button>`;
+
+  const nanServicesHtml = NAN_X402_SERVICES.map(s => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:6px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:1.1rem;">${s.icon}</span>
+        <div>
+          <div style="font-size:.82rem;font-weight:700;color:var(--text);">${s.name}</div>
+          <div style="font-size:.72rem;color:var(--text3);">${s.desc}</div>
+        </div>
+      </div>
+      <button onclick="agentQuickPay('${s.url}','${s.name}')" style="padding:5px 10px;border-radius:8px;background:#7000ff;border:none;color:#fff;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap;">⚡ ${s.price}</button>
+    </div>
+  `).join('');
+
+  el.innerHTML = `
+    <div style="font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:10px;">🏪 NAN Marketplace</div>
+    <div style="font-size:.7rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">NAN x402 Services</div>
+    ${nanServicesHtml}
+    <div style="font-size:.7rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin:10px 0 8px;">Search Circle Marketplace</div>
+    <div style="display:flex;gap:8px;margin-bottom:8px;">
+      <input id="agentMarketQuery" placeholder="Search (financial, AI...)" style="flex:1;padding:9px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.82rem;box-sizing:border-box;" value="financial"/>
+      <button onclick="agentSearchMarket()" style="padding:9px 14px;border-radius:10px;background:#7000ff;border:none;color:#fff;font-size:.82rem;font-weight:700;cursor:pointer;">Search</button>
+    </div>
+    <div id="agentMarketList" style="font-size:.82rem;max-height:150px;overflow-y:auto;color:var(--text3);"></div>
+    <button onclick="document.getElementById('agentPanelMarket').remove()" style="margin-top:10px;width:100%;padding:10px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.82rem;cursor:pointer;">Close</button>
+  `;
   const grid = document.querySelector('[onclick="agentFund()"]')?.closest('[style*="grid-template-columns"]');
   if (grid) grid.parentElement.insertBefore(el, grid);
-  document.getElementById('agentMarketQuery')?.focus();
+}
+
+async function agentQuickPay(url, name) {
+  if(!agentWalletAddr){ agentShowResult('⚠️ Connect agent wallet first'); return; }
+  agentShowResult('⏳ Paying ' + name + '...');
+  try {
+    const r = await fetch(AGENT_API, {method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'pay-service',address:agentWalletAddr,url,chain:'ARC-TESTNET',maxAmount:'0.001'})});
+    const d = await r.json();
+    if(d.success && d.result && d.result.data){
+      const rd = d.result.data;
+      if(rd.pair) agentShowResult('✅ ' + name + '\n' + rd.pair + ': ' + rd.rate + '\n1 USD = ' + rd.inverse.toFixed(8) + ' ' + rd.pair.split('/')[0] + '\nSource: ' + rd.source + '\nPaid: ' + (rd.pricePaid||'$0.001 USDC'));
+      else if(rd.USDC) agentShowResult('✅ ' + name + '\nUSDC: $' + rd.USDC.usd + ' | EUR: €' + rd.USDC.eur + '\nNGN rate: ₦' + rd.USDC.ngn);
+      else if(rd.balances) agentShowResult('✅ ' + name + '\n' + Object.entries(rd.balances).map(([k,v])=>k+': '+v+' tokens').join('\n'));
+      else agentShowResult('✅ ' + name + '\n' + JSON.stringify(rd, null, 2));
+    } else {
+      agentShowResult(d.success ? '✅ Paid!' : '❌ ' + (d.error || 'Payment failed'));
+    }
+  } catch(e) { agentShowResult('❌ ' + e.message); }
+}
+
+async function agentSearchMarket() {
+  const q = document.getElementById('agentMarketQuery')?.value || 'financial';
+  const list = document.getElementById('agentMarketList');
+  if(list) list.innerHTML = '<span style="color:var(--text3)">Searching...</span>';
+  try {
+    const r = await fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'services-search',query:q})});
+    const d = await r.json();
+    if(list){
+      if(d.services?.length){
+        list.innerHTML = d.services.map(s =>
+          `<div style="padding:8px 0;border-bottom:1px solid var(--border);">
+            <div style="font-size:.82rem;font-weight:700;color:var(--text);">${s.name||s.url||''}</div>
+            <div style="font-size:.75rem;color:var(--text3);">${s.url||''}</div>
+          </div>`
+        ).join('');
+      } else {
+        list.innerHTML = '<span style="color:var(--text3);font-size:.82rem;">No external services found.</span>';
+      }
+    }
+  } catch(e) {
+    if(list) list.innerHTML = '<span style="color:#ef4444;font-size:.82rem;">Error: ' + e.message + '</span>';
+  }
 }
 
 function agentPayService() {
