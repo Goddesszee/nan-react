@@ -3394,6 +3394,7 @@ function startOrderEngine(){
         else if(order.type==='standing'){await checkStandingOrder(order);}
         else if(order.type==='agent-scheduled'){await checkAgentScheduledOrder(order);}
         else if(order.type==='agent-standing'){await checkAgentStandingOrder(order);}
+        else if(order.type==='fx-limit-offramp'){await checkFxLimitOfframp(order);}
       }catch(e){console.log('Order check error:',e);}
     }
     nanOrders=nanOrders.filter(o=>o.status==='pending');
@@ -3469,6 +3470,29 @@ async function checkAgentStandingOrder(order){
     order.nextRun=now+60000;
     console.log('Standing order failed, retrying in 1min:',e);
   }
+}
+
+async function checkFxLimitOfframp(order){
+  // Fetch live NGN/USDC rate — use a free FX API
+  let liveNgnRate = NGN_USDC_RATE; // fallback to constant
+  try{
+    const r = await fetch('https://open.er-api.com/v6/latest/USD');
+    const d = await r.json();
+    if(d && d.rates && d.rates.NGN) liveNgnRate = d.rates.NGN;
+  }catch(e){ console.log('NGN rate fetch failed, using fallback'); }
+  order.liveRate = liveNgnRate;
+  const targetMet = order.condition==='gte' ? liveNgnRate >= order.targetRate : liveNgnRate <= order.targetRate;
+  if(!targetMet) return;
+  // Rate hit — trigger offramp
+  order.status = 'executing';
+  toast(`💱 NGN rate hit ₦${liveNgnRate.toFixed(0)}! Triggering offramp for ${order.amount} USDC…`,'success',7000);
+  goPage('naira');
+  await new Promise(r=>setTimeout(r,400));
+  const amtEl = document.getElementById('ngnWithdrawAmt');
+  if(amtEl) amtEl.value = order.amount;
+  addAgentMsg(`✅ FX limit triggered! NGN rate is ₦${liveNgnRate.toFixed(0)} (target: ₦${order.targetRate})\n\nOfframp page opened with ${order.amount} USDC prefilled. Select your bank and confirm to complete.`);
+  renderAgentMsgs();
+  order.status = 'done';
 }
 
 async function checkLimitOrder(order){
@@ -4100,16 +4124,25 @@ RULES:
         action={action:'agent-multichain'};
         console.log('[agent] fallback multichain inferred');
       }
-      // offramp/naira
-      if(!action && /offramp|withdraw.*(?:naira|NGN|bank)|send.*(?:naira|NGN|bank account)/i.test(reply)){
-        const amtM = reply.match(/([\d.]+)\s+USDC/i);
-        action={action:'agent-offramp',amount:amtM?parseFloat(amtM[1]):null};
-        console.log('[agent] fallback offramp inferred:', action);
+      // fx-limit-offramp
+      if(!action && /sell.*(?:naira|NGN)|offramp.*when|convert.*NGN.*rate/i.test(reply)){
+        const amtM = reply.match(/([\d.]+)\s*USDC/i);
+        const rateM = reply.match(/[₦#]?\s*([\d,]+)\s*(?:per|\/|naira|NGN)?/i);
+        if(amtM && rateM){
+          action={action:'fx-limit-offramp',amount:parseFloat(amtM[1]),targetRate:parseFloat(rateM[1].replace(/,/g,'')),condition:'gte'};
+          console.log('[agent] fallback fx-limit inferred:', action);
+        }
+      }
+      // agent-payroll
+      if(!action && /pay(?:roll)?.*staff|pay.*team|payroll/i.test(reply)){
+        const groupM = reply.match(/(?:group|team)[:\s]+["']?([^"'\n,]+)["']?/i);
+        action={action:'agent-payroll',group:groupM?groupM[1].trim():null};
+        console.log('[agent] fallback payroll inferred:', action);
       }
     }
     agentMsgs[agentMsgs.length-1]={role:'assistant',content:clean,action};
     // Auto-execute agent wallet actions immediately (no button needed)
-    const autoActions = ['agent-send','agent-balance','agent-history','agent-fund','agent-pay','agent-swap','agent-bridge','agent-multichain','agent-offramp','payreq-create'];
+    const autoActions = ['agent-send','agent-balance','agent-history','agent-fund','agent-pay','agent-swap','agent-bridge','agent-multichain','agent-offramp','agent-payroll','fx-limit-offramp','payreq-create'];
     if(action && action.action && autoActions.includes(action.action)){
       setTimeout(()=>executeAgentAction(action), 500);
     }
@@ -4417,6 +4450,46 @@ function executeAgentAction(action){
       const order=createOrder({type:'standing',amount:action.amount,token:action.token||'USDC',to:action.to,interval,nextRun,freq:action.freq||'week'});
       addAgentMsg(`📅 Standing order created! Will send ${action.amount} ${action.token||'USDC'} to ${(action.to||'').slice(0,10)}… every ${action.freq||'week'}. Next run: ${new Date(nextRun).toLocaleString()}. Order ID: ${order.id}`);
       break;}
+    case 'fx-limit-offramp':{
+      const targetRate = action.targetRate||action.rate||action.when;
+      const amount = action.amount;
+      const condition = action.condition||'gte';
+      if(!targetRate||!amount){addAgentMsg('❌ Please specify an amount and target rate. e.g. "sell 50 USDC when NGN hits ₦1700"');renderAgentMsgs();break;}
+      const order = {
+        id: genOrderId(), type:'fx-limit-offramp', status:'pending',
+        amount, targetRate: parseFloat(String(targetRate).replace(/[₦,]/g,'')),
+        condition, token:'USDC', createdAt: Date.now()
+      };
+      nanOrders.push(order);
+      saveOrders();
+      addAgentMsg(`🎯 FX limit set! I'll automatically open the offramp page with ${amount} USDC when the NGN rate ${condition==='gte'?'reaches':'drops to'} ₦${order.targetRate.toLocaleString()}.\n\nChecking every 15 seconds. Order ID: ${order.id}`);
+      renderAgentMsgs();
+      break;
+    }
+    case 'agent-payroll':{
+      // Open bulk/payroll page — user fills details manually
+      agentOpen=false; document.getElementById('agentPanel').style.display='none';
+      goPage('bulk');
+      setTimeout(()=>{
+        // Load saved group if specified
+        if(action.group){
+          const groups = JSON.parse(localStorage.getItem('nan_payroll_groups_'+(userAddr||''))||'{}');
+          if(groups[action.group]){
+            bulkRecipients = groups[action.group].map(r=>({...r, status:'pending'}));
+            renderBulkRecipients();
+            updateBulkSummary();
+            addAgentMsg(`📋 Loaded payroll group "${action.group}" with ${bulkRecipients.length} recipients. Review and click Send All to process.`);
+          } else {
+            const keys = Object.keys(groups);
+            addAgentMsg(keys.length ? `📋 Payroll page opened. Saved groups: ${keys.join(', ')}. Select one or add recipients manually.` : '📋 Payroll page opened. Add your staff and amounts, then click Send All.');
+          }
+        } else {
+          addAgentMsg('📋 Payroll page opened. Add your staff wallet addresses and amounts, then click Send All to pay everyone at once.');
+        }
+        renderAgentMsgs();
+      }, 400);
+      break;
+    }
     case 'cancel_all':{
       const count=nanOrders.length;
       nanOrders=[];saveOrders();
