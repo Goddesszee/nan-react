@@ -2274,7 +2274,7 @@ a:hover{color:var(--text);}
   }
   /* Shrink pills/buttons so they all fit in one row */
   #netPill{font-size:.68rem !important;padding:2px 6px !important;}
-  #navFaucetBtn{font-size:.72rem !important;padding:4px 8px !important;gap:3px !important;}
+  #navFaucetBtn{display:none !important;}
   .theme-toggle-btn{font-size:.85rem !important;padding:4px 6px !important;min-height:unset !important;}
   #connectTopBtn{font-size:.78rem !important;padding:4px 10px !important;}
   /* Hide full-text disconnect on mobile — the icon button already exists */
