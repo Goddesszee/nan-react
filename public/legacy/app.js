@@ -4453,7 +4453,11 @@ function executeAgentAction(action){
       })();
       break;
     case 'agent-balance':
-      if(!agentWalletAddr){addAgentMsg('⚠️ Agent wallet not connected.');renderAgentMsgs();return;}
+      if(!agentWalletAddr){
+        // Show main wallet balance instead
+        addAgentMsg(`💰 Your Wallet Balance:\nUSDC: ${parseFloat(usdcBal||0).toFixed(2)}\nEURC: ${parseFloat(eurcBal||0).toFixed(2)}\nNetwork: Arc Testnet\n\n💡 Connect an Agent Wallet for autonomous transactions.`);
+        renderAgentMsgs(); break;
+      }
       addAgentMsg('⏳ Checking agent wallet balance...');renderAgentMsgs();
       fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'balance',address:agentWalletAddr,chain:'ARC-TESTNET'})})
         .then(r=>r.json()).then(d=>{
@@ -4473,7 +4477,13 @@ function executeAgentAction(action){
         .catch(e=>{addAgentMsg('❌ Error: '+e.message);renderAgentMsgs();});
       break;
     case 'agent-history':
-      if(!agentWalletAddr){addAgentMsg('⚠️ Agent wallet not connected.');renderAgentMsgs();return;}
+      if(!agentWalletAddr){
+        // Navigate to history page instead
+        addAgentMsg('📋 Opening your transaction history...');
+        renderAgentMsgs();
+        goPage('history');
+        break;
+      }
       addAgentMsg('⏳ Loading agent wallet history...');renderAgentMsgs();
       fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'tx-list',address:agentWalletAddr,chain:'ARC-TESTNET'})})
         .then(r=>r.json()).then(d=>{
@@ -4484,14 +4494,22 @@ function executeAgentAction(action){
         }).catch(e=>{addAgentMsg('❌ Error: '+e.message);renderAgentMsgs();});
       break;
     case 'agent-fund':
-      if(!agentWalletAddr){addAgentMsg('⚠️ Agent wallet not connected.');renderAgentMsgs();return;}
+      if(!agentWalletAddr){
+        addAgentMsg('💧 Opening faucet to fund your wallet...');
+        renderAgentMsgs();
+        document.getElementById('tnav-faucet-btn')?.click() || goPage('home');
+        break;
+      }
       addAgentMsg('⏳ Requesting faucet for agent wallet...');renderAgentMsgs();
       fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'fund',address:agentWalletAddr,chain:'ARC-TESTNET'})})
         .then(r=>r.json()).then(d=>{addAgentMsg(d.success?'✅ Faucet success! 2 USDC sent to agent wallet.':'❌ '+(d.error||'Faucet failed'));renderAgentMsgs();})
         .catch(e=>{addAgentMsg('❌ Error: '+e.message);renderAgentMsgs();});
       break;
     case 'agent-pay':
-      if(!agentWalletAddr){addAgentMsg('⚠️ Agent wallet not connected.');renderAgentMsgs();return;}
+      if(!agentWalletAddr){
+        addAgentMsg('⚠️ Agent wallet required for autonomous payments.\n\n💡 You can still send USDC manually via the Send page.');
+        renderAgentMsgs(); break;
+      }
       addAgentMsg('⏳ Paying service '+action.serviceUrl+'...');renderAgentMsgs();
       fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'pay-service',address:agentWalletAddr,serviceUrl:action.serviceUrl,amount:String(action.amount||'0.01'),chain:'ARC-TESTNET'})})
         .then(r=>r.json()).then(d=>{addAgentMsg(d.success?'✅ Payment sent!\n'+JSON.stringify(d.result||d,null,2):'❌ '+(d.error||'Payment failed'));renderAgentMsgs();})
@@ -4567,7 +4585,10 @@ function executeAgentAction(action){
       break;
     }
     case 'agent-schedule':{
-      if(!agentWalletAddr){addAgentMsg('⚠️ Agent wallet not connected.');renderAgentMsgs();return;}
+      if(!agentWalletAddr){
+        addAgentMsg('⏰ Scheduled orders require an Agent Wallet to execute automatically.\n\n💡 Go to Agent Wallet page to connect one, then try again.');
+        renderAgentMsgs(); break;
+      }
       var agentSchedWhen = action.when||'tomorrow';
       var agentSchedAt = parseWhen(agentSchedWhen);
       if(!agentSchedAt){addAgentMsg('❌ Could not parse time: '+agentSchedWhen);renderAgentMsgs();break;}
@@ -4589,7 +4610,10 @@ function executeAgentAction(action){
       break;
     }
     case 'agent-standing':{
-      if(!agentWalletAddr){addAgentMsg('⚠️ Agent wallet not connected.');renderAgentMsgs();return;}
+      if(!agentWalletAddr){
+        addAgentMsg('🔄 Recurring orders require an Agent Wallet to execute automatically.\n\n💡 Go to Agent Wallet page to connect one, then try again.');
+        renderAgentMsgs(); break;
+      }
       var agentFreq = action.freq||'weekly';
       var agentInterval = parseInterval(agentFreq);
       var agentNextRun = parseNextOccurrence(agentFreq);
@@ -4651,7 +4675,12 @@ function executeAgentAction(action){
       break;
     case 'agent-bulk-send':{
       // recipients: [{to, amount, token}] or top-level to/amount/token with recipients array
-      if(!agentWalletAddr){addAgentMsg('⚠️ Agent wallet not connected.');renderAgentMsgs();return;}
+      if(!agentWalletAddr){
+        addAgentMsg('📋 Opening bulk send page — you can send to multiple recipients from your main wallet.');
+        renderAgentMsgs();
+        goPage('bulk');
+        break;
+      }
       const recipients = action.recipients || (action.to ? [{to:action.to,amount:action.amount,token:action.token||'USDC'}] : []);
       if(!recipients.length){addAgentMsg('❌ No recipients specified.');renderAgentMsgs();break;}
       (async()=>{
@@ -5021,13 +5050,8 @@ function executeAgentAction(action){
     }
 
     case 'agent-data':{
-      // Mobile data purchase — extends bills
-      if(!agentWalletAddr){ addAgentMsg('⚠️ Agent wallet not connected.'); renderAgentMsgs(); return; }
-      const dataPhone = action.phone;
-      const dataPlan = action.plan||action.variationCode;
-      const dataNetwork = action.network||'mtn';
-      if(!dataPhone||!dataPlan){ addAgentMsg('❌ Specify phone number and data plan. e.g. "buy 5GB MTN data for 08012345678"'); renderAgentMsgs(); break; }
-      executeAgentAction({action:'agent-bills', billType:'data', phone:dataPhone, plan:dataPlan, network:dataNetwork});
+      // Mobile data purchase — route through agent-bills
+      executeAgentAction({action:'agent-bills', billType:'data', phone:action.phone, plan:action.plan||action.variationCode, network:action.network||'mtn'});
       break;
     }
 
