@@ -4207,10 +4207,45 @@ RULES:
           console.log('[agent] fallback cable inferred:', action);
         }
       }
+      // agent-portfolio
+      if(!action && /portfolio|total balance|all.*wallet|net worth|overall balance/i.test(reply)){
+        action={action:'agent-portfolio'};
+      }
+      // agent-analytics
+      if(!action && /analytics|spend|spending|how much.*sent|transaction.*summary|monthly.*spend/i.test(reply)){
+        action={action:'agent-analytics'};
+      }
+      // agent-price-alert
+      if(!action && /alert.*when|notify.*when|tell me when|price.*alert/i.test(reply)){
+        const tokenM = reply.match(/EURC|USDC/i);
+        const priceM = reply.match(/[\d.]+/);
+        const condM = reply.match(/hits|reaches|above|over/i);
+        if(priceM) action={action:'agent-price-alert',token:tokenM?tokenM[0].toUpperCase():'EURC',targetPrice:parseFloat(priceM[0]),condition:condM?'gte':'lte'};
+      }
+      // agent-auto-sweep
+      if(!action && /auto.?sweep|automatic.*sweep|sweep.*wallet|auto.*transfer/i.test(reply)){
+        const amtM = reply.match(/[\d.]+/);
+        action={action:'agent-auto-sweep',threshold:amtM?parseFloat(amtM[0]):50};
+      }
+      // agent-data
+      if(!action && /\bdata\b.*\b(mtn|glo|airtel|9mobile)\b|\b(mtn|glo|airtel|9mobile)\b.*\bdata\b|buy.*\d+gb|purchase.*data/i.test(reply)){
+        const phoneM = reply.match(/0[7-9][01]\d{8}/);
+        const gbM = reply.match(/(\d+)\s*gb/i);
+        const netM = reply.match(/mtn|glo|airtel|9mobile/i);
+        if(phoneM) action={action:'agent-data',phone:phoneM[0],plan:gbM?`${netM?netM[0].toLowerCase():'mtn'}-${gbM[1]}gb`:'mtn-1gb',network:netM?netM[0].toLowerCase():'mtn'};
+      }
+      // agent-receipt
+      if(!action && /receipt|show receipt|generate receipt|get receipt/i.test(reply)){
+        action={action:'agent-receipt',transactionType:'Last Transaction'};
+      }
+      // agent-ngn-rate
+      if(!action && /ngn.*rate|naira.*rate|rate.*naira|dollar.*naira|how far.*fx/i.test(reply)){
+        action={action:'agent-ngn-rate'};
+      }
     }
     agentMsgs[agentMsgs.length-1]={role:'assistant',content:clean,action};
     // Auto-execute agent wallet actions immediately (no button needed)
-    const autoActions = ['agent-send','agent-bulk-send','agent-balance','agent-history','agent-fund','agent-pay','agent-swap','agent-bridge','agent-multichain','agent-offramp','agent-payroll','agent-ngn-rate','agent-bills','fx-limit-offramp','payreq-create','list_orders','cancel_order','cancel_all','agent-receipt'];
+    const autoActions = ['agent-send','agent-bulk-send','agent-balance','agent-history','agent-fund','agent-pay','agent-swap','agent-bridge','agent-multichain','agent-offramp','agent-payroll','agent-ngn-rate','agent-bills','agent-data','agent-portfolio','agent-analytics','agent-price-alert','agent-auto-sweep','agent-receipt','agent-remita','fx-limit-offramp','payreq-create','list_orders','cancel_order','cancel_all'];
     if(action && action.action && autoActions.includes(action.action)){
       setTimeout(()=>executeAgentAction(action), 500);
     }
@@ -4771,18 +4806,111 @@ function executeAgentAction(action){
       renderAgentMsgs();scrollAgentBottom();
       break;}
     case 'agent-receipt':{
-      // Generate receipt for last transaction
       generateAgentReceipt({
         type: action.transactionType || 'Transaction',
         description: action.description || 'NAN Wallet Transaction',
-        amount: action.amount,
-        usdcCost: action.usdcCost,
-        txId: action.txId,
-        token: action.token,
-        to: action.to
+        amount: action.amount, usdcCost: action.usdcCost,
+        txId: action.txId, token: action.token, to: action.to
       });
       break;
     }
+
+    case 'agent-portfolio':{
+      (async()=>{
+        addAgentMsg('📊 Fetching your full portfolio...');
+        renderAgentMsgs();
+        try{
+          // Arc balance
+          await refreshBalances();
+          const arcUsdc = parseFloat(window.usdcBal)||0;
+          const arcEurc = parseFloat(window.eurcBal)||0;
+          // Agent wallet
+          await fetchAgentBalance();
+          const agentBal = parseFloat((agentWalletBalance||'0').replace(/[^0-9.]/g,''))||0;
+          // Multichain
+          const mcCache = JSON.parse(localStorage.getItem('nan_mc_cache_'+userAddr)||'{}');
+          const mcTotal = Object.values(mcCache).reduce((s,v)=>s+parseFloat(v||0),0);
+          const total = arcUsdc + arcEurc + agentBal + mcTotal;
+          const ngnRate = window.fxRate || 1620;
+          let msg = `📊 Portfolio Summary\n\n`;
+          msg += `🔷 Arc Wallet\n  USDC: ${arcUsdc.toFixed(2)}\n  EURC: ${arcEurc.toFixed(2)}\n\n`;
+          msg += `🤖 Agent Wallet\n  USDC: ${agentBal.toFixed(2)}\n\n`;
+          if(mcTotal>0) msg += `🌐 Multichain\n  Total: ${mcTotal.toFixed(2)} USDC\n\n`;
+          msg += `━━━━━━━━━━━━━━━━\n💰 Grand Total: $${total.toFixed(2)} USDC\n≈ ₦${Math.round(total*ngnRate).toLocaleString()} NGN`;
+          addAgentMsg(msg);
+        }catch(e){ addAgentMsg('❌ Could not fetch portfolio: '+e.message); }
+        renderAgentMsgs();
+      })();
+      break;
+    }
+
+    case 'agent-analytics':{
+      (async()=>{
+        addAgentMsg('📈 Analysing your transactions...');
+        renderAgentMsgs();
+        try{
+          const hist = JSON.parse(localStorage.getItem('nan_tx_history_'+userAddr)||'[]');
+          if(!hist.length){ addAgentMsg('No transaction history found yet.'); renderAgentMsgs(); return; }
+          const now = Date.now();
+          const week = hist.filter(t=>new Date(t.timestamp||t.date||0).getTime()>(now-7*86400000));
+          const month = hist.filter(t=>new Date(t.timestamp||t.date||0).getTime()>(now-30*86400000));
+          const weekSent = week.filter(t=>t.type==='send'||t.direction==='out').reduce((s,t)=>s+parseFloat(t.amount||0),0);
+          const monthSent = month.filter(t=>t.type==='send'||t.direction==='out').reduce((s,t)=>s+parseFloat(t.amount||0),0);
+          const weekRec = week.filter(t=>t.type==='receive'||t.direction==='in').reduce((s,t)=>s+parseFloat(t.amount||0),0);
+          let msg = `📈 Spend Analytics\n\n`;
+          msg += `This week:\n  Sent: ${weekSent.toFixed(2)} USDC\n  Received: ${weekRec.toFixed(2)} USDC\n  Transactions: ${week.length}\n\n`;
+          msg += `This month:\n  Sent: ${monthSent.toFixed(2)} USDC\n  Transactions: ${month.length}\n\n`;
+          msg += `All time: ${hist.length} transactions`;
+          addAgentMsg(msg);
+        }catch(e){ addAgentMsg('❌ Analytics error: '+e.message); }
+        renderAgentMsgs();
+      })();
+      break;
+    }
+
+    case 'agent-price-alert':{
+      const alertToken = action.token||'EURC';
+      const alertPrice = action.targetPrice||action.price;
+      const alertCondition = action.condition||'gte';
+      if(!alertPrice){ addAgentMsg('❌ Specify a target price. e.g. "alert me when EURC hits 1.05"'); renderAgentMsgs(); break; }
+      const alerts = JSON.parse(localStorage.getItem('nan_price_alerts')||'[]');
+      alerts.push({ id:'alert_'+Date.now(), token:alertToken, targetPrice:parseFloat(alertPrice), condition:alertCondition, createdAt:Date.now() });
+      localStorage.setItem('nan_price_alerts', JSON.stringify(alerts));
+      addAgentMsg(`🔔 Price alert set! I'll notify you when ${alertToken} ${alertCondition==='gte'?'reaches':'drops to'} $${alertPrice}.\n\nChecking every 2 minutes.`);
+      renderAgentMsgs();
+      break;
+    }
+
+    case 'agent-auto-sweep':{
+      const sweepThreshold = action.threshold||action.amount||50;
+      const sweepKeep = action.keep||action.keepAmount||10;
+      const sweepTo = action.to||userAddr;
+      const sweepFreq = action.freq||'realtime';
+      const sweepConfig = { threshold:parseFloat(sweepThreshold), keep:parseFloat(sweepKeep), to:sweepTo, enabled:true, createdAt:Date.now() };
+      localStorage.setItem('nan_auto_sweep', JSON.stringify(sweepConfig));
+      addAgentMsg(`⚡ Auto-sweep configured!\n\nWhenever your agent wallet exceeds ${sweepThreshold} USDC, I'll automatically sweep ${parseFloat(sweepThreshold)-parseFloat(sweepKeep)} USDC to your main wallet, keeping ${sweepKeep} USDC as reserve.\n\nChecking every 2 minutes.`);
+      renderAgentMsgs();
+      break;
+    }
+
+    case 'agent-data':{
+      // Mobile data purchase — extends bills
+      if(!agentWalletAddr){ addAgentMsg('⚠️ Agent wallet not connected.'); renderAgentMsgs(); return; }
+      const dataPhone = action.phone;
+      const dataPlan = action.plan||action.variationCode;
+      const dataNetwork = action.network||'mtn';
+      if(!dataPhone||!dataPlan){ addAgentMsg('❌ Specify phone number and data plan. e.g. "buy 5GB MTN data for 08012345678"'); renderAgentMsgs(); break; }
+      executeAgentAction({action:'agent-bills', billType:'data', phone:dataPhone, plan:dataPlan, network:dataNetwork});
+      break;
+    }
+
+    case 'agent-remita':{
+      // School fees / Remita payments — navigate to bills with remita type
+      addAgentMsg('🏫 Remita school fees payment:\n\nPlease provide:\n1. RRR (Remita Retrieval Reference)\n2. Amount (₦)\n\nSay: "pay remita RRR 123456789 amount 50000"');
+      renderAgentMsgs();
+      break;
+    }
+
     case 'agent-ngn-rate':{
       // Show live NGN rate
       (async()=>{
@@ -7383,6 +7511,8 @@ async function sendReceiptEmail({to, subject, body}){
 // Auto-start session health check if previously connected
 if(agentWalletEmail && agentWalletAddr){
   setTimeout(()=>{ startAgentSessionCheck(); checkAgentSession(); }, 5000);
+  // Start background checkers for price alerts and auto-sweep
+  setTimeout(startBackgroundCheckers, 8000);
 }
 
 async function agentRefreshBalance(){
@@ -7534,6 +7664,57 @@ function startAgentSessionCheck(){
 
 function stopAgentSessionCheck(){
   if(_agentSessionCheckTimer){ clearInterval(_agentSessionCheckTimer); _agentSessionCheckTimer=null; }
+}
+
+// ── Background checkers — price alerts + auto-sweep ───────────────────────────
+function startBackgroundCheckers(){
+  setInterval(async()=>{
+    // Price alerts
+    try{
+      const alerts = JSON.parse(localStorage.getItem('nan_price_alerts')||'[]');
+      if(!alerts.length) return;
+      const r = await fetch('https://open.er-api.com/v6/latest/USD');
+      const d = await r.json();
+      const eurcRate = d?.rates?.EUR ? 1/d.rates.EUR : 1.08;
+      const prices = { EURC: eurcRate, USDC: 1.0 };
+      const remaining = [];
+      for(const alert of alerts){
+        const price = prices[alert.token]||1;
+        const triggered = alert.condition==='gte' ? price >= alert.targetPrice : price <= alert.targetPrice;
+        if(triggered){
+          toast(`🔔 Price alert! ${alert.token} is now $${price.toFixed(4)} (target: $${alert.targetPrice})`,'success',10000);
+          addAgentMsg(`🔔 Price alert triggered!\n${alert.token} is now $${price.toFixed(4)}\nYour target was $${alert.targetPrice} (${alert.condition==='gte'?'at or above':'at or below'})`);
+          renderAgentMsgs();
+        } else {
+          remaining.push(alert);
+        }
+      }
+      localStorage.setItem('nan_price_alerts', JSON.stringify(remaining));
+    }catch(e){}
+
+    // Auto-sweep
+    try{
+      const sweep = JSON.parse(localStorage.getItem('nan_auto_sweep')||'null');
+      if(!sweep?.enabled || !agentWalletAddr || !userAddr) return;
+      const bal = parseFloat((agentWalletBalance||'0').replace(/[^0-9.]/g,''))||0;
+      if(bal >= sweep.threshold){
+        const sendAmt = (bal - sweep.keep).toFixed(4);
+        if(parseFloat(sendAmt) > 0){
+          console.log(`[auto-sweep] Sweeping ${sendAmt} USDC from agent to main wallet`);
+          const r = await fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({action:'transfer',fromAddress:agentWalletAddr,toAddress:userAddr,amount:sendAmt,chain:'ARC-TESTNET'})});
+          const d = await r.json();
+          if(d.success){
+            toast(`⚡ Auto-sweep: ${sendAmt} USDC moved to main wallet`,'success',6000);
+            addAgentMsg(`⚡ Auto-sweep executed!\nMoved ${sendAmt} USDC from agent wallet to main wallet.\nAgent wallet kept: ${sweep.keep} USDC reserve.`);
+            renderAgentMsgs();
+            setTimeout(fetchAgentBalance, 2000);
+            setTimeout(updateHomeScreen, 2500);
+          }
+        }
+      }
+    }catch(e){}
+  }, 2 * 60 * 1000); // every 2 minutes
 }
 
 function updateHomeWithAgentBalance(){
