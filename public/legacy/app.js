@@ -4070,7 +4070,11 @@ RULES:
         usdcBal:usdcBal,eurcBal:eurcBal,userAddress:userAddr,
         agentWallets:agentWalletAddr?{'ARC-TESTNET':agentWalletAddr}:null,
         agentWalletActive:!!agentWalletAddr,
-        messages:agentMsgs.slice(0,-1).filter(m=>!m.content.includes('spinner')).map(m=>({role:m.role,content:m.content}))
+        // Keep last 20 messages, ensure clean string content, filter spinner/loading messages
+        messages:agentMsgs.slice(0,-1)
+          .filter(m=>m.content && typeof m.content === 'string' && !m.content.includes('spinner') && m.content.length < 2000)
+          .slice(-20)
+          .map(m=>({role:m.role, content:String(m.content).slice(0,500)}))
       }),
     });
     const data=await res.json();
@@ -4081,7 +4085,9 @@ RULES:
     }
     const reply=data.reply||"Sorry, couldn't reach the AI.";
     console.log('[agent] raw reply:', reply);
-    const actionMatch=reply.match(/<ACTION>([\s\S]*?)<\/ACTION>/);
+    // Parse ACTION tag — handle <ACTION>, ACTION>, and other variants the model outputs
+    const actionMatch=reply.match(/<ACTION>([\s\S]*?)<\/ACTION>/) ||
+                      reply.match(/ACTION[>:]\s*(\{[\s\S]*?\})\s*(?:<\/ACTION>|$)/i);
     let action=null;
     try{if(actionMatch)action=JSON.parse(actionMatch[1].trim());}catch{}
     // Strip <ACTION> tags and any raw ACTION: {...} leakage from model
