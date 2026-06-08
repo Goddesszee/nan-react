@@ -7523,48 +7523,144 @@ async function agentRefreshBalance(){
 }
 
 function generateAgentReceipt(details){
-  // details: { type, amount, token, to, txId, usdcCost, description }
   const time = new Date().toLocaleString();
-  const lines = [
-    '━━━━━━━━━━━━━━━━━━━━━━━━',
-    '    NAN WALLET RECEIPT',
-    '━━━━━━━━━━━━━━━━━━━━━━━━',
-    `📅 ${time}`,
-    `📋 Type: ${details.type||'Transaction'}`,
-    details.description ? `📝 ${details.description}` : null,
-    details.amount ? `💰 Amount: ₦${details.amount}` : null,
-    details.usdcCost ? `🔷 USDC: ${details.usdcCost}` : null,
-    details.to ? `📤 To: ${details.to}` : null,
-    details.txId ? `🔗 TX ID: ${details.txId}` : null,
-    details.token ? `🔑 Token: ${details.token}` : null,
-    '━━━━━━━━━━━━━━━━━━━━━━━━',
-    'nanarc.xyz · Arc Testnet',
-  ].filter(Boolean).join('\n');
 
-  addAgentMsg('🧾 Receipt:\n\n'+lines);
-  renderAgentMsgs();
-  scrollAgentBottom();
+  // Build canvas receipt image
+  const canvas = document.createElement('canvas');
+  const W = 420, H = 520;
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
 
-  // Add copy button
-  setTimeout(()=>{
-    const msgs = document.getElementById('agentMessages');
-    const last = msgs?.lastElementChild;
-    if(last){
-      const btn = document.createElement('button');
-      btn.textContent = '📋 Copy Receipt';
-      btn.style.cssText = 'margin-top:8px;padding:7px 16px;border-radius:10px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.3);color:#7000ff;font-size:.82rem;font-weight:700;cursor:pointer;display:block;';
-      btn.onclick = ()=>{
-        navigator.clipboard.writeText(lines).then(()=>{ btn.textContent='✓ Copied!'; setTimeout(()=>btn.textContent='📋 Copy Receipt',2000); });
-      };
-      last.appendChild(btn);
-    }
-  }, 100);
+  // Background
+  const bg = ctx.createLinearGradient(0,0,W,H);
+  bg.addColorStop(0,'#0d0d1a'); bg.addColorStop(1,'#1a0d2e');
+  ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
 
-  // Email receipt
+  // Purple glow top
+  const glow = ctx.createRadialGradient(W/2,0,0,W/2,0,200);
+  glow.addColorStop(0,'rgba(112,0,255,0.3)'); glow.addColorStop(1,'transparent');
+  ctx.fillStyle = glow; ctx.fillRect(0,0,W,200);
+
+  // Border
+  ctx.strokeStyle='rgba(112,0,255,0.4)'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.roundRect(10,10,W-20,H-20,16); ctx.stroke();
+
+  // Logo N
+  ctx.fillStyle='#7000ff'; ctx.beginPath(); ctx.roundRect(W/2-24,28,48,48,12); ctx.fill();
+  ctx.fillStyle='#fff'; ctx.font='bold 28px Inter,sans-serif'; ctx.textAlign='center';
+  ctx.fillText('N',W/2,64);
+
+  // Title
+  ctx.fillStyle='#fff'; ctx.font='bold 18px Inter,sans-serif';
+  ctx.fillText('NAN WALLET',W/2,102);
+  ctx.fillStyle='rgba(196,181,253,0.7)'; ctx.font='12px Inter,sans-serif';
+  ctx.fillText('TRANSACTION RECEIPT',W/2,120);
+
+  // Divider
+  ctx.strokeStyle='rgba(112,0,255,0.3)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(30,134); ctx.lineTo(W-30,134); ctx.stroke();
+
+  // Receipt rows
+  const rows = [
+    ['Date', time],
+    ['Type', details.type||'Transaction'],
+    details.description ? ['Details', details.description.replace(/📱|📺|⚡/g,'').trim()] : null,
+    details.amount ? ['Amount', `₦${parseFloat(details.amount).toLocaleString()}`] : null,
+    details.usdcCost ? ['USDC Cost', `${details.usdcCost} USDC`] : null,
+    details.to ? ['To', details.to.slice(0,6)+'...'+details.to.slice(-6)] : null,
+    details.txId ? ['TX ID', details.txId.slice(0,20)+'...'] : null,
+    details.token ? ['Token', details.token] : null,
+    ['Network', 'Arc Testnet'],
+    ['Status', '✓ Successful'],
+  ].filter(Boolean);
+
+  let y = 158;
+  rows.forEach(([label, value], i) => {
+    const isLast = i === rows.length-1;
+    // Row bg
+    ctx.fillStyle = i%2===0 ? 'rgba(255,255,255,0.03)' : 'transparent';
+    ctx.fillRect(20, y-14, W-40, 28);
+    // Label
+    ctx.fillStyle='rgba(196,181,253,0.6)'; ctx.font='11px Inter,sans-serif'; ctx.textAlign='left';
+    ctx.fillText(label.toUpperCase(), 32, y+2);
+    // Value
+    ctx.fillStyle = isLast ? '#4ade80' : '#fff';
+    ctx.font = isLast ? 'bold 13px Inter,sans-serif' : '13px Inter,sans-serif';
+    ctx.textAlign='right';
+    // Truncate long values
+    const maxW = W-80;
+    let val = String(value);
+    ctx.font='13px Inter,sans-serif';
+    while(ctx.measureText(val).width > maxW && val.length > 10) val = val.slice(0,-4)+'...';
+    ctx.fillText(val, W-32, y+2);
+    y += 28;
+  });
+
+  // Bottom divider
+  y += 4;
+  ctx.strokeStyle='rgba(112,0,255,0.3)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(30,y); ctx.lineTo(W-30,y); ctx.stroke();
+
+  // Footer
+  ctx.fillStyle='rgba(196,181,253,0.5)'; ctx.font='11px Inter,sans-serif'; ctx.textAlign='center';
+  ctx.fillText('nanarc.xyz · Powered by Circle & Arc Network', W/2, y+18);
+  ctx.fillStyle='rgba(112,0,255,0.6)'; ctx.font='10px Inter,sans-serif';
+  ctx.fillText('This receipt was generated automatically by NAN AI', W/2, y+34);
+
+  // Convert to image and show in chat
+  const dataUrl = canvas.toDataURL('image/png');
+
+  // Add image message to chat
+  const msgs = document.getElementById('agentMessages');
+  if(msgs){
+    const msgDiv = document.createElement('div');
+    msgDiv.style.cssText='display:flex;flex-direction:column;align-items:flex-start;gap:8px;';
+    const img = document.createElement('img');
+    img.src = dataUrl;
+    img.style.cssText='width:100%;max-width:380px;border-radius:14px;border:1px solid rgba(112,0,255,0.3);box-shadow:0 4px 20px rgba(112,0,255,0.2);';
+    img.alt='Transaction Receipt';
+    msgDiv.appendChild(img);
+
+    // Action buttons row
+    const btns = document.createElement('div');
+    btns.style.cssText='display:flex;gap:8px;flex-wrap:wrap;';
+
+    const dlBtn = document.createElement('a');
+    dlBtn.href=dataUrl; dlBtn.download=`nan-receipt-${Date.now()}.png`;
+    dlBtn.textContent='⬇ Download';
+    dlBtn.style.cssText='padding:7px 14px;border-radius:10px;background:#7000ff;color:#fff;font-size:.82rem;font-weight:700;cursor:pointer;text-decoration:none;';
+    btns.appendChild(dlBtn);
+
+    const shareBtn = document.createElement('button');
+    shareBtn.textContent='📤 Share';
+    shareBtn.style.cssText='padding:7px 14px;border-radius:10px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.3);color:#7000ff;font-size:.82rem;font-weight:700;cursor:pointer;';
+    shareBtn.onclick=async()=>{
+      try{
+        const blob = await(await fetch(dataUrl)).blob();
+        const file = new File([blob],'nan-receipt.png',{type:'image/png'});
+        if(navigator.share&&navigator.canShare({files:[file]})){
+          await navigator.share({files:[file],title:'NAN Wallet Receipt'});
+        } else {
+          // Fallback - copy image to clipboard
+          await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);
+          shareBtn.textContent='✓ Copied to clipboard!';
+          setTimeout(()=>shareBtn.textContent='📤 Share',2000);
+        }
+      }catch(e){ shareBtn.textContent='❌ Share failed'; }
+    };
+    btns.appendChild(shareBtn);
+
+    msgDiv.appendChild(btns);
+    msgs.appendChild(msgDiv);
+    scrollAgentBottom();
+  }
+
+  // Also email the receipt as text
+  const textLines = rows.map(([l,v])=>`${l}: ${v}`).join('\n');
   if(userEmail) sendReceiptEmail({
     to: userEmail,
     subject: `NAN Wallet Receipt — ${details.type||'Transaction'}`,
-    body: lines
+    body: `NAN WALLET RECEIPT\n${'─'.repeat(30)}\n${textLines}\n${'─'.repeat(30)}\nnanarc.xyz · Arc Testnet`
   }).catch(()=>{});
 }
 
