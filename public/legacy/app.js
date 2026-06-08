@@ -7710,15 +7710,24 @@ function generateAgentReceipt(details){
       try{
         const blob = await(await fetch(dataUrl)).blob();
         const file = new File([blob],'nan-receipt.png',{type:'image/png'});
-        if(navigator.share&&navigator.canShare({files:[file]})){
+        if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
           await navigator.share({files:[file],title:'NAN Wallet Receipt'});
-        } else {
-          // Fallback - copy image to clipboard
+        } else if(navigator.clipboard&&window.ClipboardItem){
           await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);
           shareBtn.textContent='✓ Copied to clipboard!';
           setTimeout(()=>shareBtn.textContent='📤 Share',2000);
+        } else {
+          // Desktop fallback — open in new tab so user can right-click save
+          window.open(dataUrl,'_blank');
+          shareBtn.textContent='🖼 Opened in tab';
+          setTimeout(()=>shareBtn.textContent='📤 Share',2000);
         }
-      }catch(e){ shareBtn.textContent='❌ Share failed'; }
+      }catch(e){
+        // Last resort — open in new tab
+        window.open(dataUrl,'_blank');
+        shareBtn.textContent='🖼 Opened in tab';
+        setTimeout(()=>shareBtn.textContent='📤 Share',2000);
+      }
     };
     btns.appendChild(shareBtn);
 
