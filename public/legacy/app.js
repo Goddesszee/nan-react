@@ -4023,6 +4023,7 @@ RULES:
       return;
     }
     const reply=data.reply||"Sorry, couldn't reach the AI.";
+    console.log('[agent] raw reply:', reply);
     const actionMatch=reply.match(/<ACTION>([\s\S]*?)<\/ACTION>/);
     let action=null;
     try{if(actionMatch)action=JSON.parse(actionMatch[1].trim());}catch{}
