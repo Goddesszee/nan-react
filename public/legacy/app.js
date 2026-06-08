@@ -7768,6 +7768,27 @@ let _agentSessionCheckTimer = null;
 let _agentReconnecting = false;
 
 async function checkAgentSession(){
+  // Try restore from localStorage first (Circle Programmable Wallets — no session needed)
+  if(!agentWalletAddr && userAddr){
+    const stored = localStorage.getItem('nan_agent_wallet_'+userAddr);
+    if(stored){
+      try{
+        const w = JSON.parse(stored);
+        if(w?.walletAddress){
+          agentWalletAddr = w.walletAddress;
+          window.agentWalletAddr = agentWalletAddr;
+          console.log('[agent] Restored wallet from localStorage:', agentWalletAddr.slice(0,10));
+          agentPageRefresh();
+          // Update green dot
+          const dot = document.getElementById('aiBtnDot');
+          const dotD = document.getElementById('aiBtnDesktopDot');
+          if(dot) dot.style.display='block';
+          if(dotD) dotD.style.display='inline-block';
+          return;
+        }
+      }catch(e){}
+    }
+  }
   if(!agentWalletEmail || !agentWalletAddr || _agentReconnecting) return;
   try{
     const r = await fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},
@@ -7955,6 +7976,39 @@ function agentShowResult(text) {
 
 // ── Login step 1 ─────────────────────────────────────────────────────────────
 async function agentLoginInit() {
+  // First try auto-connect with Circle Programmable Wallets (no CLI needed)
+  if (userAddr) {
+    const btn = document.getElementById('agentLoginBtn');
+    if (btn) { btn.textContent = 'Creating wallet...'; btn.disabled = true; }
+    try {
+      const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'get-or-create', userAddress: userAddr })
+      });
+      const d = await r.json();
+      if (d.success && d.wallet?.walletAddress) {
+        agentWalletAddr = d.wallet.walletAddress;
+        window.agentWalletAddr = agentWalletAddr;
+        agentWalletBalance = d.balance ? `${d.balance.USDC} USDC` : '0 USDC';
+        localStorage.setItem('nan_agent_wallet_'+userAddr, JSON.stringify(d.wallet));
+        agentPageRefresh();
+        toast('✅ Agent wallet ready!', 'success', 3000);
+        if (btn) { btn.textContent = 'Connected'; btn.disabled = false; }
+        // Update green dot on FAB
+        const dot = document.getElementById('aiBtnDot');
+        const dotD = document.getElementById('aiBtnDesktopDot');
+        if(dot) dot.style.display='block';
+        if(dotD) dotD.style.display='inline-block';
+        return;
+      }
+    } catch(e) {
+      console.log('[agent] Circle wallet create failed, falling back to CLI:', e.message);
+    }
+    if (btn) { btn.textContent = 'Connect Agent Wallet'; btn.disabled = false; }
+  }
+
+  // Fallback: existing CLI-based flow (for owner wallet)
   const input = document.getElementById('agentEmailInput');
   const email = (input && input.value.trim()) || agentWalletEmail || '';
   if (!email.includes('@')) { agentShowResult('Please enter a valid email address'); return; }
