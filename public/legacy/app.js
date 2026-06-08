@@ -4118,18 +4118,17 @@ RULES:
       const sendM = reply.match(/send(?:ing)?\s+([\d.]+)\s+(USDC|EURC)\s+(?:[^\n]*?\s+)?to\s+([\w.]+)/i);
       if(sendM){
         let sendTo = sendM[3].replace(/[.,!?]+$/,'');
-        // Strip 0x prefix if it's being used with an arc name (e.g. 0xaunty.arc → aunty.arc)
         if(sendTo.startsWith('0x') && !sendTo.match(/^0x[a-fA-F0-9]{40}$/)){
           sendTo = sendTo.replace(/^0x/,'');
         }
-        // Reject truncated addresses like "86B2...366a" — these are display only
         if(sendTo.includes('...') || (sendTo.startsWith('0x') && sendTo.length < 42)){
-          // Try to find the arc name instead
           const arcM = reply.match(/\b([\w]+\.arc)\b/i);
           if(arcM) sendTo = arcM[1].replace('.arc','').toLowerCase()+'.arc';
-          else { action = null; } // can't determine recipient, let arc resolution handle it
+          else { action = null; }
         }
-        if(sendTo) action={action:'agent-send',amount:parseFloat(sendM[1]),token:sendM[2].toUpperCase(),to:sendTo};
+        // Use agent-send only if agent wallet is connected, else regular send
+        const sendAction = agentWalletAddr ? 'agent-send' : 'send';
+        if(sendTo) action={action:sendAction,amount:parseFloat(sendM[1]),token:sendM[2].toUpperCase(),to:sendTo};
         if(action) console.log('[agent] fallback action inferred:', action);
       }
       // payreq-create
