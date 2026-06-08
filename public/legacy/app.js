@@ -4326,10 +4326,44 @@ function executeAgentAction(action){
       })();
       break;
     case 'agent-send':
-      if(!agentWalletAddr){addAgentMsg('⚠️ Agent wallet not connected. Go to Agent page to connect first.');renderAgentMsgs();return;}
       // Strip bad 0x prefix from arc names (e.g. 0xaunty.arc → aunty.arc)
       if(action.to && action.to.startsWith('0x') && !action.to.match(/^0x[a-fA-F0-9]{40}$/)){
         action.to = action.to.replace(/^0x/,'');
+      }
+      // If no agent wallet, use main wallet via send page
+      if(!agentWalletAddr){
+        (async()=>{
+          var to = action.to;
+          var token = action.token||'USDC';
+          var amount = action.amount;
+          // Resolve arc name if needed
+          if(to && !to.startsWith('0x') && (to.endsWith('.arc') || !to.includes('.'))){
+            var arcName = to.replace('.arc','').toLowerCase();
+            addAgentMsg('🔍 Resolving '+arcName+'.arc...');
+            renderAgentMsgs();
+            try{
+              var rp = new ethers.JsonRpcProvider(ARC_RPC,{chainId:ARC_CHAIN_ID,name:'arc-testnet',ensAddress:null});
+              var nc = new ethers.Contract(NAME_REGISTRY,NAME_ABI,rp);
+              var resolved = await Promise.race([nc.resolve(arcName),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),6000))]);
+              if(resolved && resolved!=='0x0000000000000000000000000000000000000000'){
+                to=resolved;
+                addAgentMsg('✓ Resolved '+arcName+'.arc → '+to.slice(0,6)+'...'+to.slice(-4));
+                renderAgentMsgs();
+              } else { addAgentMsg('❌ Arc name not found: '+arcName+'.arc'); renderAgentMsgs(); return; }
+            }catch(e){ addAgentMsg('❌ Could not resolve: '+e.message); renderAgentMsgs(); return; }
+          }
+          addAgentMsg('📤 Opening send — prefilling '+amount+' '+token+' to '+to.slice(0,6)+'...'+to.slice(-4));
+          renderAgentMsgs();
+          goPage('send');
+          setTimeout(()=>{
+            document.getElementById('recipInput').value=to;
+            document.getElementById('amtInput').value=amount||'';
+            sendToken=token;
+            document.getElementById('sendTokenLabel').textContent=token;
+            validateSend();
+          },300);
+        })();
+        break;
       }
       // If no destination or user said "to my agent wallet", send from main wallet to agent wallet
       if(!action.to || action.to==='AGENT_SELF' || action.to===agentWalletAddr){
@@ -4701,7 +4735,8 @@ function executeAgentAction(action){
       break;
     case 'agent-bills':{
       // Pay bills: airtime, data, electricity, cable TV
-      if(!agentWalletAddr){addAgentMsg('⚠️ Agent wallet not connected.');renderAgentMsgs();return;}
+      // Works for ALL users — agent wallet pays if connected, else deducts from main wallet balance
+      const hasAgentWallet = !!agentWalletAddr;
       (async()=>{
         const billType = action.billType||action.type||'airtime';
         const BILLS_API = 'https://nan-production.up.railway.app/api/bills';
