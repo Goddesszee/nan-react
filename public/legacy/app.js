@@ -8519,7 +8519,7 @@ async function agentConfirmedSend(to, amount, token) {
       var _agentUserAddr = _storedPerUser.userAddress || userAddr;
       r = await fetch('https://nan-production.up.railway.app/api/agent-wallets',{
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({action:'transfer', userAddress:_agentUserAddr, toAddress:to, amount:String(amount), token:token||'USDC'})
+        body: JSON.stringify({action:'transfer', userAddress:_agentUserAddr, agentWalletAddress:agentWalletAddr, toAddress:to, amount:String(amount), token:token||'USDC'})
       });
     } else {
       // CLI wallet (owner/MetaMask) — use agent-stack transfer
