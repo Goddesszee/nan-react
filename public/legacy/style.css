@@ -1165,21 +1165,6 @@ a:hover{color:var(--text);}
   .page::-webkit-scrollbar-track{background:transparent;}
   .page::-webkit-scrollbar-thumb{background:rgba(168,85,247,.2);border-radius:3px;}
 
-  /* ── Bridge / Market / Agent: card matches Home exactly ── */
-  #page-bridge > div:first-child,
-  #page-market > div:first-child,
-  #page-agent-wallet > div:first-child {
-    background: var(--card) !important;
-    border: 1px solid var(--border) !important;
-    border-radius: 22px !important;
-    overflow: hidden !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-    max-width: 600px !important;
-    width: 100% !important;
-    flex-shrink: 0 !important;
-    box-sizing: border-box !important;
-  }
 }
 
 /* Ã¢â¢ÂÃ¢â¢Â WIDE DESKTOP (1200px+) Ã¢â¢ÂÃ¢â¢Â */
@@ -4829,3 +4814,21 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
   }
 
 /* end @media(max-width:767px) */
+
+@media(min-width:769px){
+  /* ── Desktop: restore card on bridge/market/agent ── */
+  html body #page-bridge > div:first-child,
+  html body #page-market > div:first-child,
+  html body #page-agent-wallet > div:first-child {
+    background: var(--card) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 22px !important;
+    overflow: hidden !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    max-width: 600px !important;
+    width: 100% !important;
+    flex-shrink: 0 !important;
+    box-sizing: border-box !important;
+  }
+}
