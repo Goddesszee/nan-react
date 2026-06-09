@@ -11,9 +11,9 @@
   --topbar-bg:#111111;--nav-bg:#111111;
 }
 [data-theme="light"]{
-  --bg:#f0f0f5;
+  --bg:#fafafa;
   --surface:#f4f4f4;
-  --card:#ffffff;
+  --card:#f4f4f4;
   --card2:#ebebeb;
   --border:#e4e4e4;
   --border2:#cccccc;
@@ -1164,26 +1164,6 @@ a:hover{color:var(--text);}
   .page::-webkit-scrollbar{display:block;width:3px;}
   .page::-webkit-scrollbar-track{background:transparent;}
   .page::-webkit-scrollbar-thumb{background:rgba(168,85,247,.2);border-radius:3px;}
-
-  /* ── Card wrapper: cancel .page>* padding injection ── */
-  #page-bridge > div:first-child,
-  #page-market > div:first-child,
-  #page-agent-wallet > div:first-child {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-    max-width: 600px !important;
-    width: 100% !important;
-    flex-shrink: 0 !important;
-    box-sizing: border-box !important;
-  }
-  /* Page bg darker than card so card is visible — same as Home */
-  #page-home,
-  #page-bridge,
-  #page-market,
-  #page-agent-wallet {
-    background: var(--bg) !important;
-  }
-
 }
 
 /* Ã¢â¢ÂÃ¢â¢Â WIDE DESKTOP (1200px+) Ã¢â¢ÂÃ¢â¢Â */
@@ -3743,11 +3723,11 @@ input[style*="background: none"] {
 /* ── Desktop bridge: two-column layout ── */
 @media (min-width: 769px) {
   #page-bridge > * {
-    max-width: 600px !important;
+    max-width: 700px !important;
   }
   /* Gateway card full width */
   #page-bridge .card:first-of-type {
-    max-width: 600px !important;
+    max-width: 700px !important;
   }
   /* Right column (amount + button) sits beside gateway in a mini grid */
   #bridgeRightCol {
@@ -3819,7 +3799,7 @@ input[style*="background: none"] {
 }
 @media (prefers-color-scheme: light) {
   :root:not([data-theme="dark"]) {
-    --bg: #e8e8ee;
+    --bg: #fafafa;
     --surface: #f0f0f5;
     --card: #ffffff;
     --text: #111111;
