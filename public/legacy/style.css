@@ -4790,4 +4790,91 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
     color: rgba(52,211,153,.8) !important;
   }
 
+
+/* ══════════════════════════════════════════════
+   NAN PREMIUM PAGE STYLES — mobile only
+   Swap, Earn, Agent, Arc Name, History
+══════════════════════════════════════════════ */
+@media(max-width:767px){
+
+  /* Shared page header */
+  .page > div > div:first-child {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 5 !important;
+    background: var(--bg) !important;
+  }
+
+  /* Swap token dropdowns — keep existing JS positioning */
+  #fromToken, #toToken {
+    top: auto !important;
+    left: 16px !important;
+    right: 16px !important;
+    z-index: 50 !important;
+  }
+
+  /* Lend tab active state */
+  #page-lend button[onclick*="setLendTab"].active-tab,
+  #page-lend button[style*="background:#7000ff"] {
+    box-shadow: 0 2px 8px rgba(112,0,255,.3) !important;
+  }
+
+  /* Agent wallet badge states */
+  #agentWalletBadge[data-status="online"] {
+    background: rgba(52,211,153,.1) !important;
+    border-color: rgba(52,211,153,.2) !important;
+    color: rgba(52,211,153,.85) !important;
+  }
+
+  /* Arc name price options active */
+  .price-opt.active {
+    background: rgba(112,0,255,.12) !important;
+    border-color: rgba(112,0,255,.28) !important;
+  }
+  .price-opt.active div:first-child { color: #fff !important; }
+
+  /* History tx rows — populated by JS */
+  #txList .tx-item,
+  #txList > div {
+    border-bottom: 1px solid rgba(112,0,255,.06) !important;
+  }
+
+  /* Swap input number hide arrows */
+  #swapFrom::-webkit-outer-spin-button,
+  #swapFrom::-webkit-inner-spin-button,
+  #supplyAmt::-webkit-outer-spin-button,
+  #supplyAmt::-webkit-inner-spin-button,
+  #borrowAmt::-webkit-outer-spin-button,
+  #borrowAmt::-webkit-inner-spin-button,
+  #repayAmt::-webkit-outer-spin-button,
+  #repayAmt::-webkit-inner-spin-button,
+  #withdrawAmt::-webkit-outer-spin-button,
+  #withdrawAmt::-webkit-inner-spin-button { -webkit-appearance: none; }
+  #swapFrom, #supplyAmt, #borrowAmt, #repayAmt, #withdrawAmt { -moz-appearance: textfield; }
+
+  /* Stat cards light mode */
+  [data-theme=light] #page-history #statSends,
+  [data-theme=light] #page-history #histStatSwaps,
+  [data-theme=light] #page-history #histStatBridges,
+  [data-theme=light] #page-lend #suppliedAmt,
+  [data-theme=light] #page-lend #accruedInterest,
+  [data-theme=light] #page-lend #borrowedAmt { color: #111 !important; }
+
+  [data-theme=light] #page-swap #swapFrom,
+  [data-theme=light] #page-swap #swapTo { color: #111 !important; }
+
+  [data-theme=light] #page-lend #supplyAmt,
+  [data-theme=light] #page-lend #withdrawAmt,
+  [data-theme=light] #page-lend #borrowAmt,
+  [data-theme=light] #page-lend #repayAmt { color: #111 !important; }
+
+  /* Arc name search input light mode */
+  [data-theme=light] #arcNameSearch,
+  [data-theme=light] #arcNameInput { color: #111 !important; background: rgba(0,0,0,.03) !important; }
+
+  [data-theme=light] .price-opt div:first-child { color: #111 !important; }
+  [data-theme=light] .price-opt.active div:first-child { color: #fff !important; }
+
+}
+
 /* end @media(max-width:767px) */
