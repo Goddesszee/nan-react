@@ -2096,9 +2096,9 @@ a:hover{color:var(--text);}
   background: none;
   border: none;
   cursor: pointer;
-  padding: 6px 16px;
+  padding: 7px 18px;
   border-radius: 9px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--text);
@@ -2114,10 +2114,16 @@ a:hover{color:var(--text);}
   background: #1c1c1c;
   color: #ffffff;
   border: 1px solid rgba(255,255,255,.12);
-  padding: 7px 16px;
 }
 [data-theme=light] .tnav-btn { color: #111111; }
-[data-theme=light] .tnav-btn.active { background: #1c1c1c; color: #ffffff; border-color: rgba(0,0,0,.15); }
+[data-theme=light] .tnav-btn.active { background: #1c1c1c; color: #ffffff; border-color: rgba(0,0,0,.12); }
+#tnav-agent {
+  opacity: 1 !important;
+  background: #1c1c1c !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,.12) !important;
+}
+[data-theme=light] #tnav-agent { border-color: rgba(0,0,0,.12) !important; }
 .more-drop-btn {
   display: flex;
   align-items: center;
