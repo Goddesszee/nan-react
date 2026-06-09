@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>Pay with NAN Wallet</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#0a0a0a;color:#fff;font-family:'Inter',system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:24px 16px 48px;}
+  .logo{display:flex;align-items:center;gap:10px;margin-bottom:28px;margin-top:8px;}
+  .card{background:#141414;border:1px solid rgba(112,0,255,.22);border-radius:20px;padding:24px;width:100%;max-width:420px;margin-bottom:16px;}
+  .hero{text-align:center;padding:28px 20px;background:linear-gradient(135deg,rgba(112,0,255,.14),rgba(168,85,247,.06));border:1px solid rgba(112,0,255,.28);border-radius:20px;margin-bottom:20px;width:100%;max-width:420px;}
+  .amt{font-size:2.6rem;font-weight:800;letter-spacing:-2px;color:#fff;line-height:1;}
+  .lbl{font-size:1rem;font-weight:600;color:rgba(255,255,255,.6);margin-top:8px;}
+  .row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);}
+  .row:last-child{border-bottom:none;}
+  .row-label{font-size:.82rem;color:rgba(255,255,255,.4);}
+  .row-val{font-size:.82rem;color:#fff;text-align:right;word-break:break-all;max-width:60%;}
+  .addr-box{background:rgba(112,0,255,.07);border:1px solid rgba(112,0,255,.2);border-radius:12px;padding:12px 14px;font-family:'JetBrains Mono','Courier New',monospace;font-size:.72rem;color:#c084fc;word-break:break-all;line-height:1.6;margin-bottom:8px;}
+  .copy-addr{width:100%;padding:11px;background:rgba(112,0,255,.12);border:1.5px solid rgba(112,0,255,.3);border-radius:11px;color:#a855f7;font-size:.85rem;font-weight:700;cursor:pointer;margin-bottom:20px;}
+  .copy-addr:active{opacity:.7;}
+  .step{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;}
+  .step-num{width:26px;height:26px;border-radius:50%;background:rgba(112,0,255,.2);color:#a855f7;font-size:.75rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+  .step-text{font-size:.85rem;color:rgba(255,255,255,.65);line-height:1.5;}
+  .step-text b{color:#fff;}
+  .sec-title{font-size:.6rem;font-weight:700;color:rgba(255,255,255,.25);letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px;}
+  .wallets{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+  .wallet-tag{padding:5px 12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:20px;font-size:.75rem;color:rgba(255,255,255,.5);}
+  .nan-btn{display:block;width:100%;max-width:420px;padding:15px;background:#7000ff;border:none;border-radius:14px;color:#fff;font-size:1rem;font-weight:700;cursor:pointer;text-align:center;text-decoration:none;margin-bottom:10px;box-shadow:0 6px 24px rgba(112,0,255,.4);}
+  .nan-btn:active{opacity:.85;}
+  .or{text-align:center;font-size:.78rem;color:rgba(255,255,255,.25);margin-bottom:10px;}
+  .qr-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;padding-top:16px;}
+  .qr-label{font-size:.7rem;color:rgba(255,255,255,.3);}
+  .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#22c55e;color:#fff;padding:10px 22px;border-radius:24px;font-size:.85rem;font-weight:700;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;}
+  .toast.show{opacity:1;}
+  #networkNote{font-size:.75rem;color:rgba(255,255,255,.3);text-align:center;margin-top:4px;}
+</style>
+</head>
+<body>
+
+<div class="logo">
+  <svg width="32" height="32" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#7000ff"/><text x="16" y="22" font-family="sans-serif" font-size="16" font-weight="800" fill="white" text-anchor="middle">N</text></svg>
+  <span style="font-size:1.1rem;font-weight:800;color:#fff;">NAN Wallet</span>
+</div>
+
+<div class="hero">
+  <div class="amt" id="heroAmt">—</div>
+  <div class="lbl" id="heroLbl">Payment Request</div>
+</div>
+
+<!-- Details -->
+<div class="card" id="detailsCard">
+  <div class="sec-title">Details</div>
+  <div class="row"><span class="row-label">To</span><span class="row-val" id="detTo">—</span></div>
+  <div class="row" id="noteRow" style="display:none;"><span class="row-label">Note</span><span class="row-val" id="detNote">—</span></div>
+  <div class="row"><span class="row-label">Network</span><span class="row-val">Arc Testnet</span></div>
+</div>
+
+<!-- Pay with NAN -->
+<a id="nanBtn" href="#" class="nan-btn">💜 Pay with NAN Wallet</a>
+<div class="or">— or send directly —</div>
+
+<!-- Manual send -->
+<div class="card">
+  <div class="sec-title">Send from any wallet</div>
+  <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-bottom:10px;">Copy the address below and send <span id="sendInstr" style="color:#a855f7;font-weight:700;"></span> on <b style="color:#fff;">Arc Testnet</b></div>
+  <div class="addr-box" id="addrBox">—</div>
+  <button class="copy-addr" onclick="copyAddr()">📋 Copy Address</button>
+  <div id="networkNote">Make sure you're on <b style="color:#a855f7;">Arc Testnet</b> (Chain ID: 48797)</div>
+
+  <!-- QR of address -->
+  <div class="qr-wrap">
+    <div class="qr-label">Scan address QR</div>
+    <div id="addrQR"></div>
+  </div>
+</div>
+
+<!-- How to add Arc Testnet -->
+<div class="card">
+  <div class="sec-title">How to pay</div>
+  <div class="step"><div class="step-num">1</div><div class="step-text">Add <b>Arc Testnet</b> to your wallet — RPC: <b>https://rpc.arcanefinance.xyz</b>, Chain ID: <b>48797</b></div></div>
+  <div class="step"><div class="step-num">2</div><div class="step-text">Get <b>USDC or EURC</b> on Arc via <a href="https://nanarc.xyz" style="color:#a855f7;">NAN Wallet</a> (free testnet faucet)</div></div>
+  <div class="step"><div class="step-num">3</div><div class="step-text">Send to the address above — <b>no gas needed</b> on Arc Testnet</div></div>
+  <div style="margin-top:6px;">
+    <div class="sec-title" style="margin-bottom:8px;">Compatible wallets</div>
+    <div class="wallets">
+      <span class="wallet-tag">MetaMask</span>
+      <span class="wallet-tag">Trust Wallet</span>
+      <span class="wallet-tag">Coinbase Wallet</span>
+      <span class="wallet-tag">Rabby</span>
+      <span class="wallet-tag">Rainbow</span>
+    </div>
+  </div>
+</div>
+
+<div id="toastEl" class="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const p = new URLSearchParams(location.search);
+const payId = p.get('pay')||'';
+const to    = p.get('to')||'';
+const amt   = p.get('amt')||'';
+const tok   = p.get('tok')||'USDC';
+const lbl   = p.get('lbl')||'Payment Request';
+const note  = p.get('note')||'';
+
+// Hero
+document.getElementById('heroAmt').textContent = amt ? parseFloat(amt).toFixed(2)+' '+tok : 'Open · '+tok;
+document.getElementById('heroLbl').textContent = lbl;
+
+// Details
+document.getElementById('detTo').textContent = to ? to.slice(0,8)+'…'+to.slice(-6) : '—';
+if(note){ document.getElementById('noteRow').style.display='flex'; document.getElementById('detNote').textContent=note; }
+
+// Address box
+document.getElementById('addrBox').textContent = to||'—';
+document.getElementById('sendInstr').textContent = amt ? parseFloat(amt).toFixed(2)+' '+tok : tok;
+
+// NAN Wallet deep link
+const nanUrl = 'https://nanarc.xyz/legacy/app.html?pay='+encodeURIComponent(payId)+'&to='+encodeURIComponent(to)+'&amt='+encodeURIComponent(amt)+'&tok='+encodeURIComponent(tok)+'&lbl='+encodeURIComponent(lbl)+'&note='+encodeURIComponent(note);
+document.getElementById('nanBtn').href = nanUrl;
+
+// QR of wallet address
+if(to){
+  try{ new QRCode(document.getElementById('addrQR'),{text:to,width:140,height:140,colorDark:'#7000ff',colorLight:'#0a0a0a'}); }catch(e){}
+}
+
+function copyAddr(){
+  const addr = to;
+  if(!addr) return;
+  if(navigator.clipboard&&window.isSecureContext){
+    navigator.clipboard.writeText(addr).then(()=>showToast('✓ Address copied!')).catch(()=>fallbackCopy(addr));
+  }else{ fallbackCopy(addr); }
+}
+function fallbackCopy(txt){
+  const ta=document.createElement('textarea');
+  ta.value=txt;ta.style.cssText='position:fixed;top:40%;left:5%;width:90%;font-size:16px;opacity:.01;';
+  document.body.appendChild(ta);ta.focus();ta.select();
+  try{document.execCommand('copy');showToast('✓ Address copied!');}catch(e){}
+  document.body.removeChild(ta);
+}
+function showToast(msg){
+  const t=document.getElementById('toastEl');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+</script>
+</body>
+</html>
