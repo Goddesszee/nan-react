@@ -59,7 +59,7 @@ body::after{display:none;}
 
 
 
-.net-pill{font-family:'Inter var','Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:.75rem;font-weight:600;color:var(--text2);border:1px solid var(--border);padding:4px 10px;border-radius:100px;background:var(--surface);display:flex;align-items:center;gap:5px;letter-spacing:.01em;}
+.net-pill{font-family:'Inter var','Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:12px;font-weight:700;color:#ffffff;border:1px solid rgba(255,255,255,.12);padding:5px 12px;border-radius:100px;background:#1c1c1c;display:flex;align-items:center;gap:5px;letter-spacing:-.01em;}
 .net-pill::before{content:'';width:5px;height:5px;border-radius:50%;background:#7000ff;animation:pulse 2s ease infinite;flex-shrink:0;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
 @keyframes floatOrb1{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(30px,-40px) scale(1.05);}66%{transform:translate(-20px,20px) scale(.95);}}
@@ -446,6 +446,25 @@ a:hover{color:var(--text);}
 #disconnectTopBtn{display:none !important;}
 #disconnectTopBtnMobile{display:none !important;}
 
+
+/* ── Tower-style wallet + net pill ── */
+#nanWalletDropBtn{
+  display:flex;align-items:center;gap:7px;
+  background:#1c1c1c !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  border-radius:100px;padding:4px 14px 4px 4px;
+  font-family:'Inter var','Inter',sans-serif;
+  font-size:13px;font-weight:700;
+  color:#ffffff !important;cursor:pointer;
+  transition:.2s;white-space:nowrap;letter-spacing:-.01em;
+}
+#nanWalletDot{
+  width:24px;height:24px;border-radius:50%;
+  background:#7000ff;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:800;color:#fff;
+}
+#nanWalletDropLabel{font-size:13px;font-weight:700;letter-spacing:-.01em;}
 @media(max-width:480px){
   #toast{
     bottom:80px !important;
@@ -2078,8 +2097,8 @@ a:hover{color:var(--text);}
   border: none;
   cursor: pointer;
   padding: 6px 16px;
-  border-radius: 7px;
-  font-size: 1rem;
+  border-radius: 9px;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: -0.02em;
   color: var(--text);
@@ -2089,7 +2108,16 @@ a:hover{color:var(--text);}
   opacity: .45;
 }
 .tnav-btn:hover { opacity: .8; }
-.tnav-btn.active { opacity: 1; font-weight: 700; }
+.tnav-btn.active {
+  opacity: 1;
+  font-weight: 700;
+  background: #1c1c1c;
+  color: #ffffff;
+  border: 1px solid rgba(255,255,255,.12);
+  padding: 7px 16px;
+}
+[data-theme=light] .tnav-btn { color: #111111; }
+[data-theme=light] .tnav-btn.active { background: #1c1c1c; color: #ffffff; border-color: rgba(0,0,0,.15); }
 .more-drop-btn {
   display: flex;
   align-items: center;
