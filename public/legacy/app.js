@@ -6430,8 +6430,14 @@ function openPayFromURL(){
 }
 function setPRToken(token,el){
   currentPRToken=token;
-  document.querySelectorAll('#page-payreq-new .topt').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');
+  document.querySelectorAll('.pr-tok-btn').forEach(b=>{
+    b.style.background='rgba(255,255,255,.02)';
+    b.style.border='1.5px solid rgba(255,255,255,.08)';
+    b.style.color='rgba(255,255,255,.4)';
+  });
+  el.style.background='rgba(112,0,255,.12)';
+  el.style.border='1.5px solid rgba(112,0,255,.4)';
+  el.style.color='#a855f7';
   document.getElementById('prTokenLabel').textContent=token;
   updatePRPreview();
 }
@@ -6450,10 +6456,10 @@ function updatePRPreview(){
     document.getElementById('prPreviewAmt').textContent=amt?parseFloat(amt).toFixed(2)+' '+currentPRToken:'Open amount · '+currentPRToken;
     document.getElementById('prPreviewLabel').textContent=label;
     document.getElementById('prPreviewAddr').textContent=userAddr?short(userAddr):'—';
-    btn.disabled=false;
+    btn.disabled=false;btn.style.opacity='1';btn.style.cursor='pointer';
   }else{
     wrap.style.display='none';
-    btn.disabled=true;
+    btn.disabled=true;btn.style.opacity='.4';btn.style.cursor='not-allowed';
   }
 }
 function initNewPRForm(){
@@ -6466,7 +6472,7 @@ function initNewPRForm(){
   document.querySelectorAll('#prExpiryGrid .topt')[0].classList.add('active');
   document.getElementById('prTokenLabel').textContent='USDC';
   document.getElementById('prPreviewWrap').style.display='none';
-  document.getElementById('prCreateBtn').disabled=true;
+  const _pcb=document.getElementById('prCreateBtn');_pcb.disabled=true;_pcb.style.opacity='.4';_pcb.innerHTML='Create &amp; Share Link';
 }
 async function createPaymentRequest(){
   const label=document.getElementById('prLabel').value.trim();
@@ -6530,6 +6536,7 @@ async function createPaymentRequest(){
     const link=buildPRLink(pr);
     _mobileCopy(link,()=>{});
     toast('✓ Created! Link copied — share it to get paid','success',4000);
+    btn.innerHTML='Create &amp; Share Link';btn.disabled=false;btn.style.opacity='1';
     try{viewPaymentRequest(pr.id);}catch(e){console.warn('viewPR err:',e.message);}
   }catch(err){
     console.error('[createPaymentRequest] error:', err);
