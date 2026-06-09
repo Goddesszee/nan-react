@@ -8431,9 +8431,17 @@ async function agentFund() {
   if (!agentWalletAddr) return;
   agentShowResult('Requesting faucet...');
   try {
-    const r = await fetch(AGENT_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'fund', address: agentWalletAddr, chain: 'ARC-TESTNET' }) });
+    // Use /api/faucet (Circle faucet API) — NOT the CLI agent-stack
+    // CLI fund only works for wallets in an active CLI session; agent wallets are Circle SDK wallets
+    const r = await fetch('https://nan-production.up.railway.app/api/faucet', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ address: agentWalletAddr })
+    });
     const d = await r.json();
-    agentShowResult(d.success ? 'Faucet success! 2 USDC sent to agent wallet.' : (d.error || 'Faucet failed'));
+    agentShowResult(d.success
+      ? '✅ Faucet success! USDC + EURC coming in ~30s.'
+      : (d.error || 'Faucet failed') + (d.fallback ? ' → ' + d.fallback : ''));
   } catch (e) { agentShowResult('Error: ' + e.message); }
 }
 
