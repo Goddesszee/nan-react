@@ -1488,51 +1488,93 @@ html,body{background:var(--bg);}
 
   <!-- ══ ARC NAME PAGE ══ -->
   <div class="page" id="page-arcname">
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
-    <button class="back-btn" onclick="goBack()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg> Back</button>
-        <div style="font-size:1.0625rem;font-weight:700;color:var(--text);margin-bottom:4px;">.arc Name</div>
-    <div style="font-size:.875rem;color:var(--text);margin-bottom:16px;">Register your on-chain identity</div>
-    <div class="page-title" style="display:flex;align-items:center;gap:8px;">
-      <svg width="32" height="16" viewBox="0 0 40 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16,10 C16,4 8,4 8,10 C8,16 16,16 20,10 C24,4 32,4 32,10 C32,16 24,16 20,10 Z" fill="none" stroke="#7000ff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Arc Name
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
+
+  <!-- ── Header ── -->
+  <div style="padding:0 0 13px;border-bottom:1px solid rgba(112,0,255,.08);margin-bottom:0;">
+    <div style="font-family:'Syne','Inter',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text);letter-spacing:-.02em;">.arc Name</div>
+    <div style="font-size:.68rem;color:rgba(255,255,255,.35);margin-top:2px;">Your on-chain identity &middot; send by name</div>
+  </div>
+
+  <!-- ── Search ── -->
+  <div style="padding:13px 0 10px;">
+    <div style="display:flex;gap:7px;">
+      <input id="arcNameSearch" type="text" placeholder="yourname.arc" oninput="checkArcName()"
+        style="flex:1;background:rgba(0,0,0,.3);border:1.5px solid rgba(112,0,255,.2);border-radius:11px;padding:11px 13px;color:var(--text);font-family:'DM Mono','Roboto Mono',monospace;font-size:14px;outline:none;min-width:0;box-sizing:border-box;"/>
+      <button onclick="checkArcName()"
+        style="background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.25);border-radius:11px;color:#a855f7;font-size:.78rem;font-weight:700;padding:0 14px;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;flex-shrink:0;">Check</button>
     </div>
-    <div class="page-sub">Register your .arc name — your identity on Arc Testnet</div>
-    <div class="card" style="padding:11px 13px;">
-      <div class="flbl">Search a name</div>
-      <div style="display:flex;gap:7px;"><input id="arcNameSearch" type="text" placeholder="yourname.arc" style="flex:1;" oninput="checkArcName()"/><button class="max-btn" style="margin-bottom:0;" onclick="checkArcName()">Check</button></div>
-      <div id="arcNameResult" style="display:none;margin-top:7px;padding:7px 9px;border-radius:var(--radius-sm);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:.875rem;"></div>
-    </div>
-    <div class="arcname-card" id="myNamesCard">
-      <div class="card-title" style="margin-bottom:8px;"><div class="cticon">◎</div>Your .arc Names</div>
-      <div id="myArcNamesList"><div class="empty"><div class="empty-icon" style="font-size:1.2rem;">◎</div><div class="empty-text">No names registered yet.</div></div></div>
-    </div>
-    <div class="card">
-      <div class="card-title"><div class="cticon">+</div>Register Name</div>
-      <div class="field"><div class="flbl">Name</div>
-        <div style="display:flex;align-items:center;gap:0;">
-          <input id="arcNameInput" type="text" placeholder="yourname" style="border-radius:var(--radius-sm) 0 0 var(--radius-sm);border-right:none;"/>
-          <div style="background:var(--surface);border:1px solid var(--border);border-left:none;border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:8px 11px;font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:var(--accent3);white-space:nowrap;">.arc</div>
-        </div>
+    <div id="arcNameResult" style="display:none;margin-top:8px;padding:9px 12px;border-radius:10px;font-size:.82rem;font-family:'DM Sans',sans-serif;"></div>
+  </div>
+
+  <div style="height:1px;background:rgba(112,0,255,.08);margin:0 0 12px;"></div>
+
+  <!-- ── Your Names ── -->
+  <div style="font-size:.58rem;font-weight:700;color:rgba(255,255,255,.28);letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px;">Your Names</div>
+  <div id="myNamesCard" style="background:rgba(255,255,255,.02);border:1px solid rgba(112,0,255,.1);border-top:2px solid #7000ff;border-radius:13px;overflow:hidden;margin-bottom:12px;">
+    <div id="myArcNamesList" style="padding:4px 0;">
+      <div style="padding:22px 16px;text-align:center;">
+        <div style="font-size:1.2rem;opacity:.2;margin-bottom:6px;">◎</div>
+        <div style="font-size:.75rem;color:rgba(255,255,255,.28);">No names registered yet</div>
       </div>
-      <div class="field"><div class="flbl">Duration</div>
-        <div class="price-grid">
-          <div class="price-opt active" onclick="setArcNameDuration(1,2,this)"><div class="po-dur">1 year</div><div class="po-price">2 USDC</div></div>
-          <div class="price-opt" onclick="setArcNameDuration(2,3,this)"><div class="po-dur">2 years</div><div class="po-price">3 USDC</div></div>
-          <div class="price-opt" onclick="setArcNameDuration(5,8,this)"><div class="po-dur">5 years</div><div class="po-price">8 USDC</div></div>
-        </div>
-      </div>
-      <div class="gas-row"><span class="gas-icon">💵</span><span style="flex:1;">Registration fee</span><span id="arcNameFeeDisplay" style="color:var(--success);">2 USDC</span></div>
-      <div class="gas-row"><span class="gas-icon">⛽</span><span style="flex:1;">Network fee</span><span>~0.009 USDC</span></div>
-      <button class="btn" onclick="registerArcName()">Register .arc Name</button>
-    </div>
-    <div class="card">
-      <div class="card-title"><div class="cticon">👥</div>Directory</div>
-      <div id="arcNameDirectory"><div class="empty"><div class="empty-icon">◎</div><div class="empty-text">No names registered yet. Be the first!</div></div></div>
     </div>
   </div>
 
-    </div><!-- end arcname unified card -->
-  <!-- ══ NAIRA PAGE ══ -->
+  <div style="height:1px;background:rgba(112,0,255,.08);margin:0 0 12px;"></div>
+
+  <!-- ── Register ── -->
+  <div style="font-size:.58rem;font-weight:700;color:rgba(255,255,255,.28);letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px;">Register</div>
+  <div style="background:rgba(255,255,255,.02);border:1px solid rgba(112,0,255,.1);border-radius:13px;padding:13px 14px;margin-bottom:12px;">
+    <!-- Name input + .arc suffix -->
+    <div style="display:flex;align-items:center;gap:0;margin-bottom:10px;">
+      <input id="arcNameInput" type="text" placeholder="yourname"
+        style="flex:1;padding:11px 13px;background:rgba(0,0,0,.3);border:1.5px solid rgba(112,0,255,.2);border-radius:11px 0 0 11px;border-right:none;color:var(--text);font-family:'DM Mono','Roboto Mono',monospace;font-size:14px;outline:none;min-width:0;"/>
+      <div style="background:rgba(112,0,255,.1);border:1.5px solid rgba(112,0,255,.2);border-left:none;border-radius:0 11px 11px 0;padding:11px 12px;font-size:.85rem;font-weight:700;color:#a855f7;white-space:nowrap;">.arc</div>
+    </div>
+    <!-- Duration grid -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:10px;">
+      <div class="price-opt active" onclick="setArcNameDuration(1,2,this)"
+        style="padding:10px 8px;border-radius:10px;background:rgba(112,0,255,.12);border:1.5px solid rgba(112,0,255,.35);text-align:center;cursor:pointer;">
+        <div style="font-size:.78rem;font-weight:700;color:#fff;">1 year</div>
+        <div style="font-size:.65rem;font-weight:600;color:rgba(168,85,247,.8);margin-top:2px;">2 USDC</div>
+      </div>
+      <div class="price-opt" onclick="setArcNameDuration(2,3,this)"
+        style="padding:10px 8px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);text-align:center;cursor:pointer;">
+        <div style="font-size:.78rem;font-weight:700;color:rgba(255,255,255,.5);">2 years</div>
+        <div style="font-size:.65rem;font-weight:600;color:rgba(255,255,255,.3);margin-top:2px;">3 USDC</div>
+      </div>
+      <div class="price-opt" onclick="setArcNameDuration(5,8,this)"
+        style="padding:10px 8px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);text-align:center;cursor:pointer;">
+        <div style="font-size:.78rem;font-weight:700;color:rgba(255,255,255,.5);">5 years</div>
+        <div style="font-size:.65rem;font-weight:600;color:rgba(255,255,255,.3);margin-top:2px;">8 USDC</div>
+      </div>
+    </div>
+    <!-- Fees -->
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid rgba(112,0,255,.08);">
+      <span style="font-size:.72rem;color:rgba(255,255,255,.35);">Registration fee</span>
+      <span id="arcNameFeeDisplay" style="font-family:'DM Mono','Roboto Mono',monospace;font-size:.75rem;font-weight:700;color:rgba(52,211,153,.85);">2 USDC</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0 10px;">
+      <span style="font-size:.72rem;color:rgba(255,255,255,.35);">Network fee</span>
+      <span style="font-family:'DM Mono','Roboto Mono',monospace;font-size:.75rem;font-weight:700;color:rgba(52,211,153,.85);">~0.009 USDC</span>
+    </div>
+    <button onclick="registerArcName()"
+      style="width:100%;padding:13px;background:#7000ff;border:none;border-radius:12px;color:#fff;font-family:'Syne','Inter',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(112,0,255,.4);">Register .arc Name &rarr;</button>
+  </div>
+
+  <div style="height:1px;background:rgba(112,0,255,.08);margin:0 0 12px;"></div>
+
+  <!-- ── Directory ── -->
+  <div style="font-size:.58rem;font-weight:700;color:rgba(255,255,255,.28);letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px;">Directory</div>
+  <div id="arcNameDirectory" style="background:rgba(255,255,255,.02);border:1px solid rgba(112,0,255,.08);border-radius:13px;overflow:hidden;margin-bottom:4px;">
+    <div style="padding:22px 16px;text-align:center;">
+      <div style="font-size:1.2rem;opacity:.2;margin-bottom:6px;">◎</div>
+      <div style="font-size:.75rem;color:rgba(255,255,255,.28);">Be the first to register</div>
+    </div>
+  </div>
+
+  </div><!-- end card -->
+</div> ══ -->
   <div class="page" id="page-naira">
     <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
     <button class="back-btn" onclick="goBack()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg> Back</button>
