@@ -4085,6 +4085,14 @@ RULES:
         usdcBal:usdcBal,eurcBal:eurcBal,userAddress:userAddr,
         agentWallets:agentWalletAddr?{'ARC-TESTNET':agentWalletAddr}:null,
         agentWalletActive:!!agentWalletAddr,
+        agentWalletBalance:agentWalletBalance||null,
+        pendingOrders:(typeof listOrders==='function'?listOrders():[]).slice(0,10).map(o=>typeof formatOrderSummary==='function'?formatOrderSummary(o):JSON.stringify(o)),
+        recentTxs:txHistory.slice(0,5).map(t=>t.type+' '+t.amount+' '+(t.token||'')+' '+(t.to?'→ '+t.to.slice(0,8):'')+'  ('+(new Date(t.ts||0).toLocaleDateString())+')'),
+        arcNames:(arcNames||[]).filter(n=>n.owner===userAddr).map(n=>n.name+'.arc'),
+        lendSupplied:parseFloat(document.getElementById('lendSupplied')?.textContent||'0'),
+        lendBorrowed:parseFloat(document.getElementById('lendBorrowed')?.textContent||'0'),
+        gatewayBalance:gatewayBalance?.total||null,
+        fxRate:typeof FX!=='undefined'?FX:null,
         // Keep last 20 messages, ensure clean string content, filter spinner/loading messages
         messages:agentMsgs.slice(0,-1)
           .filter(m=>m.content && typeof m.content === 'string' && !m.content.includes('spinner') && m.content.length < 2000)
