@@ -354,15 +354,15 @@ html,body{background:var(--bg);}
 
   <!-- ══ MARKETPLACE PAGE ══ -->
   <div class="page" id="page-market">
-<div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
+<div style="background:var(--card);border:1px solid var(--border);border-radius:22px;padding:20px;">
 
   <!-- ══ HEADER ══ -->
-  <div style="padding:16px 18px 14px;border-bottom:1px solid var(--border);">
+  <div style="padding:14px 16px 12px;border-bottom:1px solid rgba(112,0,255,.08);">
     <div style="font-size:1.1rem;font-weight:700;color:var(--text);font-family:'Syne','Inter',sans-serif;letter-spacing:-.02em;">Market</div>
   </div>
 
   <!-- ══ BALANCE STRIP ══ -->
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid rgba(112,0,255,.08);">
     <div>
       <div style="font-size:.58rem;font-weight:700;color:rgba(168,85,247,.55);letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px;">Available</div>
       <div id="mkt-bal-display" style="font-family:'Syne','Inter',sans-serif;font-size:1.25rem;font-weight:800;color:var(--text);letter-spacing:-.5px;line-height:1;">-- USDC</div>
@@ -375,14 +375,14 @@ html,body{background:var(--bg);}
   </div>
 
   <!-- ══ SEARCH ══ -->
-  <div style="display:flex;align-items:center;gap:8px;margin:12px 18px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:9px 12px;">
+  <div style="display:flex;align-items:center;gap:8px;margin:12px 16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:9px 12px;">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     <input id="mkt-search-inp" placeholder="Search airtime, DSTV, Ajo&#8230;" oninput="mktSearch(this.value)"
       style="background:none;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;flex:1;min-width:0;"/>
   </div>
 
   <!-- ══ QUICK ACTIONS ══ -->
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 18px 14px;">
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 16px 14px;">
     <div onclick="doAirtime()" style="display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;">
       <div style="width:46px;height:46px;border-radius:14px;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.2);display:flex;align-items:center;justify-content:center;">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
@@ -409,12 +409,12 @@ html,body{background:var(--bg);}
     </div>
   </div>
 
-  <div style="height:1px;background:var(--border);margin:0 0 12px;"></div>
+  <div style="height:1px;background:rgba(112,0,255,.08);margin:0 16px 12px;"></div>
 
   <!-- ══ NAIRA SERVICES ══ -->
   <div id="mkt-naira" style="margin-bottom:0;">
-    <div style="font-size:.58rem;font-weight:700;color:rgba(255,255,255,.28);letter-spacing:.14em;text-transform:uppercase;padding:0 18px 8px;">&#127469;&#127468; Naira services</div>
-    <div style="padding:0 18px;margin-bottom:14px;">
+    <div style="font-size:.58rem;font-weight:700;color:rgba(255,255,255,.28);letter-spacing:.14em;text-transform:uppercase;padding:0 16px 8px;">&#127469;&#127468; Naira services</div>
+    <div style="padding:0 16px;margin-bottom:14px;">
       <div onclick="goPage('naira');setTimeout(()=>document.getElementById('ntab-deposit')?.click(),200)" style="display:flex;align-items:center;gap:12px;padding:11px 14px;background:rgba(255,255,255,.02);border:1px solid rgba(112,0,255,.08);border-radius:12px 12px 0 0;cursor:pointer;">
         <div style="width:34px;height:34px;border-radius:10px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="font-size:1.1rem;color:#fbbf24;font-weight:700;">&#8358;</span></div>
         <div style="flex:1;"><div style="font-size:.82rem;font-weight:700;color:var(--text);">Deposit Naira</div><div style="font-size:.65rem;color:rgba(255,255,255,.3);margin-top:1px;">Bank transfer &#8594; USDC</div></div>
@@ -433,12 +433,12 @@ html,body{background:var(--bg);}
     </div>
   </div>
 
-  <div style="height:1px;background:var(--border);margin:0 0 12px;"></div>
+  <div style="height:1px;background:rgba(112,0,255,.08);margin:0 16px 12px;"></div>
 
   <!-- ══ ONLY ON NAN ══ -->
   <div id="mkt-outstanding">
-    <div style="font-size:.58rem;font-weight:700;color:rgba(255,255,255,.28);letter-spacing:.14em;text-transform:uppercase;padding:0 18px 8px;display:flex;align-items:center;gap:7px;">Only on NAN <span style="font-size:.55rem;font-weight:700;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#a855f7;border-radius:4px;padding:2px 6px;letter-spacing:.06em;">UNIQUE</span></div>
-    <div onclick="doAjo()" style="display:flex;align-items:center;gap:14px;margin:0 18px 14px;background:rgba(112,0,255,.07);border:1px solid rgba(112,0,255,.18);border-radius:14px;padding:15px;cursor:pointer;">
+    <div style="font-size:.58rem;font-weight:700;color:rgba(255,255,255,.28);letter-spacing:.14em;text-transform:uppercase;padding:0 16px 8px;display:flex;align-items:center;gap:7px;">Only on NAN <span style="font-size:.55rem;font-weight:700;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#a855f7;border-radius:4px;padding:2px 6px;letter-spacing:.06em;">UNIQUE</span></div>
+    <div onclick="doAjo()" style="display:flex;align-items:center;gap:14px;margin:0 16px 14px;background:rgba(112,0,255,.07);border:1px solid rgba(112,0,255,.18);border-radius:14px;padding:15px;cursor:pointer;">
       <div style="width:44px;height:44px;border-radius:12px;background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
       </div>
@@ -451,12 +451,12 @@ html,body{background:var(--bg);}
     </div>
   </div>
 
-  <div style="height:1px;background:var(--border);margin:0 0 12px;"></div>
+  <div style="height:1px;background:rgba(112,0,255,.08);margin:0 16px 12px;"></div>
 
   <!-- ══ NIGERIAN SERVICES ══ -->
   <div id="mkt-nigerian">
-    <div style="font-size:.58rem;font-weight:700;color:rgba(255,255,255,.28);letter-spacing:.14em;text-transform:uppercase;padding:0 18px 8px;">&#127469;&#127468; Nigerian services</div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 18px 14px;">
+    <div style="font-size:.58rem;font-weight:700;color:rgba(255,255,255,.28);letter-spacing:.14em;text-transform:uppercase;padding:0 16px 8px;">&#127469;&#127468; Nigerian services</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 16px 14px;">
       <div onclick="doAirtime()" style="background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:12px 8px;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer;">
         <div style="width:38px;height:38px;border-radius:11px;background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.18);display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div>
         <div style="font-size:.7rem;font-weight:700;color:var(--text);text-align:center;">Airtime</div>
@@ -490,12 +490,12 @@ html,body{background:var(--bg);}
     </div>
   </div>
 
-  <div style="height:1px;background:var(--border);margin:0 0 12px;"></div>
+  <div style="height:1px;background:rgba(112,0,255,.08);margin:0 16px 12px;"></div>
 
   <!-- ══ MONEY SERVICES ══ -->
   <div id="mkt-money">
-    <div style="font-size:.58rem;font-weight:700;color:rgba(255,255,255,.28);letter-spacing:.14em;text-transform:uppercase;padding:0 18px 8px;">Money services</div>
-    <div style="padding:0 18px;margin-bottom:14px;">
+    <div style="font-size:.58rem;font-weight:700;color:rgba(255,255,255,.28);letter-spacing:.14em;text-transform:uppercase;padding:0 16px 8px;">Money services</div>
+    <div style="padding:0 16px;margin-bottom:14px;">
       <div onclick="doBVN()" style="display:flex;align-items:center;gap:12px;padding:11px 14px;background:rgba(255,255,255,.02);border:1px solid rgba(112,0,255,.08);border-radius:12px;cursor:pointer;">
         <div style="width:34px;height:34px;border-radius:10px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h1v6H9M14 15h1V9l-3 3"/></svg></div>
         <div style="flex:1;"><div style="font-size:.82rem;font-weight:700;color:var(--text);">BVN Verification</div><div style="font-size:.65rem;color:rgba(255,255,255,.3);margin-top:1px;">Verify identity on-chain</div></div>
@@ -504,12 +504,12 @@ html,body{background:var(--bg);}
     </div>
   </div>
 
-  <div style="height:1px;background:var(--border);margin:0 0 12px;"></div>
+  <div style="height:1px;background:rgba(112,0,255,.08);margin:0 16px 12px;"></div>
 
   <!-- ══ AI SERVICES ══ -->
   <div id="mkt-agents">
-    <div style="font-size:.58rem;font-weight:700;color:rgba(255,255,255,.28);letter-spacing:.14em;text-transform:uppercase;padding:0 18px 8px;display:flex;align-items:center;gap:7px;">AI services <span style="font-size:.55rem;font-weight:700;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#a855f7;border-radius:4px;padding:2px 6px;letter-spacing:.06em;">x402</span></div>
-    <div style="padding:0 18px;margin-bottom:14px;">
+    <div style="font-size:.58rem;font-weight:700;color:rgba(255,255,255,.28);letter-spacing:.14em;text-transform:uppercase;padding:0 16px 8px;display:flex;align-items:center;gap:7px;">AI services <span style="font-size:.55rem;font-weight:700;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#a855f7;border-radius:4px;padding:2px 6px;letter-spacing:.06em;">x402</span></div>
+    <div style="padding:0 16px;margin-bottom:14px;">
       <div onclick="doCredit()" style="display:flex;align-items:center;gap:12px;padding:11px 14px;background:rgba(255,255,255,.02);border:1px solid rgba(112,0,255,.08);border-radius:12px;cursor:pointer;">
         <div style="width:34px;height:34px;border-radius:10px;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.16);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
         <div style="flex:1;"><div style="font-size:.82rem;font-weight:700;color:var(--text);">Credit Scoring</div><div style="font-size:.65rem;color:rgba(255,255,255,.3);margin-top:1px;">AI-powered credit check</div></div>
@@ -518,10 +518,10 @@ html,body{background:var(--bg);}
     </div>
   </div>
 
-  <div style="height:1px;background:var(--border);margin:0 0 12px;"></div>
+  <div style="height:1px;background:rgba(112,0,255,.08);margin:0 16px 12px;"></div>
 
   <!-- ══ LIST YOUR SERVICE CTA ══ -->
-  <div onclick="doList()" style="display:flex;align-items:center;gap:12px;margin:0 18px 16px;padding:13px 14px;background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.15);border-radius:12px;cursor:pointer;">
+  <div onclick="doList()" style="display:flex;align-items:center;gap:12px;margin:0 16px 16px;padding:13px 14px;background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.15);border-radius:12px;cursor:pointer;">
     <div style="width:34px;height:34px;border-radius:10px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
     </div>
@@ -554,14 +554,14 @@ html,body{background:var(--bg);}
 <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
 
   <!-- ══ HEADER ══ -->
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px 14px;border-bottom:1px solid var(--border);">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 16px 14px;border-bottom:1px solid rgba(112,0,255,.08);">
     <div style="font-size:1.1rem;font-weight:700;color:var(--text);font-family:'Syne','Inter',sans-serif;letter-spacing:-.02em;">Agent Wallet</div>
     <div id="agentWalletBadge" style="font-size:.62rem;font-weight:700;padding:3px 9px;border-radius:20px;background:rgba(107,114,128,.1);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.35);">Offline</div>
   </div>
 
   <!-- ══ LOGIN SECTION ══ -->
   <div id="agentLoginSection">
-    <div style="padding:28px 18px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;overflow:hidden;">
+    <div style="padding:28px 16px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;overflow:hidden;">
       <div style="position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:200px;height:200px;background:radial-gradient(circle,rgba(112,0,255,.12) 0%,transparent 65%);pointer-events:none;border-radius:50%;"></div>
       <div style="width:60px;height:60px;border-radius:18px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.22);display:flex;align-items:center;justify-content:center;margin-bottom:14px;position:relative;z-index:1;">
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#7000ff" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><circle cx="12" cy="14" r="2"/></svg>
@@ -569,16 +569,16 @@ html,body{background:var(--bg);}
       <div style="font-family:'Syne','Inter',sans-serif;font-size:1.15rem;font-weight:800;color:var(--text);letter-spacing:-.03em;margin-bottom:4px;">Circle Agent Wallet</div>
       <div id="agentWalletStatus" style="font-size:.72rem;color:rgba(255,255,255,.35);margin-bottom:0;">User-controlled · gas-free · spending limits</div>
     </div>
-    <div style="padding:0 18px 16px;">
+    <div style="padding:0 16px 16px;">
       <input id="agentEmailInput" type="email" placeholder="Email address"
         style="width:100%;background:rgba(0,0,0,.35);border:1.5px solid rgba(112,0,255,.2);border-radius:11px;padding:12px 14px;color:var(--text);font-family:'Inter var','Inter',sans-serif;font-size:15px;box-sizing:border-box;margin-bottom:8px;outline:none;"
         onfocus="this.style.borderColor='rgba(112,0,255,.5)'" onblur="this.style.borderColor='rgba(112,0,255,.2)'"/>
       <button id="agentLoginBtn" onclick="agentLoginInit()"
         style="width:100%;padding:14px;background:#7000ff;border:none;border-radius:13px;color:#fff;font-family:'Syne','Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(112,0,255,.4);">Connect</button>
     </div>
-    <div style="height:1px;background:var(--border);margin:0 0 13px;"></div>
-    <div style="font-size:.58rem;font-weight:700;color:rgba(255,255,255,.25);letter-spacing:.14em;text-transform:uppercase;padding:0 18px 8px;">Capabilities</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 18px 16px;">
+    <div style="height:1px;background:rgba(112,0,255,.08);margin:0 16px 13px;"></div>
+    <div style="font-size:.58rem;font-weight:700;color:rgba(255,255,255,.25);letter-spacing:.14em;text-transform:uppercase;padding:0 16px 8px;">Capabilities</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 16px;">
       <div style="background:rgba(112,0,255,.05);border:1px solid rgba(112,0,255,.12);border-radius:12px;padding:13px 12px;">
         <div style="margin-bottom:8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
         <div style="font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:2px;">Spending Limits</div>
@@ -604,14 +604,14 @@ html,body{background:var(--bg);}
 
   <!-- ══ OTP SECTION ══ -->
   <div id="agentOtpSection" style="display:none;">
-    <div style="padding:28px 18px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;">
+    <div style="padding:28px 16px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;">
       <div style="width:52px;height:52px;border-radius:15px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.22);display:flex;align-items:center;justify-content:center;margin-bottom:14px;">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
       </div>
       <div style="font-family:'Syne','Inter',sans-serif;font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">Check your email</div>
       <div style="font-size:.7rem;color:rgba(255,255,255,.35);margin-bottom:24px;">Enter the code we sent you</div>
     </div>
-    <div style="padding:0 18px 16px;">
+    <div style="padding:0 16px 16px;">
       <input id="agentOtpInput" type="text" placeholder="ABC-123456" maxlength="12"
         style="width:100%;background:rgba(0,0,0,.35);border:2px solid rgba(112,0,255,.3);border-radius:12px;padding:14px;color:var(--text);font-family:'Inter var','Inter',monospace;font-size:1.4rem;font-weight:700;text-align:center;letter-spacing:.3em;box-sizing:border-box;outline:none;margin-bottom:10px;"
         onfocus="this.style.borderColor='rgba(112,0,255,.6)'" onblur="this.style.borderColor='rgba(112,0,255,.3)'"/>
@@ -632,7 +632,7 @@ html,body{background:var(--bg);}
 
   <!-- ══ CONNECTED SECTION ══ -->
   <div id="agentConnectedSection" style="display:none;">
-    <div style="padding:16px 18px;border-bottom:1px solid var(--border);">
+    <div style="margin:14px 16px 10px;background:rgba(112,0,255,.06);border:1px solid rgba(112,0,255,.18);border-radius:14px;padding:16px;">
       <div id="agentArcAddr" style="font-family:'Inter var','Inter',monospace;font-size:.62rem;color:rgba(255,255,255,.3);margin-bottom:10px;word-break:break-all;display:flex;align-items:center;justify-content:space-between;gap:8px;"></div>
       <div style="display:flex;align-items:center;justify-content:space-between;">
         <div>
@@ -643,11 +643,11 @@ html,body{background:var(--bg);}
           style="background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);border-radius:20px;padding:6px 12px;color:#a855f7;font-size:.7rem;font-weight:700;cursor:pointer;font-family:'Inter var','Inter',sans-serif;flex-shrink:0;">↻ Refresh</button>
       </div>
     </div>
-    <div id="agentResultBox" style="display:none;margin:0 18px 10px;background:rgba(112,0,255,.05);border:1px solid rgba(112,0,255,.18);border-radius:12px;padding:12px;">
+    <div id="agentResultBox" style="display:none;margin:0 16px 10px;background:rgba(112,0,255,.05);border:1px solid rgba(112,0,255,.18);border-radius:12px;padding:12px;">
       <div id="agentResultText" style="font-size:.75rem;color:var(--text);line-height:1.6;font-family:'Inter var','Inter',monospace;white-space:pre-wrap;word-break:break-all;"></div>
     </div>
-    <div style="font-size:.58rem;font-weight:700;color:rgba(255,255,255,.25);letter-spacing:.14em;text-transform:uppercase;padding:8px 18px 8px;">Actions</div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 18px 10px;">
+    <div style="font-size:.58rem;font-weight:700;color:rgba(255,255,255,.25);letter-spacing:.14em;text-transform:uppercase;padding:0 16px 8px;">Actions</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 16px 10px;">
       <button onclick="agentFund()" style="padding:13px 6px;border-radius:13px;background:rgba(112,0,255,.07);border:1px solid rgba(112,0,255,.15);color:#7000ff;font-size:.72rem;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;font-family:'Inter var','Inter',sans-serif;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7000ff" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Faucet</button>
       <button onclick="agentSend()" style="padding:13px 6px;border-radius:13px;background:rgba(112,0,255,.07);border:1px solid rgba(112,0,255,.15);color:#7000ff;font-size:.72rem;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;font-family:'Inter var','Inter',sans-serif;">
@@ -661,8 +661,8 @@ html,body{background:var(--bg);}
       <button onclick="agentPayService()" style="padding:13px 6px;border-radius:13px;background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.2);color:#22c55e;font-size:.72rem;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;font-family:'Inter var','Inter',sans-serif;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Pay x402</button>
     </div>
-    <div style="height:1px;background:var(--border);margin:0 0 12px;"></div>
-    <div style="padding:0 18px 16px;">
+    <div style="height:1px;background:rgba(112,0,255,.08);margin:0 16px 12px;"></div>
+    <div style="padding:0 16px 16px;">
       <button onclick="agentDisconnect()" style="width:100%;padding:11px;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);border-radius:11px;color:rgba(248,113,113,.8);font-size:.875rem;font-weight:600;cursor:pointer;font-family:'Inter var','Inter',sans-serif;">Disconnect</button>
     </div>
   </div>
@@ -1017,7 +1017,7 @@ html,body{background:var(--bg);}
     </div>
   </div>
 
-  <div style="height:1px;background:var(--border);margin:0 0 12px;"></div>
+  <div style="height:1px;background:rgba(112,0,255,.08);margin:0 16px 12px;"></div>
 
   <!-- ── Tabs ── -->
   <div class="send-tabs" style="background:rgba(255,255,255,.03);border:1px solid rgba(168,85,247,.14);border-radius:13px;padding:4px;gap:3px;margin:0 16px 12px;">
@@ -1338,12 +1338,13 @@ html,body{background:var(--bg);}
   <!-- ══ BRIDGE PAGE ══ -->
   <div class="page" id="page-bridge">
 <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
+  <div style="padding:0;">
 
     <!-- hidden span for JS -->
     <span id="bridgeAvailBal" style="display:none;"></span>
 
     <!-- ── Page header ── -->
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px 14px;border-bottom:1px solid var(--border);">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 16px 14px;border-bottom:1px solid rgba(112,0,255,.08);">
       <div>
         <div style="font-size:1.1rem;font-weight:700;color:var(--text);letter-spacing:-.02em;">Bridge</div>
         <div style="font-size:.7rem;color:rgba(168,85,247,.55);font-weight:600;margin-top:2px;letter-spacing:.04em;">CCTP V2 · Circle</div>
@@ -1352,7 +1353,7 @@ html,body{background:var(--bg);}
     </div>
 
     <!-- ── Gateway balance strip ── -->
-    <div style="padding:13px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);">
+    <div style="margin:12px 16px;background:rgba(112,0,255,.06);border:1px solid rgba(112,0,255,.18);border-radius:14px;padding:13px 14px;display:flex;align-items:center;gap:12px;">
       <div style="width:36px;height:36px;border-radius:10px;background:rgba(112,0,255,.12);border:1px solid rgba(112,0,255,.22);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
       </div>
@@ -1363,17 +1364,17 @@ html,body{background:var(--bg);}
     </div>
 
     <!-- ── Per-chain balances ── -->
-    <div id="gatewayChains" style="display:flex;flex-wrap:wrap;gap:6px;padding:10px 18px 14px;">
+    <div id="gatewayChains" style="display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 14px;">
       <div style="font-size:.7rem;color:var(--text3);padding:4px;">Loading…</div>
     </div>
 
-    <div style="height:1px;background:var(--border);"></div>
+    <div style="height:1px;background:rgba(112,0,255,.08);margin:0 16px 14px;"></div>
 
     <!-- ── Route ── -->
-    <div style="padding:0;">
+    <div style="margin:0 16px 12px;background:rgba(255,255,255,.02);border:1px solid rgba(112,0,255,.12);border-radius:14px;overflow:visible;">
 
       <!-- From -->
-      <div style="display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--border);">
+      <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid rgba(112,0,255,.08);">
         <div style="width:30px;height:30px;border-radius:8px;background:rgba(109,40,217,.15);border:1px solid rgba(112,0,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path fill="rgba(255,255,255,.85)" d="M3.5 21c.146-4.407.893-8.519 2.142-11.717C7.223 5.231 9.513 3 12.088 3s4.865 2.231 6.447 6.283c.822 2.107 1.427 4.61 1.786 7.334.048.366.087.737.087.737s.21 1.317.256 3.604h-.024c-.313-.256-4-3.153-10.112-2.314.093-1.035.22-2.04.383-3.005l.027-.146a24.5 24.5 0 016.104.57q-.007-.056-.017-.115c-.33-2.06-.819-3.945-1.448-5.556-1.029-2.635-2.371-4.271-3.502-4.271-1.132 0-2.474 1.636-3.503 4.271q-.375.958-.679 2.034a30 30 0 00-.718 3.213A40 40 0 006.662 21H3.5z"/></svg>
         </div>
@@ -1385,14 +1386,14 @@ html,body{background:var(--bg);}
       </div>
 
       <!-- Arrow -->
-      <div style="display:flex;align-items:center;justify-content:center;padding:10px 0;border-bottom:1px solid var(--border);">
+      <div style="display:flex;align-items:center;justify-content:center;padding:8px 0;border-bottom:1px solid rgba(112,0,255,.08);">
         <div style="width:26px;height:26px;border-radius:50%;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.22);display:flex;align-items:center;justify-content:center;">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
         </div>
       </div>
 
       <!-- To -->
-      <div style="padding:14px 18px;border-bottom:1px solid var(--border);">
+      <div style="padding:12px 14px;">
         <div style="font-size:.6rem;font-weight:700;color:rgba(255,255,255,.28);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;">To</div>
         <input type="hidden" id="bridgeDestChain" value="ETH-SEPOLIA"/>
         <div class="chain-dropdown" id="bridgeChain-wrap">
@@ -1410,7 +1411,7 @@ html,body{background:var(--bg);}
       </div>
 
       <!-- Send to different address toggle -->
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-bottom:1px solid var(--border);">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-top:1px solid rgba(112,0,255,.08);">
         <div style="font-size:.85rem;color:var(--text);font-weight:500;">Different address?</div>
         <label style="position:relative;width:38px;height:20px;cursor:pointer;flex-shrink:0;">
           <input type="checkbox" id="bridgeAddrToggle" onchange="toggleBridgeAddr()" style="opacity:0;width:0;height:0;position:absolute;"/>
@@ -1418,7 +1419,7 @@ html,body{background:var(--bg);}
           <span id="bridgeAddrKnob" style="position:absolute;top:3px;left:3px;width:12px;height:12px;border-radius:50%;background:#fff;transition:.2s;"></span>
         </label>
       </div>
-      <div id="bridgeAddrWrap" style="display:none;padding:12px 18px;position:relative;border-bottom:1px solid var(--border);">
+      <div id="bridgeAddrWrap" style="display:none;padding:0 14px 12px;position:relative;">
         <input id="bridgeDestAddr" type="text" placeholder="0x… destination address"
           onfocus="if(!this.value&&userAddr)this.value=userAddr;" onclick="if(!this.value&&userAddr)this.value=userAddr;"
           style="width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:11px;padding:11px 52px 11px 13px;color:var(--text);font-family:'Inter',sans-serif;font-size:15px;outline:none;"/>
@@ -1429,13 +1430,13 @@ html,body{background:var(--bg);}
     </div>
 
     <!-- ── Amount ── -->
-    <div id="bridgeRightCol" style="border-bottom:1px solid var(--border);">
-      <div style="padding:14px 18px;">
+    <div id="bridgeRightCol" style="margin:0 16px 12px;">
+      <div style="background:rgba(255,255,255,.02);border:1px solid rgba(112,0,255,.12);border-radius:14px;padding:13px 14px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
           <div style="font-size:.6rem;font-weight:700;color:rgba(255,255,255,.28);letter-spacing:.12em;text-transform:uppercase;">Amount</div>
           <div style="font-size:.7rem;color:rgba(168,85,247,.6);font-weight:600;" id="bridgeAvailBal2"></div>
         </div>
-        <div style="display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;">
+        <div style="display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.25);border:1px solid rgba(112,0,255,.18);border-radius:11px;padding:11px 13px;">
           <div style="background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);border-radius:7px;padding:4px 9px;font-size:.8rem;font-weight:700;color:#a855f7;flex-shrink:0;">USDC</div>
           <input id="bridgeAmt" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="0.00"
             style="flex:1;background:none;border:none;outline:none;font-size:1.3rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;width:100%;min-width:0;"/>
@@ -1446,7 +1447,7 @@ html,body{background:var(--bg);}
     </div>
 
     <!-- ── Summary ── -->
-    <div id="bridgeSummary" style="display:none;padding:14px 18px;border-bottom:1px solid var(--border);">
+    <div id="bridgeSummary" style="display:none;margin:0 16px 12px;background:rgba(112,0,255,.08);border:1px solid rgba(112,0,255,.2);border-radius:12px;padding:12px 14px;">
       <div style="display:flex;justify-content:space-between;font-size:.85rem;padding:3px 0;"><span style="color:var(--text3);">Network</span><span style="color:var(--text);font-weight:600;" id="bridgeSumChain">—</span></div>
       <div style="display:flex;justify-content:space-between;font-size:.85rem;padding:3px 0;"><span style="color:var(--text3);">Recipient</span><span style="color:var(--text);font-weight:600;" id="bridgeSumAddr">Your wallet</span></div>
       <div style="height:1px;background:rgba(112,0,255,.15);margin:7px 0;"></div>
@@ -1456,8 +1457,8 @@ html,body{background:var(--bg);}
     </div>
 
     <!-- ── Deposit to Gateway ── -->
-    <div id="gatewayDepositSection" style="display:none;border-bottom:1px solid var(--border);">
-      <div style="padding:14px 18px;">
+    <div id="gatewayDepositSection" style="display:none;margin:0 16px 12px;">
+      <div style="background:rgba(112,0,255,.04);border:1px solid rgba(112,0,255,.12);border-radius:14px;padding:13px 14px;">
         <div style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:8px;">Deposit to Gateway</div>
         <div style="display:flex;gap:8px;">
           <input id="gatewayDepositAmt" type="number" inputmode="decimal" min="1" step="1" placeholder="Min 1 USDC"
@@ -1468,12 +1469,12 @@ html,body{background:var(--bg);}
     </div>
 
     <!-- ── Bridge button ── -->
-    <div style="padding:16px 18px;">
+    <div style="padding:0 16px 16px;">
       <button class="btn" id="bridgeBtn" onclick="doBridge()" style="width:100%;padding:15px;font-size:1rem;font-weight:700;border-radius:14px;box-shadow:0 6px 24px rgba(112,0,255,.4);">Bridge USDC →</button>
     </div>
 
     <!-- Status card (JS compat) -->
-    <div class="card" id="bridgeStatusCard" style="display:none;margin:0 0 12px;">
+    <div class="card" id="bridgeStatusCard" style="display:none;margin:0 16px 16px;">
       <div class="card-title"><div class="cticon">⟳</div>Bridge Status</div>
       <div id="bridgeStatusContent">
         <div id="attestStatus" style="font-family:'Inter',sans-serif;font-size:.85rem;color:var(--text);line-height:1.6;"></div>
@@ -1481,8 +1482,9 @@ html,body{background:var(--bg);}
       </div>
     </div>
 
-</div>
+  </div><!-- end bridge unified card -->
 </div><!-- end bridge page -->
+</div><!-- end unified card -->
 
   <!-- ══ ARC NAME PAGE ══ -->
   <div class="page" id="page-arcname">
@@ -2066,7 +2068,7 @@ html,body{background:var(--bg);}
     <button onclick="setPRExpiry(720,this)" style="padding:8px 4px;border-radius:9px;background:rgba(112,0,255,.08);border:1px solid rgba(112,0,255,.15);color:#a855f7;font-family:'DM Sans',sans-serif;font-size:.68rem;font-weight:700;cursor:pointer;">30 days</button>
   </div>
 
-  <div style="height:1px;background:var(--border);margin:0 0 12px;"></div>
+  <div style="height:1px;background:rgba(112,0,255,.08);margin:0 16px 12px;"></div>
 
   <!-- ── Preview ── -->
   <div id="prPreviewWrap" style="display:none;margin:0 16px 12px;background:rgba(112,0,255,.06);border:1px solid rgba(112,0,255,.2);border-radius:13px;padding:14px;">
@@ -2789,16 +2791,6 @@ function startQRScan() {
 
 /* ══ MOBILE SIDE DRAWER ══ */
 
-
-/* ══ UNIFIED CARD PAGES ══ */
-#page-bridge, #page-market, #page-agent-wallet {
-  padding: 0 0 90px;
-}
-@media(max-width:767px) {
-  #page-bridge, #page-market, #page-agent-wallet {
-    padding: 0 0 90px !important;
-  }
-}
 </style>
 <script>
 
