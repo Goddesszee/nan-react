@@ -7993,6 +7993,16 @@ async function checkAgentSession(){
     }
 
     // Try silent restore from Redis via agent-wallets API
+    // First clear any stale global key that might belong to a different user
+    var _existingGlobal = localStorage.getItem('nan_agent_addr');
+    if (_existingGlobal) {
+      var _perUserCheck = localStorage.getItem('nan_agent_wallet_'+userAddr);
+      if (!_perUserCheck) {
+        // No per-user record for current user — global key is stale/foreign, remove it
+        localStorage.removeItem('nan_agent_addr');
+        agentWalletAddr = null;
+      }
+    }
     try{
       const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets',{
         method:'POST', headers:{'Content-Type':'application/json'},
@@ -8005,6 +8015,7 @@ async function checkAgentSession(){
         window.agentWalletAddr = agentWalletAddr;
         agentWalletBalance = d.balance ? `${d.balance.USDC} USDC` : '0 USDC';
         localStorage.setItem('nan_agent_wallet_'+userAddr, JSON.stringify(d.wallet));
+        localStorage.setItem('nan_agent_addr', agentWalletAddr); // write global for init
         agentPageRefresh();
         const dot = document.getElementById('aiBtnDot');
         const dotD = document.getElementById('aiBtnDesktopDot');
@@ -8622,6 +8633,34 @@ async function agentDisconnect() {
 // ── Init: restore session from localStorage ───────────────────────────────────
 (function agentInit() {
   agentWalletEmail = localStorage.getItem('nan_agent_email') || null;
-  agentWalletAddr  = localStorage.getItem('nan_agent_addr')  || null;
+  // Restore agent wallet only if it matches current user's per-user key.
+  // 'nan_agent_addr' is a legacy global key (used by CLI flow).
+  // Circle Programmable Wallet addresses are stored under 'nan_agent_wallet_<userAddr>'.
+  // On init, userAddr may not be set yet — checkAgentSession handles that case.
+  // If userAddr IS known, validate: prefer per-user key, don't blindly restore global.
+  var _storedGlobal = localStorage.getItem('nan_agent_addr');
+  if (userAddr) {
+    var _perUser = localStorage.getItem('nan_agent_wallet_' + userAddr);
+    if (_perUser) {
+      try {
+        var _pw = JSON.parse(_perUser);
+        if (_pw?.walletAddress) {
+          agentWalletAddr = _pw.walletAddress;
+        }
+      } catch(e) {}
+    }
+    // If per-user key found, remove stale global to prevent cross-user leakage
+    if (agentWalletAddr) {
+      localStorage.setItem('nan_agent_addr', agentWalletAddr);
+    } else if (_storedGlobal) {
+      // global key exists but no per-user record — could be another user's wallet, clear it
+      localStorage.removeItem('nan_agent_addr');
+      agentWalletAddr = null;
+    }
+  } else {
+    // userAddr not yet known — will be validated in checkAgentSession after login
+    // Don't restore global key blindly here
+    agentWalletAddr = null;
+  }
   if(agentWalletAddr) setTimeout(fetchAgentBalance, 2000);
 })();
