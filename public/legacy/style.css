@@ -11,9 +11,9 @@
   --topbar-bg:#111111;--nav-bg:#111111;
 }
 [data-theme="light"]{
-  --bg:#fafafa;
+  --bg:#f0f0f5;
   --surface:#f4f4f4;
-  --card:#f4f4f4;
+  --card:#ffffff;
   --card2:#ebebeb;
   --border:#e4e4e4;
   --border2:#cccccc;
@@ -1164,6 +1164,23 @@ a:hover{color:var(--text);}
   .page::-webkit-scrollbar{display:block;width:3px;}
   .page::-webkit-scrollbar-track{background:transparent;}
   .page::-webkit-scrollbar-thumb{background:rgba(168,85,247,.2);border-radius:3px;}
+
+  /* ── Bridge / Market / Agent: card visible on desktop ── */
+  #page-bridge > div[style*="background:var(--card)"],
+  #page-market > div[style*="background:var(--card)"],
+  #page-agent-wallet > div[style*="background:var(--card)"] {
+    box-shadow: 0 2px 16px rgba(0,0,0,.08), 0 0 0 1px var(--border) !important;
+    background: var(--card) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 22px !important;
+    overflow: hidden !important;
+  }
+  /* Make page bg slightly different so card stands out */
+  #page-bridge,
+  #page-market,
+  #page-agent-wallet {
+    background: var(--bg) !important;
+  }
 }
 
 /* Ã¢â¢ÂÃ¢â¢Â WIDE DESKTOP (1200px+) Ã¢â¢ÂÃ¢â¢Â */
