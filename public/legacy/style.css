@@ -1165,27 +1165,14 @@ a:hover{color:var(--text);}
   .page::-webkit-scrollbar-track{background:transparent;}
   .page::-webkit-scrollbar-thumb{background:rgba(168,85,247,.2);border-radius:3px;}
 
-  /* ── Bridge / Market / Agent: match Home card exactly ── */
+  /* ── Bridge / Market / Agent: card matches Home ── */
+  /* Only reset the .page>* padding that gets injected into the card wrapper */
   #page-bridge > div:first-child,
   #page-market > div:first-child,
   #page-agent-wallet > div:first-child {
-    background: var(--card) !important;
-    border: 1px solid var(--border) !important;
-    border-radius: 22px !important;
-    overflow: hidden !important;
-    box-shadow: 0 1px 12px rgba(0,0,0,.06) !important;
-    /* Reset the .page > * interference */
     padding-left: 0 !important;
     padding-right: 0 !important;
     max-width: 600px !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-  }
-  /* Page backgrounds match home */
-  #page-bridge,
-  #page-market,
-  #page-agent-wallet {
-    background: var(--bg) !important;
   }
 }
 
