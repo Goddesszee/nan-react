@@ -440,6 +440,14 @@ a:hover{color:var(--text);}
 #toast.warning #toastTitle{color:#f0f0f0;}
 
 /* Mobile: full width at bottom */
+/* ── NAN nav: permanently hide replaced buttons ── */
+#nan-history-btn{display:none !important;}
+#navFaucetBtn{display:none !important;}
+#nanNotifBtn{display:none !important;}
+#themeToggle{display:none !important;}
+#disconnectTopBtn{display:none !important;}
+#disconnectTopBtnMobile{display:none !important;}
+
 @media(max-width:480px){
   #toast{
     bottom:80px !important;
@@ -2153,11 +2161,6 @@ a:hover{color:var(--text);}
   /* Shrink pills/buttons so they all fit in one row */
   #netPill{font-size:.68rem !important;padding:2px 6px !important;}
   #navFaucetBtn{display:none !important;}
-#nan-history-btn{display:none !important;}
-#nanNotifBtn{display:none !important;}
-#themeToggle{display:none !important;}
-#disconnectTopBtn{display:none !important;}
-#disconnectTopBtnMobile{display:none !important;}
   .theme-toggle-btn{font-size:.85rem !important;padding:4px 6px !important;min-height:unset !important;}
   #connectTopBtn{font-size:.78rem !important;padding:4px 10px !important;}
   /* Hide full-text disconnect on mobile — the icon button already exists */
@@ -2416,16 +2419,7 @@ a:hover{color:var(--text);}
   #mobileAddrPill{display:none !important;}
   .net-pill-full{display:inline !important;}
   .net-pill-short{display:none !important;}
-  /* Faucet on desktop: show text + icon */
-  #navFaucetBtn{
-    background:rgba(109,40,217,.12) !important;
-    border:1px solid rgba(109,40,217,.25) !important;
-    border-radius:100px !important;
-    padding:5px 12px !important;
-    color:#c084fc !important;
-    width:auto !important;height:auto !important;
-  }
-  .tb-faucet .tb-btn-text{display:inline !important;}
+  /* Faucet removed from nav - now in Settings dropdown */
   /* Disconnect: hide mobile icon on desktop */
   #disconnectTopBtnMobile{display:none !important;}
 }
