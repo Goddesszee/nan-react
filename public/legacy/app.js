@@ -7831,7 +7831,9 @@ async function agentRefreshBalance(){
   var balEl = document.getElementById('agentBalDisplay');
   if(balEl) balEl.textContent = '⏳';
   await fetchAgentBalance();
-  if(balEl) balEl.textContent = agentWalletBalance || '0 USDC';
+  // fetchAgentBalance already updates agentBalDisplay with innerHTML — no need to overwrite
+  // But update text fallback if innerHTML was not set
+  if(balEl && balEl.textContent === '⏳') balEl.textContent = agentWalletBalance || '0.00 USDC';
 }
 
 function generateAgentReceipt(details){
@@ -7988,20 +7990,41 @@ function generateAgentReceipt(details){
 async function fetchAgentBalance(){
   if(!agentWalletAddr) return;
   try{
-    const r = await fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'balance',address:agentWalletAddr,chain:'ARC-TESTNET'})});
-    const d = await r.json();
-    if(d.balance && d.balance.data && d.balance.data.balances){
-      const seen={};
-      d.balance.data.balances.forEach(b=>{const sym=b.token?.symbol;if(sym&&(!seen[sym]||b.token.isNative===false))seen[sym]=b;});
-      const lines=Object.values(seen).filter(b=>parseFloat(b.amount)>0).map(b=>b.token.symbol+': '+parseFloat(b.amount).toFixed(2));
-      agentWalletBalance = lines.join(' · ') || '0 USDC';
+    // Route based on wallet type: Circle SDK wallet → agent-wallets API, CLI wallet → agent-stack
+    var _isCircleAgentW = !!(userAddr && localStorage.getItem('nan_agent_wallet_'+userAddr));
+    var r, d;
+    if(_isCircleAgentW){
+      // Circle SDK wallet — returns { success, walletAddress, balance: { USDC, EURC } }
+      r = await fetch('https://nan-production.up.railway.app/api/agent-wallets',{
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({action:'balance', userAddress:userAddr})
+      });
+      d = await r.json();
+      if(d.success && d.balance){
+        var usdc = parseFloat(d.balance.USDC||0).toFixed(2);
+        var eurc = parseFloat(d.balance.EURC||0).toFixed(2);
+        var parts = [];
+        if(parseFloat(usdc)>0) parts.push('USDC: '+usdc);
+        if(parseFloat(eurc)>0) parts.push('EURC: '+eurc);
+        agentWalletBalance = parts.join(' · ') || '0.00 USDC';
+      }
+    } else {
+      // CLI wallet — returns { balance: { data: { balances: [...] } } }
+      r = await fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action:'balance',address:agentWalletAddr,chain:'ARC-TESTNET'})});
+      d = await r.json();
+      if(d.balance && d.balance.data && d.balance.data.balances){
+        const seen={};
+        d.balance.data.balances.forEach(b=>{const sym=b.token?.symbol;if(sym&&(!seen[sym]||b.token.isNative===false))seen[sym]=b;});
+        const lines=Object.values(seen).filter(b=>parseFloat(b.amount)>0).map(b=>b.token.symbol+': '+parseFloat(b.amount).toFixed(2));
+        agentWalletBalance = lines.join(' · ') || '0.00 USDC';
+      }
     }
-    // Update UI display
+    // Update UI
     var balEl = document.getElementById('agentBalDisplay');
-    if(balEl) balEl.innerHTML = '<span style="background:rgba(112,0,255,.12);border:1px solid rgba(112,0,255,.2);border-radius:8px;padding:2px 10px;font-size:1.3rem;font-weight:800;color:var(--text);">' + (agentWalletBalance || '0 USDC') + '</span>';
-    // Update home page total to include agent wallet
+    if(balEl) balEl.innerHTML = '<span style="background:rgba(112,0,255,.12);border:1px solid rgba(112,0,255,.2);border-radius:8px;padding:2px 10px;font-size:1.3rem;font-weight:800;color:var(--text);">' + (agentWalletBalance || '0.00 USDC') + '</span>';
     updateHomeWithAgentBalance();
-  } catch(e){}
+  } catch(e){ console.log('[agent] fetchAgentBalance error:', e.message); }
 }
 
 // ── Agent session health check — runs every 2 minutes ───────────────────────
@@ -8289,6 +8312,8 @@ async function agentLoginInit() {
         const dotD = document.getElementById('aiBtnDesktopDot');
         if(dot) dot.style.display='block';
         if(dotD) dotD.style.display='inline-block';
+        // Fetch fresh balance immediately via SDK (not CLI)
+        setTimeout(fetchAgentBalance, 500);
         return;
       }
       // SDK returned but no wallet address
