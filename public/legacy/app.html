@@ -324,7 +324,7 @@ html,body{background:var(--bg);}
       <!-- Net pill: shows "Arc Testnet" on desktop, "Arc" on mobile via CSS -->
       <div class="net-pill" id="netPill"><span class="net-pill-full"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:4px;display:inline-block;flex-shrink:0;border-radius:3px;background:#0d1b2e;padding:1px;"><path fill="url(#arc_logo)" d="M3.5 20.999c.146-4.407.893-8.519 2.142-11.717C7.223 5.231 9.513 3 12.088 3s4.865 2.231 6.447 6.283c.822 2.107 1.427 4.61 1.786 7.334q.048.366.087.737.015.024.013.041s.21 1.317.256 3.604h-.024c-.313-.256-4-3.153-10.112-2.314.093-1.035.22-2.04.383-3.005l.027-.146a24.5 24.5 0 0 1 6.104.57q-.007-.056-.017-.115c-.33-2.06-.819-3.945-1.448-5.556-1.029-2.635-2.371-4.271-3.502-4.271-1.132 0-2.474 1.636-3.503 4.271q-.375.958-.679 2.034a30 30 0 0 0-.718 3.213A40 40 0 0 0 6.662 21H3.5z"/><defs><linearGradient id="arc_logo" x1="12" x2="12" y1="3" y2="21" gradientUnits="userSpaceOnUse"><stop stop-color="#d0d8e8"/><stop offset="1" stop-color="#7a8faa"/></linearGradient></defs></svg>Testnet</span><span class="net-pill-short" style="display:none;">Arc</span></div>
       <!-- Faucet: text pill on desktop, icon button on mobile -->
-      <button id="nan-history-btn" onclick="goPage('history')" title="History" class="desktop-only-btn" style="display:none;background:transparent;border:1px solid var(--border);border-radius:100px;width:34px;height:34px;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);flex-shrink:0;transition:all .2s;" onmouseover="this.style.borderColor='rgba(168,85,247,.4)';this.style.color='#a855f7'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text2)'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></button>
+      <button id="nan-history-btn" onclick="goPage('history')" title="History" class="nan-hidden-btn" style="display:none;background:transparent;border:1px solid var(--border);border-radius:100px;width:34px;height:34px;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);flex-shrink:0;transition:all .2s;" onmouseover="this.style.borderColor='rgba(168,85,247,.4)';this.style.color='#a855f7'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text2)'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></button>
       <button id="navFaucetBtn" onclick="claimFaucet(this)" style="display:none;" class="tb-faucet" title="Get free USDC tokens">
         💧
         <span class="tb-btn-text">Faucet</span>
@@ -344,6 +344,39 @@ html,body{background:var(--bg);}
       <button id="disconnectTopBtnMobile" onclick="disconnect()" class="tb-icon-btn tb-disconnect" style="display:none;" title="Disconnect">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
       </button>
+      <!-- ── Wallet dropdown ── -->
+      <div id="nanWalletDropWrap" style="position:relative;display:inline-flex;flex-shrink:0;">
+        <button id="nanWalletDropBtn" onclick="nanToggleWalletDrop(event)"
+          style="display:flex;align-items:center;gap:6px;background:rgba(109,40,217,.12);
+          border:1px solid rgba(109,40,217,.35);border-radius:100px;padding:5px 12px;
+          font-family:Inter,sans-serif;font-size:0.8rem;font-weight:600;
+          color:var(--text1);cursor:pointer;transition:.2s;white-space:nowrap;">
+          <span style="width:8px;height:8px;border-radius:50%;background:#6b7280;flex-shrink:0;" id="nanWalletDot"></span>
+          <span id="nanWalletDropLabel">Connect</span>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div id="nanWalletDropMenu" style="display:none;position:absolute;top:calc(100% + 8px);right:0;
+          background:var(--surface);border:1px solid var(--border);border-radius:12px;
+          padding:6px;min-width:185px;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.25);">
+          <button onclick="nanWalletCopyAddr()" style="display:flex;align-items:center;gap:10px;width:100%;
+            padding:9px 12px;background:none;border:none;border-radius:8px;cursor:pointer;
+            font-size:0.82rem;color:var(--text1);transition:.15s;"
+            onmouseover="this.style.background='rgba(109,40,217,.12)'"
+            onmouseout="this.style.background='none'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span id="nanCopyAddrLabel">Copy Address</span>
+          </button>
+          <div style="height:1px;background:var(--border);margin:4px 0;"></div>
+          <button onclick="nanWalletDisconnect()" style="display:flex;align-items:center;gap:10px;width:100%;
+            padding:9px 12px;background:none;border:none;border-radius:8px;cursor:pointer;
+            font-size:0.82rem;color:#f87171;transition:.15s;"
+            onmouseover="this.style.background='rgba(248,113,113,.1)'"
+            onmouseout="this.style.background='none'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Disconnect
+          </button>
+        </div>
+      </div>
       <!-- ── Settings gear dropdown ── -->
       <div id="nanSettingsWrap" style="position:relative;display:inline-flex;flex-shrink:0;">
         <button id="nanSettingsBtn" onclick="nanToggleSettings(event)" title="Settings"
@@ -388,39 +421,7 @@ html,body{background:var(--bg);}
           </button>
         </div>
       </div>
-      <!-- ── Wallet dropdown ── -->
-      <div id="nanWalletDropWrap" style="position:relative;display:inline-flex;flex-shrink:0;">
-        <button id="nanWalletDropBtn" onclick="nanToggleWalletDrop(event)"
-          style="display:flex;align-items:center;gap:6px;background:rgba(109,40,217,.12);
-          border:1px solid rgba(109,40,217,.35);border-radius:100px;padding:5px 12px;
-          font-family:Inter,sans-serif;font-size:0.8rem;font-weight:600;
-          color:var(--text1);cursor:pointer;transition:.2s;white-space:nowrap;">
-          <span style="width:8px;height:8px;border-radius:50%;background:#6b7280;flex-shrink:0;" id="nanWalletDot"></span>
-          <span id="nanWalletDropLabel">Connect</span>
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div id="nanWalletDropMenu" style="display:none;position:absolute;top:calc(100% + 8px);right:0;
-          background:var(--surface);border:1px solid var(--border);border-radius:12px;
-          padding:6px;min-width:185px;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.25);">
-          <button onclick="nanWalletCopyAddr()" style="display:flex;align-items:center;gap:10px;width:100%;
-            padding:9px 12px;background:none;border:none;border-radius:8px;cursor:pointer;
-            font-size:0.82rem;color:var(--text1);transition:.15s;"
-            onmouseover="this.style.background='rgba(109,40,217,.12)'"
-            onmouseout="this.style.background='none'">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            <span id="nanCopyAddrLabel">Copy Address</span>
-          </button>
-          <div style="height:1px;background:var(--border);margin:4px 0;"></div>
-          <button onclick="nanWalletDisconnect()" style="display:flex;align-items:center;gap:10px;width:100%;
-            padding:9px 12px;background:none;border:none;border-radius:8px;cursor:pointer;
-            font-size:0.82rem;color:#f87171;transition:.15s;"
-            onmouseover="this.style.background='rgba(248,113,113,.1)'"
-            onmouseout="this.style.background='none'">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-            Disconnect
-          </button>
-        </div>
-      </div>
+
     </div>
   </div>
 
