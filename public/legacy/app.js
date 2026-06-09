@@ -1577,35 +1577,7 @@ function cancelConfirm(){
   if(sc) sc.style.display='block';
 }
 
-async function doAirtime(){
-  if(typeof toggleAgent==='function') toggleAgent();
-  setTimeout(()=>{
-    const inp=document.getElementById('agentInput')||document.getElementById('chatInput');
-    if(inp){inp.value='Buy airtime';inp.focus();}
-  },400);
-}
-function doData(){
-  if(typeof toggleAgent==='function') toggleAgent();
-  setTimeout(()=>{
-    const inp=document.getElementById('agentInput')||document.getElementById('chatInput');
-    if(inp){inp.value='Buy data bundle';inp.focus();}
-  },400);
-}
-function doDstv(){
-  if(typeof toggleAgent==='function') toggleAgent();
-  setTimeout(()=>{
-    const inp=document.getElementById('agentInput')||document.getElementById('chatInput');
-    if(inp){inp.value='Pay DSTV subscription';inp.focus();}
-  },400);
-}
-function doNepa(){
-  if(typeof toggleAgent==='function') toggleAgent();
-  setTimeout(()=>{
-    const inp=document.getElementById('agentInput')||document.getElementById('chatInput');
-    if(inp){inp.value='Pay electricity bill';inp.focus();}
-  },400);
-}
-function doSend(){
+async function doSend(){
   const raw=document.getElementById('recipInput').value.trim();
   const amt=parseFloat(document.getElementById('amtInput').value);
   const to=(resolvedTo&&lastResolvedInput===raw)?resolvedTo:null;
