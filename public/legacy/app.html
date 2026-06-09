@@ -1941,10 +1941,10 @@ html,body{background:var(--bg);}
     <input id="prViewLinkInput" type="text" readonly
       style="position:fixed;top:-9999px;left:0;width:90vw;font-size:16px;opacity:0;pointer-events:none;z-index:-1;"/>
 
-    <!-- Link display — tap to select all on mobile -->
-    <div id="prViewLink"
-      onclick="selectAllLinkText(this)"
-      style="font-size:.72rem;color:var(--accent3);font-family:'Inter',sans-serif;word-break:break-all;padding:10px 12px;background:rgba(112,0,255,.06);border:1px solid rgba(112,0,255,.2);border-radius:10px;margin-bottom:12px;cursor:pointer;line-height:1.5;user-select:all;-webkit-user-select:all;"></div>
+    <!-- Link display — real anchor so it opens on tap -->
+    <a id="prViewLink"
+      href="#" target="_blank" rel="noopener"
+      style="display:block;font-size:.72rem;color:#a855f7;font-family:'Inter',sans-serif;word-break:break-all;padding:10px 12px;background:rgba(112,0,255,.06);border:1px solid rgba(112,0,255,.2);border-radius:10px;margin-bottom:12px;cursor:pointer;line-height:1.5;text-decoration:underline;text-decoration-color:rgba(168,85,247,.4);"></a>
 
     <!-- Copy + Share buttons — full width, tall enough to tap easily -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
