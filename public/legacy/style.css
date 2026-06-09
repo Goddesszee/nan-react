@@ -4790,4 +4790,16 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
     color: rgba(52,211,153,.8) !important;
   }
 
+
+  /* ── Strip unified card wrapper on mobile for market/bridge/agent ── */
+  #page-market > div[style*="background:var(--card)"],
+  #page-bridge > div[style*="background:var(--card)"],
+  #page-agent-wallet > div[style*="background:var(--card)"] {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+
 /* end @media(max-width:767px) */
