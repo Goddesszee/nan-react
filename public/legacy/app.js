@@ -1181,8 +1181,9 @@ async function onConnected(isEmail=false, isDev=false){
   if(!isEmail)await checkNetwork();
   // Paint cached balances IMMEDIATELY — no waiting for RPC
   loadCachedBalances();
-  // Then refresh from chain in background — UI already shows something
+  // Fire TWO refreshes: one immediately, one after 1.5s as a safety net
   refreshBalances().catch(e=>console.log('[balance refresh]',e.message));
+  setTimeout(()=>refreshBalances().catch(()=>{}), 1500);
   loadTxHistory();arcNames=JSON.parse(localStorage.getItem('nan_arcnames_'+userAddr)||'[]');
   setTimeout(()=>loadOnChainHistory(),2000);
   renderQR(userAddr);
@@ -1310,9 +1311,10 @@ async function refreshBalances(){
     validateSend();
   }catch(err){
     console.error('Balance fetch failed:',err);
-    document.getElementById('rpcError').classList.add('show');
+    try{document.getElementById('rpcError').classList.add('show');}catch(e){}
+  }finally{
+    balancesLoading=false;
   }
-  balancesLoading=false;
 }
 
 // ═══════════════════════════════════════════
@@ -6387,7 +6389,7 @@ function genPRId(){
   return 'pr_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 }
 function buildPRLink(pr){
-  const base='https://nanarc.xyz/legacy/app.html';
+  const base='https://nanarc.xyz/legacy/pay.html';
   const id=pr.onChainId||pr.id;
   const p=new URLSearchParams({pay:id,to:pr.to,amt:pr.amount||'',tok:pr.token,lbl:pr.label,note:pr.note||''});
   return base+'?'+p.toString();
@@ -6702,12 +6704,14 @@ function _execCopy(text,cb){
   if(cb)cb();
 }
 function sharePRLink(){
-  const link=document.getElementById('prViewLink').textContent;
+  const link=document.getElementById('prViewLink').textContent.trim();
+  if(!link)return;
   const pr=paymentRequests.find(p=>p.id===activePRId);
-  if(!pr)return;
-  const amt=pr.amount?pr.amount+' '+pr.token:pr.token;
-  const text='Pay me '+amt+' — '+pr.label+'\n\n'+link+'\n\nPowered by NAN Wallet on Arc Testnet';
-  if(navigator.share){navigator.share({title:'Payment Request — '+pr.label,text,url:link}).catch(()=>{});}
+  // Build share text — works with or without PR in local array
+  const amt=pr?(pr.amount?pr.amount+' '+pr.token:pr.token):'';
+  const lbl=pr?pr.label:(new URLSearchParams(window.location.search).get('lbl')||'Payment Request');
+  const text=(amt?'Pay me '+amt+' — ':'')+lbl+'\n\n'+link+'\n\nPowered by NAN Wallet on Arc Testnet';
+  if(navigator.share){navigator.share({title:'Payment Request',text,url:link}).catch(()=>{});}
   else{_mobileCopy(text,()=>toast('✓ Copied — paste to share!','success',3000));}
 }
 function markPRAsPaid(){
