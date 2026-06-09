@@ -347,11 +347,8 @@ html,body{background:var(--bg);}
       <!-- ── Wallet dropdown ── -->
       <div id="nanWalletDropWrap" style="position:relative;display:inline-flex;flex-shrink:0;">
         <button id="nanWalletDropBtn" onclick="nanToggleWalletDrop(event)"
-          style="display:flex;align-items:center;gap:6px;background:rgba(109,40,217,.12);
-          border:1px solid rgba(109,40,217,.35);border-radius:100px;padding:5px 12px;
-          font-family:Inter,sans-serif;font-size:0.8rem;font-weight:600;
-          color:var(--text1);cursor:pointer;transition:.2s;white-space:nowrap;">
-          <span style="width:8px;height:8px;border-radius:50%;background:#6b7280;flex-shrink:0;" id="nanWalletDot"></span>
+          style="cursor:pointer;">
+          <span id="nanWalletDot">◆</span>
           <span id="nanWalletDropLabel">Connect</span>
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
