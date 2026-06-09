@@ -8221,22 +8221,31 @@ function agentPageRefresh() {
     if (status) status.textContent = 'Connected \u00b7 Arc Testnet';
     if (badge)  { badge.textContent = 'Active'; badge.style.cssText = 'font-size:.72rem;padding:3px 9px;border-radius:100px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#4ade80;font-weight:600;'; }
     if (addr)   addr.innerHTML = '<span style="color:var(--text2);font-family:monospace;">Arc: ' + agentWalletAddr.slice(0,6)+'...'+agentWalletAddr.slice(-4) + '</span><button onclick="navigator.clipboard.writeText(\''+agentWalletAddr+'\').then(()=>{this.textContent=\'✓\';setTimeout(()=>this.textContent=\'Copy\',1500)})" style="padding:2px 8px;border-radius:6px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#7000ff;font-size:.7rem;font-weight:600;cursor:pointer;">Copy</button>';
-    // Show green dot on AI FAB buttons
     const dot = document.getElementById('aiBtnDot');
     const dotD = document.getElementById('aiBtnDesktopDot');
     if(dot) dot.style.display='block';
     if(dotD) dotD.style.display='inline-block';
-    // Show cached balance if available
     var balEl = document.getElementById('agentBalDisplay');
     if(balEl) balEl.textContent = agentWalletBalance || '—';
   } else {
     if (status) status.textContent = 'Not connected';
     if (badge)  { badge.textContent = 'Offline'; badge.style.cssText = 'font-size:.72rem;padding:3px 9px;border-radius:100px;background:rgba(107,114,128,.1);border:1px solid var(--border);color:var(--text3);font-weight:600;'; }
-    // Hide green dot
     const dot = document.getElementById('aiBtnDot');
     const dotD = document.getElementById('aiBtnDesktopDot');
     if(dot) dot.style.display='none';
     if(dotD) dotD.style.display='none';
+    // For Circle wallet users: hide email input (they don't need CLI OTP)
+    // Just show a single "Connect Agent Wallet" button
+    const emailInput = document.getElementById('agentEmailInput');
+    const loginBtn = document.getElementById('agentLoginBtn');
+    if (isCircleWallet || userAddr) {
+      if (emailInput) emailInput.style.display = 'none';
+      if (loginBtn) loginBtn.textContent = 'Connect Agent Wallet';
+    } else {
+      // MetaMask/unconnected — show email input for CLI OTP
+      if (emailInput) emailInput.style.display = '';
+      if (loginBtn) loginBtn.textContent = 'Send Code';
+    }
   }
 }
 
@@ -8251,15 +8260,19 @@ function agentShowResult(text) {
 
 // ── Login step 1 ─────────────────────────────────────────────────────────────
 async function agentLoginInit() {
-  // First try auto-connect with Circle Programmable Wallets (no CLI needed)
+  const btn = document.getElementById('agentLoginBtn');
+
+  // ── Circle SDK wallet users (email login or any logged-in user) ──────────
+  // These users get a Circle Developer-Controlled Wallet — no CLI, no OTP needed
   if (userAddr) {
-    const btn = document.getElementById('agentLoginBtn');
-    if (btn) { btn.textContent = 'Creating wallet...'; btn.disabled = true; }
+    if (btn) { btn.textContent = 'Connecting...'; btn.disabled = true; }
+    agentShowResult('⏳ Setting up your agent wallet...');
     try {
       const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'get-or-create', userAddress: userAddr })
+        body: JSON.stringify({ action: 'get-or-create', userAddress: userAddr }),
+        signal: AbortSignal.timeout(15000)
       });
       const d = await r.json();
       if (d.success && d.wallet?.walletAddress) {
@@ -8267,34 +8280,40 @@ async function agentLoginInit() {
         window.agentWalletAddr = agentWalletAddr;
         agentWalletBalance = d.balance ? `${d.balance.USDC} USDC` : '0 USDC';
         localStorage.setItem('nan_agent_wallet_'+userAddr, JSON.stringify(d.wallet));
+        localStorage.setItem('nan_agent_addr', agentWalletAddr);
         agentPageRefresh();
-        toast('✅ Agent wallet ready!', 'success', 3000);
+        agentShowResult('');
+        if(typeof toast==='function') toast('✅ Agent wallet ready!', 'success', 3000);
         if (btn) { btn.textContent = 'Connected'; btn.disabled = false; }
-        // Update green dot on FAB
         const dot = document.getElementById('aiBtnDot');
         const dotD = document.getElementById('aiBtnDesktopDot');
         if(dot) dot.style.display='block';
         if(dotD) dotD.style.display='inline-block';
         return;
       }
+      // SDK returned but no wallet address
+      const errMsg = d.error || 'Could not create agent wallet. Try again.';
+      agentShowResult('❌ ' + errMsg);
+      if (btn) { btn.textContent = 'Connect Agent Wallet'; btn.disabled = false; }
     } catch(e) {
-      console.log('[agent] Circle wallet create failed:', e.message);
-      if(isCircleWallet){
-        agentShowResult('Could not create agent wallet: '+e.message.slice(0,80));
-        if (btn) { btn.textContent = 'Connect Agent Wallet'; btn.disabled = false; }
-        return;
-      }
+      const msg = e.name === 'TimeoutError' ? 'Request timed out — Railway may be restarting. Try again in 30s.' : e.message;
+      agentShowResult('❌ ' + msg.slice(0, 100));
+      if (btn) { btn.textContent = 'Connect Agent Wallet'; btn.disabled = false; }
+      console.log('[agent] SDK wallet connect failed:', e.message);
     }
-    if (btn) { btn.textContent = 'Connect Agent Wallet'; btn.disabled = false; }
-    if(isCircleWallet) return; // Circle users don't use CLI
+    // Circle email login users: never fall through to CLI OTP
+    if (isCircleWallet) return;
   }
 
-  // Fallback: existing CLI-based flow (for owner wallet / MetaMask users)
+  // ── CLI-based flow (MetaMask / owner wallet only) ─────────────────────────
+  // Only reached if: userAddr is null OR not a Circle wallet login
   const input = document.getElementById('agentEmailInput');
   const email = (input && input.value.trim()) || agentWalletEmail || '';
-  if (!email.includes('@')) { agentShowResult('Please enter a valid email address'); return; }
+  if (!email.includes('@')) {
+    agentShowResult(userAddr ? '❌ Connect your wallet first' : 'Please enter a valid email address');
+    return;
+  }
   agentWalletEmail = email;
-  const btn = document.getElementById('agentLoginBtn');
   if (btn) { btn.textContent = 'Sending code...'; btn.disabled = true; }
   try {
     const r = await fetch(AGENT_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'login-init', email }) });
@@ -8310,7 +8329,7 @@ async function agentLoginInit() {
       const ls = document.getElementById('agentLoginSection');
       const os = document.getElementById('agentOtpSection');
       if (ls) ls.style.display = 'none';
-      if (os) { os.style.display = ''; document.getElementById('agentOtpInput').focus(); }
+      if (os) { os.style.display = ''; document.getElementById('agentOtpInput')?.focus(); }
     } else {
       agentShowResult(d.error || 'Failed to send code');
       if (btn) { btn.textContent = 'Connect Agent Wallet'; btn.disabled = false; }
