@@ -682,10 +682,11 @@ function updateTopBar(connected){
       addrPill.style.display='block';
     }
     const discBtn=document.getElementById('disconnectTopBtn');
-    if(discBtn)discBtn.style.display='block';
+    if(discBtn)discBtn.style.display='none';
     const discBtnMobile=document.getElementById('disconnectTopBtnMobile');
-    if(discBtnMobile)discBtnMobile.style.display='flex';
+    if(discBtnMobile)discBtnMobile.style.display='none';
     if(landBtn) landBtn.style.display='none';
+    nanSyncWalletBtn(true);
   }else{
     bar.style.display='none';
     if(dNav) dNav.style.display='none';
@@ -694,8 +695,74 @@ function updateTopBar(connected){
     const discBtnMobile=document.getElementById('disconnectTopBtnMobile');
     if(discBtnMobile)discBtnMobile.style.display='none';
     if(landBtn) landBtn.style.display='block';
+    nanSyncWalletBtn(false);
   }
 }
+
+// ── NAN Wallet Dropdown & Settings ──────────────────────────
+function nanSyncWalletBtn(connected){
+  const dot=document.getElementById('nanWalletDot');
+  const lbl=document.getElementById('nanWalletDropLabel');
+  if(!lbl)return;
+  if(connected && window.userAddr){
+    const addr=window.userAddr;
+    lbl.textContent=addr.slice(0,6)+'…'+addr.slice(-4);
+    if(dot)dot.style.background='#22c55e';
+  } else if(connected && window.otpEmail){
+    lbl.textContent='⚡ '+window.otpEmail.split('@')[0].slice(0,10);
+    if(dot)dot.style.background='#22c55e';
+  } else {
+    lbl.textContent='Connect';
+    if(dot)dot.style.background='#6b7280';
+  }
+}
+function nanToggleWalletDrop(e){
+  e.stopPropagation();
+  const menu=document.getElementById('nanWalletDropMenu');
+  const isOpen=menu&&menu.style.display!=='none';
+  nanCloseAll();
+  if(menu&&!isOpen)menu.style.display='block';
+}
+function nanToggleSettings(e){
+  e.stopPropagation();
+  const menu=document.getElementById('nanSettingsMenu');
+  const isOpen=menu&&menu.style.display!=='none';
+  nanCloseAll();
+  if(menu&&!isOpen)menu.style.display='block';
+}
+function nanCloseAll(){
+  const w=document.getElementById('nanWalletDropMenu');
+  const s=document.getElementById('nanSettingsMenu');
+  if(w)w.style.display='none';
+  if(s)s.style.display='none';
+}
+function nanCloseSettings(){
+  const s=document.getElementById('nanSettingsMenu');
+  if(s)s.style.display='none';
+}
+function nanWalletCopyAddr(){
+  const addr=window.userAddr||'';
+  nanCloseAll();
+  if(!addr){showWalletPicker();return;}
+  navigator.clipboard.writeText(addr).then(()=>{
+    const lbl=document.getElementById('nanCopyAddrLabel');
+    if(lbl){lbl.textContent='Copied!';setTimeout(()=>lbl.textContent='Copy Address',1500);}
+  });
+}
+function nanWalletDisconnect(){
+  nanCloseAll();
+  if(typeof disconnect==='function')disconnect();
+}
+document.addEventListener('click',nanCloseAll);
+// Sync notif badge into settings menu
+setInterval(()=>{
+  const src=document.getElementById('nanNotifBadge');
+  const dst=document.getElementById('nanSettingsNotifBadge');
+  if(!src||!dst)return;
+  const c=src.textContent.trim();
+  if(c&&c!=='0'){dst.textContent=c;dst.style.display='inline';}
+  else{dst.style.display='none';}
+},2000);
 
 // ═══════════════════════════════════════════
 // FX RATE
