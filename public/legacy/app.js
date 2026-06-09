@@ -661,20 +661,7 @@ function updateTopBar(connected){
       bar.style.display='flex';
     }
     if(dNav) dNav.style.display = window.innerWidth >= 769 ? 'flex' : 'none';
-    btn.style.display='block';
-    btn.textContent=otpEmail?'⚡ '+otpEmail.split('@')[0].slice(0,10):'0x…'+userAddr.slice(-6);
-    btn.className='connected';
-    btn.title='Click to copy wallet address';
-    btn.onclick=()=>{
-      if(!userAddr)return;
-      navigator.clipboard.writeText(userAddr).then(()=>{
-        const orig=btn.textContent;
-        btn.textContent='✓ Copied!';
-        btn.style.color='var(--success)';
-        btn.style.borderColor='rgba(112,0,255,.4)';
-        setTimeout(()=>{btn.textContent=orig;btn.style.color='';btn.style.borderColor='';},1800);
-      });
-    };
+    btn.style.display='none'; // replaced by nanWalletDropBtn
     // Mobile address pill
     if(addrPill){
       const label=otpEmail?'⚡ '+otpEmail.split('@')[0].slice(0,12):'0x…'+userAddr.slice(-6);
@@ -1260,8 +1247,7 @@ async function onConnected(isEmail=false, isDev=false){
   initLendUI();
   // Move aiBtn and agentPanel to body so overflow:hidden on page divs cannot clip them
   _ensureAIButton();
-  var navF=document.getElementById('navFaucetBtn');
-  if(navF)navF.style.display='flex';
+  // navFaucetBtn hidden - now in Settings dropdown
   setTimeout(attachAIListeners,100);
   startOrderEngine();
   // Pre-approve all contracts once so users never see repeated approve popups
