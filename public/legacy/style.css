@@ -2074,7 +2074,7 @@ a:hover{color:var(--text);}
   display: flex !important;
   align-items: center !important;
   justify-content: flex-start !important;
-  padding: 0 28px !important;
+  padding: 0 28px 0 180px !important;
   gap: 0 !important;
 }
 #globalTopBar > div:last-child {
