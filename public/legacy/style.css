@@ -2080,15 +2080,15 @@ a:hover{color:var(--text);}
   padding: 6px 16px;
   border-radius: 7px;
   font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: -0.015em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   color: var(--text);
   font-family: 'Inter var','Inter', sans-serif;
   transition: opacity .15s;
   white-space: nowrap;
-  opacity: .55;
+  opacity: .45;
 }
-.tnav-btn:hover { opacity: .85; }
+.tnav-btn:hover { opacity: .8; }
 .tnav-btn.active { opacity: 1; font-weight: 700; }
 .more-drop-btn {
   display: flex;
