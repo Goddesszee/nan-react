@@ -4468,44 +4468,70 @@ function executeAgentAction(action){
       break;
     case 'agent-balance':
       if(!agentWalletAddr){
-        // Show main wallet balance instead
         addAgentMsg(`💰 Your Wallet Balance:\nUSDC: ${parseFloat(usdcBal||0).toFixed(2)}\nEURC: ${parseFloat(eurcBal||0).toFixed(2)}\nNetwork: Arc Testnet\n\n💡 Connect an Agent Wallet for autonomous transactions.`);
         renderAgentMsgs(); break;
       }
       addAgentMsg('⏳ Checking agent wallet balance...');renderAgentMsgs();
-      fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'balance',address:agentWalletAddr,chain:'ARC-TESTNET'})})
-        .then(r=>r.json()).then(d=>{
-          const bal = d.balance;
-          let msg = '💰 Agent Wallet Balance:\n';
-          if(bal && bal.data && bal.data.balances){
-            const seen={};
-            bal.data.balances.forEach(b=>{const sym=b.token?.symbol;if(sym&&(!seen[sym]||b.token.isNative===false))seen[sym]=b;});
-            Object.values(seen).forEach(b=>{if(parseFloat(b.amount)>0)msg+=b.token.symbol+': '+parseFloat(b.amount).toFixed(2)+'\n';});
-          } else if(typeof bal === 'object'){
-            msg += JSON.stringify(bal,null,2);
-          } else {
-            msg += String(bal||d.error||'No balance data');
-          }
-          addAgentMsg(msg.trim());renderAgentMsgs();
-        })
-        .catch(e=>{addAgentMsg('❌ Error: '+e.message);renderAgentMsgs();});
+      {
+        // Route based on wallet type: Circle SDK wallet → agent-wallets, CLI wallet → agent-stack
+        var _isCircleAgentWal = !!(localStorage.getItem('nan_agent_wallet_'+userAddr));
+        var _balUrl = _isCircleAgentWal
+          ? 'https://nan-production.up.railway.app/api/agent-wallets'
+          : AGENT_API;
+        var _balBody = _isCircleAgentWal
+          ? JSON.stringify({action:'balance', userAddress:userAddr})
+          : JSON.stringify({action:'balance', address:agentWalletAddr, chain:'ARC-TESTNET'});
+        fetch(_balUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:_balBody})
+          .then(r=>r.json()).then(d=>{
+            let msg = '💰 Agent Wallet Balance:\n';
+            const bal = d.balance || d;
+            if(bal && typeof bal === 'object' && (bal.USDC !== undefined || bal.EURC !== undefined)){
+              if(bal.USDC) msg += 'USDC: '+bal.USDC+'\n';
+              if(bal.EURC) msg += 'EURC: '+bal.EURC+'\n';
+            } else if(bal && bal.data && bal.data.balances){
+              const seen={};
+              bal.data.balances.forEach(b=>{const sym=b.token?.symbol;if(sym&&(!seen[sym]||b.token.isNative===false))seen[sym]=b;});
+              Object.values(seen).forEach(b=>{if(parseFloat(b.amount)>0)msg+=b.token.symbol+': '+parseFloat(b.amount).toFixed(2)+'\n';});
+            } else {
+              msg += d.error || 'No balance data';
+            }
+            addAgentMsg(msg.trim());renderAgentMsgs();
+          })
+          .catch(e=>{addAgentMsg('❌ Error: '+e.message);renderAgentMsgs();});
+      }
       break;
     case 'agent-history':
       if(!agentWalletAddr){
-        // Navigate to history page instead
         addAgentMsg('📋 Opening your transaction history...');
         renderAgentMsgs();
         goPage('history');
         break;
       }
       addAgentMsg('⏳ Loading agent wallet history...');renderAgentMsgs();
-      fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'tx-list',address:agentWalletAddr,chain:'ARC-TESTNET'})})
-        .then(r=>r.json()).then(d=>{
-          const txs=d.transactions||[];
-          const lines=txs.slice(0,10).map(t=>(t.type||'tx')+' '+(t.amount||'')+' '+(t.token||'')+' — '+(t.state||t.status||'')+' ('+(t.createDate||'').slice(0,10)+')');
-          addAgentMsg(lines.length?'📋 Agent Wallet History:\n'+lines.join('\n'):'📋 No transactions yet on agent wallet');
-          renderAgentMsgs();
-        }).catch(e=>{addAgentMsg('❌ Error: '+e.message);renderAgentMsgs();});
+      {
+        var _isCircleAgentH = !!(localStorage.getItem('nan_agent_wallet_'+userAddr));
+        var _histUrl = _isCircleAgentH
+          ? 'https://nan-production.up.railway.app/api/agent-wallets'
+          : AGENT_API;
+        var _histBody = _isCircleAgentH
+          ? JSON.stringify({action:'history', userAddress:userAddr})
+          : JSON.stringify({action:'tx-list', address:agentWalletAddr, chain:'ARC-TESTNET'});
+        fetch(_histUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:_histBody})
+          .then(r=>r.json()).then(d=>{
+            const txs=d.transactions||[];
+            // SDK returns: {id, amounts, destinationAddress, state, createDate, operation, blockchain}
+            const lines=txs.slice(0,10).map(t=>{
+              const amt = Array.isArray(t.amounts)?t.amounts[0]:(t.amount||'');
+              const type = t.operation||t.type||'tx';
+              const dest = t.destinationAddress?t.destinationAddress.slice(0,8)+'...':(t.to||'');
+              const state = t.state||t.status||'';
+              const date = (t.createDate||'').slice(0,10);
+              return `${type} ${amt} → ${dest} [${state}] ${date}`;
+            });
+            addAgentMsg(lines.length?'📋 Agent Wallet History:\n'+lines.join('\n'):'📋 No transactions yet on agent wallet');
+            renderAgentMsgs();
+          }).catch(e=>{addAgentMsg('❌ Error: '+e.message);renderAgentMsgs();});
+      }
       break;
     case 'agent-fund':
       if(!agentWalletAddr){
@@ -4515,9 +4541,20 @@ function executeAgentAction(action){
         break;
       }
       addAgentMsg('⏳ Requesting faucet for agent wallet...');renderAgentMsgs();
-      fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'fund',address:agentWalletAddr,chain:'ARC-TESTNET'})})
-        .then(r=>r.json()).then(d=>{addAgentMsg(d.success?'✅ Faucet success! 2 USDC sent to agent wallet.':'❌ '+(d.error||'Faucet failed'));renderAgentMsgs();})
-        .catch(e=>{addAgentMsg('❌ Error: '+e.message);renderAgentMsgs();});
+      {
+        // Circle SDK wallet → requestTestnetTokens via agent-wallets
+        // CLI wallet → circle wallet fund via agent-stack
+        var _isCircleAgentF = !!(localStorage.getItem('nan_agent_wallet_'+userAddr));
+        var _faucetUrl = _isCircleAgentF
+          ? 'https://nan-production.up.railway.app/api/agent-wallets'
+          : AGENT_API;
+        var _faucetBody = _isCircleAgentF
+          ? JSON.stringify({action:'faucet', userAddress:userAddr})
+          : JSON.stringify({action:'fund', address:agentWalletAddr, chain:'ARC-TESTNET'});
+        fetch(_faucetUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:_faucetBody})
+          .then(r=>r.json()).then(d=>{addAgentMsg(d.success?'✅ Faucet requested! USDC arrives in ~30s.':'❌ '+(d.error||'Faucet failed'));renderAgentMsgs();})
+          .catch(e=>{addAgentMsg('❌ Error: '+e.message);renderAgentMsgs();});
+      }
       break;
     case 'agent-pay':
       if(!agentWalletAddr){
@@ -4525,7 +4562,7 @@ function executeAgentAction(action){
         renderAgentMsgs(); break;
       }
       addAgentMsg('⏳ Paying service '+action.serviceUrl+'...');renderAgentMsgs();
-      fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'pay-service',address:agentWalletAddr,serviceUrl:action.serviceUrl,amount:String(action.amount||'0.01'),chain:'ARC-TESTNET'})})
+      fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'pay-service',address:agentWalletAddr,url:action.serviceUrl||action.url,amount:String(action.amount||'0.01'),chain:'ARC-TESTNET'})})
         .then(r=>r.json()).then(d=>{addAgentMsg(d.success?'✅ Payment sent!\n'+JSON.stringify(d.result||d,null,2):'❌ '+(d.error||'Payment failed'));renderAgentMsgs();})
         .catch(e=>{addAgentMsg('❌ Error: '+e.message);renderAgentMsgs();});
       break;
