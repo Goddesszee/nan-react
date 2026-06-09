@@ -1081,6 +1081,7 @@ function loadCachedBalances(){
   const homeEurcBal = document.getElementById('homeEurcBal');
   if(homeBalAmt) homeBalAmt.textContent = '$'+totalUsd.toFixed(2);
   window._arcBaseBalance = totalUsd; // store for multichain total
+  try{if(typeof updateHomeWithAgentBalance==='function')updateHomeWithAgentBalance();}catch(e){}
   if(homeBalNgn) homeBalNgn.textContent = '≈ NGN'+Math.round(totalUsd*NGN_RATE).toLocaleString()+' NGN';
   if(homeUsdcBal) homeUsdcBal.textContent = uFmt+' USDC';
   if(homeEurcBal) homeEurcBal.textContent = eFmt+' EURC';
@@ -1289,6 +1290,7 @@ async function refreshBalances(){
     const homeEurcBal=document.getElementById('homeEurcBal');
     if(homeBalAmt)homeBalAmt.textContent=isNaN(totalUsd)?'$0.00':'$'+totalUsd.toFixed(2);
     window._arcBaseBalance = isNaN(totalUsd)?0:totalUsd;
+    try{if(typeof updateHomeWithAgentBalance==='function')updateHomeWithAgentBalance();}catch(e){}
     // Hide skeleton, show balance
     const _sk=document.getElementById('balSkelWrap');const _rw=document.getElementById('balRealWrap');
     if(_sk)_sk.style.display='none';if(_rw)_rw.style.display='block';
@@ -6423,7 +6425,7 @@ function openPayFromURL(){
   const noteEl=document.getElementById('prViewNote');
   if(noteEl&&note)noteEl.textContent=note;
   const link=buildPRLink(pr);
-  document.getElementById('prViewLink').textContent=link;
+  const _pvl=document.getElementById('prViewLink');if(_pvl){_pvl.textContent=link;_pvl.href=link;}
   const qrBox=document.getElementById('prViewQR');
   if(qrBox){qrBox.innerHTML='';try{new QRCode(qrBox,{text:link,width:120,height:120,colorDark:'#111111',colorLight:'#ffffff'});}catch{};}
   const markBtn=document.getElementById('prMarkPaidBtn');
@@ -6563,7 +6565,7 @@ function viewPaymentRequest(id){
   if(pr.note){document.getElementById('prViewNoteRow').style.display='flex';document.getElementById('prViewNote').textContent=pr.note;}
   else{document.getElementById('prViewNoteRow').style.display='none';}
   const link=buildPRLink(pr);
-  document.getElementById('prViewLink').textContent=link;
+  const _pvl=document.getElementById('prViewLink');if(_pvl){_pvl.textContent=link;_pvl.href=link;}
   const qrBox=document.getElementById('prViewQR');
   if(qrBox){qrBox.innerHTML='';try{new QRCode(qrBox,{text:link,width:120,height:120,colorDark:'#111111',colorLight:'#ffffff'});}catch{}}
   document.getElementById('prMarkPaidBtn').style.display=pr.status==='paid'?'none':'block';
@@ -6647,8 +6649,9 @@ function selectAllLinkText(el){
 function handleCopyTouch(e){
   // ontouchstart fires synchronously inside gesture — most reliable on Android
   e.preventDefault();
-  const link=document.getElementById('prViewLink').textContent.trim();
-  if(!link)return;
+  const _el=document.getElementById('prViewLink');
+  const link=(_el?.textContent||'').trim()||(_el?.href||'').replace(/^javascript:/,'').trim();
+  if(!link||link==='#')return;
   _doCopy(link, ()=>{
     const btn=document.getElementById('prCopyBtn');
     if(btn){const orig=btn.innerHTML;btn.innerHTML='✓ Copied!';setTimeout(()=>btn.innerHTML=orig,2000);}
@@ -6657,8 +6660,9 @@ function handleCopyTouch(e){
 }
 
 function copyPRLink(){
-  const link=document.getElementById('prViewLink').textContent.trim();
-  if(!link)return;
+  const _el2=document.getElementById('prViewLink');
+  const link=(_el2?.textContent||'').trim()||(_el2?.href||'').replace(/^javascript:/,'').trim();
+  if(!link||link==='#')return;
   _doCopy(link, ()=>{
     const btn=document.getElementById('prCopyBtn');
     if(btn){const orig=btn.innerHTML;btn.innerHTML='✓ Copied!';setTimeout(()=>btn.innerHTML=orig,2000);}
@@ -8269,7 +8273,7 @@ function startBackgroundCheckers(){
 }
 
 function updateHomeWithAgentBalance(){
-  if(!agentWalletAddr || !window._arcBaseBalance) return;
+  if(!agentWalletAddr) return;
   var agentTotal = parseFloat((agentWalletBalance||'0').replace(/[^0-9.]/g,'')) || 0;
   if(!agentTotal) return;
   var grand = window._arcBaseBalance + agentTotal;
