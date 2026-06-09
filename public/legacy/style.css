@@ -3950,7 +3950,7 @@ input[type="number"] { -moz-appearance: textfield !important; }
 @media print {
   body { background: #fff !important; }
   .bottom-nav, #desktopNav, #globalTopBar,
-  #aiBtn, #agentPanel, #nanNotifBackdrop, #nanNotifPanel,
+   #agentPanel, #nanNotifBackdrop, #nanNotifPanel,
   .btn { display: none !important; }
   .page { position: static !important; display: block !important; }
   #page-home { display: block !important; }
@@ -4640,7 +4640,7 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
   /* ─────────────────────────────────────────
      AI FAB — hide on mobile (use agent nav)
   ───────────────────────────────────────── */
-  #aiBtn { display: none !important; }
+  
 
   /* ─────────────────────────────────────────
      SIDE DRAWER
@@ -4739,7 +4739,7 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
   #homeGreet, .home-greeting,
   #homeGreetName, .home-name { display: none !important; }
   /* ── Hide AI FAB on mobile ── */
-  #aiBtn { display: none !important; }
+  
   /* ── Burger takes brand place, push right side to end ── */
   #nanDrawerBurger { display: flex !important; flex-shrink: 0; }
 
@@ -4800,6 +4800,16 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
     border-radius: 0 !important;
     overflow: visible !important;
     padding: 0 !important;
+  }
+
+
+  /* ── AI button: show on mobile above bottom nav ── */
+  #aiBtn {
+    display: flex !important;
+    bottom: 84px !important;
+    right: 14px !important;
+    width: 48px !important;
+    height: 48px !important;
   }
 
 /* end @media(max-width:767px) */
