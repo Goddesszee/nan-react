@@ -6314,6 +6314,7 @@ window.addEventListener('load',()=>{
     // Normal — show page-land
     if(_land && !_lp.get('pay')) _land.style.display='flex';
   }
+  if(_lp.get('pay')) setTimeout(openPayFromURL, 800);
   initSwapUI();
   initBridgeUI();
   fetchLiveFX();
@@ -6386,10 +6387,46 @@ function genPRId(){
   return 'pr_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 }
 function buildPRLink(pr){
-  const base='https://nan-production.up.railway.app/pay.html';
+  const base='https://nanarc.xyz/legacy/app.html';
   const id=pr.onChainId||pr.id;
   const p=new URLSearchParams({pay:id,to:pr.to,amt:pr.amount||'',tok:pr.token,lbl:pr.label,note:pr.note||''});
   return base+'?'+p.toString();
+}
+
+function openPayFromURL(){
+  const p=new URLSearchParams(window.location.search);
+  const payId=p.get('pay');
+  if(!payId)return;
+  const to=p.get('to')||'';
+  const amt=p.get('amt')||'';
+  const tok=p.get('tok')||'USDC';
+  const lbl=p.get('lbl')||'Payment Request';
+  const note=p.get('note')||'';
+  // Try local first
+  const existing=paymentRequests.find(pr=>pr.id===payId||pr.onChainId===payId);
+  if(existing){viewPaymentRequest(existing.id);return;}
+  // Build synthetic PR from URL params for recipient view
+  const pr={id:payId,onChainId:payId,to,token:tok,amount:amt,label:lbl,note,status:'pending',createdAt:Date.now()};
+  activePRId=payId;
+  document.getElementById('prViewTitle').textContent=lbl;
+  document.getElementById('prViewStatus').textContent='⏳ Pending';
+  document.getElementById('prViewStatus').style.color='var(--text3)';
+  document.getElementById('prViewAmt').textContent=amt?parseFloat(amt).toFixed(2)+' '+tok:'Open · '+tok;
+  document.getElementById('prViewLabel2').textContent=lbl;
+  document.getElementById('prViewFrom').textContent=to?short(to):'—';
+  document.getElementById('prViewDate').textContent=new Date().toLocaleDateString();
+  document.getElementById('prViewExpiry').textContent='Never';
+  const noteRow=document.getElementById('prViewNoteRow');
+  if(noteRow)noteRow.style.display=note?'flex':'none';
+  const noteEl=document.getElementById('prViewNote');
+  if(noteEl&&note)noteEl.textContent=note;
+  const link=buildPRLink(pr);
+  document.getElementById('prViewLink').textContent=link;
+  const qrBox=document.getElementById('prViewQR');
+  if(qrBox){qrBox.innerHTML='';try{new QRCode(qrBox,{text:link,width:120,height:120,colorDark:'#111111',colorLight:'#ffffff'});}catch{};}
+  const markBtn=document.getElementById('prMarkPaidBtn');
+  if(markBtn)markBtn.style.display='block';
+  goPage('payreq-view');
 }
 function setPRToken(token,el){
   currentPRToken=token;
