@@ -8482,54 +8482,48 @@ async function agentConfirmedSend(to, amount, token) {
   addAgentMsg('⏳ Sending '+amount+' '+token+' from agent wallet to '+to.slice(0,6)+'...'+to.slice(-4)+'...');
   renderAgentMsgs();
   try {
-    // Determine routing: Circle SDK wallet → agent-wallets, CLI wallet → agent-stack
-    // Check per-user localStorage key first, then fall back to any stored wallet data
-    var _storedPerUser = null;
-    try { _storedPerUser = JSON.parse(localStorage.getItem('nan_agent_wallet_'+userAddr)||'null'); } catch(e){}
-    
-    // Also scan localStorage for any nan_agent_wallet_ key that matches agentWalletAddr
-    // (handles case where key was stored with different userAddr casing)
-    if(!_storedPerUser?.walletId && agentWalletAddr) {
-      for(var k in localStorage) {
-        if(k.startsWith('nan_agent_wallet_')) {
-          try {
-            var _kv = JSON.parse(localStorage.getItem(k)||'null');
-            if(_kv?.walletAddress?.toLowerCase() === agentWalletAddr.toLowerCase() && _kv?.walletId) {
-              _storedPerUser = _kv;
-              break;
-            }
-          } catch(e){}
-        }
-      }
-    }
-
-    const isCircleAgentWallet = !!(_storedPerUser?.walletId && _storedPerUser?.walletAddress);
-
-    // If we found a Circle wallet record, also ensure per-user key is written for next time
-    if(isCircleAgentWallet && userAddr && !localStorage.getItem('nan_agent_wallet_'+userAddr)) {
-      localStorage.setItem('nan_agent_wallet_'+userAddr, JSON.stringify(_storedPerUser));
-    }
-
+    // Always try Circle SDK agent-wallets first using agentWalletAddr directly.
+    // The backend resolves walletId from the address — no localStorage/Redis dependency.
+    // If the address is not a Circle SDK wallet, it returns notCircleWallet:true
+    // and we fall back to CLI agent-stack.
     let r, d;
-    if(isCircleAgentWallet){
-      // Circle SDK wallet — use agent-wallets transfer (SDK createTransaction)
-      // IMPORTANT: use the userAddress from the stored wallet record, NOT userAddr
-      // userAddr may be a different wallet (e.g. MetaMask) if the agent wallet was
-      // created under a Circle email login address
-      var _agentUserAddr = _storedPerUser.userAddress || userAddr;
-      r = await fetch('https://nan-production.up.railway.app/api/agent-wallets',{
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({action:'transfer', userAddress:_agentUserAddr, agentWalletAddress:agentWalletAddr, toAddress:to, amount:String(amount), token:token||'USDC'})
-      });
-    } else {
-      // CLI wallet (owner/MetaMask) — use agent-stack transfer
-      r = await fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({action:'transfer',fromAddress:agentWalletAddr,toAddress:to,amount:String(amount),chain:'ARC-TESTNET'})});
+    const _awRes = await fetch('https://nan-production.up.railway.app/api/agent-wallets',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({action:'transfer', userAddress:userAddr, agentWalletAddress:agentWalletAddr, toAddress:to, amount:String(amount), token:token||'USDC'})
+    });
+    d = await _awRes.json();
+    // If Circle SDK found the wallet, use its result
+    if(d.success || (d.error && !d.notCircleWallet)) {
+      if(d.success){
+        addAgentMsg('✅ Sent! TX: '+(d.txId||d.txHash||d.transactionId||'pending'));
+        setTimeout(()=>{
+          const msgs = document.getElementById('agentMessages');
+          const last = msgs?.lastElementChild;
+          if(last){
+            const btn = document.createElement('button');
+            btn.textContent = '🧾 Generate Receipt';
+            btn.style.cssText = 'margin-top:8px;padding:7px 16px;border-radius:10px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.3);color:#7000ff;font-size:.82rem;font-weight:700;cursor:pointer;display:block;';
+            btn.onclick = ()=>{ btn.remove(); generateAgentReceipt({type:'Agent Send',description:`Sent ${amount} ${token||'USDC'} to ${to.slice(0,10)}...`,usdcCost:amount,txId:d.txId||d.txHash||d.transactionId}); };
+            last.appendChild(btn);
+          }
+        }, 100);
+        setTimeout(fetchAgentBalance, 1500);
+        setTimeout(updateHomeScreen, 2000);
+        if(userEmail){
+          sendReceiptEmail({to:userEmail,subject:`NAN Wallet: Sent ${amount} ${token||'USDC'}`,body:`You sent ${amount} ${token||'USDC'} from your Agent Wallet to ${to}\n\nTX: ${d.txId||d.txHash||'pending'}\nTime: ${new Date().toLocaleString()}`}).catch(()=>{});
+        }
+      } else {
+        addAgentMsg('❌ '+(d.error||'Transfer failed'));
+      }
+      renderAgentMsgs();
+      return;
     }
+    // notCircleWallet: fall back to CLI agent-stack
+    r = await fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'transfer',fromAddress:agentWalletAddr,toAddress:to,amount:String(amount),chain:'ARC-TESTNET'})});
     d = await r.json();
     if(d.success){
       addAgentMsg('✅ Sent! TX: '+(d.txHash||d.transactionId||'pending'));
-      // Receipt button
       setTimeout(()=>{
         const msgs = document.getElementById('agentMessages');
         const last = msgs?.lastElementChild;
@@ -8541,16 +8535,10 @@ async function agentConfirmedSend(to, amount, token) {
           last.appendChild(btn);
         }
       }, 100);
-      // Refresh balances immediately
       setTimeout(fetchAgentBalance, 1500);
       setTimeout(updateHomeScreen, 2000);
-      // Send email receipt if user email known
       if(userEmail){
-        sendReceiptEmail({
-          to: userEmail,
-          subject: `NAN Wallet: Sent ${amount} ${token||'USDC'}`,
-          body: `You sent ${amount} ${token||'USDC'} from your Agent Wallet to ${to}\n\nTX: ${d.txHash||d.transactionId||'pending'}\nTime: ${new Date().toLocaleString()}`
-        }).catch(()=>{});
+        sendReceiptEmail({to:userEmail,subject:`NAN Wallet: Sent ${amount} ${token||'USDC'}`,body:`You sent ${amount} ${token||'USDC'} from your Agent Wallet to ${to}\n\nTX: ${d.txHash||d.transactionId||'pending'}\nTime: ${new Date().toLocaleString()}`}).catch(()=>{});
       }
     } else {
       addAgentMsg('❌ '+(d.error||'Transfer failed'));
