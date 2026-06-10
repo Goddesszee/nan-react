@@ -3298,14 +3298,18 @@ a:hover{color:var(--text);}
     color: #fff !important;
   }
 
-  /* ── Asset rows spacing ── */
+  /* ── Asset rows: flush to screen edges (mobile only) ── */
   .mob-asset-row {
-    padding: 12px 14px 12px 0 !important;
+    padding: 12px 16px !important;
     gap: 13px !important;
+    margin-left: -14px !important;
+    margin-right: -14px !important;
   }
 
-  /* ── Hide address pill on mobile ── */
-  #mobileAddrPill { display: none !important; }
+  /* ── Hide wallet pill, settings gear, address pill on mobile ── */
+  #nanWalletDropWrap { display: none !important; }
+  #nanSettingsWrap   { display: none !important; }
+  #mobileAddrPill    { display: none !important; }
 
   /* ── Welcome text must be visible ── */
   #mobileWelcome { display: flex !important; align-items: center !important; }
