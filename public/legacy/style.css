@@ -3311,6 +3311,9 @@ a:hover{color:var(--text);}
   #nanSettingsWrap   { display: none !important; }
   #mobileAddrPill    { display: none !important; }
 
+  /* ── Hide AI FAB when already on the AI page ── */
+  body:has(#page-agent-ai.active) #aiBtn { display: none !important; }
+
   /* ── Welcome text must be visible ── */
   #mobileWelcome { display: flex !important; align-items: center !important; }
 
