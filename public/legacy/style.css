@@ -3305,6 +3305,17 @@ a:hover{color:var(--text);}
     margin-left: -14px !important;
     margin-right: -14px !important;
   }
+  /* ── Token logos: correct size, always circular, never hidden ── */
+  .mob-asset-row img {
+    display: block !important;
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    border-radius: 50% !important;
+    flex-shrink: 0 !important;
+    object-fit: cover !important;
+    background: #1c1c1c !important;
+  }
 
   /* ── Hide wallet pill, settings gear, address pill on mobile ── */
   #nanWalletDropWrap { display: none !important; }
