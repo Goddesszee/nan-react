@@ -112,8 +112,8 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
       {/* ── NAV ── */}
       <nav style={{ position:'fixed', top:0, left:0, right:0, zIndex:100, padding: D ? '14px 48px' : '12px 16px', display:'flex', alignItems:'center', justifyContent:'space-between', background: dark ? 'rgba(17,17,17,.85)' : 'rgba(250,250,250,.85)', backdropFilter:'blur(24px)', borderBottom:`1px solid ${border}` }}>
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-          <div style={!D ? { width:28, height:28, borderRadius:9, background:surface, border:`1px solid ${border}`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 } : { display:'flex', flexShrink:0 }}>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 480" width={!D ? 14 : 23} height={!D ? 21 : 34} style={{flexShrink:0}}>
+          <div style={{ width:D?44:28, height:D?44:28, borderRadius:D?14:9, background:surface, border:`1px solid ${border}`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 480" width={D?22:14} height={D?33:21} style={{flexShrink:0}}>
               <path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill={accent}/>
               <path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill={accent}/>
             </svg>
