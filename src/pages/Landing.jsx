@@ -85,7 +85,10 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
   // ── Loading screen ────────────────────────────────────────────
   if (step === 'loading') return (
     <div style={{ minHeight:'100vh', background:bg, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:16, fontFamily:'Inter,sans-serif' }}>
-      <div style={{ width:48, height:48, borderRadius:12, background:accent, display:'flex', alignItems:'center', justifyContent:'center', fontWeight:800, fontSize:22, color:'#fff' }}>N</div>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 480" width="32" height="48" style={{flexShrink:0}}>
+        <path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill={accent}/>
+        <path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill={accent}/>
+      </svg>
       <div style={{ color:text, fontSize:'1rem', fontWeight:600 }}>{loadMsg}</div>
       <div style={{ display:'flex', gap:6 }}>
         {['#7000ff','#9333ea','#c084fc'].map((c,i) => (
@@ -109,7 +112,10 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
       {/* ── NAV ── */}
       <nav style={{ position:'fixed', top:0, left:0, right:0, zIndex:100, padding: D ? '14px 48px' : '12px 16px', display:'flex', alignItems:'center', justifyContent:'space-between', background: dark ? 'rgba(17,17,17,.85)' : 'rgba(250,250,250,.85)', backdropFilter:'blur(24px)', borderBottom:`1px solid ${border}` }}>
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-          <div style={{ width:34, height:34, borderRadius:9, background:accent, display:'flex', alignItems:'center', justifyContent:'center', fontWeight:800, fontSize:17, color:'#fff', flexShrink:0 }}>N</div>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 480" width="23" height="34" style={{flexShrink:0}}>
+            <path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill={accent}/>
+            <path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill={accent}/>
+          </svg>
           <span style={{ fontWeight:700, fontSize:'.95rem', color:text }}>NAN</span>
         </div>
 
@@ -383,7 +389,10 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
       {/* ── FOOTER ── */}
       <footer style={{ position:'relative', zIndex:1, borderTop:`1px solid ${border}`, padding: D ? '24px 48px' : '20px 20px', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:12 }}>
         <div style={{ display:'flex', alignItems:'center', gap:8, fontSize:'.78rem', color:text3 }}>
-          <div style={{ width:26, height:26, borderRadius:7, background:accent, display:'flex', alignItems:'center', justifyContent:'center', fontWeight:800, fontSize:13, color:'#fff' }}>N</div>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 480" width="18" height="26" style={{flexShrink:0}}>
+            <path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill={accent}/>
+            <path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill={accent}/>
+          </svg>
           NAN Wallet · Arc Testnet · v1.0.0
         </div>
         <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
