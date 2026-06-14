@@ -4781,8 +4781,29 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
   /* ── Burger takes brand place, push right side to end ── */
   #nanDrawerBurger { display: flex !important; flex-shrink: 0; }
 
-  /* ── New flat NAN mark — mobile only for now ── */
-  #mobileBrandLogo { display: flex !important; align-items: center; flex-shrink: 0; margin-right: 4px; }
+  /* ── New flat NAN mark — mobile only, centered ── */
+  #mobileBrandLogo {
+    display: flex !important; align-items: center; flex-shrink: 0;
+    position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  /* ── Mobile network pill (right side) ── */
+  #mobileNetPill {
+    display: flex !important; align-items: center; gap: 5px;
+    font-family: 'JetBrains Mono', 'Inter', monospace; font-size: .68rem; font-weight: 700;
+    letter-spacing: .04em; color: #7000ff;
+    background: rgba(112,0,255,.08); border: 1px solid rgba(112,0,255,.22);
+    border-radius: 100px; padding: 4px 10px; flex-shrink: 0;
+    margin-left: auto !important;
+  }
+  #mobileNetPill .dot {
+    width: 6px; height: 6px; border-radius: 50%; background: #22c55e;
+    animation: pulse 2s ease infinite; flex-shrink: 0;
+  }
+  [data-theme="light"] #mobileNetPill {
+    background: rgba(112,0,255,.06); border-color: rgba(112,0,255,.18);
+  }
 
 
 
