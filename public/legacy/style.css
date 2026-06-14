@@ -4781,6 +4781,9 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
   /* ── Burger takes brand place, push right side to end ── */
   #nanDrawerBurger { display: flex !important; flex-shrink: 0; }
 
+  /* ── New flat NAN mark — mobile only for now ── */
+  #mobileBrandLogo { display: flex !important; align-items: center; flex-shrink: 0; margin-right: 4px; }
+
 
 
   /* ── Bridge page ── */
