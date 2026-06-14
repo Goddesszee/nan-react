@@ -1883,15 +1883,13 @@ function downloadReceipt(){
   ctx.beginPath();ctx.arc(S-60,60,60,0,Math.PI*2);ctx.stroke();
 
   // ── NAN logo mark ──
-  ctx.fillStyle='rgba(255,255,255,0.15)';
-  roundRect(ctx,70,68,70,70,16);ctx.fill();
-  // Infinity-like logo
-  ctx.strokeStyle='#fff';ctx.lineWidth=5;ctx.lineCap='round';ctx.lineJoin='round';
-  ctx.beginPath();
-  ctx.moveTo(91,103);ctx.bezierCurveTo(91,88,106,88,105,103);
-  ctx.bezierCurveTo(106,118,121,118,121,103);
-  ctx.bezierCurveTo(121,88,136,88,136,103);
-  ctx.bezierCurveTo(136,118,121,118,121,103);ctx.stroke();
+  ctx.save();
+  ctx.translate(89.5,80);
+  ctx.scale(0.09583,0.09583);
+  ctx.fillStyle='#fff';
+  ctx.fill(new Path2D('M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z'));
+  ctx.fill(new Path2D('M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z'));
+  ctx.restore();
 
   // NAN WALLET text
   ctx.fillStyle='#fff';ctx.font='bold 28px Inter, Arial, sans-serif';
@@ -7973,9 +7971,13 @@ function generateAgentReceipt(details){
   ctx.beginPath(); ctx.roundRect(10,10,W-20,H-20,16); ctx.stroke();
 
   // Logo N
-  ctx.fillStyle='#7000ff'; ctx.beginPath(); ctx.roundRect(W/2-24,28,48,48,12); ctx.fill();
-  ctx.fillStyle='#fff'; ctx.font='bold 28px Inter,sans-serif'; ctx.textAlign='center';
-  ctx.fillText('N',W/2,64);
+  ctx.save();
+  ctx.translate(193.8,28);
+  ctx.scale(0.1,0.1);
+  ctx.fillStyle='#7000ff';
+  ctx.fill(new Path2D('M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z'));
+  ctx.fill(new Path2D('M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z'));
+  ctx.restore();
 
   // Title
   ctx.fillStyle='#fff'; ctx.font='bold 18px Inter,sans-serif';
