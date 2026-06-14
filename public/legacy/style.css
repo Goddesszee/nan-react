@@ -4783,13 +4783,19 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
 
   /* ── New flat NAN mark + "NAN" wordmark, both purple — pinned to left edge ── */
   #mobileBrandLogo {
-    display: flex !important; align-items: center; gap: 7px; flex-shrink: 0;
+    display: flex !important; align-items: center; gap: 8px; flex-shrink: 0;
     position: absolute; left: 13px; top: 50%;
     transform: translateY(-50%);
   }
+  #mobileBrandLogo .mb-badge {
+    width: 28px; height: 28px; border-radius: 9px;
+    background: var(--card2); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
   #mobileBrandLogo .mb-word {
     font-weight: 800; font-size: 1.05rem; letter-spacing: .02em; font-style: normal;
-    color: #7000ff;
+    color: var(--text);
   }
 
   /* ── Mobile network pill (right side, grouped with burger) ── */
