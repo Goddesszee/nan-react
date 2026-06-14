@@ -4778,24 +4778,26 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
   #homeGreetName, .home-name { display: none !important; }
   /* ── Hide AI FAB on mobile ── */
   
-  /* ── Burger takes brand place, push right side to end ── */
-  #nanDrawerBurger { display: flex !important; flex-shrink: 0; }
+  /* ── Burger moves to the right, grouped with the Arc pill ── */
+  #nanDrawerBurger { display: flex !important; flex-shrink: 0; order: 3; margin-left: 8px; }
 
-  /* ── New flat NAN mark — mobile only, centered ── */
+  /* ── New flat NAN mark + "NAN" wordmark, both purple — left side ── */
   #mobileBrandLogo {
-    display: flex !important; align-items: center; flex-shrink: 0;
-    position: absolute; left: 50%; top: 50%;
-    transform: translate(-50%, -50%);
+    display: flex !important; align-items: center; gap: 6px; flex-shrink: 0;
+    order: 1;
+  }
+  #mobileBrandLogo .mb-word {
+    font-weight: 900; font-size: 1rem; letter-spacing: -.01em; color: #7000ff;
   }
 
-  /* ── Mobile network pill (right side) ── */
+  /* ── Mobile network pill (right side, grouped with burger) ── */
   #mobileNetPill {
     display: flex !important; align-items: center; gap: 5px;
     font-family: 'JetBrains Mono', 'Inter', monospace; font-size: .68rem; font-weight: 700;
     letter-spacing: .04em; color: #7000ff;
     background: rgba(112,0,255,.08); border: 1px solid rgba(112,0,255,.22);
     border-radius: 100px; padding: 4px 10px; flex-shrink: 0;
-    margin-left: auto !important;
+    margin-left: auto !important; order: 2;
   }
   #mobileNetPill .dot {
     width: 6px; height: 6px; border-radius: 50%; background: #22c55e;
