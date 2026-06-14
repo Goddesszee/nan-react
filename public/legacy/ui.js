@@ -91,6 +91,19 @@ function goPage(name) {
   // Update desktop topbar page name + context pill
   updateTopbarPageInfo(name);
 
+  // Mobile only: hide the floating AI button while already on the AI chat page
+  // (it was overlapping the chat input and bottom nav). Restored on other pages.
+  if (window.innerWidth <= 768) {
+    const aiBtn = document.getElementById('aiBtn');
+    if (aiBtn) {
+      if (name === 'agent-ai') {
+        aiBtn.style.setProperty('display', 'none', 'important');
+      } else {
+        aiBtn.style.removeProperty('display');
+      }
+    }
+  }
+
   // Trigger page-specific init
   if (name === 'earn' || name === 'lend') initLendUI();
   if (name === 'history') renderHistory();
