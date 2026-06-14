@@ -62,10 +62,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="theme-color" content="#111111"/>
 <title>NAN — Weave. Connect. Build.</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20width%3D%2232%22%20height%3D%2232%22%20viewBox%3D%220%200%2032%2032%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M10%2C16%20C10%2C9%202%2C9%202%2C16%20C2%2C23%2010%2C23%2014%2C16%20C18%2C9%2026%2C9%2026%2C16%20C26%2C23%2018%2C23%2014%2C16%20Z%22%20fill%3D%22none%22%20stroke%3D%22%237000ff%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20width%3D%2232%22%20height%3D%2232%22%20viewBox%3D%220%200%20480%20480%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20transform%3D%22translate%28126.6%2C72%29%20scale%280.7%29%22%3E%3Cpath%20d%3D%22M255%2C0%20L84%2C167%20L71%2C163%20L0%2C97%20L0%2C378%20L246%2C132%20L255%2C110%20Z%22%20fill%3D%22%237000ff%22/%3E%3Cpath%20d%3D%22M69%2C480%20L240%2C313%20L253%2C317%20L324%2C383%20L324%2C102%20L78%2C348%20L69%2C370%20Z%22%20fill%3D%22%237000ff%22/%3E%3C/g%3E%3C/svg%3E"/>
 <link rel="preconnect" href="https://rsms.me/">
 <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
-<link rel="stylesheet" href="/legacy/style.css?v=1781443117"/>
+<link rel="stylesheet" href="/legacy/style.css?v=1781443580"/>
 <style>
 /* ══ THEME TOKENS — scoped per theme so neither fights the other ══ */
 :root,[data-theme="dark"]{
@@ -299,13 +299,13 @@ html,body{background:var(--bg);}
     </div>
     <div class="brand">
       <div class="brand-logo" id="secretTapZone" onclick="handleSecretTap()" style="display:flex;align-items:center;gap:1px;cursor:pointer;">
-        <!-- Purple N + white AN (dark) -->
+        <!-- Flat NAN mark -->
         <span class="logo-dark">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" width="58" height="58"><rect width="36" height="36" rx="6" fill="#7000ff"/><rect x="7" y="7" width="22" height="22" rx="3" fill="#ffffff"/><rect x="11" y="11" width="14" height="14" rx="2" fill="#000000"/><text x="18" y="19" font-family="Inter,system-ui,sans-serif" font-size="10" font-weight="900" fill="#ffffff" text-anchor="middle" dominant-baseline="middle">N</text></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 480" width="39" height="58"><path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill="#7000ff"/><path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill="#7000ff"/></svg>
         </span>
-        <!-- Purple N + dark AN (light) -->
+        <!-- Flat NAN mark -->
         <span class="logo-light">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" width="58" height="58"><rect width="36" height="36" rx="6" fill="#7000ff"/><rect x="7" y="7" width="22" height="22" rx="3" fill="#ffffff"/><rect x="11" y="11" width="14" height="14" rx="2" fill="#000000"/><text x="18" y="19" font-family="Inter,system-ui,sans-serif" font-size="10" font-weight="900" fill="#ffffff" text-anchor="middle" dominant-baseline="middle">N</text></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 480" width="39" height="58"><path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill="#7000ff"/><path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill="#7000ff"/></svg>
         </span>
       </div>
       
@@ -2351,8 +2351,8 @@ document.addEventListener('DOMContentLoaded',function(){
   }
 })();
 </script>
-<script src="/legacy/app.js?v=1781443117"></script>
-<script src="/legacy/ui.js?v=1781443117"></script>
+<script src="/legacy/app.js?v=1781443580"></script>
+<script src="/legacy/ui.js?v=1781443580"></script>
 
 <!-- ══ BANK PICKER MODAL ══ -->
 <div id="bankPickerOverlay" onclick="closeBankPicker()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:99990;backdrop-filter:blur(4px);"></div>
@@ -2789,7 +2789,7 @@ window.addEventListener('load', function() {
       <!-- Total across all chains -->
       <div style="background:linear-gradient(135deg,#3b1fa3,#6d28d9);border-radius:16px;padding:20px;margin-bottom:16px;text-align:center;position:relative;overflow:hidden;">
         <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:.06;pointer-events:none;">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" width="100" height="100"><rect width="36" height="36" rx="6" fill="#ffffff"/><rect x="7" y="7" width="22" height="22" rx="3" fill="#7000ff"/><rect x="11" y="11" width="14" height="14" rx="2" fill="#ffffff"/><text x="18" y="19" font-family="Inter,system-ui,sans-serif" font-size="10" font-weight="900" fill="#7000ff" text-anchor="middle" dominant-baseline="middle">N</text></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 480" width="70" height="104"><path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill="#ffffff"/><path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill="#ffffff"/></svg>
         </div>
         <div style="font-size:.7rem;color:var(--text2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;">Total USDC</div>
         <div style="font-size:2.2rem;font-weight:800;color:#fff;letter-spacing:-.02em;" id="mcTotalBal">—</div>
