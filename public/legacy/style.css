@@ -3332,6 +3332,7 @@ a:hover{color:var(--text);}
   #nanWalletDropWrap { display: none !important; }
   #nanSettingsWrap   { display: none !important; }
   #mobileAddrPill    { display: none !important; }
+  #navFaucetIconBtn  { display: none !important; }
 
   /* ── Hide AI FAB when already on the AI page ── */
   body:has(#page-agent-ai.active) #aiBtn { display: none !important; }
