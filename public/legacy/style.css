@@ -1203,7 +1203,7 @@ a:hover{color:var(--text);}
 
 /* —— Desktop topbar: hide mobile-only Arc pill, enlarge brand mark, tune wordmark weight —— */
 @media(min-width:769px){
-  #mobileNetPill{display:none !important;}
+  html body #mobileNetPill{display:none !important;}
   #mobileBrandLogo svg{width:30px !important;height:45px !important;}
   #mobileBrandLogo .mb-word{font-weight:700 !important;}
 }
