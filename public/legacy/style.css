@@ -1102,7 +1102,7 @@ a:hover{color:var(--text);}
   .page{
     position:fixed !important;
     top:64px !important;
-    left:220px !important;
+    left:0 !important;
     right:0 !important;
     bottom:0 !important;
     width:auto !important;max-width:none !important;
@@ -1171,7 +1171,7 @@ a:hover{color:var(--text);}
   .wallet-modal{border-radius:22px !important;max-width:420px !important;}
 
   /* Toast centered in content area */
-  #toast{bottom:36px !important;left:calc(220px + (100vw - 220px) / 2) !important;max-width:380px !important;width:auto !important;min-width:180px !important;padding:10px 24px !important;}
+  #toast{bottom:36px !important;left:50% !important;max-width:380px !important;width:auto !important;min-width:180px !important;padding:10px 24px !important;}
 
   /* Pickers as centered modals */
   #chainPickerSheet,#bankPickerSheet{
@@ -1195,11 +1195,22 @@ a:hover{color:var(--text);}
 /* Ã¢â¢ÂÃ¢â¢Â WIDE DESKTOP (1200px+) Ã¢â¢ÂÃ¢â¢Â */
 @media(min-width:1200px){
   #desktopNav{width:240px;}
-  .page{left:240px !important;}
+  .page{left:0 !important;}
   .page > *{max-width:600px !important;}
   .home-bal-num{font-size:3rem;}
-  #toast{left:calc(240px + (100vw - 240px) / 2) !important;}
+  #toast{left:50% !important;}
 }
+
+/* —— Desktop topbar: hide mobile-only Arc pill, enlarge brand mark, tune wordmark weight —— */
+@media(min-width:769px){
+  #mobileNetPill{display:none !important;}
+  #mobileBrandLogo svg{width:30px !important;height:45px !important;}
+  #mobileBrandLogo .mb-word{font-weight:700 !important;}
+}
+
+/* —— Topbar nav links: purple highlight on hover —— */
+.tnav-btn:hover{color:#7000ff !important;opacity:1 !important;}
+#tnav-agent:hover{color:#7000ff !important;}
 
 
 /* Ã¢ââ¬Ã¢ââ¬ Mobile polish (max-width:480px) Ã¢ââ¬Ã¢ââ¬ */
