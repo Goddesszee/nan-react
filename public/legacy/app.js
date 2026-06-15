@@ -2118,14 +2118,14 @@ async function ensureSwapApprovals() {
     if(uAllow < half) {
       approvals.push(
         usdcC.approve(SWAP_CONTRACT, ethers.MaxUint256, arcGasOpts())
-          .then(tx => { _swapApproved.USDC = true; return tx.wait(0); })
+          .then(tx => { _swapApproved.USDC = true; return tx.wait(1); })
           .catch(() => {})
       );
     } else { _swapApproved.USDC = true; }
     if(eAllow < half) {
       approvals.push(
         eurcC.approve(SWAP_CONTRACT, ethers.MaxUint256, arcGasOpts())
-          .then(tx => { _swapApproved.EURC = true; return tx.wait(0); })
+          .then(tx => { _swapApproved.EURC = true; return tx.wait(1); })
           .catch(() => {})
       );
     } else { _swapApproved.EURC = true; }
@@ -2229,7 +2229,7 @@ async function doSwap(){
     if(currentAllow < amtIn){
       btn.innerHTML = '<span class="spinner"></span>Approving…';
       const approveTx = await tokenContract.approve(SWAP_CONTRACT, ethers.MaxUint256, arcGasOpts());
-      await approveTx.wait(0);
+      await approveTx.wait(1);
       if(isUSDCtoEURC) _swapApproved.USDC = true;
       else             _swapApproved.EURC = true;
     }
@@ -5400,7 +5400,7 @@ async function depositToGateway() {
     return;
   }
 
-  // ── MetaMask path — depositForBurn on CCTP Token Messenger ──
+  // ── MetaMask path — deposit() on Circle Gateway Wallet contract ──
   if (!signer || !onArcNetwork) {
     toast('Connect MetaMask on Arc Testnet first','error');
     if(btn){ btn.disabled=false; btn.textContent='Deposit'; }
@@ -5412,22 +5412,25 @@ async function depositToGateway() {
     // Check balance
     const bal = await usdcC.balanceOf(userAddr);
     if(bal < amtAtomic) throw new Error('Insufficient USDC balance');
-    // Approve CCTP messenger to spend
+    // Approve Gateway Wallet contract to spend
     if(btn) btn.textContent = 'Approving…';
-    const approveTx = await usdcC.approve(CCTP_TOKEN_MESSENGER, ethers.MaxUint256, arcGasOpts());
-    await approveTx.wait(0);
-    // depositForBurn — burns USDC on Arc and mints on Gateway
+    const currentAllow = await usdcC.allowance(userAddr, GATEWAY_CONTRACT);
+    if(currentAllow < amtAtomic){
+      const approveTx = await usdcC.approve(GATEWAY_CONTRACT, ethers.MaxUint256, arcGasOpts());
+      await approveTx.wait(1);
+    }
+    // depositForBurn — deposits USDC into the Gateway unified balance
     if(btn) btn.textContent = 'Depositing…';
     const recipientPadded = '0x' + userAddr.replace('0x','').toLowerCase().padStart(64,'0');
-    const messenger = new ethers.Contract(CCTP_TOKEN_MESSENGER, CCTP_ABI, signer);
-    const burnTx = await messenger.depositForBurn(
+    const gatewayC = new ethers.Contract(GATEWAY_CONTRACT, GATEWAY_ABI, signer);
+    const burnTx = await gatewayC.depositForBurn(
       amtAtomic,
       GATEWAY_DOMAIN,
       recipientPadded,
       USDC_ADDR,
       arcGasOpts()
     );
-    await burnTx.wait(0);
+    await burnTx.wait(1);
     toast('✅ Gateway deposit submitted! Balance updates in ~20 mins','success',8000);
     addTx({hash:burnTx.hash,to:GATEWAY_CONTRACT,toRaw:'Gateway Deposit',amount:amt.toFixed(6),type:'out',token:'USDC',ts:Date.now(),confirmed:true,source:'gateway'});
     if(amtInput) amtInput.value = '';
@@ -7233,8 +7236,8 @@ async function adminSeedPool(){
     statusEl.innerHTML='<span style="color:#c084fc;">Approving…</span>';
     // Always approve both since contract takes both
     await Promise.all([
-      usdcC.approve(SWAP_CONTRACT,ethers.MaxUint256,arcGasOpts()).then(tx=>tx.wait(0)),
-      eurcC.approve(SWAP_CONTRACT,ethers.MaxUint256,arcGasOpts()).then(tx=>tx.wait(0)),
+      usdcC.approve(SWAP_CONTRACT,ethers.MaxUint256,arcGasOpts()).then(tx=>tx.wait(1)),
+      eurcC.approve(SWAP_CONTRACT,ethers.MaxUint256,arcGasOpts()).then(tx=>tx.wait(1)),
     ]);
 
     statusEl.innerHTML='<span style="color:#c084fc;">Adding liquidity…</span>';
