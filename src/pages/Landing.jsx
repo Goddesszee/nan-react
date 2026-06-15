@@ -395,6 +395,16 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
           </svg>
           NAN Wallet · Arc Testnet · v1.0.0
         </div>
+        <div style={{ display:'flex', alignItems:'center', gap:16, fontSize:'.78rem' }}>
+          <a href="https://x.com/nan_arc" target="_blank" rel="noopener noreferrer" style={{ display:'flex', alignItems:'center', gap:6, color:text2, textDecoration:'none' }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.262 10.94H16.17l-5.214-6.817L4.99 21.45H1.68l7.73-8.835L1.5 2.25H8.08l4.713 6.231zm-2.66 16.91h1.71L7.51 4.07H5.7z"/></svg>
+            @nan_arc
+          </a>
+          <a href="https://x.com/zarafatoluu" target="_blank" rel="noopener noreferrer" style={{ display:'flex', alignItems:'center', gap:6, color:text2, textDecoration:'none' }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.262 10.94H16.17l-5.214-6.817L4.99 21.45H1.68l7.73-8.835L1.5 2.25H8.08l4.713 6.231zm-2.66 16.91h1.71L7.51 4.07H5.7z"/></svg>
+            @zarafatoluu
+          </a>
+        </div>
         <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
           {['Circle','CCTP V2','Arc','Groq AI','Non-custodial'].map((t,i) => (
             <span key={i} style={{ fontSize:'.7rem', background: dark?'rgba(255,255,255,.04)':'rgba(0,0,0,.04)', border:`1px solid ${border}`, borderRadius:6, padding:'3px 9px', color:text2 }}>{t}</span>
