@@ -4783,7 +4783,7 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
 
   /* ── New flat NAN mark + "NAN" wordmark, both purple — pinned to left edge ── */
   #mobileBrandLogo {
-    display: flex !important; align-items: center; gap: 8px; flex-shrink: 0;
+    display: flex !important; align-items: center; gap: 5px; flex-shrink: 0;
     position: absolute; left: 13px; top: 50%;
     transform: translateY(-50%);
   }
