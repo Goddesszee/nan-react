@@ -3846,6 +3846,20 @@ input[style*="background: none"] {
     --border: rgba(255,255,255,.07);
   }
 }
+/* Re-apply our charcoal palette over the prefers-color-scheme:dark block above
+   (same specificity, later in source order wins). Excludes light theme and
+   does not use !important, so it can't bleed into [data-theme="light"] or
+   the mobile pure-black override. */
+:root:not([data-theme="light"]) {
+  --bg: #1a1a1a;
+  --surface: #212121;
+  --card: #242424;
+  --card2: #2e2e2e;
+  --border: rgba(255,255,255,.10);
+  --border2: rgba(255,255,255,.16);
+  --topbar-bg: #1a1a1a;
+  --nav-bg: #1a1a1a;
+}
 @media (prefers-color-scheme: light) {
   :root:not([data-theme="dark"]) {
     --bg: #fafafa;
