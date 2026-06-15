@@ -2,13 +2,13 @@
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes scaleIn{from{opacity:0;transform:scale(.88) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
 :root{
-  --bg:#0f0f0f;--surface:#161616;--card:#161616;--card2:#1c1c1c;
-  --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.11);
+  --bg:#1a1a1a;--surface:#212121;--card:#242424;--card2:#2e2e2e;
+  --border:rgba(255,255,255,.10);--border2:rgba(255,255,255,.16);
   --accent:#7000ff;--accent2:#7000ff;--accent3:#7000ff;--accent4:#a855f7;
   --text:#e8e8e8;--text2:#787878;--text3:#4a4a4a;
   --danger:#f87171;--success:#7000ff;
   --radius:12px;--radius-sm:8px;
-  --topbar-bg:#0f0f0f;--nav-bg:#0f0f0f;
+  --topbar-bg:#1a1a1a;--nav-bg:#1a1a1a;
 }
 [data-theme="light"]{
   --bg:#f0f0f0;
