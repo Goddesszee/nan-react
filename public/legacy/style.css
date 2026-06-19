@@ -4927,3 +4927,29 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
     box-sizing: border-box !important;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   ADMIN PAGE — readability fix
+   Labels/captions inside #adminOverlay were using var(--text2)/
+   var(--text3) at small font sizes on near-black card backgrounds,
+   making them very hard to read. Brighten just this page so it
+   doesn't affect --text2/--text3 anywhere else in the app.
+══════════════════════════════════════════════════════════════ */
+#adminOverlay [style*="color:var(--text2)"],
+#adminOverlay [style*="color: var(--text2)"],
+#adminOverlay [style*="color:var(--text3)"],
+#adminOverlay [style*="color: var(--text3)"] {
+  color: #b8b8c4 !important;
+}
+#adminOverlay [style*="color:var(--text)"],
+#adminOverlay [style*="color: var(--text)"] {
+  color: #f5f5f7 !important;
+}
+/* Card backgrounds are nearly transparent (.02-.03 alpha) — give them
+   a touch more depth so the cards read as distinct surfaces, which
+   also helps the text sitting on them appear higher contrast. */
+#adminOverlay [style*="background:rgba(255,255,255,.02)"],
+#adminOverlay [style*="background:rgba(255,255,255,.03)"] {
+  background: rgba(255,255,255,.05) !important;
+  border-color: rgba(255,255,255,.14) !important;
+}
