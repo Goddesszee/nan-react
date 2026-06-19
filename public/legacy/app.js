@@ -7203,6 +7203,66 @@ async function adminWithdrawPool(){
     btn.disabled=false;btn.textContent='Withdraw All';
   }
 }
+// ── Admin: Gateway withdraw (x402 revenue → destination chain) ──────────────
+// This is a server-signed action (X402_SELLER_PRIVATE_KEY on Railway), not a
+// MetaMask transaction — no signer/network check needed here, unlike the
+// pool withdraw above which is a direct on-chain call.
+async function adminGatewayWithdraw(){
+  const source    = document.getElementById('adminWdSource').value;
+  const dest      = document.getElementById('adminWdDest').value;
+  const amountStr = document.getElementById('adminWdAmount').value;
+  const recipient = document.getElementById('adminWdRecipient').value.trim();
+  const btn       = document.getElementById('adminWdBtn');
+  const statusEl  = document.getElementById('adminWdStatus');
+
+  const amount = parseFloat(amountStr);
+  if(!amountStr || isNaN(amount) || amount <= 0){
+    toast('Enter a valid amount','error',3000);
+    return;
+  }
+  if(source === dest){
+    toast('Source and destination must differ','error',3000);
+    return;
+  }
+  if(recipient && !/^0x[a-fA-F0-9]{40}$/.test(recipient)){
+    toast('Invalid recipient address','error',3000);
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Withdrawing…';
+  if(statusEl) statusEl.innerHTML = '<span style="color:var(--text2);">Signing burn intent and requesting attestation…</span>';
+
+  try{
+    const res = await fetch('https://nan-production.up.railway.app/api/gateway', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        action: 'withdraw',
+        sourceChain: source,
+        destChain: dest,
+        amount: amount,
+        recipient: recipient || undefined,
+      })
+    });
+    const data = await res.json();
+
+    if(data.success){
+      toast('✓ Withdrew '+amount.toFixed(6)+' USDC to '+dest, 'success', 6000);
+      if(statusEl) statusEl.innerHTML = '<span style="color:#7000ff;">Mint tx: '+data.mintTxHash.slice(0,10)+'…'+data.mintTxHash.slice(-8)+'</span>';
+      document.getElementById('adminWdAmount').value = '';
+    } else {
+      toast('Withdraw failed: '+(data.error||'Unknown error').slice(0,100), 'error', 6000);
+      if(statusEl) statusEl.innerHTML = '<span style="color:#f87171;">'+(data.error||'Unknown error').slice(0,150)+'</span>';
+    }
+  }catch(err){
+    toast('Withdraw request failed: '+err.message.slice(0,100), 'error', 6000);
+    if(statusEl) statusEl.innerHTML = '<span style="color:#f87171;">Connection error — '+err.message.slice(0,100)+'</span>';
+  }finally{
+    btn.disabled = false;
+    btn.textContent = 'Withdraw';
+  }
+}
 // ── Admin pool token selector ────────────────────────────────────────────────
 let _adminLiqToken = 'both'; // 'both' | 'usdc' | 'eurc'
 
