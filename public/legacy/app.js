@@ -6917,7 +6917,7 @@ function closeAdmin(){
   _adminUnlocked=false;
 }
 async function checkAdminPw(){
-  const pw = document.getElementById('adminPwInput').value;
+  const pw = document.getElementById('adminPwInput').value.trim();
   if(!pw) return;
   try {
     const res = await fetch('https://nan-production.up.railway.app/api/admin/auth', {
@@ -6932,12 +6932,15 @@ async function checkAdminPw(){
       document.getElementById('adminDash').style.display='block';
       loadAdminStats();
     } else {
-      document.getElementById('adminPwErr').style.display='block';
+      const errEl=document.getElementById('adminPwErr');
+      errEl.textContent='Incorrect password';
+      errEl.style.display='block';
       document.getElementById('adminPwInput').value='';
     }
   } catch(e) {
-    document.getElementById('adminPwErr').style.display='block';
-    document.getElementById('adminPwInput').value='';
+    const errEl=document.getElementById('adminPwErr');
+    errEl.textContent='Connection error — check your internet and try again';
+    errEl.style.display='block';
   }
 }
 async function loadAdminStats(){
