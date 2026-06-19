@@ -7019,33 +7019,65 @@ async function loadAdminStats(){
     const sh=await rpc('eth_call',[{to:USDC,data:'0x18160ddd'},'latest']);
     document.getElementById('statSupply').textContent=(parseInt(sh,16)/1e6).toLocaleString('en',{maximumFractionDigits:0})+' USDC';
 
-    // Find what chunk size RPC accepts by testing
-    setMsg('Finding optimal chunk size…');
-    const NAN_START=45488000;
+    // Scan from genesis (block 0) so stats reflect NAN's full history, not a
+    // guessed deployment block. NAN_START was a hardcoded approximation that
+    // could silently exclude early activity for every stat, not just USDC
+    // transfers — scanning from 0 removes that risk entirely.
+    //
+    // To keep this fast on repeat visits, results are cached in localStorage
+    // per contract. Only the gap between the cached "scanned through" block
+    // and the current latest block is fetched on subsequent loads.
     let CHUNK=10000;
-    setMsg(`Scanning from NAN deployment block…`);
+    const CACHE_PREFIX='nan_admin_scan_';
+    const CACHE_VERSION=2; // bump to invalidate old caches (e.g. after this SCAN_START fix)
 
-    // Scan in chunks from NAN_START — show progress
-    async function scanContract(addr, topics, label){
-      const logs=[];
-      const totalBlocks=latest-NAN_START;
-      const chunks=Math.ceil(totalBlocks/CHUNK);
+    function loadCache(key){
+      try{
+        const raw=localStorage.getItem(CACHE_PREFIX+key);
+        if(!raw)return null;
+        const parsed=JSON.parse(raw);
+        if(parsed.v!==CACHE_VERSION)return null;
+        return parsed;
+      }catch(e){return null;}
+    }
+    function saveCache(key,scannedThrough,logs){
+      try{
+        localStorage.setItem(CACHE_PREFIX+key,JSON.stringify({v:CACHE_VERSION,scannedThrough,logs}));
+      }catch(e){ /* storage full or unavailable — just skip caching, scan still works */ }
+    }
+
+    // Scan in chunks, resuming from cached progress when available
+    async function scanContract(addr, topics, label, cacheKey){
+      const cached=loadCache(cacheKey);
+      let logs=cached?cached.logs:[];
+      let scanFrom=cached?cached.scannedThrough+1:0;
+
+      if(scanFrom>latest){
+        // Already fully scanned through the current latest block
+        return logs;
+      }
+
+      const totalBlocks=latest-scanFrom;
+      const chunks=Math.ceil(totalBlocks/CHUNK)||1;
       for(let i=0;i<chunks;i++){
-        const from=NAN_START+(i*CHUNK), to=Math.min(from+CHUNK-1,latest);
+        const from=scanFrom+(i*CHUNK), to=Math.min(from+CHUNK-1,latest);
         const r=await oneLogs(addr,topics,from,to);
         logs.push(...r);
-        setMsg(`${label}<br/>${logs.length} events · ${Math.round(((i+1)/chunks)*100)}%`);
+        const pct=cached?`resuming from block ${scanFrom.toLocaleString()}`:`${Math.round(((i+1)/chunks)*100)}%`;
+        setMsg(`${label}<br/>${logs.length} events · ${pct}`);
         await new Promise(r=>setTimeout(r,0));
       }
+      saveCache(cacheKey,latest,logs);
       return logs;
     }
 
-    const hL=await scanContract(HIST,null,'📋 NAN History');
-    const sL=await scanContract(SWAP,null,'🔄 Swaps');
-    const lL=await scanContract(LEND,null,'💰 Lend');
-    const nL=await scanContract(NAME,null,'🏷 .arc Names');
-    const pL=await scanContract(PAYREQ,null,'📨 Pay Requests');
-    const uL=await scanContract(USDC,[TRANSFER],'💸 USDC Transfers');
+    setMsg('Scanning full chain history (first load may take a few minutes)…');
+    const hL=await scanContract(HIST,null,'📋 NAN History','hist');
+    const sL=await scanContract(SWAP,null,'🔄 Swaps','swap');
+    const lL=await scanContract(LEND,null,'💰 Lend','lend');
+    const nL=await scanContract(NAME,null,'🏷 .arc Names','name');
+    const pL=await scanContract(PAYREQ,null,'📨 Pay Requests','payreq');
+    const uL=await scanContract(USDC,[TRANSFER],'💸 USDC Transfers','usdc');
 
     setMsg('Processing…');
     const wallets=new Set();
