@@ -7182,6 +7182,13 @@ async function loadAdminStats(){
             }
           }
         });
+        // Save progress after EVERY chunk, not just at the end. The
+        // aggregate object is tiny (a few KB even with thousands of
+        // senders), so this is cheap — and it means a closed tab, locked
+        // phone, or navigation away only loses the current 10,000-block
+        // chunk's progress, not the entire multi-minute scan.
+        agg.scannedThrough=to;
+        saveUsdcAgg(agg);
         const pct=cached?`resuming from block ${scanFrom.toLocaleString()}`:`${Math.round(((i+1)/chunks)*100)}%`;
         setMsg(`💸 USDC Transfers<br/>${agg.bridges} bridges so far · ${pct}`);
         await new Promise(r=>setTimeout(r,0));
