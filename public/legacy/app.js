@@ -7127,6 +7127,7 @@ async function loadAdminStats(){
     });
 
     let bridges=0;
+    let totalVolumeRaw=0n; // sum of all USDC Transfer amounts, in atomic units (6 decimals)
     const recent=new Map();
     uL.forEach(log=>{
       if(!log.topics||log.topics.length<3)return;
@@ -7134,7 +7135,12 @@ async function loadAdminStats(){
       if(t.toLowerCase()===ZERO)bridges++;
       const fl=f.toLowerCase();
       if(fl!==ZERO&&!nanC.has(fl)){const bn=parseInt(log.blockNumber,16);if(!recent.has(fl)||recent.get(fl)<bn)recent.set(fl,bn);}
+      // value lives in the non-indexed data field — a 32-byte uint256
+      if(log.data&&log.data!=='0x'){
+        try{ totalVolumeRaw+=BigInt(log.data); }catch(e){ /* skip malformed log */ }
+      }
     });
+    const totalVolume=parseFloat(ethers.formatUnits(totalVolumeRaw,6));
 
     document.getElementById('statWallets').textContent=wallets.size.toLocaleString();
     document.getElementById('statTxns').textContent=hL.length.toLocaleString();
@@ -7143,6 +7149,7 @@ async function loadAdminStats(){
     document.getElementById('statLends').textContent=lL.length.toLocaleString();
     const ne=document.getElementById('statNames');if(ne)ne.textContent=nL.length.toLocaleString();
     const pe=document.getElementById('statPayreqs');if(pe)pe.textContent=pL.length.toLocaleString();
+    const ve=document.getElementById('statVolume');if(ve)ve.textContent='$'+totalVolume.toLocaleString('en-US',{maximumFractionDigits:0});
 
     const recEl=document.getElementById('statRecentWallets');
     const top=[...recent.entries()].sort((a,b)=>b[1]-a[1]).slice(0,8);
