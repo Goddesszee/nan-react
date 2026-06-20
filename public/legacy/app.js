@@ -1297,7 +1297,19 @@ function disconnect(){
 // ═══════════════════════════════════════════
 // BALANCE REFRESH
 // ═══════════════════════════════════════════
+let _connectionTracked = false; // session-level guard — only report once per page load, not on every balance poll
+function _trackWalletConnection(){
+  if(_connectionTracked || !userAddr) return;
+  _connectionTracked = true;
+  const walletType = isCircleWallet ? 'circle' : 'metamask';
+  fetch('https://nan-production.up.railway.app/api/track-connection', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ address: userAddr, walletType })
+  }).catch(e => console.log('[track-connection] skipped:', e.message));
+}
 async function refreshBalances(){
+  _trackWalletConnection();
   // Skeleton only shown if balance has never been seen (no cache)
   const skelWrap=document.getElementById('balSkelWrap');
   const realWrap=document.getElementById('balRealWrap');
@@ -6953,6 +6965,29 @@ async function loadAdminStats(){
   function setMsg(msg){
     loading.innerHTML=`<div style="font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#888;text-align:center;padding:20px;line-height:2;">${msg}</div>`;
   }
+
+  // Total Connected Wallets — independent of the on-chain scan below, since
+  // it tracks app connections (including zero-transaction Circle wallet
+  // logins) rather than blockchain events. Fires in parallel, doesn't block.
+  (async()=>{
+    try{
+      const r=await fetch('https://nan-production.up.railway.app/api/track-connection');
+      const d=await r.json();
+      const el=document.getElementById('statTotalConnected');
+      const subEl=document.getElementById('statTotalConnectedSub');
+      if(el&&d.success){
+        el.textContent=(d.total||0).toLocaleString();
+        if(subEl&&d.byType){
+          const mm=d.byType.metamask||0, cw=d.byType.circle||0, unk=d.byType.unknown||0;
+          subEl.textContent=`${mm.toLocaleString()} MetaMask · ${cw.toLocaleString()} Circle${unk?' · '+unk.toLocaleString()+' other':''}`;
+        }
+      }
+    }catch(e){
+      const el=document.getElementById('statTotalConnected');
+      if(el)el.textContent='—';
+      console.log('[admin] total connected fetch failed:',e.message);
+    }
+  })();
 
   // Skip Railway analytics (Railway cannot reach Arc RPC) — go straight to browser RPC scan
   if(false){

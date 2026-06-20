@@ -2367,7 +2367,7 @@ document.addEventListener('DOMContentLoaded',function(){
   }
 })();
 </script>
-<script src="/legacy/app.js?v=1781895476"></script>
+<script src="/legacy/app.js?v=1781925520"></script>
 <script src="/legacy/ui.js?v=1781459118"></script>
 
 <!-- ══ BANK PICKER MODAL ══ -->
@@ -3166,13 +3166,18 @@ function nanPopulateRecent(){
         <div style="background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:18px;padding:20px;">
           <div style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:var(--text);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;">Unique Wallets</div>
           <div id="statWallets" style="font-size:2rem;font-weight:800;letter-spacing:-1px;color:var(--accent3);">—</div>
-          <div data-stat="wallet-sub" style="font-size:1rem;color:var(--text);margin-top:4px;">Verified NAN users</div>
+          <div data-stat="wallet-sub" style="font-size:1rem;color:var(--text);margin-top:4px;">On-chain activity (swap/lend/names/payreq)</div>
         </div>
         <div style="background:rgba(112,0,255,.06);border:1px solid rgba(112,0,255,.18);border-radius:18px;padding:20px;">
-          <div style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:var(--text);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;">Total Transactions</div>
+          <div style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:var(--text);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;">History Events</div>
           <div id="statTxns" style="font-size:2rem;font-weight:800;letter-spacing:-1px;color:#7000ff;">—</div>
-          <div style="font-size:1rem;color:var(--text);margin-top:4px;">USDC + EURC transfers</div>
+          <div style="font-size:1rem;color:var(--text);margin-top:4px;">NANHistory on-chain records</div>
         </div>
+      </div>
+      <div style="background:rgba(0,255,170,.06);border:1px solid rgba(0,255,170,.2);border-radius:18px;padding:20px;margin-bottom:10px;">
+        <div style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:var(--text);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;">Total Connected Wallets</div>
+        <div id="statTotalConnected" style="font-size:2rem;font-weight:800;letter-spacing:-1px;color:#00ffaa;">—</div>
+        <div id="statTotalConnectedSub" style="font-size:1rem;color:var(--text);margin-top:4px;">Every wallet that ever connected — MetaMask + Circle</div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">
         <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:16px;padding:16px;">
