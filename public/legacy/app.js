@@ -7084,7 +7084,10 @@ async function loadAdminStats(){
       }catch(e){ /* storage full or unavailable — just skip caching, scan still works */ }
     }
 
-    // Scan in chunks, resuming from cached progress when available
+    // Scan in chunks, resuming from cached progress when available.
+    // NOTE: this generic raw-log cache is fine for NAN's own contracts
+    // (History/Swap/Lend/Names/PayRequests) since their event volume is small.
+    // It is NOT used for USDC transfers — see scanUsdcAggregates below.
     async function scanContract(addr, topics, label, cacheKey){
       const cached=loadCache(cacheKey);
       let logs=cached?cached.logs:[];
@@ -7109,13 +7112,92 @@ async function loadAdminStats(){
       return logs;
     }
 
+    // USDC transfer logs can number in the millions — far too large to cache
+    // as raw JSON in localStorage (a multi-million-event scan can exceed
+    // 500MB, while localStorage typically caps around 5-10MB). Storing the
+    // raw logs would silently fail to save, causing every refresh to
+    // re-scan from block 0 with no error shown.
+    //
+    // Instead, only the *computed aggregates* are cached — a few KB instead
+    // of hundreds of MB — and new blocks are folded into the running totals
+    // incrementally on each scan, never re-deriving from raw logs.
+    const USDC_AGG_KEY='nan_admin_usdc_agg';
+    function loadUsdcAgg(){
+      try{
+        const raw=localStorage.getItem(USDC_AGG_KEY);
+        if(!raw)return null;
+        const parsed=JSON.parse(raw);
+        if(parsed.v!==CACHE_VERSION)return null;
+        return {
+          scannedThrough: parsed.scannedThrough,
+          bridges: parsed.bridges,
+          totalVolumeRaw: BigInt(parsed.totalVolumeRaw),
+          volumeBySender: new Map(Object.entries(parsed.volumeBySender||{}).map(([k,v])=>[k,BigInt(v)])),
+          recent: new Map(Object.entries(parsed.recent||{})),
+        };
+      }catch(e){return null;}
+    }
+    function saveUsdcAgg(agg){
+      try{
+        const volumeBySenderObj={};
+        agg.volumeBySender.forEach((v,k)=>{ volumeBySenderObj[k]=v.toString(); });
+        const recentObj=Object.fromEntries(agg.recent);
+        localStorage.setItem(USDC_AGG_KEY,JSON.stringify({
+          v:CACHE_VERSION,
+          scannedThrough:agg.scannedThrough,
+          bridges:agg.bridges,
+          totalVolumeRaw:agg.totalVolumeRaw.toString(),
+          volumeBySender:volumeBySenderObj,
+          recent:recentObj,
+        }));
+      }catch(e){ /* extremely unlikely to fail now — aggregates are tiny — but stay safe */ }
+    }
+
+    async function scanUsdcAggregates(){
+      const cached=loadUsdcAgg();
+      const agg=cached || { scannedThrough:-1, bridges:0, totalVolumeRaw:0n, volumeBySender:new Map(), recent:new Map() };
+      let scanFrom=agg.scannedThrough+1;
+
+      if(scanFrom>latest) return agg; // already fully scanned through current latest block
+
+      const totalBlocks=latest-scanFrom;
+      const chunks=Math.ceil(totalBlocks/CHUNK)||1;
+      for(let i=0;i<chunks;i++){
+        const from=scanFrom+(i*CHUNK), to=Math.min(from+CHUNK-1,latest);
+        const r=await oneLogs(USDC,[TRANSFER],from,to);
+        r.forEach(log=>{
+          if(!log.topics||log.topics.length<3)return;
+          const f='0x'+log.topics[1].slice(-40),t='0x'+log.topics[2].slice(-40);
+          if(t.toLowerCase()===ZERO)agg.bridges++;
+          const fl=f.toLowerCase();
+          if(fl!==ZERO&&!nanC.has(fl)){
+            const bn=parseInt(log.blockNumber,16);
+            if(!agg.recent.has(fl)||agg.recent.get(fl)<bn)agg.recent.set(fl,bn);
+            if(log.data&&log.data!=='0x'){
+              try{
+                const v=BigInt(log.data);
+                agg.totalVolumeRaw+=v;
+                agg.volumeBySender.set(fl,(agg.volumeBySender.get(fl)||0n)+v);
+              }catch(e){ /* skip malformed log */ }
+            }
+          }
+        });
+        const pct=cached?`resuming from block ${scanFrom.toLocaleString()}`:`${Math.round(((i+1)/chunks)*100)}%`;
+        setMsg(`💸 USDC Transfers<br/>${agg.bridges} bridges so far · ${pct}`);
+        await new Promise(r=>setTimeout(r,0));
+      }
+      agg.scannedThrough=latest;
+      saveUsdcAgg(agg);
+      return agg;
+    }
+
     setMsg('Scanning full chain history (first load may take a few minutes)…');
     const hL=await scanContract(HIST,null,'📋 NAN History','hist');
     const sL=await scanContract(SWAP,null,'🔄 Swaps','swap');
     const lL=await scanContract(LEND,null,'💰 Lend','lend');
     const nL=await scanContract(NAME,null,'🏷 .arc Names','name');
     const pL=await scanContract(PAYREQ,null,'📨 Pay Requests','payreq');
-    const uL=await scanContract(USDC,[TRANSFER],'💸 USDC Transfers','usdc');
+    const usdcAgg=await scanUsdcAggregates();
 
     setMsg('Processing…');
     const wallets=new Set();
@@ -7126,20 +7208,9 @@ async function loadAdminStats(){
       }
     });
 
-    let bridges=0;
-    let totalVolumeRaw=0n; // sum of all USDC Transfer amounts, in atomic units (6 decimals)
-    const recent=new Map();
-    uL.forEach(log=>{
-      if(!log.topics||log.topics.length<3)return;
-      const f='0x'+log.topics[1].slice(-40),t='0x'+log.topics[2].slice(-40);
-      if(t.toLowerCase()===ZERO)bridges++;
-      const fl=f.toLowerCase();
-      if(fl!==ZERO&&!nanC.has(fl)){const bn=parseInt(log.blockNumber,16);if(!recent.has(fl)||recent.get(fl)<bn)recent.set(fl,bn);}
-      // value lives in the non-indexed data field — a 32-byte uint256
-      if(log.data&&log.data!=='0x'){
-        try{ totalVolumeRaw+=BigInt(log.data); }catch(e){ /* skip malformed log */ }
-      }
-    });
+    const bridges=usdcAgg.bridges;
+    const totalVolumeRaw=usdcAgg.totalVolumeRaw;
+    const recent=usdcAgg.recent;
     const totalVolume=parseFloat(ethers.formatUnits(totalVolumeRaw,6));
 
     // Per-contract breakdown — top wallets by event count, one map per contract
@@ -7159,18 +7230,9 @@ async function loadAdminStats(){
     const topPayreq=topWalletsByCount(pL);
     const topHist=topWalletsByCount(hL);
 
-    // Top wallets by USDC volume sent — from the same uL scan, sum value per sender
-    const volumeBySender=new Map();
-    uL.forEach(log=>{
-      if(!log.topics||log.topics.length<3||!log.data||log.data==='0x')return;
-      const f='0x'+log.topics[1].slice(-40),fl=f.toLowerCase();
-      if(fl===ZERO||nanC.has(fl))return;
-      try{
-        const v=BigInt(log.data);
-        volumeBySender.set(fl,(volumeBySender.get(fl)||0n)+v);
-      }catch(e){ /* skip malformed log */ }
-    });
-    const topVolume=[...volumeBySender.entries()]
+    // Top wallets by USDC volume sent — already computed incrementally inside
+    // usdcAgg.volumeBySender, no need to re-derive from raw logs
+    const topVolume=[...usdcAgg.volumeBySender.entries()]
       .sort((a,b)=>(b[1]>a[1]?1:-1))
       .slice(0,5)
       .map(([addr,raw])=>[addr,parseFloat(ethers.formatUnits(raw,6))]);
