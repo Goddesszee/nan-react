@@ -6989,6 +6989,37 @@ async function loadAdminStats(){
     }
   })();
 
+  // Circle Wallets (All-Time) — queries Circle's API directly for every
+  // wallet set ever created, independent of on-chain activity or connection
+  // tracking. This is the one true day-one count for Circle users, since
+  // Circle itself is the source of truth for wallet creation. Can be slower
+  // than other stats if NAN has many users (paginated + rate-limited Circle
+  // API calls), so it runs independently and doesn't block the rest of the
+  // page from loading.
+  (async()=>{
+    try{
+      const r=await fetch('https://nan-production.up.railway.app/api/circle-wallets',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action:'listAllWalletSets'})
+      });
+      const d=await r.json();
+      const el=document.getElementById('statCircleAllTime');
+      const subEl=document.getElementById('statCircleAllTimeSub');
+      if(el&&d.success){
+        el.textContent=(d.total||0).toLocaleString();
+        if(subEl)subEl.textContent='Every Circle wallet ever created — true count since day one';
+      }else if(el){
+        el.textContent='—';
+        if(subEl)subEl.textContent=d.error||'Could not load Circle wallet count';
+      }
+    }catch(e){
+      const el=document.getElementById('statCircleAllTime');
+      if(el)el.textContent='—';
+      console.log('[admin] circle all-time fetch failed:',e.message);
+    }
+  })();
+
   // Skip Railway analytics (Railway cannot reach Arc RPC) — go straight to browser RPC scan
   if(false){
     setMsg('Loading NAN analytics…');
