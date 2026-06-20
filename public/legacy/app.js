@@ -7142,6 +7142,51 @@ async function loadAdminStats(){
     });
     const totalVolume=parseFloat(ethers.formatUnits(totalVolumeRaw,6));
 
+    // Per-contract breakdown — top wallets by event count, one map per contract
+    function topWalletsByCount(logs, n=5){
+      const counts=new Map();
+      logs.forEach(log=>{
+        if(!log.topics||log.topics.length<2)return;
+        const a='0x'+log.topics[1].slice(-40), al=a.toLowerCase();
+        if(al===ZERO||nanC.has(al))return;
+        counts.set(al,(counts.get(al)||0)+1);
+      });
+      return [...counts.entries()].sort((a,b)=>b[1]-a[1]).slice(0,n);
+    }
+    const topSwap=topWalletsByCount(sL);
+    const topLend=topWalletsByCount(lL);
+    const topName=topWalletsByCount(nL);
+    const topPayreq=topWalletsByCount(pL);
+    const topHist=topWalletsByCount(hL);
+
+    // Top wallets by USDC volume sent — from the same uL scan, sum value per sender
+    const volumeBySender=new Map();
+    uL.forEach(log=>{
+      if(!log.topics||log.topics.length<3||!log.data||log.data==='0x')return;
+      const f='0x'+log.topics[1].slice(-40),fl=f.toLowerCase();
+      if(fl===ZERO||nanC.has(fl))return;
+      try{
+        const v=BigInt(log.data);
+        volumeBySender.set(fl,(volumeBySender.get(fl)||0n)+v);
+      }catch(e){ /* skip malformed log */ }
+    });
+    const topVolume=[...volumeBySender.entries()]
+      .sort((a,b)=>(b[1]>a[1]?1:-1))
+      .slice(0,5)
+      .map(([addr,raw])=>[addr,parseFloat(ethers.formatUnits(raw,6))]);
+
+    function renderWalletList(pairs, formatVal){
+      if(!pairs.length)return'<div style="font-size:.75rem;color:#666;">No activity yet</div>';
+      return pairs.map(([a,v])=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#1a1a1a;border:1px solid #1a1a1a;border-radius:10px;margin-bottom:4px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:#ccc;">${a.slice(0,8)}…${a.slice(-6)}</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:.65rem;color:#7000ff;font-weight:700;">${formatVal(v)}</span><a href="https://testnet.arcscan.app/address/${a}" target="_blank" style="font-size:.6rem;color:#a855f7;text-decoration:none;">View ↗</a></div></div>`).join('');
+    }
+
+    const swapEl=document.getElementById('statTopSwap');if(swapEl)swapEl.innerHTML=renderWalletList(topSwap,v=>v+' txns');
+    const lendEl=document.getElementById('statTopLend');if(lendEl)lendEl.innerHTML=renderWalletList(topLend,v=>v+' txns');
+    const nameEl=document.getElementById('statTopName');if(nameEl)nameEl.innerHTML=renderWalletList(topName,v=>v+' txns');
+    const payreqEl=document.getElementById('statTopPayreq');if(payreqEl)payreqEl.innerHTML=renderWalletList(topPayreq,v=>v+' txns');
+    const histEl=document.getElementById('statTopHist');if(histEl)histEl.innerHTML=renderWalletList(topHist,v=>v+' txns');
+    const volEl=document.getElementById('statTopVolume');if(volEl)volEl.innerHTML=renderWalletList(topVolume,v=>'$'+v.toLocaleString('en-US',{maximumFractionDigits:2}));
+
     document.getElementById('statWallets').textContent=wallets.size.toLocaleString();
     document.getElementById('statTxns').textContent=hL.length.toLocaleString();
     document.getElementById('statSwaps').textContent=sL.length.toLocaleString();
