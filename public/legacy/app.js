@@ -1388,26 +1388,28 @@ async function payNgnInUsdc(ngnAmount, btn){
 // ── AIRTIME ──────────────────────────────────────────────────────────────
 function doAirtime(){
   openBillModal('Buy Airtime', `
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:12px;">
-      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Network</div>
-      <select id="airtimeNetwork" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 14px;color:var(--text);font-size:1rem;font-weight:600;">
-        <option value="mtn">MTN</option>
-        <option value="glo">Glo</option>
-        <option value="airtel">Airtel</option>
-        <option value="etisalat">9mobile</option>
-      </select>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:3px;">
+        <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Network</div>
+        <select id="airtimeNetwork" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 14px;color:var(--text);font-size:1rem;font-weight:600;">
+          <option value="mtn">MTN</option>
+          <option value="glo">Glo</option>
+          <option value="airtel">Airtel</option>
+          <option value="etisalat">9mobile</option>
+        </select>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:3px;">
+        <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Phone Number</div>
+        <input id="airtimePhone" type="tel" placeholder="08011111111" style="width:100%;background:none;border:none;outline:none;font-size:1.4rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
+        <div style="font-size:.8rem;color:var(--text3);margin-top:6px;">Sandbox tip: use 08011111111 for a guaranteed success</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:18px;">
+        <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Amount (₦)</div>
+        <input id="airtimeAmount" type="number" placeholder="0" style="width:100%;background:none;border:none;outline:none;font-size:2.2rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
+      </div>
+      <button onclick="submitAirtime()" id="airtimeBtn" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Buy Airtime</button>
+      <div id="airtimeStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
     </div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:12px;">
-      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Phone Number</div>
-      <input id="airtimePhone" type="tel" placeholder="08011111111" style="width:100%;background:none;border:none;outline:none;font-size:1.4rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
-      <div style="font-size:.8rem;color:var(--text3);margin-top:6px;">Sandbox tip: use 08011111111 for a guaranteed success</div>
-    </div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:18px;">
-      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Amount (₦)</div>
-      <input id="airtimeAmount" type="number" placeholder="0" style="width:100%;background:none;border:none;outline:none;font-size:2.2rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
-    </div>
-    <button onclick="submitAirtime()" id="airtimeBtn" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Buy Airtime</button>
-    <div id="airtimeStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
   `);
 }
 async function submitAirtime(){
@@ -1445,26 +1447,28 @@ async function submitAirtime(){
 // ── DATA ─────────────────────────────────────────────────────────────────
 function doData(){
   openBillModal('Buy Data', `
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:12px;">
-      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Network</div>
-      <select id="dataNetwork" onchange="loadDataPlans()" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 14px;color:var(--text);font-size:1rem;font-weight:600;">
-        <option value="mtn-data">MTN</option>
-        <option value="glo-data">Glo</option>
-        <option value="airtel-data">Airtel</option>
-        <option value="etisalat-data">9mobile</option>
-      </select>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:3px;">
+        <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Network</div>
+        <select id="dataNetwork" onchange="loadDataPlans()" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 14px;color:var(--text);font-size:1rem;font-weight:600;">
+          <option value="mtn-data">MTN</option>
+          <option value="glo-data">Glo</option>
+          <option value="airtel-data">Airtel</option>
+          <option value="etisalat-data">9mobile</option>
+        </select>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:3px;">
+        <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Plan</div>
+        <select id="dataPlan" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 14px;color:var(--text);font-size:1rem;font-weight:600;"><option>Loading plans…</option></select>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:18px;">
+        <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Phone Number</div>
+        <input id="dataPhone" type="tel" placeholder="08011111111" style="width:100%;background:none;border:none;outline:none;font-size:1.4rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
+        <div style="font-size:.8rem;color:var(--text3);margin-top:6px;">Sandbox tip: use 08011111111 for a guaranteed success</div>
+      </div>
+      <button onclick="submitData()" id="dataBtn" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Buy Data</button>
+      <div id="dataStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
     </div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:12px;">
-      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Plan</div>
-      <select id="dataPlan" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 14px;color:var(--text);font-size:1rem;font-weight:600;"><option>Loading plans…</option></select>
-    </div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:18px;">
-      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Phone Number</div>
-      <input id="dataPhone" type="tel" placeholder="08011111111" style="width:100%;background:none;border:none;outline:none;font-size:1.4rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
-      <div style="font-size:.8rem;color:var(--text3);margin-top:6px;">Sandbox tip: use 08011111111 for a guaranteed success</div>
-    </div>
-    <button onclick="submitData()" id="dataBtn" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Buy Data</button>
-    <div id="dataStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
   `);
   loadDataPlans();
 }
@@ -1567,15 +1571,17 @@ async function doCredit(){
                : {label:'Building', color:'#f87171'};
 
     document.getElementById('billBody').innerHTML = `
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;padding:28px 20px;text-align:center;">
-        <div style="font-size:3rem;font-weight:800;color:${tier.color};letter-spacing:-2px;">${score}</div>
-        <div style="font-size:.9rem;font-weight:700;color:${tier.color};margin-top:4px;">${tier.label}</div>
-        <div style="font-size:.78rem;color:var(--text3);margin-top:12px;max-width:280px;margin-left:auto;margin-right:auto;">Computed from your real on-chain NANLendingPool activity — not a third-party credit check.</div>
-      </div>
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px;margin-top:12px;">
-        <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:.9rem;"><span style="color:var(--text3);">Supplied</span><span style="color:var(--text);font-weight:700;">${supplied.toFixed(2)} USDC</span></div>
-        <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:.9rem;"><span style="color:var(--text3);">Borrowed</span><span style="color:var(--text);font-weight:700;">${borrowed.toFixed(2)} USDC</span></div>
-        <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:.9rem;"><span style="color:var(--text3);">Health Factor</span><span style="color:var(--text);font-weight:700;">${healthFactor!==null?healthFactor.toFixed(2):'—'}</span></div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px 20px;text-align:center;margin-bottom:3px;">
+          <div style="font-size:3rem;font-weight:800;color:${tier.color};letter-spacing:-2px;">${score}</div>
+          <div style="font-size:.9rem;font-weight:700;color:${tier.color};margin-top:4px;">${tier.label}</div>
+          <div style="font-size:.78rem;color:var(--text3);margin-top:12px;max-width:280px;margin-left:auto;margin-right:auto;">Computed from your real on-chain NANLendingPool activity — not a third-party credit check.</div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px;">
+          <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:.9rem;"><span style="color:var(--text3);">Supplied</span><span style="color:var(--text);font-weight:700;">${supplied.toFixed(2)} USDC</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:.9rem;"><span style="color:var(--text3);">Borrowed</span><span style="color:var(--text);font-weight:700;">${borrowed.toFixed(2)} USDC</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:.9rem;"><span style="color:var(--text3);">Health Factor</span><span style="color:var(--text);font-weight:700;">${healthFactor!==null?healthFactor.toFixed(2):'—'}</span></div>
+        </div>
       </div>
     `;
   }catch(err){
@@ -1590,26 +1596,28 @@ async function doCredit(){
 function doList(){
   if(!userAddr){ toast('Connect your wallet first', 'error', 3000); return; }
   openBillModal('List Your Service', `
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:12px;">
-      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Service Name</div>
-      <input id="listServiceName" type="text" placeholder="e.g. Logo Design" style="width:100%;background:none;border:none;outline:none;font-size:1.4rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
-    </div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:12px;">
-      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Price</div>
-      <div style="display:flex;align-items:center;gap:12px;">
-        <input id="listAmount" type="number" min="0.000001" step="0.01" placeholder="0" style="flex:1;background:none;border:none;outline:none;font-size:2.2rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
-        <select id="listToken" style="background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:8px 14px;color:var(--text);font-size:1rem;font-weight:700;flex-shrink:0;">
-          <option value="USDC">USDC</option>
-          <option value="EURC">EURC</option>
-        </select>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:3px;">
+        <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Service Name</div>
+        <input id="listServiceName" type="text" placeholder="e.g. Logo Design" style="width:100%;background:none;border:none;outline:none;font-size:1.4rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
       </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:3px;">
+        <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Price</div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <input id="listAmount" type="number" min="0.000001" step="0.01" placeholder="0" style="flex:1;background:none;border:none;outline:none;font-size:2.2rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
+          <select id="listToken" style="background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:8px 14px;color:var(--text);font-size:1rem;font-weight:700;flex-shrink:0;">
+            <option value="USDC">USDC</option>
+            <option value="EURC">EURC</option>
+          </select>
+        </div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:18px;">
+        <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Description (optional)</div>
+        <input id="listNote" type="text" placeholder="What's this for?" style="width:100%;background:none;border:none;outline:none;font-size:1.1rem;font-weight:500;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
+      </div>
+      <button onclick="submitListService()" id="listBtn" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Create Payment Link</button>
+      <div id="listStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
     </div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:18px;">
-      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Description (optional)</div>
-      <input id="listNote" type="text" placeholder="What's this for?" style="width:100%;background:none;border:none;outline:none;font-size:1.1rem;font-weight:500;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
-    </div>
-    <button onclick="submitListService()" id="listBtn" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Create Payment Link</button>
-    <div id="listStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
   `);
 }
 async function submitListService(){
@@ -1750,33 +1758,35 @@ async function loadMyAjoGroups(){
 function showAjoCreate(){
   document.getElementById('ajoBody').innerHTML = `
     <button onclick="doAjo()" style="background:none;border:none;color:var(--text3);font-size:.82rem;cursor:pointer;margin-bottom:14px;padding:0;">← Back</button>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:12px;">
-      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">What's this group for?</div>
-      <input id="ajoLabel" type="text" placeholder="e.g. Office Savings, Family Ajo" style="width:100%;background:none;border:none;outline:none;font-size:1.2rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
-    </div>
-    <div style="display:flex;gap:10px;margin-bottom:12px;">
-      <div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 16px 14px;">
-        <div style="font-size:.9rem;color:var(--text);font-weight:500;margin-bottom:12px;">People</div>
-        <input id="ajoMaxMembers" type="number" min="2" max="50" placeholder="0" oninput="updateAjoPreview()" style="width:100%;background:none;border:none;outline:none;font-size:1.8rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:3px;">
+        <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">What's this group for?</div>
+        <input id="ajoLabel" type="text" placeholder="e.g. Office Savings, Family Ajo" style="width:100%;background:none;border:none;outline:none;font-size:1.2rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
       </div>
-      <div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 16px 14px;">
-        <div style="font-size:.9rem;color:var(--text);font-weight:500;margin-bottom:12px;">USDC each</div>
-        <input id="ajoContribution" type="number" min="0.01" step="0.01" placeholder="0" oninput="updateAjoPreview()" style="width:100%;background:none;border:none;outline:none;font-size:1.8rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
+      <div style="display:flex;gap:3px;margin-bottom:3px;">
+        <div style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 16px 14px;">
+          <div style="font-size:.9rem;color:var(--text);font-weight:500;margin-bottom:12px;">People</div>
+          <input id="ajoMaxMembers" type="number" min="2" max="50" placeholder="0" oninput="updateAjoPreview()" style="width:100%;background:none;border:none;outline:none;font-size:1.8rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
+        </div>
+        <div style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 16px 14px;">
+          <div style="font-size:.9rem;color:var(--text);font-weight:500;margin-bottom:12px;">USDC each</div>
+          <input id="ajoContribution" type="number" min="0.01" step="0.01" placeholder="0" oninput="updateAjoPreview()" style="width:100%;background:none;border:none;outline:none;font-size:1.8rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
+        </div>
       </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:12px;">
+        <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">How often does everyone pay?</div>
+        <select id="ajoRoundLength" onchange="updateAjoPreview()" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 14px;color:var(--text);font-size:1rem;font-weight:600;">
+          <option value="3600">Every hour (for testing)</option>
+          <option value="86400">Every day</option>
+          <option value="604800" selected>Every week</option>
+        </select>
+      </div>
+      <div id="ajoPreview" style="background:rgba(112,0,255,.06);border:1px solid rgba(112,0,255,.18);border-radius:16px;padding:16px;margin-bottom:18px;font-size:.85rem;color:var(--text3);line-height:1.6;">
+        Fill in the details above to see how much you'll pay and receive.
+      </div>
+      <button onclick="submitAjoCreate()" id="ajoCreateBtn" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Start Group</button>
+      <div id="ajoCreateStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
     </div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:12px;">
-      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">How often does everyone pay?</div>
-      <select id="ajoRoundLength" onchange="updateAjoPreview()" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 14px;color:var(--text);font-size:1rem;font-weight:600;">
-        <option value="3600">Every hour (for testing)</option>
-        <option value="86400">Every day</option>
-        <option value="604800" selected>Every week</option>
-      </select>
-    </div>
-    <div id="ajoPreview" style="background:rgba(112,0,255,.06);border:1px solid rgba(112,0,255,.18);border-radius:16px;padding:16px;margin-bottom:18px;font-size:.85rem;color:var(--text3);line-height:1.6;">
-      Fill in the details above to see how much you'll pay and receive.
-    </div>
-    <button onclick="submitAjoCreate()" id="ajoCreateBtn" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Start Group</button>
-    <div id="ajoCreateStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
   `;
 }
 
@@ -1836,14 +1846,16 @@ async function submitAjoCreate(){
 function showAjoJoin(){
   document.getElementById('ajoBody').innerHTML = `
     <button onclick="doAjo()" style="background:none;border:none;color:var(--text3);font-size:.82rem;cursor:pointer;margin-bottom:14px;padding:0;">← Back</button>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:14px;">
-      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Group Code</div>
-      <input id="ajoJoinId" type="number" min="0" placeholder="0" oninput="previewAjoJoin()" style="width:100%;background:none;border:none;outline:none;font-size:2.2rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
-      <div style="font-size:.8rem;color:var(--text3);margin-top:6px;">Ask whoever invited you for this number — it's shown when they create the group.</div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:3px;">
+        <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Group Code</div>
+        <input id="ajoJoinId" type="number" min="0" placeholder="0" oninput="previewAjoJoin()" style="width:100%;background:none;border:none;outline:none;font-size:2.2rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
+        <div style="font-size:.8rem;color:var(--text3);margin-top:6px;">Ask whoever invited you for this number — it's shown when they create the group.</div>
+      </div>
+      <div id="ajoJoinPreview"></div>
+      <button onclick="submitAjoJoin()" id="ajoJoinBtn" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:14px;">Join Group</button>
+      <div id="ajoJoinStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
     </div>
-    <div id="ajoJoinPreview"></div>
-    <button onclick="submitAjoJoin()" id="ajoJoinBtn" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Join Group</button>
-    <div id="ajoJoinStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
   `;
 }
 
@@ -1865,7 +1877,7 @@ function previewAjoJoin(){
         return;
       }
       previewEl.innerHTML = `
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:3px;">
           <div style="font-size:.95rem;font-weight:700;color:var(--text);">${g.label || 'Group #'+groupId}</div>
           <div style="font-size:.82rem;color:var(--text3);margin-top:6px;">You'll pay ${ethers.formatUnits(g.contributionAmount,6)} USDC each round · ${g.memberCount}/${g.maxMembers} people joined so far</div>
         </div>
@@ -1917,7 +1929,7 @@ async function showAjoGroup(groupId){
 
     if(isOpen){
       actionHtml = `
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-top:14px;margin-bottom:12px;text-align:center;">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:3px;text-align:center;">
           <div style="font-size:.78rem;color:var(--text3);margin-bottom:6px;">Share this code so others can join</div>
           <div style="font-size:1.8rem;font-weight:800;color:#7000ff;">${groupId}</div>
         </div>
@@ -1939,7 +1951,7 @@ async function showAjoGroup(groupId){
       // Pre-compute every conditional string OUTSIDE the template literal —
       // avoids nested-ternary-inside-backtick bugs that have bitten this
       // function twice before (quotes trapping ${...} as literal text).
-      const roundCardBg = itsYourTurn ? 'rgba(52,211,153,.1)' : 'var(--card)';
+      const roundCardBg = itsYourTurn ? 'rgba(52,211,153,.1)' : 'var(--surface)';
       const roundCardBorder = itsYourTurn ? 'rgba(52,211,153,.35)' : 'var(--border)';
       const roundLabelText = itsYourTurn
         ? "🎉 It's your turn to receive this round!"
@@ -1947,7 +1959,7 @@ async function showAjoGroup(groupId){
       const roundLabelWeight = itsYourTurn ? '700' : '500';
 
       actionHtml = `
-        <div style="background:${roundCardBg};border:1px solid ${roundCardBorder};border-radius:16px;padding:16px;margin-top:14px;margin-bottom:12px;">
+        <div style="background:${roundCardBg};border:1px solid ${roundCardBorder};border-radius:16px;padding:16px;margin-bottom:3px;">
           <div style="font-size:.9rem;color:var(--text);font-weight:${roundLabelWeight};">${roundLabelText}</div>
           <div style="font-size:.82rem;color:var(--text3);margin-top:6px;">${contributed} of ${total} people have paid this round</div>
         </div>
@@ -1987,12 +1999,14 @@ async function showAjoGroup(groupId){
       <button onclick="doAjo()" style="background:none;border:none;color:var(--text3);font-size:.82rem;cursor:pointer;margin-bottom:14px;padding:0;">← Back</button>
       <div style="font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:4px;">${g.label || 'Group #'+groupId}</div>
       <div style="font-size:.82rem;color:var(--text3);margin-bottom:16px;">${statusLabel} · ${g.memberCount}/${g.maxMembers} people</div>
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px 16px;">
-        <div style="font-size:.78rem;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em;">Payout order (first to join goes first)</div>
-        ${memberRows}
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px 16px;margin-bottom:14px;">
+          <div style="font-size:.78rem;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em;">Payout order (first to join goes first)</div>
+          ${memberRows}
+        </div>
+        ${actionHtml}
+        <div id="ajoGroupStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
       </div>
-      ${actionHtml}
-      <div id="ajoGroupStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
     `;
   }catch(err){
     el.innerHTML = '<div style="text-align:center;padding:20px 0;color:#f87171;font-size:.8rem;">'+err.message.slice(0,150)+'</div>';
@@ -2067,37 +2081,39 @@ async function submitAjoClaim(groupId){
 // ── ELECTRICITY (NEPA) ──────────────────────────────────────────────────
 function doNepa(){
   openBillModal('Pay Electricity', `
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:12px;">
-      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Provider</div>
-      <select id="nepaProvider" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 14px;color:var(--text);font-size:1rem;font-weight:600;">
-        <option value="ikeja-electric">Ikeja Electric (IKEDC)</option>
-        <option value="eko-electric">Eko Electric (EKEDC)</option>
-        <option value="kano-electric">Kano Electric (KEDCO)</option>
-        <option value="portharcourt-electric">Port Harcourt Electric (PHED)</option>
-        <option value="jos-electric">Jos Electric (JED)</option>
-        <option value="ibadan-electric">Ibadan Electric (IBEDC)</option>
-        <option value="kaduna-electric">Kaduna Electric (KAEDCO)</option>
-        <option value="abuja-electric">Abuja Electric (AEDC)</option>
-        <option value="enugu-electric">Enugu Electric (EEDC)</option>
-        <option value="benin-electric">Benin Electric (BEDC)</option>
-        <option value="aba-electric">Aba Electric (ABA)</option>
-        <option value="yola-electric">Yola Electric (YEDC)</option>
-      </select>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:3px;">
+        <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Provider</div>
+        <select id="nepaProvider" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 14px;color:var(--text);font-size:1rem;font-weight:600;">
+          <option value="ikeja-electric">Ikeja Electric (IKEDC)</option>
+          <option value="eko-electric">Eko Electric (EKEDC)</option>
+          <option value="kano-electric">Kano Electric (KEDCO)</option>
+          <option value="portharcourt-electric">Port Harcourt Electric (PHED)</option>
+          <option value="jos-electric">Jos Electric (JED)</option>
+          <option value="ibadan-electric">Ibadan Electric (IBEDC)</option>
+          <option value="kaduna-electric">Kaduna Electric (KAEDCO)</option>
+          <option value="abuja-electric">Abuja Electric (AEDC)</option>
+          <option value="enugu-electric">Enugu Electric (EEDC)</option>
+          <option value="benin-electric">Benin Electric (BEDC)</option>
+          <option value="aba-electric">Aba Electric (ABA)</option>
+          <option value="yola-electric">Yola Electric (YEDC)</option>
+        </select>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:3px;">
+        <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Meter Type</div>
+        <select id="nepaType" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 14px;color:var(--text);font-size:1rem;font-weight:600;">
+          <option value="prepaid">Prepaid</option>
+          <option value="postpaid">Postpaid</option>
+        </select>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:18px;">
+        <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Meter Number</div>
+        <input id="nepaMeter" type="text" placeholder="1111111111111" style="width:100%;background:none;border:none;outline:none;font-size:1.4rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
+        <div style="font-size:.8rem;color:var(--text3);margin-top:6px;">Sandbox: 1111111111111 (prepaid) or 1010101010101 (postpaid)</div>
+      </div>
+      <button onclick="verifyNepaMeter()" id="nepaVerifyBtn" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;margin-bottom:12px;">Verify Meter</button>
+      <div id="nepaVerifyResult"></div>
     </div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:12px;">
-      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Meter Type</div>
-      <select id="nepaType" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 14px;color:var(--text);font-size:1rem;font-weight:600;">
-        <option value="prepaid">Prepaid</option>
-        <option value="postpaid">Postpaid</option>
-      </select>
-    </div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:18px;">
-      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Meter Number</div>
-      <input id="nepaMeter" type="text" placeholder="1111111111111" style="width:100%;background:none;border:none;outline:none;font-size:1.4rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
-      <div style="font-size:.8rem;color:var(--text3);margin-top:6px;">Sandbox: 1111111111111 (prepaid) or 1010101010101 (postpaid)</div>
-    </div>
-    <button onclick="verifyNepaMeter()" id="nepaVerifyBtn" style="width:100%;background:rgba(112,0,255,.12);border:1px solid rgba(112,0,255,.3);border-radius:14px;color:#7000ff;padding:13px;font-size:.95rem;font-weight:700;cursor:pointer;margin-bottom:12px;">Verify Meter</button>
-    <div id="nepaVerifyResult"></div>
   `);
 }
 async function verifyNepaMeter(){
@@ -2117,15 +2133,15 @@ async function verifyNepaMeter(){
   }
   const c = result.customer;
   document.getElementById('nepaVerifyResult').innerHTML = `
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:3px;">
       <div style="font-size:.95rem;font-weight:700;color:var(--text);">${c.Customer_Name||'Verified'}</div>
       <div style="font-size:.8rem;color:var(--text3);margin-top:4px;">${c.Address||''}</div>
     </div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:12px;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:3px;">
       <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Amount (₦)</div>
       <input id="nepaAmount" type="number" placeholder="0" style="width:100%;background:none;border:none;outline:none;font-size:2.2rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
     </div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:18px;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:18px;">
       <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Phone Number</div>
       <input id="nepaPhone" type="tel" placeholder="08011111111" style="width:100%;background:none;border:none;outline:none;font-size:1.4rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
     </div>
@@ -2170,13 +2186,15 @@ async function submitNepa(){
 // ── DSTV ─────────────────────────────────────────────────────────────────
 function doDstv(){
   openBillModal('DSTV Subscription', `
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:18px;">
-      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Smartcard Number</div>
-      <input id="dstvCard" type="text" placeholder="1212121212" style="width:100%;background:none;border:none;outline:none;font-size:1.4rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
-      <div style="font-size:.8rem;color:var(--text3);margin-top:6px;">Sandbox: 1212121212 for a guaranteed success</div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:18px;">
+        <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Smartcard Number</div>
+        <input id="dstvCard" type="text" placeholder="1212121212" style="width:100%;background:none;border:none;outline:none;font-size:1.4rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
+        <div style="font-size:.8rem;color:var(--text3);margin-top:6px;">Sandbox: 1212121212 for a guaranteed success</div>
+      </div>
+      <button onclick="verifyDstvCard()" id="dstvVerifyBtn" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;margin-bottom:12px;">Verify Smartcard</button>
+      <div id="dstvVerifyResult"></div>
     </div>
-    <button onclick="verifyDstvCard()" id="dstvVerifyBtn" style="width:100%;background:rgba(112,0,255,.12);border:1px solid rgba(112,0,255,.3);border-radius:14px;color:#7000ff;padding:13px;font-size:.95rem;font-weight:700;cursor:pointer;margin-bottom:12px;">Verify Smartcard</button>
-    <div id="dstvVerifyResult"></div>
   `);
 }
 async function verifyDstvCard(){
@@ -2197,15 +2215,15 @@ async function verifyDstvCard(){
   const bouquetOptions = (variations.variations||[]).map(v => `<option value="${v.variation_code}" data-amount="${v.variation_amount}">${v.name}</option>`).join('');
 
   document.getElementById('dstvVerifyResult').innerHTML = `
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:3px;">
       <div style="font-size:.95rem;font-weight:700;color:var(--text);">${c.Customer_Name||'Verified'}</div>
       <div style="font-size:.8rem;color:var(--text3);margin-top:4px;">Status: ${c.Status||'—'}</div>
     </div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:12px;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:3px;">
       <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Bouquet</div>
       <select id="dstvBouquet" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 14px;color:var(--text);font-size:1rem;font-weight:600;">${bouquetOptions}</select>
     </div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:18px;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:18px;">
       <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Phone Number</div>
       <input id="dstvPhone" type="tel" placeholder="08011111111" style="width:100%;background:none;border:none;outline:none;font-size:1.4rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
     </div>
