@@ -4976,3 +4976,34 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
 #billOverlay #billTitle {
   color: #f5f5f7 !important;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   MARKET PAGE — light mode readability fix
+   The entire Market page (search bar, Naira services, Nigerian
+   services tiles, Money services, AI services) used hardcoded
+   rgba(255,255,255,.0X) backgrounds and rgba(255,255,255,.2-.5)
+   text — all assume a dark page background and become low-contrast
+   to invisible in light mode. This predates today's bill-payment
+   work; scoped fix here rather than touching every inline style.
+══════════════════════════════════════════════════════════════ */
+[data-theme="light"] #page-market [style*="background:rgba(255,255,255,.02)"],
+[data-theme="light"] #page-market [style*="background:rgba(255,255,255,.03)"] {
+  background: #f5f5f5 !important;
+  border-color: #e5e5e5 !important;
+}
+[data-theme="light"] #page-market [style*="color:rgba(255,255,255,.5)"] {
+  color: #555555 !important;
+}
+[data-theme="light"] #page-market [style*="color:rgba(255,255,255,.35)"],
+[data-theme="light"] #page-market [style*="color:rgba(255,255,255,.3)"] {
+  color: #777777 !important;
+}
+[data-theme="light"] #page-market [style*="color:rgba(255,255,255,.28)"] {
+  color: #999999 !important;
+}
+[data-theme="light"] #page-market [style*="color:rgba(255,255,255,.25)"] {
+  color: #aaaaaa !important;
+}
+[data-theme="light"] #page-market svg[stroke*="rgba(255,255,255"] {
+  stroke: #999999 !important;
+}

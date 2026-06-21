@@ -1946,15 +1946,30 @@ async function showAjoGroup(groupId){
       const already = await c.hasContributed(groupId, g.currentRound, userAddr).catch(()=>false);
       const recipient = await c.getCurrentRecipient(groupId).catch(()=>null);
       itsYourTurn = recipient && recipient.toLowerCase() === userAddr.toLowerCase();
+      const everyonePaid = contributed == total;
+
       actionHtml = `
         <div style="background:${itsYourTurn?'rgba(52,211,153,.1)':t.inputBg};border:1px solid ${itsYourTurn?'rgba(52,211,153,.3)':t.inputBorder};border-radius:10px;padding:12px;margin-top:12px;margin-bottom:10px;">
           <div style="font-size:.78rem;color:${t.text};font-weight:${itsYourTurn?'700':'400'};">${itsYourTurn ? "🎉 It's your turn to receive this round!" : `Round ${Number(g.currentRound)+1} of ${g.memberCount}`}</div>
           <div style="font-size:.72rem;color:${t.text3};margin-top:4px;">${contributed} of ${total} people have paid this round</div>
         </div>
-        ${already
-          ? `<button onclick="submitAjoClaim(${groupId})" id="ajoActionBtn" style="width:100%;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.3);border-radius:10px;color:#a855f7;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;">${contributed==total ? 'Release Payout' : "You've Paid — Waiting on Others"}</button>`
-          : `<button onclick="submitAjoContribute(${groupId})" id="ajoActionBtn" style="width:100%;background:#7000ff;border:none;border-radius:10px;color:#fff;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;">Pay Your ${ethers.formatUnits(g.contributionAmount,6)} USDC</button>`}
       `;
+
+      // Creator-specific control: a clearly-labeled button to release this
+      // round's payout once everyone's paid. Functionally identical to the
+      // member "Release Payout" button below (the contract pays the correct
+      // recipient regardless of who clicks), but gives the creator a
+      // dedicated, obvious action — useful since they're usually the one
+      // running/coordinating the group.
+      if(isCreator && everyonePaid){
+        actionHtml += `<button onclick="submitAjoClaim(${groupId})" id="ajoCreatorPayBtn" style="width:100%;background:#34d399;border:none;border-radius:10px;color:#000;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;margin-bottom:8px;">👑 Pay ${recipient?(recipient.toLowerCase()===userAddr.toLowerCase()?'Yourself':'Out'):'Out'} Now (Round ${Number(g.currentRound)+1})</button>`;
+      } else if(isCreator && !everyonePaid){
+        actionHtml += `<div style="text-align:center;padding:8px;color:${t.text3};font-size:.72rem;">As the creator, you'll be able to release this round's payout once everyone has paid.</div>`;
+      }
+
+      actionHtml += already
+          ? `<button onclick="submitAjoClaim(${groupId})" id="ajoActionBtn" style="width:100%;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.3);border-radius:10px;color:#a855f7;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;">${everyonePaid ? 'Release Payout' : "You've Paid — Waiting on Others"}</button>`
+          : `<button onclick="submitAjoContribute(${groupId})" id="ajoActionBtn" style="width:100%;background:#7000ff;border:none;border-radius:10px;color:#fff;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;">Pay Your ${ethers.formatUnits(g.contributionAmount,6)} USDC</button>`;
     } else {
       actionHtml = `<div style="text-align:center;padding:12px;color:${t.text3};font-size:.78rem;">🎉 This group is finished — everyone has had their turn.</div>`;
     }
@@ -2020,22 +2035,25 @@ async function submitAjoContribute(groupId){
 }
 
 async function submitAjoClaim(groupId){
-  const btn = document.getElementById('ajoActionBtn');
+  // Could be triggered by either the creator's dedicated button or the
+  // generic member "Release Payout" button — grab whichever exists,
+  // guard against either being absent so this never throws on a null ref.
+  const btn = document.getElementById('ajoCreatorPayBtn') || document.getElementById('ajoActionBtn');
   const statusEl = document.getElementById('ajoGroupStatus');
   if(!signer){ toast('Connect MetaMask & switch to Arc Testnet', 'error', 5000); return; }
-  btn.disabled = true; btn.textContent = 'Checking…';
+  if(btn){ btn.disabled = true; btn.textContent = 'Checking…'; }
   try{
     const c = ajoContract(signer);
     const tx = await c.claimRoundPayout(groupId, arcGasOpts());
-    statusEl.innerHTML = '<span style="color:#888;">Confirming…</span>';
+    if(statusEl) statusEl.innerHTML = '<span style="color:#888;">Confirming…</span>';
     await tx.wait(1);
     toast('✓ Round paid out!', 'success', 6000);
     await refreshBalances();
     showAjoGroup(groupId);
   }catch(err){
-    statusEl.innerHTML = '<span style="color:#f87171;">Not everyone has contributed yet, or: '+err.message.slice(0,100)+'</span>';
+    if(statusEl) statusEl.innerHTML = '<span style="color:#f87171;">Not everyone has contributed yet, or: '+err.message.slice(0,100)+'</span>';
   }finally{
-    btn.disabled = false;
+    if(btn) btn.disabled = false;
   }
 }
 
