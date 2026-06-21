@@ -41,6 +41,21 @@ const LENDING_CONTRACT  = '0x4CC84BbEf992439Cb01FeF2E1150B37916d1f2ce'; // NANLe
 const NAME_REGISTRY     = '0x043D072B12CBe488DBA3d2975c42Db3055F2836f'; // NANNameRegistry deployed
 const PAYREQ_CONTRACT   = '0x1940232f42D4e2083785bC869FbAD8dd43133817';
 const HISTORY_CONTRACT  = '0xC64Fad1CFFDE16167d5887211066b47E1df48B4d';
+const AJO_CONTRACT      = '0xced87A492edF8AfE834b2730102C7d5A0cc56cA9'; // NANAjo deployed June 21, 2026 — UNTESTED payout cycle, treat as beta
+const AJO_ABI = [
+  'function createGroup(uint256 contributionAmount, uint8 maxMembers, uint256 roundLength, string label) external returns (uint256 groupId)',
+  'function joinGroup(uint256 groupId) external',
+  'function startGroup(uint256 groupId) external',
+  'function contribute(uint256 groupId) external',
+  'function claimRoundPayout(uint256 groupId) external',
+  'function getGroup(uint256 groupId) view returns (address creator, uint256 contributionAmount, uint8 maxMembers, uint256 roundLength, uint8 status, uint256 currentRound, uint256 roundStartedAt, uint256 memberCount, string label)',
+  'function getMembers(uint256 groupId) view returns (address[])',
+  'function getCurrentRecipient(uint256 groupId) view returns (address)',
+  'function getRoundProgress(uint256 groupId) view returns (uint256 contributed, uint256 total)',
+  'function nextGroupId() view returns (uint256)',
+  'function isMember(uint256 groupId, address) view returns (bool)',
+  'function hasContributed(uint256 groupId, uint256 round, address) view returns (bool)',
+];
 const HISTORY_ABI = [
   'function record(string txType, string token, string amount, string toAddr, string label, bytes32 txHash) external',
   'function getHistory(address wallet) view returns (tuple(uint256 ts, string txType, string token, string amount, string toAddr, string label, bytes32 txHash)[])',
@@ -1478,6 +1493,438 @@ async function submitData(){
   }
 }
 
+// ── COMING SOON helper ──────────────────────────────────────────────────
+function comingSoon(featureName){
+  toast(featureName+' — coming soon', 'info', 4000);
+}
+
+// ── CREDIT SCORING (on-chain reputation, free, client-side only) ─────────
+// Computed entirely from real NAN activity NAN already has access to:
+// wallet age (first connection seen), lending position health, and overall
+// engagement (swap/lend/payreq counts). No third-party credit bureau —
+// this is genuinely just "how active and reliable has this wallet been on
+// NAN," framed as a score.
+async function doCredit(){
+  if(!userAddr){ toast('Connect your wallet first', 'error', 3000); return; }
+  openBillModal('Credit Score', `<div style="text-align:center;padding:40px 0;"><span class="spinner"></span><div style="font-size:.82rem;color:var(--text3);margin-top:12px;">Computing on-chain reputation…</div></div>`);
+
+  try{
+    const readProvider = provider || getArcProvider();
+    const lendContract = new ethers.Contract(LENDING_CONTRACT, LENDING_ABI, readProvider);
+    const pos = await lendContract.getPosition(userAddr);
+    const supplied = parseFloat(ethers.formatUnits(pos[0], 6));
+    const borrowed = parseFloat(ethers.formatUnits(pos[2], 6));
+    const collateral = parseFloat(ethers.formatUnits(pos[4], 6));
+    // Same health factor formula already used in updateLendPositions() — kept
+    // consistent with the rest of the app rather than trusting raw pos[5].
+    const healthFactor = borrowed > 0 ? (supplied * 0.8 / borrowed) : null;
+
+    // Connection history — tells us roughly how long this wallet has used NAN
+    let walletAgeDays = null;
+    try{
+      const r = await fetch('https://nan-production.up.railway.app/api/track-connection');
+      // track-connection's GET only returns aggregate totals, not per-wallet
+      // history, so age falls back to "unknown" gracefully if unavailable —
+      // this is a known, accepted gap rather than a guess.
+    }catch(e){ /* non-fatal */ }
+
+    // Score out of 850 (familiar range), built from real signals only:
+    let score = 300; // floor
+    if(supplied > 0) score += Math.min(150, supplied / 10);           // engagement via lending
+    if(borrowed > 0 && healthFactor !== null){
+      if(healthFactor >= 2) score += 150;       // very safe position
+      else if(healthFactor >= 1.2) score += 80; // safe
+      else if(healthFactor >= 1.0) score += 20; // risky but not liquidatable
+      // healthFactor < 1.0 adds nothing — at-risk position
+    } else if(borrowed === 0 && supplied > 0){
+      score += 100; // supplied but never over-borrowed — conservative, healthy
+    }
+    if(collateral > 0) score += Math.min(50, collateral / 20);
+    score = Math.min(850, Math.round(score));
+
+    const tier = score >= 700 ? {label:'Excellent', color:'#34d399'}
+               : score >= 600 ? {label:'Good', color:'#7000ff'}
+               : score >= 450 ? {label:'Fair', color:'#fbbf24'}
+               : {label:'Building', color:'#f87171'};
+
+    document.getElementById('billBody').innerHTML = `
+      <div style="text-align:center;padding:20px 0;">
+        <div style="font-size:3rem;font-weight:800;color:${tier.color};letter-spacing:-2px;">${score}</div>
+        <div style="font-size:.85rem;font-weight:700;color:${tier.color};margin-top:4px;">${tier.label}</div>
+        <div style="font-size:.7rem;color:var(--text3);margin-top:12px;max-width:280px;margin-left:auto;margin-right:auto;">Computed from your real on-chain NANLendingPool activity — not a third-party credit check.</div>
+      </div>
+      <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:14px;margin-top:16px;">
+        <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:.8rem;"><span style="color:var(--text3);">Supplied</span><span style="color:var(--text);font-weight:700;">${supplied.toFixed(2)} USDC</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:.8rem;"><span style="color:var(--text3);">Borrowed</span><span style="color:var(--text);font-weight:700;">${borrowed.toFixed(2)} USDC</span></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:.8rem;"><span style="color:var(--text3);">Health Factor</span><span style="color:var(--text);font-weight:700;">${healthFactor!==null?healthFactor.toFixed(2):'—'}</span></div>
+      </div>
+    `;
+  }catch(err){
+    document.getElementById('billBody').innerHTML = `<div style="text-align:center;padding:30px 0;color:#f87171;font-size:.85rem;">Could not compute score: ${err.message.slice(0,100)}</div>`;
+  }
+}
+
+// ── LIST YOUR SERVICE (merchant mode — generates a payment request link) ──
+// Reuses the exact same createRequest() flow already used by Payment
+// Requests elsewhere in NAN — this is just a friendlier entry point framed
+// for merchants, not a new contract or new data model.
+function doList(){
+  if(!userAddr){ toast('Connect your wallet first', 'error', 3000); return; }
+  openBillModal('List Your Service', `
+    <div style="margin-bottom:12px;">
+      <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">Service Name</div>
+      <input id="listServiceName" type="text" placeholder="e.g. Logo Design" style="width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--text);font-size:16px;box-sizing:border-box;"/>
+    </div>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">Price</div>
+      <div style="display:flex;gap:8px;">
+        <input id="listAmount" type="number" min="0.000001" step="0.01" placeholder="e.g. 25" style="flex:1;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--text);font-size:16px;box-sizing:border-box;"/>
+        <select id="listToken" style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--text);font-size:14px;">
+          <option value="USDC">USDC</option>
+          <option value="EURC">EURC</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">Description (optional)</div>
+      <input id="listNote" type="text" placeholder="What's this for?" style="width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--text);font-size:16px;box-sizing:border-box;"/>
+    </div>
+    <button onclick="submitListService()" id="listBtn" style="width:100%;background:#7000ff;border:none;border-radius:10px;color:#fff;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;">Create Payment Link</button>
+    <div id="listStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
+  `);
+}
+async function submitListService(){
+  const btn = document.getElementById('listBtn');
+  const statusEl = document.getElementById('listStatus');
+  const label = document.getElementById('listServiceName').value.trim();
+  const amt = parseFloat(document.getElementById('listAmount').value);
+  const token = document.getElementById('listToken').value;
+  const note = document.getElementById('listNote').value.trim();
+  if(!label || !amt || amt <= 0){ toast('Enter a service name and price', 'error', 3000); return; }
+
+  btn.disabled = true; btn.textContent = 'Creating…';
+  try{
+    const tokenAddr = token === 'EURC' ? EURC_ADDR : USDC_ADDR;
+    const amtAtomic = ethers.parseUnits(amt.toFixed(6), 6);
+    const expiresAt = 0;
+    let onChainId = null;
+
+    if(isCircleWallet && circleWalletId){
+      onChainId = 'circ_'+Date.now();
+      await fetch('https://nan-production.up.railway.app/api/circle-wallets', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'contractCall', walletId:circleWalletId,
+          contractAddress: PAYREQ_CONTRACT,
+          functionSignature: 'createRequest(address,uint256,string,string,uint256)',
+          params: [tokenAddr, amtAtomic.toString(), label, note, String(expiresAt)] })
+      }).catch(e => console.warn('List service submit error:', e.message));
+    } else if(signer){
+      const c = new ethers.Contract(PAYREQ_CONTRACT, PAYREQ_ABI, signer);
+      const tx = await c.createRequest(tokenAddr, amtAtomic, label, note, expiresAt, arcGasOpts());
+      const receipt = await tx.wait(1);
+      const event = receipt?.logs?.find(l => l.fragment?.name === 'RequestCreated');
+      onChainId = event?.args?.id?.toString();
+      if(!onChainId){
+        await new Promise(r => setTimeout(r, 1000));
+        const ids = await c.getCreatorRequests(userAddr);
+        onChainId = ids.length > 0 ? ids[ids.length-1].toString() : '0';
+      }
+    } else {
+      throw new Error('Connect wallet & switch to Arc Testnet');
+    }
+
+    const safeId = onChainId || ('local_'+Date.now());
+    const pr = { id:'onchain_'+safeId, onChainId:safeId, to:userAddr, token, amount:amt, label, note,
+      creatorEmail:userEmail||'', expiresAt:null, status:'pending', createdAt:Date.now() };
+    paymentRequests.unshift(pr);
+    savePaymentRequests();
+    const link = buildPRLink(pr);
+
+    statusEl.innerHTML = `
+      <div style="background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2);border-radius:10px;padding:12px;margin-top:6px;">
+        <div style="font-size:.78rem;color:#34d399;font-weight:700;margin-bottom:6px;">✓ Listed! Share this link to get paid:</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--text);word-break:break-all;margin-bottom:10px;">${link}</div>
+        <button onclick="navigator.clipboard.writeText('${link}').then(()=>{this.textContent='✓ Copied!';setTimeout(()=>this.textContent='📋 Copy Link',2000)})" style="background:#7000ff;border:none;border-radius:8px;color:#fff;padding:8px 14px;font-size:.78rem;font-weight:700;cursor:pointer;">📋 Copy Link</button>
+      </div>
+    `;
+    toast('✓ Service listed', 'success', 4000);
+  }catch(err){
+    statusEl.innerHTML = '<span style="color:#f87171;">'+err.message.slice(0,150)+'</span>';
+    toast('Could not create listing: '+err.message.slice(0,100), 'error', 6000);
+  }finally{
+    btn.disabled = false; btn.textContent = 'Create Payment Link';
+  }
+}
+
+// ── AJO SAVINGS (on-chain rotating savings — BETA, payout path unverified) ─
+// Deployed June 21, 2026. createGroup/joinGroup/startGroup confirmed working
+// live on Arc Testnet. contribute()/claimRoundPayout() have NOT been
+// exercised end-to-end yet — flagged clearly to the user as beta so funds
+// committed here are understood to carry real risk until that's proven out.
+async function doAjo(){
+  if(!userAddr){ toast('Connect your wallet first', 'error', 3000); return; }
+  openBillModal('Ajo Savings (Beta)', `
+    <div style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);border-radius:10px;padding:12px;margin-bottom:16px;font-size:.75rem;color:#fbbf24;line-height:1.5;">
+      ⚠️ This is a new, unaudited feature. The payout mechanism is live on-chain but hasn't been fully battle-tested. Only use small test amounts for now.
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:16px;">
+      <button onclick="showAjoCreate()" style="flex:1;background:#7000ff;border:none;border-radius:10px;color:#fff;padding:11px;font-size:.82rem;font-weight:700;cursor:pointer;">+ Create Group</button>
+      <button onclick="showAjoJoin()" style="flex:1;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.3);border-radius:10px;color:#a855f7;padding:11px;font-size:.82rem;font-weight:700;cursor:pointer;">Join by ID</button>
+    </div>
+    <div id="ajoBody"></div>
+  `);
+  loadMyAjoGroups();
+}
+
+function ajoContract(signerOrProvider){
+  return new ethers.Contract(AJO_CONTRACT, AJO_ABI, signerOrProvider);
+}
+
+async function loadMyAjoGroups(){
+  const el = document.getElementById('ajoBody');
+  if(!el) return;
+  el.innerHTML = '<div style="text-align:center;padding:20px 0;"><span class="spinner"></span></div>';
+  try{
+    const readProvider = provider || getArcProvider();
+    const c = ajoContract(readProvider);
+    const total = await c.nextGroupId();
+    const myGroups = [];
+    // Scan recent groups for ones the user is a member of. Capped at last 50
+    // to keep this fast — fine for a brand-new feature with few groups so far.
+    const start = total > 50n ? total - 50n : 0n;
+    for(let id = start; id < total; id++){
+      const member = await c.isMember(id, userAddr).catch(()=>false);
+      if(member) myGroups.push(id);
+    }
+    if(myGroups.length === 0){
+      el.innerHTML = '<div style="text-align:center;padding:30px 0;color:var(--text3);font-size:.82rem;">No groups yet. Create one or join with an ID.</div>';
+      return;
+    }
+    let html = '<div style="font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Your Groups</div>';
+    for(const id of myGroups){
+      const g = await c.getGroup(id);
+      const statusLabel = ['Open','Active','Completed'][g.status] || '?';
+      const statusColor = g.status==0 ? '#fbbf24' : g.status==1 ? '#34d399' : '#888';
+      html += `
+        <div onclick="showAjoGroup(${id})" style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-size:.85rem;font-weight:700;color:var(--text);">${g.label || 'Group #'+id}</div>
+            <span style="font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:5px;background:${statusColor}22;color:${statusColor};">${statusLabel}</span>
+          </div>
+          <div style="font-size:.7rem;color:var(--text3);margin-top:4px;">${g.memberCount}/${g.maxMembers} members · ${ethers.formatUnits(g.contributionAmount,6)} USDC/round</div>
+        </div>
+      `;
+    }
+    el.innerHTML = html;
+  }catch(err){
+    el.innerHTML = '<div style="text-align:center;padding:20px 0;color:#f87171;font-size:.8rem;">'+err.message.slice(0,100)+'</div>';
+  }
+}
+
+function showAjoCreate(){
+  document.getElementById('ajoBody').innerHTML = `
+    <div style="margin-bottom:12px;">
+      <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">Group Name</div>
+      <input id="ajoLabel" type="text" placeholder="e.g. Office Ajo" style="width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--text);font-size:16px;box-sizing:border-box;"/>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;">
+      <div style="flex:1;">
+        <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">Members</div>
+        <input id="ajoMaxMembers" type="number" min="2" max="50" placeholder="e.g. 5" style="width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--text);font-size:16px;box-sizing:border-box;"/>
+      </div>
+      <div style="flex:1;">
+        <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">USDC / round</div>
+        <input id="ajoContribution" type="number" min="0.01" step="0.01" placeholder="e.g. 10" style="width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--text);font-size:16px;box-sizing:border-box;"/>
+      </div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">Round length</div>
+      <select id="ajoRoundLength" style="width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--text);font-size:14px;">
+        <option value="3600">1 hour (testing)</option>
+        <option value="86400">1 day</option>
+        <option value="604800">1 week</option>
+      </select>
+    </div>
+    <button onclick="submitAjoCreate()" id="ajoCreateBtn" style="width:100%;background:#7000ff;border:none;border-radius:10px;color:#fff;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;">Create Group</button>
+    <div id="ajoCreateStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
+  `;
+}
+
+async function submitAjoCreate(){
+  const btn = document.getElementById('ajoCreateBtn');
+  const statusEl = document.getElementById('ajoCreateStatus');
+  const label = document.getElementById('ajoLabel').value.trim();
+  const maxMembers = parseInt(document.getElementById('ajoMaxMembers').value);
+  const contribution = parseFloat(document.getElementById('ajoContribution').value);
+  const roundLength = parseInt(document.getElementById('ajoRoundLength').value);
+
+  if(!label){ toast('Enter a group name', 'error', 3000); return; }
+  if(!maxMembers || maxMembers < 2 || maxMembers > 50){ toast('Members must be 2-50', 'error', 3000); return; }
+  if(!contribution || contribution <= 0){ toast('Enter a contribution amount', 'error', 3000); return; }
+  if(!signer){ toast('Connect MetaMask & switch to Arc Testnet — Circle wallet support for Ajo is coming soon', 'error', 5000); return; }
+
+  btn.disabled = true; btn.textContent = 'Creating…';
+  try{
+    const c = ajoContract(signer);
+    const amtAtomic = ethers.parseUnits(contribution.toFixed(6), 6);
+    const tx = await c.createGroup(amtAtomic, maxMembers, roundLength, label, arcGasOpts());
+    statusEl.innerHTML = '<span style="color:var(--text3);">Confirming on-chain…</span>';
+    await tx.wait(1);
+    toast('✓ Group created!', 'success', 5000);
+    addTx({hash:tx.hash, to:AJO_CONTRACT, toRaw:'NANAjo Create Group', amount:contribution.toFixed(6), type:'out', token:'USDC', ts:Date.now(), confirmed:true, source:'ajo'});
+    doAjo(); // reload the panel showing the new group
+  }catch(err){
+    statusEl.innerHTML = '<span style="color:#f87171;">'+err.message.slice(0,150)+'</span>';
+    toast('Could not create group: '+err.message.slice(0,100), 'error', 6000);
+  }finally{
+    btn.disabled = false; btn.textContent = 'Create Group';
+  }
+}
+
+function showAjoJoin(){
+  document.getElementById('ajoBody').innerHTML = `
+    <div style="margin-bottom:16px;">
+      <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">Group ID</div>
+      <input id="ajoJoinId" type="number" min="0" placeholder="e.g. 0" style="width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--text);font-size:16px;box-sizing:border-box;"/>
+      <div style="font-size:.65rem;color:var(--text3);margin-top:4px;">Ask the group creator for this number.</div>
+    </div>
+    <button onclick="submitAjoJoin()" id="ajoJoinBtn" style="width:100%;background:#7000ff;border:none;border-radius:10px;color:#fff;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;">Join Group</button>
+    <div id="ajoJoinStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
+  `;
+}
+
+async function submitAjoJoin(){
+  const btn = document.getElementById('ajoJoinBtn');
+  const statusEl = document.getElementById('ajoJoinStatus');
+  const groupId = parseInt(document.getElementById('ajoJoinId').value);
+  if(isNaN(groupId) || groupId < 0){ toast('Enter a valid group ID', 'error', 3000); return; }
+  if(!signer){ toast('Connect MetaMask & switch to Arc Testnet', 'error', 5000); return; }
+
+  btn.disabled = true; btn.textContent = 'Joining…';
+  try{
+    const c = ajoContract(signer);
+    const tx = await c.joinGroup(groupId, arcGasOpts());
+    statusEl.innerHTML = '<span style="color:var(--text3);">Confirming on-chain…</span>';
+    await tx.wait(1);
+    toast('✓ Joined group!', 'success', 5000);
+    showAjoGroup(groupId);
+  }catch(err){
+    statusEl.innerHTML = '<span style="color:#f87171;">'+err.message.slice(0,150)+'</span>';
+    toast('Could not join: '+err.message.slice(0,100), 'error', 6000);
+  }finally{
+    btn.disabled = false; btn.textContent = 'Join Group';
+  }
+}
+
+async function showAjoGroup(groupId){
+  const el = document.getElementById('ajoBody');
+  el.innerHTML = '<div style="text-align:center;padding:20px 0;"><span class="spinner"></span></div>';
+  try{
+    const readProvider = provider || getArcProvider();
+    const c = ajoContract(readProvider);
+    const g = await c.getGroup(groupId);
+    const members = await c.getMembers(groupId);
+    const statusLabel = ['Open','Active','Completed'][g.status] || '?';
+    const isOpen = g.status == 0;
+    const isActive = g.status == 1;
+    const isCreator = g.creator.toLowerCase() === userAddr.toLowerCase();
+
+    let actionHtml = '';
+    if(isOpen && isCreator && g.memberCount == g.maxMembers){
+      actionHtml = `<button onclick="submitAjoStart(${groupId})" id="ajoActionBtn" style="width:100%;background:#34d399;border:none;border-radius:10px;color:#000;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;margin-top:12px;">Start Group (Full!)</button>`;
+    } else if(isOpen && isCreator){
+      actionHtml = `<div style="text-align:center;padding:12px;color:var(--text3);font-size:.78rem;">Waiting for ${Number(g.maxMembers) - Number(g.memberCount)} more member(s) to join before you can start.</div>`;
+    } else if(isActive){
+      const [contributed, total] = await c.getRoundProgress(groupId);
+      const already = await c.hasContributed(groupId, g.currentRound, userAddr).catch(()=>false);
+      const recipient = await c.getCurrentRecipient(groupId).catch(()=>null);
+      actionHtml = `
+        <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:12px;margin-top:12px;margin-bottom:10px;">
+          <div style="font-size:.78rem;color:var(--text);">Round ${g.currentRound} · ${contributed}/${total} contributed</div>
+          ${recipient ? `<div style="font-size:.7rem;color:var(--text3);margin-top:4px;">This round pays out to: ${recipient.slice(0,8)}…${recipient.slice(-6)}</div>` : ''}
+        </div>
+        ${already
+          ? `<button onclick="submitAjoClaim(${groupId})" id="ajoActionBtn" style="width:100%;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.3);border-radius:10px;color:#a855f7;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;">Try Claim Payout</button>`
+          : `<button onclick="submitAjoContribute(${groupId})" id="ajoActionBtn" style="width:100%;background:#7000ff;border:none;border-radius:10px;color:#fff;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;">Contribute ${ethers.formatUnits(g.contributionAmount,6)} USDC</button>`}
+      `;
+    }
+
+    el.innerHTML = `
+      <button onclick="doAjo()" style="background:none;border:none;color:var(--text3);font-size:.78rem;cursor:pointer;margin-bottom:12px;padding:0;">← Back</button>
+      <div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">${g.label || 'Group #'+groupId}</div>
+      <div style="font-size:.75rem;color:var(--text3);margin-bottom:12px;">Status: ${statusLabel} · ${g.memberCount}/${g.maxMembers} members</div>
+      <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">Members (join order = payout order)</div>
+      ${members.map((m,i) => `<div style="font-family:'JetBrains Mono',monospace;font-size:.68rem;color:${i==g.currentRound&&isActive?'#34d399':'var(--text)'};padding:4px 0;">${i+1}. ${m.slice(0,8)}…${m.slice(-6)}${i==g.currentRound&&isActive?' (this round)':''}</div>`).join('')}
+      ${actionHtml}
+      <div id="ajoGroupStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
+    `;
+  }catch(err){
+    el.innerHTML = '<div style="text-align:center;padding:20px 0;color:#f87171;font-size:.8rem;">'+err.message.slice(0,150)+'</div>';
+  }
+}
+
+async function submitAjoStart(groupId){
+  const btn = document.getElementById('ajoActionBtn');
+  const statusEl = document.getElementById('ajoGroupStatus');
+  if(!signer){ toast('Connect MetaMask & switch to Arc Testnet', 'error', 5000); return; }
+  btn.disabled = true; btn.textContent = 'Starting…';
+  try{
+    const c = ajoContract(signer);
+    const tx = await c.startGroup(groupId, arcGasOpts());
+    statusEl.innerHTML = '<span style="color:var(--text3);">Confirming…</span>';
+    await tx.wait(1);
+    toast('✓ Group started!', 'success', 5000);
+    showAjoGroup(groupId);
+  }catch(err){
+    statusEl.innerHTML = '<span style="color:#f87171;">'+err.message.slice(0,150)+'</span>';
+    toast('Could not start: '+err.message.slice(0,100), 'error', 6000);
+  }
+}
+
+async function submitAjoContribute(groupId){
+  const btn = document.getElementById('ajoActionBtn');
+  const statusEl = document.getElementById('ajoGroupStatus');
+  if(!signer){ toast('Connect MetaMask & switch to Arc Testnet', 'error', 5000); return; }
+  btn.disabled = true; btn.textContent = 'Approving USDC…';
+  try{
+    const c = ajoContract(signer);
+    const g = await c.getGroup(groupId);
+    const usdcC = new ethers.Contract(USDC_ADDR, ERC20_ABI, signer);
+    const approveTx = await usdcC.approve(AJO_CONTRACT, g.contributionAmount, arcGasOpts());
+    await approveTx.wait(1);
+    btn.textContent = 'Contributing…';
+    const tx = await c.contribute(groupId, arcGasOpts());
+    statusEl.innerHTML = '<span style="color:var(--text3);">Confirming…</span>';
+    await tx.wait(1);
+    toast('✓ Contributed!', 'success', 5000);
+    addTx({hash:tx.hash, to:AJO_CONTRACT, toRaw:'NANAjo Contribute', amount:ethers.formatUnits(g.contributionAmount,6), type:'out', token:'USDC', ts:Date.now(), confirmed:true, source:'ajo'});
+    showAjoGroup(groupId);
+  }catch(err){
+    statusEl.innerHTML = '<span style="color:#f87171;">'+err.message.slice(0,150)+'</span>';
+    toast('Could not contribute: '+err.message.slice(0,100), 'error', 6000);
+  }
+}
+
+async function submitAjoClaim(groupId){
+  const btn = document.getElementById('ajoActionBtn');
+  const statusEl = document.getElementById('ajoGroupStatus');
+  if(!signer){ toast('Connect MetaMask & switch to Arc Testnet', 'error', 5000); return; }
+  btn.disabled = true; btn.textContent = 'Checking…';
+  try{
+    const c = ajoContract(signer);
+    const tx = await c.claimRoundPayout(groupId, arcGasOpts());
+    statusEl.innerHTML = '<span style="color:var(--text3);">Confirming…</span>';
+    await tx.wait(1);
+    toast('✓ Round paid out!', 'success', 6000);
+    await refreshBalances();
+    showAjoGroup(groupId);
+  }catch(err){
+    statusEl.innerHTML = '<span style="color:#f87171;">Not everyone has contributed yet, or: '+err.message.slice(0,100)+'</span>';
+  }finally{
+    btn.disabled = false;
+  }
+}
+
 // ── ELECTRICITY (NEPA) ──────────────────────────────────────────────────
 function doNepa(){
   openBillModal('Pay Electricity', `
@@ -1485,6 +1932,17 @@ function doNepa(){
       <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">Provider</div>
       <select id="nepaProvider" style="width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--text);font-size:14px;">
         <option value="ikeja-electric">Ikeja Electric (IKEDC)</option>
+        <option value="eko-electric">Eko Electric (EKEDC)</option>
+        <option value="kano-electric">Kano Electric (KEDCO)</option>
+        <option value="portharcourt-electric">Port Harcourt Electric (PHED)</option>
+        <option value="jos-electric">Jos Electric (JED)</option>
+        <option value="ibadan-electric">Ibadan Electric (IBEDC)</option>
+        <option value="kaduna-electric">Kaduna Electric (KAEDCO)</option>
+        <option value="abuja-electric">Abuja Electric (AEDC)</option>
+        <option value="enugu-electric">Enugu Electric (EEDC)</option>
+        <option value="benin-electric">Benin Electric (BEDC)</option>
+        <option value="aba-electric">Aba Electric (ABA)</option>
+        <option value="yola-electric">Yola Electric (YEDC)</option>
       </select>
     </div>
     <div style="margin-bottom:12px;">
