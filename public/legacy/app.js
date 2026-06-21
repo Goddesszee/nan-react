@@ -1664,9 +1664,6 @@ async function submitListService(){
 async function doAjo(){
   if(!userAddr){ toast('Connect your wallet first', 'error', 3000); return; }
   openBillModal('Ajo Savings (Beta)', `
-    <div style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);border-radius:10px;padding:12px;margin-bottom:14px;font-size:.75rem;color:#fbbf24;line-height:1.5;">
-      ⚠️ New feature, still being tested. Start with small amounts (e.g. 1-5 USDC) until it's proven out.
-    </div>
     <details style="margin-bottom:16px;background:rgba(112,0,255,.05);border:1px solid rgba(112,0,255,.15);border-radius:10px;">
       <summary style="cursor:pointer;padding:12px 14px;font-size:.82rem;font-weight:700;color:var(--text);">❓ What is Ajo? (tap to learn)</summary>
       <div style="padding:0 14px 14px;font-size:.78rem;color:var(--text3);line-height:1.7;">

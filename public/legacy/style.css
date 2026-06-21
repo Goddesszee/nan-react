@@ -4953,3 +4953,26 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
   background: rgba(255,255,255,.05) !important;
   border-color: rgba(255,255,255,.14) !important;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   BILL PAYMENT / AJO MODAL — light mode readability fix
+   #billOverlay's backdrop is intentionally always dark (same as
+   #adminOverlay), but its inner content used var(--text)/--text3,
+   which resolve to DARK colors in light mode — producing dark text
+   on a dark background, nearly invisible. Force light text here
+   regardless of the page's active theme, same fix pattern already
+   used for #adminOverlay above.
+══════════════════════════════════════════════════════════════ */
+#billOverlay [style*="color:var(--text2)"],
+#billOverlay [style*="color: var(--text2)"],
+#billOverlay [style*="color:var(--text3)"],
+#billOverlay [style*="color: var(--text3)"] {
+  color: #b8b8c4 !important;
+}
+#billOverlay [style*="color:var(--text)"],
+#billOverlay [style*="color: var(--text)"] {
+  color: #f5f5f7 !important;
+}
+#billOverlay #billTitle {
+  color: #f5f5f7 !important;
+}
