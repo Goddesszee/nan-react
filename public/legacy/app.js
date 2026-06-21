@@ -1387,28 +1387,27 @@ async function payNgnInUsdc(ngnAmount, btn){
 
 // ── AIRTIME ──────────────────────────────────────────────────────────────
 function doAirtime(){
-  const t = bpColors();
   openBillModal('Buy Airtime', `
-    <div style="margin-bottom:12px;">
-      <div style="font-size:.72rem;color:${t.text3};margin-bottom:6px;">Network</div>
-      <select id="airtimeNetwork" style="width:100%;background:${t.inputBg};border:1px solid ${t.inputBorder};border-radius:10px;padding:11px 12px;color:${t.text};font-size:14px;">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:12px;">
+      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Network</div>
+      <select id="airtimeNetwork" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 14px;color:var(--text);font-size:1rem;font-weight:600;">
         <option value="mtn">MTN</option>
         <option value="glo">Glo</option>
         <option value="airtel">Airtel</option>
         <option value="etisalat">9mobile</option>
       </select>
     </div>
-    <div style="margin-bottom:12px;">
-      <div style="font-size:.72rem;color:${t.text3};margin-bottom:6px;">Phone Number</div>
-      <input id="airtimePhone" type="tel" placeholder="08011111111" style="width:100%;background:${t.inputBg};border:1px solid ${t.inputBorder};border-radius:10px;padding:11px 12px;color:${t.text};font-size:16px;box-sizing:border-box;"/>
-      <div style="font-size:.65rem;color:${t.text3};margin-top:4px;">Sandbox tip: use 08011111111 for a guaranteed success</div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:12px;">
+      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Phone Number</div>
+      <input id="airtimePhone" type="tel" placeholder="08011111111" style="width:100%;background:none;border:none;outline:none;font-size:1.4rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
+      <div style="font-size:.8rem;color:var(--text3);margin-top:6px;">Sandbox tip: use 08011111111 for a guaranteed success</div>
     </div>
-    <div style="margin-bottom:16px;">
-      <div style="font-size:.72rem;color:${t.text3};margin-bottom:6px;">Amount (₦)</div>
-      <input id="airtimeAmount" type="number" placeholder="e.g. 500" style="width:100%;background:${t.inputBg};border:1px solid ${t.inputBorder};border-radius:10px;padding:11px 12px;color:${t.text};font-size:16px;box-sizing:border-box;"/>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:18px;">
+      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Amount (₦)</div>
+      <input id="airtimeAmount" type="number" placeholder="0" style="width:100%;background:none;border:none;outline:none;font-size:2.2rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
     </div>
-    <button onclick="submitAirtime()" id="airtimeBtn" style="width:100%;background:#7000ff;border:none;border-radius:10px;color:#fff;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;">Buy Airtime</button>
-    <div id="airtimeStatus" style="font-size:.8rem;color:${t.text};margin-top:10px;"></div>
+    <button onclick="submitAirtime()" id="airtimeBtn" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Buy Airtime</button>
+    <div id="airtimeStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
   `);
 }
 async function submitAirtime(){
@@ -1445,28 +1444,27 @@ async function submitAirtime(){
 
 // ── DATA ─────────────────────────────────────────────────────────────────
 function doData(){
-  const t = bpColors();
   openBillModal('Buy Data', `
-    <div style="margin-bottom:12px;">
-      <div style="font-size:.72rem;color:${t.text3};margin-bottom:6px;">Network</div>
-      <select id="dataNetwork" onchange="loadDataPlans()" style="width:100%;background:${t.inputBg};border:1px solid ${t.inputBorder};border-radius:10px;padding:11px 12px;color:${t.text};font-size:14px;">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:12px;">
+      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Network</div>
+      <select id="dataNetwork" onchange="loadDataPlans()" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 14px;color:var(--text);font-size:1rem;font-weight:600;">
         <option value="mtn-data">MTN</option>
         <option value="glo-data">Glo</option>
         <option value="airtel-data">Airtel</option>
         <option value="etisalat-data">9mobile</option>
       </select>
     </div>
-    <div style="margin-bottom:12px;">
-      <div style="font-size:.72rem;color:${t.text3};margin-bottom:6px;">Plan</div>
-      <select id="dataPlan" style="width:100%;background:${t.inputBg};border:1px solid ${t.inputBorder};border-radius:10px;padding:11px 12px;color:${t.text};font-size:14px;"><option>Loading plans…</option></select>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:12px;">
+      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Plan</div>
+      <select id="dataPlan" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 14px;color:var(--text);font-size:1rem;font-weight:600;"><option>Loading plans…</option></select>
     </div>
-    <div style="margin-bottom:16px;">
-      <div style="font-size:.72rem;color:${t.text3};margin-bottom:6px;">Phone Number</div>
-      <input id="dataPhone" type="tel" placeholder="08011111111" style="width:100%;background:${t.inputBg};border:1px solid ${t.inputBorder};border-radius:10px;padding:11px 12px;color:${t.text};font-size:16px;box-sizing:border-box;"/>
-      <div style="font-size:.65rem;color:${t.text3};margin-top:4px;">Sandbox tip: use 08011111111 for a guaranteed success</div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:18px;">
+      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Phone Number</div>
+      <input id="dataPhone" type="tel" placeholder="08011111111" style="width:100%;background:none;border:none;outline:none;font-size:1.4rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
+      <div style="font-size:.8rem;color:var(--text3);margin-top:6px;">Sandbox tip: use 08011111111 for a guaranteed success</div>
     </div>
-    <button onclick="submitData()" id="dataBtn" style="width:100%;background:#7000ff;border:none;border-radius:10px;color:#fff;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;">Buy Data</button>
-    <div id="dataStatus" style="font-size:.8rem;color:${t.text};margin-top:10px;"></div>
+    <button onclick="submitData()" id="dataBtn" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Buy Data</button>
+    <div id="dataStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
   `);
   loadDataPlans();
 }
@@ -1526,9 +1524,8 @@ function comingSoon(featureName){
 // this is genuinely just "how active and reliable has this wallet been on
 // NAN," framed as a score.
 async function doCredit(){
-  const t = bpColors();
   if(!userAddr){ toast('Connect your wallet first', 'error', 3000); return; }
-  openBillModal('Credit Score', `<div style="text-align:center;padding:40px 0;"><span class="spinner"></span><div style="font-size:.82rem;color:${t.text3};margin-top:12px;">Computing on-chain reputation…</div></div>`);
+  openBillModal('Credit Score', `<div style="text-align:center;padding:40px 0;"><span class="spinner"></span><div style="font-size:.85rem;color:var(--text3);margin-top:12px;">Computing on-chain reputation…</div></div>`);
 
   try{
     const readProvider = provider || getArcProvider();
@@ -1570,15 +1567,15 @@ async function doCredit(){
                : {label:'Building', color:'#f87171'};
 
     document.getElementById('billBody').innerHTML = `
-      <div style="text-align:center;padding:20px 0;">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;padding:28px 20px;text-align:center;">
         <div style="font-size:3rem;font-weight:800;color:${tier.color};letter-spacing:-2px;">${score}</div>
-        <div style="font-size:.85rem;font-weight:700;color:${tier.color};margin-top:4px;">${tier.label}</div>
-        <div style="font-size:.7rem;color:${t.text3};margin-top:12px;max-width:280px;margin-left:auto;margin-right:auto;">Computed from your real on-chain NANLendingPool activity — not a third-party credit check.</div>
+        <div style="font-size:.9rem;font-weight:700;color:${tier.color};margin-top:4px;">${tier.label}</div>
+        <div style="font-size:.78rem;color:var(--text3);margin-top:12px;max-width:280px;margin-left:auto;margin-right:auto;">Computed from your real on-chain NANLendingPool activity — not a third-party credit check.</div>
       </div>
-      <div style="background:${t.inputBg};border:1px solid ${t.inputBorder};border-radius:12px;padding:14px;margin-top:16px;">
-        <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:.8rem;"><span style="color:${t.text3};">Supplied</span><span style="color:${t.text};font-weight:700;">${supplied.toFixed(2)} USDC</span></div>
-        <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:.8rem;"><span style="color:${t.text3};">Borrowed</span><span style="color:${t.text};font-weight:700;">${borrowed.toFixed(2)} USDC</span></div>
-        <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:.8rem;"><span style="color:${t.text3};">Health Factor</span><span style="color:${t.text};font-weight:700;">${healthFactor!==null?healthFactor.toFixed(2):'—'}</span></div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px;margin-top:12px;">
+        <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:.9rem;"><span style="color:var(--text3);">Supplied</span><span style="color:var(--text);font-weight:700;">${supplied.toFixed(2)} USDC</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:.9rem;"><span style="color:var(--text3);">Borrowed</span><span style="color:var(--text);font-weight:700;">${borrowed.toFixed(2)} USDC</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:.9rem;"><span style="color:var(--text3);">Health Factor</span><span style="color:var(--text);font-weight:700;">${healthFactor!==null?healthFactor.toFixed(2):'—'}</span></div>
       </div>
     `;
   }catch(err){
@@ -1591,29 +1588,28 @@ async function doCredit(){
 // Requests elsewhere in NAN — this is just a friendlier entry point framed
 // for merchants, not a new contract or new data model.
 function doList(){
-  const t = bpColors();
   if(!userAddr){ toast('Connect your wallet first', 'error', 3000); return; }
   openBillModal('List Your Service', `
-    <div style="margin-bottom:12px;">
-      <div style="font-size:.72rem;color:${t.text3};margin-bottom:6px;">Service Name</div>
-      <input id="listServiceName" type="text" placeholder="e.g. Logo Design" style="width:100%;background:${t.inputBg};border:1px solid ${t.inputBorder};border-radius:10px;padding:11px 12px;color:${t.text};font-size:16px;box-sizing:border-box;"/>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:12px;">
+      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Service Name</div>
+      <input id="listServiceName" type="text" placeholder="e.g. Logo Design" style="width:100%;background:none;border:none;outline:none;font-size:1.4rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
     </div>
-    <div style="margin-bottom:12px;">
-      <div style="font-size:.72rem;color:${t.text3};margin-bottom:6px;">Price</div>
-      <div style="display:flex;gap:8px;">
-        <input id="listAmount" type="number" min="0.000001" step="0.01" placeholder="e.g. 25" style="flex:1;background:${t.inputBg};border:1px solid ${t.inputBorder};border-radius:10px;padding:11px 12px;color:${t.text};font-size:16px;box-sizing:border-box;"/>
-        <select id="listToken" style="background:${t.inputBg};border:1px solid ${t.inputBorder};border-radius:10px;padding:11px 12px;color:${t.text};font-size:14px;">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:12px;">
+      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Price</div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <input id="listAmount" type="number" min="0.000001" step="0.01" placeholder="0" style="flex:1;background:none;border:none;outline:none;font-size:2.2rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
+        <select id="listToken" style="background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:8px 14px;color:var(--text);font-size:1rem;font-weight:700;flex-shrink:0;">
           <option value="USDC">USDC</option>
           <option value="EURC">EURC</option>
         </select>
       </div>
     </div>
-    <div style="margin-bottom:16px;">
-      <div style="font-size:.72rem;color:${t.text3};margin-bottom:6px;">Description (optional)</div>
-      <input id="listNote" type="text" placeholder="What's this for?" style="width:100%;background:${t.inputBg};border:1px solid ${t.inputBorder};border-radius:10px;padding:11px 12px;color:${t.text};font-size:16px;box-sizing:border-box;"/>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:18px;">
+      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Description (optional)</div>
+      <input id="listNote" type="text" placeholder="What's this for?" style="width:100%;background:none;border:none;outline:none;font-size:1.1rem;font-weight:500;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
     </div>
-    <button onclick="submitListService()" id="listBtn" style="width:100%;background:#7000ff;border:none;border-radius:10px;color:#fff;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;">Create Payment Link</button>
-    <div id="listStatus" style="font-size:.8rem;color:${t.text};margin-top:10px;"></div>
+    <button onclick="submitListService()" id="listBtn" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Create Payment Link</button>
+    <div id="listStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
   `);
 }
 async function submitListService(){
@@ -1662,13 +1658,12 @@ async function submitListService(){
     paymentRequests.unshift(pr);
     savePaymentRequests();
     const link = buildPRLink(pr);
-    const t = bpColors();
 
     statusEl.innerHTML = `
-      <div style="background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2);border-radius:10px;padding:12px;margin-top:6px;">
-        <div style="font-size:.78rem;color:#34d399;font-weight:700;margin-bottom:6px;">✓ Listed! Share this link to get paid:</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:.68rem;color:${t.text};word-break:break-all;margin-bottom:10px;">${link}</div>
-        <button onclick="navigator.clipboard.writeText('${link}').then(()=>{this.textContent='✓ Copied!';setTimeout(()=>this.textContent='📋 Copy Link',2000)})" style="background:#7000ff;border:none;border-radius:8px;color:#fff;padding:8px 14px;font-size:.78rem;font-weight:700;cursor:pointer;">📋 Copy Link</button>
+      <div style="background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2);border-radius:14px;padding:14px;margin-top:6px;">
+        <div style="font-size:.85rem;color:#34d399;font-weight:700;margin-bottom:8px;">✓ Listed! Share this link to get paid:</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text);word-break:break-all;margin-bottom:12px;">${link}</div>
+        <button onclick="navigator.clipboard.writeText('${link}').then(()=>{this.textContent='✓ Copied!';setTimeout(()=>this.textContent='📋 Copy Link',2000)})" style="background:#7000ff;border:none;border-radius:10px;color:#fff;padding:9px 16px;font-size:.82rem;font-weight:700;cursor:pointer;">📋 Copy Link</button>
       </div>
     `;
     toast('✓ Service listed', 'success', 4000);
@@ -1687,21 +1682,20 @@ async function submitListService(){
 // committed here are understood to carry real risk until that's proven out.
 async function doAjo(){
   if(!userAddr){ toast('Connect your wallet first', 'error', 3000); return; }
-  const t = bpColors();
   openBillModal('Ajo Savings (Beta)', `
-    <details style="margin-bottom:16px;background:rgba(112,0,255,.05);border:1px solid rgba(112,0,255,.15);border-radius:10px;">
-      <summary style="cursor:pointer;padding:12px 14px;font-size:.82rem;font-weight:700;color:${t.text};">❓ What is Ajo? (tap to learn)</summary>
-      <div style="padding:0 14px 14px;font-size:.78rem;color:${t.text3};line-height:1.7;">
+    <details style="margin-bottom:16px;background:var(--card);border:1px solid var(--border);border-radius:16px;">
+      <summary style="cursor:pointer;padding:14px 16px;font-size:.85rem;font-weight:700;color:var(--text);">❓ What is Ajo? (tap to learn)</summary>
+      <div style="padding:0 16px 16px;font-size:.82rem;color:var(--text3);line-height:1.7;">
         Ajo is a savings circle — a group of people who each put in the same amount of money on a schedule, and take turns receiving the whole pot.
         <br><br>
-        <b style="color:${t.text};">Example:</b> 5 friends each contribute 10 USDC every week. Each week, one person gets the full 50 USDC. After 5 weeks, everyone has received a payout once.
+        <b style="color:var(--text);">Example:</b> 5 friends each contribute 10 USDC every week. Each week, one person gets the full 50 USDC. After 5 weeks, everyone has received a payout once.
         <br><br>
         On NAN, this happens automatically on-chain — no one can skip their turn to pay, and the payout goes to the right person the moment everyone's contributed.
       </div>
     </details>
-    <div style="display:flex;gap:8px;margin-bottom:16px;">
-      <button onclick="showAjoCreate()" style="flex:1;background:#7000ff;border:none;border-radius:10px;color:#fff;padding:12px;font-size:.82rem;font-weight:700;cursor:pointer;">+ Start a Group</button>
-      <button onclick="showAjoJoin()" style="flex:1;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.3);border-radius:10px;color:#a855f7;padding:12px;font-size:.82rem;font-weight:700;cursor:pointer;">Join with a Code</button>
+    <div style="display:flex;gap:10px;margin-bottom:16px;">
+      <button onclick="showAjoCreate()" style="flex:1;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:13px;font-size:.88rem;font-weight:700;cursor:pointer;">+ Start a Group</button>
+      <button onclick="showAjoJoin()" style="flex:1;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.3);border-radius:14px;color:#7000ff;padding:13px;font-size:.88rem;font-weight:700;cursor:pointer;">Join with a Code</button>
     </div>
     <div id="ajoBody"></div>
   `);
@@ -1713,7 +1707,6 @@ function ajoContract(signerOrProvider){
 }
 
 async function loadMyAjoGroups(){
-  const t = bpColors();
   const el = document.getElementById('ajoBody');
   if(!el) return;
   el.innerHTML = '<div style="text-align:center;padding:20px 0;"><span class="spinner"></span></div>';
@@ -1730,21 +1723,21 @@ async function loadMyAjoGroups(){
       if(member) myGroups.push(id);
     }
     if(myGroups.length === 0){
-      el.innerHTML = `<div style="text-align:center;padding:30px 0;color:${t.text3};font-size:.82rem;">No groups yet. Create one or join with an ID.</div>`;
+      el.innerHTML = `<div style="text-align:center;padding:30px 0;color:var(--text3);font-size:.85rem;">No groups yet. Create one or join with an ID.</div>`;
       return;
     }
-    let html = `<div style="font-size:.7rem;color:${t.text3};text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Your Groups</div>`;
+    let html = `<div style="font-size:.75rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;font-weight:600;">Your Groups</div>`;
     for(const id of myGroups){
       const g = await c.getGroup(id);
       const statusLabel = ['Open','Active','Completed'][g.status] || '?';
       const statusColor = g.status==0 ? '#fbbf24' : g.status==1 ? '#34d399' : '#888';
       html += `
-        <div onclick="showAjoGroup(${id})" style="background:${t.inputBg};border:1px solid ${t.inputBorder};border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer;">
+        <div onclick="showAjoGroup(${id})" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:10px;cursor:pointer;">
           <div style="display:flex;justify-content:space-between;align-items:center;">
-            <div style="font-size:.85rem;font-weight:700;color:${t.text};">${g.label || 'Group #'+id}</div>
-            <span style="font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:5px;background:${statusColor}22;color:${statusColor};">${statusLabel}</span>
+            <div style="font-size:.95rem;font-weight:700;color:var(--text);">${g.label || 'Group #'+id}</div>
+            <span style="font-size:.68rem;font-weight:700;padding:3px 10px;border-radius:6px;background:${statusColor}22;color:${statusColor};">${statusLabel}</span>
           </div>
-          <div style="font-size:.7rem;color:${t.text3};margin-top:4px;">${g.memberCount}/${g.maxMembers} members · ${ethers.formatUnits(g.contributionAmount,6)} USDC/round</div>
+          <div style="font-size:.78rem;color:var(--text3);margin-top:6px;">${g.memberCount}/${g.maxMembers} members · ${ethers.formatUnits(g.contributionAmount,6)} USDC/round</div>
         </div>
       `;
     }
@@ -1755,36 +1748,35 @@ async function loadMyAjoGroups(){
 }
 
 function showAjoCreate(){
-  const t = bpColors();
   document.getElementById('ajoBody').innerHTML = `
-    <button onclick="doAjo()" style="background:none;border:none;color:${t.text3};font-size:.78rem;cursor:pointer;margin-bottom:12px;padding:0;">← Back</button>
-    <div style="margin-bottom:12px;">
-      <div style="font-size:.72rem;color:${t.text3};margin-bottom:6px;">What's this group for?</div>
-      <input id="ajoLabel" type="text" placeholder="e.g. Office Savings, Family Ajo" style="width:100%;background:${t.inputBg};border:1px solid ${t.inputBorder};border-radius:10px;padding:11px 12px;color:${t.text};font-size:16px;box-sizing:border-box;"/>
+    <button onclick="doAjo()" style="background:none;border:none;color:var(--text3);font-size:.82rem;cursor:pointer;margin-bottom:14px;padding:0;">← Back</button>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:12px;">
+      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">What's this group for?</div>
+      <input id="ajoLabel" type="text" placeholder="e.g. Office Savings, Family Ajo" style="width:100%;background:none;border:none;outline:none;font-size:1.2rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
     </div>
-    <div style="display:flex;gap:8px;margin-bottom:12px;">
-      <div style="flex:1;">
-        <div style="font-size:.72rem;color:${t.text3};margin-bottom:6px;">How many people?</div>
-        <input id="ajoMaxMembers" type="number" min="2" max="50" placeholder="e.g. 5" oninput="updateAjoPreview()" style="width:100%;background:${t.inputBg};border:1px solid ${t.inputBorder};border-radius:10px;padding:11px 12px;color:${t.text};font-size:16px;box-sizing:border-box;"/>
+    <div style="display:flex;gap:10px;margin-bottom:12px;">
+      <div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 16px 14px;">
+        <div style="font-size:.9rem;color:var(--text);font-weight:500;margin-bottom:12px;">People</div>
+        <input id="ajoMaxMembers" type="number" min="2" max="50" placeholder="0" oninput="updateAjoPreview()" style="width:100%;background:none;border:none;outline:none;font-size:1.8rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
       </div>
-      <div style="flex:1;">
-        <div style="font-size:.72rem;color:${t.text3};margin-bottom:6px;">Each person pays</div>
-        <input id="ajoContribution" type="number" min="0.01" step="0.01" placeholder="e.g. 10" oninput="updateAjoPreview()" style="width:100%;background:${t.inputBg};border:1px solid ${t.inputBorder};border-radius:10px;padding:11px 12px;color:${t.text};font-size:16px;box-sizing:border-box;"/>
+      <div style="flex:1;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 16px 14px;">
+        <div style="font-size:.9rem;color:var(--text);font-weight:500;margin-bottom:12px;">USDC each</div>
+        <input id="ajoContribution" type="number" min="0.01" step="0.01" placeholder="0" oninput="updateAjoPreview()" style="width:100%;background:none;border:none;outline:none;font-size:1.8rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
       </div>
     </div>
-    <div style="margin-bottom:12px;">
-      <div style="font-size:.72rem;color:${t.text3};margin-bottom:6px;">How often does everyone pay?</div>
-      <select id="ajoRoundLength" onchange="updateAjoPreview()" style="width:100%;background:${t.inputBg};border:1px solid ${t.inputBorder};border-radius:10px;padding:11px 12px;color:${t.text};font-size:14px;">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:12px;">
+      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">How often does everyone pay?</div>
+      <select id="ajoRoundLength" onchange="updateAjoPreview()" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 14px;color:var(--text);font-size:1rem;font-weight:600;">
         <option value="3600">Every hour (for testing)</option>
         <option value="86400">Every day</option>
         <option value="604800" selected>Every week</option>
       </select>
     </div>
-    <div id="ajoPreview" style="background:rgba(112,0,255,.06);border:1px solid rgba(112,0,255,.15);border-radius:10px;padding:12px;margin-bottom:16px;font-size:.78rem;color:${t.text3};line-height:1.6;">
+    <div id="ajoPreview" style="background:rgba(112,0,255,.06);border:1px solid rgba(112,0,255,.18);border-radius:16px;padding:16px;margin-bottom:18px;font-size:.85rem;color:var(--text3);line-height:1.6;">
       Fill in the details above to see how much you'll pay and receive.
     </div>
-    <button onclick="submitAjoCreate()" id="ajoCreateBtn" style="width:100%;background:#7000ff;border:none;border-radius:10px;color:#fff;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;">Start Group</button>
-    <div id="ajoCreateStatus" style="font-size:.8rem;color:${t.text};margin-top:10px;"></div>
+    <button onclick="submitAjoCreate()" id="ajoCreateBtn" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Start Group</button>
+    <div id="ajoCreateStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
   `;
 }
 
@@ -1803,10 +1795,9 @@ function updateAjoPreview(){
   const pot = (members * contribution).toFixed(2);
   const totalRounds = members;
   const totalWeeks = totalRounds; // 1 payout per round, 1 round per period
-  const t = bpColors();
   previewEl.innerHTML = `
-    <b style="color:${t.text};">💰 ${pot} USDC</b> — that's the full pot, paid to one person each ${roundLabel}.<br>
-    Each member pays <b style="color:${t.text};">${contribution} USDC every ${roundLabel}</b>, for ${totalRounds} ${roundLabel}${totalRounds>1?'s':''} total.<br>
+    <b style="color:var(--text);">💰 ${pot} USDC</b> — that's the full pot, paid to one person each ${roundLabel}.<br>
+    Each member pays <b style="color:var(--text);">${contribution} USDC every ${roundLabel}</b>, for ${totalRounds} ${roundLabel}${totalRounds>1?'s':''} total.<br>
     Once everyone has had a turn, the group ends automatically.
   `;
 }
@@ -1843,17 +1834,16 @@ async function submitAjoCreate(){
 }
 
 function showAjoJoin(){
-  const t = bpColors();
   document.getElementById('ajoBody').innerHTML = `
-    <button onclick="doAjo()" style="background:none;border:none;color:${t.text3};font-size:.78rem;cursor:pointer;margin-bottom:12px;padding:0;">← Back</button>
-    <div style="margin-bottom:16px;">
-      <div style="font-size:.72rem;color:${t.text3};margin-bottom:6px;">Group Code</div>
-      <input id="ajoJoinId" type="number" min="0" placeholder="e.g. 0" oninput="previewAjoJoin()" style="width:100%;background:${t.inputBg};border:1px solid ${t.inputBorder};border-radius:10px;padding:11px 12px;color:${t.text};font-size:16px;box-sizing:border-box;"/>
-      <div style="font-size:.65rem;color:${t.text3};margin-top:4px;">Ask whoever invited you for this number — it's shown when they create the group.</div>
+    <button onclick="doAjo()" style="background:none;border:none;color:var(--text3);font-size:.82rem;cursor:pointer;margin-bottom:14px;padding:0;">← Back</button>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:14px;">
+      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Group Code</div>
+      <input id="ajoJoinId" type="number" min="0" placeholder="0" oninput="previewAjoJoin()" style="width:100%;background:none;border:none;outline:none;font-size:2.2rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
+      <div style="font-size:.8rem;color:var(--text3);margin-top:6px;">Ask whoever invited you for this number — it's shown when they create the group.</div>
     </div>
     <div id="ajoJoinPreview"></div>
-    <button onclick="submitAjoJoin()" id="ajoJoinBtn" style="width:100%;background:#7000ff;border:none;border-radius:10px;color:#fff;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;">Join Group</button>
-    <div id="ajoJoinStatus" style="font-size:.8rem;color:${t.text};margin-top:10px;"></div>
+    <button onclick="submitAjoJoin()" id="ajoJoinBtn" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Join Group</button>
+    <div id="ajoJoinStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
   `;
 }
 
@@ -1865,24 +1855,23 @@ function previewAjoJoin(){
   if(isNaN(groupId) || groupId < 0){ if(previewEl) previewEl.innerHTML = ''; return; }
   _ajoPreviewTimer = setTimeout(async () => {
     if(!previewEl) return;
-    const t = bpColors();
-    previewEl.innerHTML = `<div style="font-size:.75rem;color:${t.text3};margin-bottom:12px;">Looking up group…</div>`;
+    previewEl.innerHTML = `<div style="font-size:.82rem;color:var(--text3);margin-bottom:12px;">Looking up group…</div>`;
     try{
       const readProvider = provider || getArcProvider();
       const c = ajoContract(readProvider);
       const g = await c.getGroup(groupId);
       if(g.status != 0){
-        previewEl.innerHTML = '<div style="font-size:.75rem;color:#f87171;margin-bottom:12px;">This group has already started or finished — you can\'t join it now.</div>';
+        previewEl.innerHTML = '<div style="font-size:.82rem;color:#f87171;margin-bottom:12px;">This group has already started or finished — you can\'t join it now.</div>';
         return;
       }
       previewEl.innerHTML = `
-        <div style="background:rgba(112,0,255,.06);border:1px solid rgba(112,0,255,.15);border-radius:10px;padding:12px;margin-bottom:12px;">
-          <div style="font-size:.85rem;font-weight:700;color:${t.text};">${g.label || 'Group #'+groupId}</div>
-          <div style="font-size:.75rem;color:${t.text3};margin-top:6px;">You'll pay ${ethers.formatUnits(g.contributionAmount,6)} USDC each round · ${g.memberCount}/${g.maxMembers} people joined so far</div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;">
+          <div style="font-size:.95rem;font-weight:700;color:var(--text);">${g.label || 'Group #'+groupId}</div>
+          <div style="font-size:.82rem;color:var(--text3);margin-top:6px;">You'll pay ${ethers.formatUnits(g.contributionAmount,6)} USDC each round · ${g.memberCount}/${g.maxMembers} people joined so far</div>
         </div>
       `;
     }catch(err){
-      previewEl.innerHTML = '<div style="font-size:.75rem;color:#f87171;margin-bottom:12px;">Couldn\'t find a group with that code.</div>';
+      previewEl.innerHTML = '<div style="font-size:.82rem;color:#f87171;margin-bottom:12px;">Couldn\'t find a group with that code.</div>';
     }
   }, 500);
 }
@@ -1911,7 +1900,6 @@ async function submitAjoJoin(){
 }
 
 async function showAjoGroup(groupId){
-  const t = bpColors();
   const el = document.getElementById('ajoBody');
   el.innerHTML = '<div style="text-align:center;padding:20px 0;"><span class="spinner"></span></div>';
   try{
@@ -1929,29 +1917,39 @@ async function showAjoGroup(groupId){
 
     if(isOpen){
       actionHtml = `
-        <div style="background:rgba(112,0,255,.06);border:1px solid rgba(112,0,255,.15);border-radius:10px;padding:12px;margin-top:12px;margin-bottom:10px;text-align:center;">
-          <div style="font-size:.7rem;color:${t.text3};margin-bottom:4px;">Share this code so others can join</div>
-          <div style="font-size:1.6rem;font-weight:800;color:#7000ff;">${groupId}</div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-top:14px;margin-bottom:12px;text-align:center;">
+          <div style="font-size:.78rem;color:var(--text3);margin-bottom:6px;">Share this code so others can join</div>
+          <div style="font-size:1.8rem;font-weight:800;color:#7000ff;">${groupId}</div>
         </div>
       `;
       if(isCreator && g.memberCount == g.maxMembers){
-        actionHtml += `<button onclick="submitAjoStart(${groupId})" id="ajoActionBtn" style="width:100%;background:#34d399;border:none;border-radius:10px;color:#000;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;">Everyone's here — Start Now!</button>`;
+        actionHtml += `<button onclick="submitAjoStart(${groupId})" id="ajoActionBtn" style="width:100%;background:#34d399;border:none;border-radius:14px;color:#000;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Everyone's here — Start Now!</button>`;
       } else if(isCreator){
-        actionHtml += `<div style="text-align:center;padding:8px;color:${t.text3};font-size:.78rem;">Waiting for ${Number(g.maxMembers) - Number(g.memberCount)} more person/people to join.</div>`;
+        actionHtml += `<div style="text-align:center;padding:10px;color:var(--text3);font-size:.82rem;">Waiting for ${Number(g.maxMembers) - Number(g.memberCount)} more person/people to join.</div>`;
       } else {
-        actionHtml += `<div style="text-align:center;padding:8px;color:${t.text3};font-size:.78rem;">Waiting for the group to fill up before it starts.</div>`;
+        actionHtml += `<div style="text-align:center;padding:10px;color:var(--text3);font-size:.82rem;">Waiting for the group to fill up before it starts.</div>`;
       }
     } else if(isActive){
       const [contributed, total] = await c.getRoundProgress(groupId);
       const already = await c.hasContributed(groupId, g.currentRound, userAddr).catch(()=>false);
       const recipient = await c.getCurrentRecipient(groupId).catch(()=>null);
-      itsYourTurn = recipient && recipient.toLowerCase() === userAddr.toLowerCase();
+      itsYourTurn = !!(recipient && recipient.toLowerCase() === userAddr.toLowerCase());
       const everyonePaid = contributed == total;
 
+      // Pre-compute every conditional string OUTSIDE the template literal —
+      // avoids nested-ternary-inside-backtick bugs that have bitten this
+      // function twice before (quotes trapping ${...} as literal text).
+      const roundCardBg = itsYourTurn ? 'rgba(52,211,153,.1)' : 'var(--card)';
+      const roundCardBorder = itsYourTurn ? 'rgba(52,211,153,.35)' : 'var(--border)';
+      const roundLabelText = itsYourTurn
+        ? "🎉 It's your turn to receive this round!"
+        : `Round ${Number(g.currentRound)+1} of ${g.memberCount}`;
+      const roundLabelWeight = itsYourTurn ? '700' : '500';
+
       actionHtml = `
-        <div style="background:${itsYourTurn?'rgba(52,211,153,.1)':t.inputBg};border:1px solid ${itsYourTurn?'rgba(52,211,153,.3)':t.inputBorder};border-radius:10px;padding:12px;margin-top:12px;margin-bottom:10px;">
-          <div style="font-size:.78rem;color:${t.text};font-weight:${itsYourTurn?'700':'400'};">${itsYourTurn ? "🎉 It's your turn to receive this round!" : `Round ${Number(g.currentRound)+1} of ${g.memberCount}`}</div>
-          <div style="font-size:.72rem;color:${t.text3};margin-top:4px;">${contributed} of ${total} people have paid this round</div>
+        <div style="background:${roundCardBg};border:1px solid ${roundCardBorder};border-radius:16px;padding:16px;margin-top:14px;margin-bottom:12px;">
+          <div style="font-size:.9rem;color:var(--text);font-weight:${roundLabelWeight};">${roundLabelText}</div>
+          <div style="font-size:.82rem;color:var(--text3);margin-top:6px;">${contributed} of ${total} people have paid this round</div>
         </div>
       `;
 
@@ -1962,30 +1960,39 @@ async function showAjoGroup(groupId){
       // dedicated, obvious action — useful since they're usually the one
       // running/coordinating the group.
       if(isCreator && everyonePaid){
-        actionHtml += `<button onclick="submitAjoClaim(${groupId})" id="ajoCreatorPayBtn" style="width:100%;background:#34d399;border:none;border-radius:10px;color:#000;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;margin-bottom:8px;">👑 Pay ${recipient?(recipient.toLowerCase()===userAddr.toLowerCase()?'Yourself':'Out'):'Out'} Now (Round ${Number(g.currentRound)+1})</button>`;
+        const payRecipientWord = (recipient && recipient.toLowerCase() === userAddr.toLowerCase()) ? 'Yourself' : 'Out';
+        actionHtml += `<button onclick="submitAjoClaim(${groupId})" id="ajoCreatorPayBtn" style="width:100%;background:#34d399;border:none;border-radius:14px;color:#000;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;margin-bottom:10px;">👑 Pay ${payRecipientWord} Now (Round ${Number(g.currentRound)+1})</button>`;
       } else if(isCreator && !everyonePaid){
-        actionHtml += `<div style="text-align:center;padding:8px;color:${t.text3};font-size:.72rem;">As the creator, you'll be able to release this round's payout once everyone has paid.</div>`;
+        actionHtml += `<div style="text-align:center;padding:10px;color:var(--text3);font-size:.78rem;">As the creator, you'll be able to release this round's payout once everyone has paid.</div>`;
       }
 
+      const memberBtnLabel = everyonePaid ? 'Release Payout' : "You've Paid — Waiting on Others";
       actionHtml += already
-          ? `<button onclick="submitAjoClaim(${groupId})" id="ajoActionBtn" style="width:100%;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.3);border-radius:10px;color:#a855f7;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;">${everyonePaid ? 'Release Payout' : "You've Paid — Waiting on Others"}</button>`
-          : `<button onclick="submitAjoContribute(${groupId})" id="ajoActionBtn" style="width:100%;background:#7000ff;border:none;border-radius:10px;color:#fff;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;">Pay Your ${ethers.formatUnits(g.contributionAmount,6)} USDC</button>`;
+          ? `<button onclick="submitAjoClaim(${groupId})" id="ajoActionBtn" style="width:100%;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.3);border-radius:14px;color:#7000ff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">${memberBtnLabel}</button>`
+          : `<button onclick="submitAjoContribute(${groupId})" id="ajoActionBtn" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Pay Your ${ethers.formatUnits(g.contributionAmount,6)} USDC</button>`;
     } else {
-      actionHtml = `<div style="text-align:center;padding:12px;color:${t.text3};font-size:.78rem;">🎉 This group is finished — everyone has had their turn.</div>`;
+      actionHtml = `<div style="text-align:center;padding:14px;color:var(--text3);font-size:.82rem;">🎉 This group is finished — everyone has had their turn.</div>`;
     }
 
+    const memberRows = members.map((m,i) => {
+      const isMe = m.toLowerCase() === userAddr.toLowerCase();
+      const isCurrentTurn = (i==g.currentRound && isActive);
+      const rowColor = isCurrentTurn ? '#34d399' : 'var(--text)';
+      const rowLabel = isMe ? 'You' : (m.slice(0,8)+'…'+m.slice(-6));
+      const rowSuffix = isCurrentTurn ? ' ← gets paid this round' : '';
+      return `<div style="font-family:'JetBrains Mono',monospace;font-size:.78rem;color:${rowColor};padding:6px 0;">${i+1}. ${rowLabel}${rowSuffix}</div>`;
+    }).join('');
+
     el.innerHTML = `
-      <button onclick="doAjo()" style="background:none;border:none;color:${t.text3};font-size:.78rem;cursor:pointer;margin-bottom:12px;padding:0;">← Back</button>
-      <div style="font-size:1rem;font-weight:700;color:${t.text};margin-bottom:4px;">${g.label || 'Group #'+groupId}</div>
-      <div style="font-size:.75rem;color:${t.text3};margin-bottom:12px;">${statusLabel} · ${g.memberCount}/${g.maxMembers} people</div>
-      <div style="font-size:.72rem;color:${t.text3};margin-bottom:6px;">Payout order (first to join goes first)</div>
-      ${members.map((m,i) => {
-        const isMe = m.toLowerCase() === userAddr.toLowerCase();
-        const isCurrentTurn = i==g.currentRound && isActive;
-        return `<div style="font-family:'JetBrains Mono',monospace;font-size:.7rem;color:${isCurrentTurn?'#34d399':t.text};padding:4px 0;">${i+1}. ${isMe?'You':m.slice(0,8)+'…'+m.slice(-6)}${isCurrentTurn?' ← gets paid this round':''}</div>`;
-      }).join('')}
+      <button onclick="doAjo()" style="background:none;border:none;color:var(--text3);font-size:.82rem;cursor:pointer;margin-bottom:14px;padding:0;">← Back</button>
+      <div style="font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:4px;">${g.label || 'Group #'+groupId}</div>
+      <div style="font-size:.82rem;color:var(--text3);margin-bottom:16px;">${statusLabel} · ${g.memberCount}/${g.maxMembers} people</div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px 16px;">
+        <div style="font-size:.78rem;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em;">Payout order (first to join goes first)</div>
+        ${memberRows}
+      </div>
       ${actionHtml}
-      <div id="ajoGroupStatus" style="font-size:.8rem;color:${t.text};margin-top:10px;"></div>
+      <div id="ajoGroupStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
     `;
   }catch(err){
     el.innerHTML = '<div style="text-align:center;padding:20px 0;color:#f87171;font-size:.8rem;">'+err.message.slice(0,150)+'</div>';
@@ -2059,11 +2066,10 @@ async function submitAjoClaim(groupId){
 
 // ── ELECTRICITY (NEPA) ──────────────────────────────────────────────────
 function doNepa(){
-  const t = bpColors();
   openBillModal('Pay Electricity', `
-    <div style="margin-bottom:12px;">
-      <div style="font-size:.72rem;color:${t.text3};margin-bottom:6px;">Provider</div>
-      <select id="nepaProvider" style="width:100%;background:${t.inputBg};border:1px solid ${t.inputBorder};border-radius:10px;padding:11px 12px;color:${t.text};font-size:14px;">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:12px;">
+      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Provider</div>
+      <select id="nepaProvider" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 14px;color:var(--text);font-size:1rem;font-weight:600;">
         <option value="ikeja-electric">Ikeja Electric (IKEDC)</option>
         <option value="eko-electric">Eko Electric (EKEDC)</option>
         <option value="kano-electric">Kano Electric (KEDCO)</option>
@@ -2078,19 +2084,19 @@ function doNepa(){
         <option value="yola-electric">Yola Electric (YEDC)</option>
       </select>
     </div>
-    <div style="margin-bottom:12px;">
-      <div style="font-size:.72rem;color:${t.text3};margin-bottom:6px;">Meter Type</div>
-      <select id="nepaType" style="width:100%;background:${t.inputBg};border:1px solid ${t.inputBorder};border-radius:10px;padding:11px 12px;color:${t.text};font-size:14px;">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:12px;">
+      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Meter Type</div>
+      <select id="nepaType" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 14px;color:var(--text);font-size:1rem;font-weight:600;">
         <option value="prepaid">Prepaid</option>
         <option value="postpaid">Postpaid</option>
       </select>
     </div>
-    <div style="margin-bottom:12px;">
-      <div style="font-size:.72rem;color:${t.text3};margin-bottom:6px;">Meter Number</div>
-      <input id="nepaMeter" type="text" placeholder="1111111111111" style="width:100%;background:${t.inputBg};border:1px solid ${t.inputBorder};border-radius:10px;padding:11px 12px;color:${t.text};font-size:16px;box-sizing:border-box;"/>
-      <div style="font-size:.65rem;color:${t.text3};margin-top:4px;">Sandbox: 1111111111111 (prepaid) or 1010101010101 (postpaid)</div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:18px;">
+      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Meter Number</div>
+      <input id="nepaMeter" type="text" placeholder="1111111111111" style="width:100%;background:none;border:none;outline:none;font-size:1.4rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
+      <div style="font-size:.8rem;color:var(--text3);margin-top:6px;">Sandbox: 1111111111111 (prepaid) or 1010101010101 (postpaid)</div>
     </div>
-    <button onclick="verifyNepaMeter()" id="nepaVerifyBtn" style="width:100%;background:rgba(112,0,255,.12);border:1px solid rgba(112,0,255,.3);border-radius:10px;color:#a855f7;padding:11px;font-size:.85rem;font-weight:700;cursor:pointer;margin-bottom:12px;">Verify Meter</button>
+    <button onclick="verifyNepaMeter()" id="nepaVerifyBtn" style="width:100%;background:rgba(112,0,255,.12);border:1px solid rgba(112,0,255,.3);border-radius:14px;color:#7000ff;padding:13px;font-size:.95rem;font-weight:700;cursor:pointer;margin-bottom:12px;">Verify Meter</button>
     <div id="nepaVerifyResult"></div>
   `);
 }
@@ -2110,22 +2116,21 @@ async function verifyNepaMeter(){
     return;
   }
   const c = result.customer;
-  const t = bpColors();
   document.getElementById('nepaVerifyResult').innerHTML = `
-    <div style="background:${t.inputBg};border:1px solid ${t.inputBorder};border-radius:10px;padding:12px;margin-bottom:12px;">
-      <div style="font-size:.85rem;font-weight:700;color:${t.text};">${c.Customer_Name||'Verified'}</div>
-      <div style="font-size:.72rem;color:${t.text3};margin-top:2px;">${c.Address||''}</div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px;">
+      <div style="font-size:.95rem;font-weight:700;color:var(--text);">${c.Customer_Name||'Verified'}</div>
+      <div style="font-size:.8rem;color:var(--text3);margin-top:4px;">${c.Address||''}</div>
     </div>
-    <div style="margin-bottom:16px;">
-      <div style="font-size:.72rem;color:${t.text3};margin-bottom:6px;">Amount (₦)</div>
-      <input id="nepaAmount" type="number" placeholder="e.g. 2000" style="width:100%;background:${t.inputBg};border:1px solid ${t.inputBorder};border-radius:10px;padding:11px 12px;color:${t.text};font-size:16px;box-sizing:border-box;"/>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:12px;">
+      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Amount (₦)</div>
+      <input id="nepaAmount" type="number" placeholder="0" style="width:100%;background:none;border:none;outline:none;font-size:2.2rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
     </div>
-    <div style="margin-bottom:16px;">
-      <div style="font-size:.72rem;color:${t.text3};margin-bottom:6px;">Phone Number</div>
-      <input id="nepaPhone" type="tel" placeholder="08011111111" style="width:100%;background:${t.inputBg};border:1px solid ${t.inputBorder};border-radius:10px;padding:11px 12px;color:${t.text};font-size:16px;box-sizing:border-box;"/>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:18px;">
+      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Phone Number</div>
+      <input id="nepaPhone" type="tel" placeholder="08011111111" style="width:100%;background:none;border:none;outline:none;font-size:1.4rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
     </div>
-    <button onclick="submitNepa()" id="nepaSubmitBtn" style="width:100%;background:#7000ff;border:none;border-radius:10px;color:#fff;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;">Pay Electricity Bill</button>
-    <div id="nepaStatus" style="font-size:.8rem;color:${t.text};margin-top:10px;"></div>
+    <button onclick="submitNepa()" id="nepaSubmitBtn" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Pay Electricity Bill</button>
+    <div id="nepaStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
   `;
 }
 async function submitNepa(){
@@ -2164,14 +2169,13 @@ async function submitNepa(){
 
 // ── DSTV ─────────────────────────────────────────────────────────────────
 function doDstv(){
-  const t = bpColors();
   openBillModal('DSTV Subscription', `
-    <div style="margin-bottom:12px;">
-      <div style="font-size:.72rem;color:${t.text3};margin-bottom:6px;">Smartcard Number</div>
-      <input id="dstvCard" type="text" placeholder="1212121212" style="width:100%;background:${t.inputBg};border:1px solid ${t.inputBorder};border-radius:10px;padding:11px 12px;color:${t.text};font-size:16px;box-sizing:border-box;"/>
-      <div style="font-size:.65rem;color:${t.text3};margin-top:4px;">Sandbox: 1212121212 for a guaranteed success</div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:18px;">
+      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Smartcard Number</div>
+      <input id="dstvCard" type="text" placeholder="1212121212" style="width:100%;background:none;border:none;outline:none;font-size:1.4rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
+      <div style="font-size:.8rem;color:var(--text3);margin-top:6px;">Sandbox: 1212121212 for a guaranteed success</div>
     </div>
-    <button onclick="verifyDstvCard()" id="dstvVerifyBtn" style="width:100%;background:rgba(112,0,255,.12);border:1px solid rgba(112,0,255,.3);border-radius:10px;color:#a855f7;padding:11px;font-size:.85rem;font-weight:700;cursor:pointer;margin-bottom:12px;">Verify Smartcard</button>
+    <button onclick="verifyDstvCard()" id="dstvVerifyBtn" style="width:100%;background:rgba(112,0,255,.12);border:1px solid rgba(112,0,255,.3);border-radius:14px;color:#7000ff;padding:13px;font-size:.95rem;font-weight:700;cursor:pointer;margin-bottom:12px;">Verify Smartcard</button>
     <div id="dstvVerifyResult"></div>
   `);
 }
@@ -2191,23 +2195,22 @@ async function verifyDstvCard(){
   const c = result.customer;
   const variations = await vtpassCall('getVariations', { serviceID:'dstv' });
   const bouquetOptions = (variations.variations||[]).map(v => `<option value="${v.variation_code}" data-amount="${v.variation_amount}">${v.name}</option>`).join('');
-  const t = bpColors();
 
   document.getElementById('dstvVerifyResult').innerHTML = `
-    <div style="background:${t.inputBg};border:1px solid ${t.inputBorder};border-radius:10px;padding:12px;margin-bottom:12px;">
-      <div style="font-size:.85rem;font-weight:700;color:${t.text};">${c.Customer_Name||'Verified'}</div>
-      <div style="font-size:.72rem;color:${t.text3};margin-top:2px;">Status: ${c.Status||'—'}</div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px;">
+      <div style="font-size:.95rem;font-weight:700;color:var(--text);">${c.Customer_Name||'Verified'}</div>
+      <div style="font-size:.8rem;color:var(--text3);margin-top:4px;">Status: ${c.Status||'—'}</div>
     </div>
-    <div style="margin-bottom:12px;">
-      <div style="font-size:.72rem;color:${t.text3};margin-bottom:6px;">Bouquet</div>
-      <select id="dstvBouquet" style="width:100%;background:${t.inputBg};border:1px solid ${t.inputBorder};border-radius:10px;padding:11px 12px;color:${t.text};font-size:14px;">${bouquetOptions}</select>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:12px;">
+      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Bouquet</div>
+      <select id="dstvBouquet" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 14px;color:var(--text);font-size:1rem;font-weight:600;">${bouquetOptions}</select>
     </div>
-    <div style="margin-bottom:16px;">
-      <div style="font-size:.72rem;color:${t.text3};margin-bottom:6px;">Phone Number</div>
-      <input id="dstvPhone" type="tel" placeholder="08011111111" style="width:100%;background:${t.inputBg};border:1px solid ${t.inputBorder};border-radius:10px;padding:11px 12px;color:${t.text};font-size:16px;box-sizing:border-box;"/>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:18px;">
+      <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Phone Number</div>
+      <input id="dstvPhone" type="tel" placeholder="08011111111" style="width:100%;background:none;border:none;outline:none;font-size:1.4rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
     </div>
-    <button onclick="submitDstv()" id="dstvSubmitBtn" style="width:100%;background:#7000ff;border:none;border-radius:10px;color:#fff;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;">Subscribe</button>
-    <div id="dstvStatus" style="font-size:.8rem;color:${t.text};margin-top:10px;"></div>
+    <button onclick="submitDstv()" id="dstvSubmitBtn" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Subscribe</button>
+    <div id="dstvStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
   `;
 }
 async function submitDstv(){
