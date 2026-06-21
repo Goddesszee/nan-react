@@ -1295,6 +1295,365 @@ function disconnect(){
 }
 
 // ═══════════════════════════════════════════
+// MARKETPLACE — BILL PAYMENTS (VTpass, sandbox)
+// ═══════════════════════════════════════════
+// User flow: pick service → (for data/electricity/DSTV) verify customer +
+// pick variation → confirm NGN amount → send equivalent USDC on-chain to
+// NAN's treasury wallet → once that tx confirms, call VTpass to fulfill.
+// This mirrors how Send already works (on-chain transfer first), so a bill
+// payment is really "Send to NAN + NAN fulfills a bill on your behalf."
+const NAN_TREASURY_ADDR = '0x86B245D0B48BBdc58F08cAeA971a24ba377c366a'; // same wallet used for x402 seller revenue
+const VTPASS_API = 'https://nan-production.up.railway.app/api/vtpass';
+
+function openBillModal(title, bodyHtml){
+  document.getElementById('billTitle').textContent = title;
+  document.getElementById('billBody').innerHTML = bodyHtml;
+  document.getElementById('billOverlay').style.display = 'block';
+}
+function closeBillModal(){
+  document.getElementById('billOverlay').style.display = 'none';
+}
+
+async function vtpassCall(action, payload){
+  const res = await fetch(VTPASS_API, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ action, ...payload })
+  });
+  return res.json();
+}
+
+// Sends the NGN-equivalent USDC amount to NAN's treasury, returns the tx hash.
+// Reuses the same signer/Circle-wallet paths already established for Send.
+async function payNgnInUsdc(ngnAmount, btn){
+  const preview = await vtpassCall('ngnPreview', { ngnAmount });
+  if(!preview.success) throw new Error(preview.error || 'Could not get NGN rate');
+  const usdcAmount = preview.usdcAmount;
+
+  if(btn) btn.innerHTML = '<span class="spinner"></span>Sending '+usdcAmount.toFixed(4)+' USDC…';
+
+  if(isCircleWallet){
+    const res = await fetch('https://nan-production.up.railway.app/api/circle-wallets', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'transfer', walletId:circleWalletId, walletAddress:circleWalletAddress, destinationAddress:NAN_TREASURY_ADDR, amount:usdcAmount.toString(), tokenSymbol:'USDC' })
+    });
+    const data = await res.json();
+    if(!data.success) throw new Error(data.error || 'USDC payment failed');
+    return { txHash: data.txHash || data.transactionId, usdcAmount };
+  } else {
+    if(!signer){ signer = await getDynamicSigner(); }
+    if(!signer) throw new Error('Connect wallet & switch to Arc Testnet');
+    const c = new ethers.Contract(USDC_ADDR, ERC20_ABI, signer);
+    const tx = await c.transfer(NAN_TREASURY_ADDR, ethers.parseUnits(usdcAmount.toFixed(USDC_DECIMALS), USDC_DECIMALS), arcGasOpts());
+    await tx.wait(0);
+    return { txHash: tx.hash, usdcAmount };
+  }
+}
+
+// ── AIRTIME ──────────────────────────────────────────────────────────────
+function doAirtime(){
+  openBillModal('Buy Airtime', `
+    <div style="margin-bottom:12px;">
+      <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">Network</div>
+      <select id="airtimeNetwork" style="width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--text);font-size:14px;">
+        <option value="mtn">MTN</option>
+        <option value="glo">Glo</option>
+        <option value="airtel">Airtel</option>
+        <option value="etisalat">9mobile</option>
+      </select>
+    </div>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">Phone Number</div>
+      <input id="airtimePhone" type="tel" placeholder="08011111111" style="width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--text);font-size:16px;box-sizing:border-box;"/>
+      <div style="font-size:.65rem;color:var(--text3);margin-top:4px;">Sandbox tip: use 08011111111 for a guaranteed success</div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">Amount (₦)</div>
+      <input id="airtimeAmount" type="number" placeholder="e.g. 500" style="width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--text);font-size:16px;box-sizing:border-box;"/>
+    </div>
+    <button onclick="submitAirtime()" id="airtimeBtn" style="width:100%;background:#7000ff;border:none;border-radius:10px;color:#fff;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;">Buy Airtime</button>
+    <div id="airtimeStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
+  `);
+}
+async function submitAirtime(){
+  const btn = document.getElementById('airtimeBtn');
+  const statusEl = document.getElementById('airtimeStatus');
+  const serviceID = document.getElementById('airtimeNetwork').value;
+  const phone = document.getElementById('airtimePhone').value.trim();
+  const ngnAmount = parseFloat(document.getElementById('airtimeAmount').value);
+  if(!phone || !ngnAmount || ngnAmount <= 0){ toast('Enter phone and amount','error',3000); return; }
+
+  btn.disabled = true;
+  try{
+    const { txHash, usdcAmount } = await payNgnInUsdc(ngnAmount, btn);
+    statusEl.innerHTML = '<span style="color:var(--text3);">Payment sent ('+usdcAmount.toFixed(4)+' USDC) · Delivering airtime…</span>';
+    const result = await vtpassCall('purchase', { serviceID, phone, amount: ngnAmount });
+    if(result.success){
+      statusEl.innerHTML = '<span style="color:#34d399;">✓ Airtime delivered! Ref: '+result.requestId+'</span>';
+      toast('✓ ₦'+ngnAmount+' airtime sent to '+phone, 'success', 6000);
+      await refreshBalances();
+    } else if(result.pending){
+      statusEl.innerHTML = '<span style="color:#fbbf24;">⏳ Pending — checking status…</span>';
+      toast('Airtime purchase pending, checking status', 'info', 5000);
+    } else {
+      statusEl.innerHTML = '<span style="color:#f87171;">Payment sent but delivery failed: '+(result.responseDescription||result.error||'Unknown error')+'</span>';
+      toast('Airtime delivery failed — your USDC was sent, contact support with tx: '+txHash.slice(0,10), 'error', 10000);
+    }
+  }catch(err){
+    statusEl.innerHTML = '<span style="color:#f87171;">'+err.message.slice(0,150)+'</span>';
+    toast('Airtime purchase failed: '+err.message.slice(0,100), 'error', 6000);
+  }finally{
+    btn.disabled = false;
+  }
+}
+
+// ── DATA ─────────────────────────────────────────────────────────────────
+function doData(){
+  openBillModal('Buy Data', `
+    <div style="margin-bottom:12px;">
+      <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">Network</div>
+      <select id="dataNetwork" onchange="loadDataPlans()" style="width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--text);font-size:14px;">
+        <option value="mtn-data">MTN</option>
+        <option value="glo-data">Glo</option>
+        <option value="airtel-data">Airtel</option>
+        <option value="etisalat-data">9mobile</option>
+      </select>
+    </div>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">Plan</div>
+      <select id="dataPlan" style="width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--text);font-size:14px;"><option>Loading plans…</option></select>
+    </div>
+    <div style="margin-bottom:16px;">
+      <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">Phone Number</div>
+      <input id="dataPhone" type="tel" placeholder="08011111111" style="width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--text);font-size:16px;box-sizing:border-box;"/>
+      <div style="font-size:.65rem;color:var(--text3);margin-top:4px;">Sandbox tip: use 08011111111 for a guaranteed success</div>
+    </div>
+    <button onclick="submitData()" id="dataBtn" style="width:100%;background:#7000ff;border:none;border-radius:10px;color:#fff;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;">Buy Data</button>
+    <div id="dataStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
+  `);
+  loadDataPlans();
+}
+async function loadDataPlans(){
+  const sel = document.getElementById('dataPlan');
+  sel.innerHTML = '<option>Loading plans…</option>';
+  const serviceID = document.getElementById('dataNetwork').value;
+  const result = await vtpassCall('getVariations', { serviceID });
+  if(result.success && result.variations.length){
+    sel.innerHTML = result.variations.map(v => `<option value="${v.variation_code}" data-amount="${v.variation_amount}">${v.name}</option>`).join('');
+  } else {
+    sel.innerHTML = '<option value="">Could not load plans</option>';
+  }
+}
+async function submitData(){
+  const btn = document.getElementById('dataBtn');
+  const statusEl = document.getElementById('dataStatus');
+  const serviceID = document.getElementById('dataNetwork').value;
+  const phone = document.getElementById('dataPhone').value.trim();
+  const planSel = document.getElementById('dataPlan');
+  const variationCode = planSel.value;
+  const ngnAmount = parseFloat(planSel.selectedOptions[0]?.dataset.amount || 0);
+  if(!phone || !variationCode || !ngnAmount){ toast('Select a plan and enter phone','error',3000); return; }
+
+  btn.disabled = true;
+  try{
+    const { txHash, usdcAmount } = await payNgnInUsdc(ngnAmount, btn);
+    statusEl.innerHTML = '<span style="color:var(--text3);">Payment sent ('+usdcAmount.toFixed(4)+' USDC) · Delivering data…</span>';
+    const result = await vtpassCall('purchase', { serviceID, phone, variationCode });
+    if(result.success){
+      statusEl.innerHTML = '<span style="color:#34d399;">✓ Data delivered! Ref: '+result.requestId+'</span>';
+      toast('✓ Data bundle sent to '+phone, 'success', 6000);
+      await refreshBalances();
+    } else if(result.pending){
+      statusEl.innerHTML = '<span style="color:#fbbf24;">⏳ Pending — checking status…</span>';
+    } else {
+      statusEl.innerHTML = '<span style="color:#f87171;">Payment sent but delivery failed: '+(result.responseDescription||result.error||'Unknown error')+'</span>';
+      toast('Data delivery failed — your USDC was sent, contact support with tx: '+txHash.slice(0,10), 'error', 10000);
+    }
+  }catch(err){
+    statusEl.innerHTML = '<span style="color:#f87171;">'+err.message.slice(0,150)+'</span>';
+    toast('Data purchase failed: '+err.message.slice(0,100), 'error', 6000);
+  }finally{
+    btn.disabled = false;
+  }
+}
+
+// ── ELECTRICITY (NEPA) ──────────────────────────────────────────────────
+function doNepa(){
+  openBillModal('Pay Electricity', `
+    <div style="margin-bottom:12px;">
+      <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">Provider</div>
+      <select id="nepaProvider" style="width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--text);font-size:14px;">
+        <option value="ikeja-electric">Ikeja Electric (IKEDC)</option>
+      </select>
+    </div>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">Meter Type</div>
+      <select id="nepaType" style="width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--text);font-size:14px;">
+        <option value="prepaid">Prepaid</option>
+        <option value="postpaid">Postpaid</option>
+      </select>
+    </div>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">Meter Number</div>
+      <input id="nepaMeter" type="text" placeholder="1111111111111" style="width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--text);font-size:16px;box-sizing:border-box;"/>
+      <div style="font-size:.65rem;color:var(--text3);margin-top:4px;">Sandbox: 1111111111111 (prepaid) or 1010101010101 (postpaid)</div>
+    </div>
+    <button onclick="verifyNepaMeter()" id="nepaVerifyBtn" style="width:100%;background:rgba(112,0,255,.12);border:1px solid rgba(112,0,255,.3);border-radius:10px;color:#a855f7;padding:11px;font-size:.85rem;font-weight:700;cursor:pointer;margin-bottom:12px;">Verify Meter</button>
+    <div id="nepaVerifyResult"></div>
+  `);
+}
+async function verifyNepaMeter(){
+  const btn = document.getElementById('nepaVerifyBtn');
+  const serviceID = document.getElementById('nepaProvider').value;
+  const type = document.getElementById('nepaType').value;
+  const billersCode = document.getElementById('nepaMeter').value.trim();
+  if(!billersCode){ toast('Enter meter number','error',3000); return; }
+
+  btn.disabled = true; btn.textContent = 'Verifying…';
+  const result = await vtpassCall('verifyCustomer', { serviceID, billersCode, type });
+  btn.disabled = false; btn.textContent = 'Verify Meter';
+
+  if(!result.success){
+    document.getElementById('nepaVerifyResult').innerHTML = '<div style="font-size:.8rem;color:#f87171;">'+(result.error||'Verification failed')+'</div>';
+    return;
+  }
+  const c = result.customer;
+  document.getElementById('nepaVerifyResult').innerHTML = `
+    <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:12px;">
+      <div style="font-size:.85rem;font-weight:700;color:var(--text);">${c.Customer_Name||'Verified'}</div>
+      <div style="font-size:.72rem;color:var(--text3);margin-top:2px;">${c.Address||''}</div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">Amount (₦)</div>
+      <input id="nepaAmount" type="number" placeholder="e.g. 2000" style="width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--text);font-size:16px;box-sizing:border-box;"/>
+    </div>
+    <div style="margin-bottom:16px;">
+      <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">Phone Number</div>
+      <input id="nepaPhone" type="tel" placeholder="08011111111" style="width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--text);font-size:16px;box-sizing:border-box;"/>
+    </div>
+    <button onclick="submitNepa()" id="nepaSubmitBtn" style="width:100%;background:#7000ff;border:none;border-radius:10px;color:#fff;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;">Pay Electricity Bill</button>
+    <div id="nepaStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
+  `;
+}
+async function submitNepa(){
+  const btn = document.getElementById('nepaSubmitBtn');
+  const statusEl = document.getElementById('nepaStatus');
+  const serviceID = document.getElementById('nepaProvider').value;
+  const variationCode = document.getElementById('nepaType').value; // prepaid|postpaid
+  const billersCode = document.getElementById('nepaMeter').value.trim();
+  const phone = document.getElementById('nepaPhone').value.trim();
+  const ngnAmount = parseFloat(document.getElementById('nepaAmount').value);
+  if(!phone || !ngnAmount || ngnAmount <= 0){ toast('Enter amount and phone','error',3000); return; }
+
+  btn.disabled = true;
+  try{
+    const { txHash, usdcAmount } = await payNgnInUsdc(ngnAmount, btn);
+    statusEl.innerHTML = '<span style="color:var(--text3);">Payment sent ('+usdcAmount.toFixed(4)+' USDC) · Processing…</span>';
+    const result = await vtpassCall('purchase', { serviceID, billersCode, variationCode, amount: ngnAmount, phone });
+    if(result.success){
+      const token = result.purchasedCode || result.transaction?.token || '';
+      statusEl.innerHTML = '<span style="color:#34d399;">✓ Bill paid!'+(token?' '+token:'')+'</span>';
+      toast('✓ Electricity bill paid', 'success', 6000);
+      await refreshBalances();
+    } else if(result.pending){
+      statusEl.innerHTML = '<span style="color:#fbbf24;">⏳ Pending — checking status…</span>';
+    } else {
+      statusEl.innerHTML = '<span style="color:#f87171;">Payment sent but delivery failed: '+(result.responseDescription||result.error||'Unknown error')+'</span>';
+      toast('Electricity payment failed — your USDC was sent, contact support with tx: '+txHash.slice(0,10), 'error', 10000);
+    }
+  }catch(err){
+    statusEl.innerHTML = '<span style="color:#f87171;">'+err.message.slice(0,150)+'</span>';
+    toast('Electricity payment failed: '+err.message.slice(0,100), 'error', 6000);
+  }finally{
+    btn.disabled = false;
+  }
+}
+
+// ── DSTV ─────────────────────────────────────────────────────────────────
+function doDstv(){
+  openBillModal('DSTV Subscription', `
+    <div style="margin-bottom:12px;">
+      <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">Smartcard Number</div>
+      <input id="dstvCard" type="text" placeholder="1212121212" style="width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--text);font-size:16px;box-sizing:border-box;"/>
+      <div style="font-size:.65rem;color:var(--text3);margin-top:4px;">Sandbox: 1212121212 for a guaranteed success</div>
+    </div>
+    <button onclick="verifyDstvCard()" id="dstvVerifyBtn" style="width:100%;background:rgba(112,0,255,.12);border:1px solid rgba(112,0,255,.3);border-radius:10px;color:#a855f7;padding:11px;font-size:.85rem;font-weight:700;cursor:pointer;margin-bottom:12px;">Verify Smartcard</button>
+    <div id="dstvVerifyResult"></div>
+  `);
+}
+async function verifyDstvCard(){
+  const btn = document.getElementById('dstvVerifyBtn');
+  const billersCode = document.getElementById('dstvCard').value.trim();
+  if(!billersCode){ toast('Enter smartcard number','error',3000); return; }
+
+  btn.disabled = true; btn.textContent = 'Verifying…';
+  const result = await vtpassCall('verifyCustomer', { serviceID:'dstv', billersCode });
+  btn.disabled = false; btn.textContent = 'Verify Smartcard';
+
+  if(!result.success){
+    document.getElementById('dstvVerifyResult').innerHTML = '<div style="font-size:.8rem;color:#f87171;">'+(result.error||'Verification failed')+'</div>';
+    return;
+  }
+  const c = result.customer;
+  const variations = await vtpassCall('getVariations', { serviceID:'dstv' });
+  const bouquetOptions = (variations.variations||[]).map(v => `<option value="${v.variation_code}" data-amount="${v.variation_amount}">${v.name}</option>`).join('');
+
+  document.getElementById('dstvVerifyResult').innerHTML = `
+    <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:12px;">
+      <div style="font-size:.85rem;font-weight:700;color:var(--text);">${c.Customer_Name||'Verified'}</div>
+      <div style="font-size:.72rem;color:var(--text3);margin-top:2px;">Status: ${c.Status||'—'}</div>
+    </div>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">Bouquet</div>
+      <select id="dstvBouquet" style="width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--text);font-size:14px;">${bouquetOptions}</select>
+    </div>
+    <div style="margin-bottom:16px;">
+      <div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">Phone Number</div>
+      <input id="dstvPhone" type="tel" placeholder="08011111111" style="width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--text);font-size:16px;box-sizing:border-box;"/>
+    </div>
+    <button onclick="submitDstv()" id="dstvSubmitBtn" style="width:100%;background:#7000ff;border:none;border-radius:10px;color:#fff;padding:13px;font-size:.9rem;font-weight:700;cursor:pointer;">Subscribe</button>
+    <div id="dstvStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
+  `;
+}
+async function submitDstv(){
+  const btn = document.getElementById('dstvSubmitBtn');
+  const statusEl = document.getElementById('dstvStatus');
+  const billersCode = document.getElementById('dstvCard').value.trim();
+  const variationCode = document.getElementById('dstvBouquet').value;
+  const phone = document.getElementById('dstvPhone').value.trim();
+  const ngnAmount = parseFloat(document.getElementById('dstvBouquet').selectedOptions[0]?.dataset.amount || 0);
+  if(!phone || !variationCode){ toast('Select bouquet and enter phone','error',3000); return; }
+
+  btn.disabled = true;
+  try{
+    const variations = await vtpassCall('getVariations', { serviceID:'dstv' });
+    const chosen = (variations.variations||[]).find(v => v.variation_code === variationCode);
+    const amount = parseFloat(chosen?.variation_amount || 0);
+    if(!amount){ throw new Error('Could not determine bouquet price'); }
+
+    const { txHash, usdcAmount } = await payNgnInUsdc(amount, btn);
+    statusEl.innerHTML = '<span style="color:var(--text3);">Payment sent ('+usdcAmount.toFixed(4)+' USDC) · Processing…</span>';
+    const result = await vtpassCall('purchase', { serviceID:'dstv', billersCode, variationCode, phone, subscriptionType:'change' });
+    if(result.success){
+      statusEl.innerHTML = '<span style="color:#34d399;">✓ Subscription updated!</span>';
+      toast('✓ DSTV subscription updated', 'success', 6000);
+      await refreshBalances();
+    } else if(result.pending){
+      statusEl.innerHTML = '<span style="color:#fbbf24;">⏳ Pending — checking status…</span>';
+    } else {
+      statusEl.innerHTML = '<span style="color:#f87171;">Payment sent but delivery failed: '+(result.responseDescription||result.error||'Unknown error')+'</span>';
+      toast('DSTV subscription failed — your USDC was sent, contact support with tx: '+txHash.slice(0,10), 'error', 10000);
+    }
+  }catch(err){
+    statusEl.innerHTML = '<span style="color:#f87171;">'+err.message.slice(0,150)+'</span>';
+    toast('DSTV subscription failed: '+err.message.slice(0,100), 'error', 6000);
+  }finally{
+    btn.disabled = false;
+  }
+}
+
+// ═══════════════════════════════════════════
 // BALANCE REFRESH
 // ═══════════════════════════════════════════
 let _connectionTracked = false; // session-level guard — only report once per page load, not on every balance poll
