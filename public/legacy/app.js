@@ -1397,7 +1397,7 @@ function doAirtime(){
     <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:3px;">
         <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Network</div>
-        <select id="airtimeNetwork" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 36px 10px 14px;color:var(--text);font-size:1rem;font-weight:600;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%2212%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27rgba(255,255,255,.4)%27 stroke-width=%272.5%27%3E%3Cpolyline points=%276 9 12 15 18 9%27/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:16px;">
+        <select id="airtimeNetwork" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 36px 10px 14px;color:var(--text);font-size:1rem;font-weight:600;-webkit-appearance:none;appearance:none;background-image:none;">
           <option value="mtn">MTN</option>
           <option value="glo">Glo</option>
           <option value="airtel">Airtel</option>
@@ -1456,7 +1456,7 @@ function doData(){
     <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:3px;">
         <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Network</div>
-        <select id="dataNetwork" onchange="loadDataPlans()" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 36px 10px 14px;color:var(--text);font-size:1rem;font-weight:600;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%2212%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27rgba(255,255,255,.4)%27 stroke-width=%272.5%27%3E%3Cpolyline points=%276 9 12 15 18 9%27/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:16px;">
+        <select id="dataNetwork" onchange="loadDataPlans()" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 36px 10px 14px;color:var(--text);font-size:1rem;font-weight:600;-webkit-appearance:none;appearance:none;background-image:none;">
           <option value="mtn-data">MTN</option>
           <option value="glo-data">Glo</option>
           <option value="airtel-data">Airtel</option>
@@ -1465,7 +1465,7 @@ function doData(){
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:3px;">
         <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Plan</div>
-        <select id="dataPlan" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 36px 10px 14px;color:var(--text);font-size:1rem;font-weight:600;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%2212%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27rgba(255,255,255,.4)%27 stroke-width=%272.5%27%3E%3Cpolyline points=%276 9 12 15 18 9%27/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:16px;"><option>Loading plans…</option></select>
+        <select id="dataPlan" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 36px 10px 14px;color:var(--text);font-size:1rem;font-weight:600;-webkit-appearance:none;appearance:none;background-image:none;"><option>Loading plans…</option></select>
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:18px;">
         <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Phone Number</div>
@@ -1781,7 +1781,7 @@ function showAjoCreate(){
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:12px;">
         <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">How often does everyone pay?</div>
-        <select id="ajoRoundLength" onchange="updateAjoPreview()" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 36px 10px 14px;color:var(--text);font-size:1rem;font-weight:600;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%2212%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27rgba(255,255,255,.4)%27 stroke-width=%272.5%27%3E%3Cpolyline points=%276 9 12 15 18 9%27/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:16px;">
+        <select id="ajoRoundLength" onchange="updateAjoPreview()" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 36px 10px 14px;color:var(--text);font-size:1rem;font-weight:600;-webkit-appearance:none;appearance:none;background-image:none;">
           <option value="3600">Every hour (for testing)</option>
           <option value="86400">Every day</option>
           <option value="604800" selected>Every week</option>
@@ -2090,7 +2090,7 @@ function doNepa(){
     <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:3px;">
         <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Provider</div>
-        <select id="nepaProvider" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 36px 10px 14px;color:var(--text);font-size:1rem;font-weight:600;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%2212%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27rgba(255,255,255,.4)%27 stroke-width=%272.5%27%3E%3Cpolyline points=%276 9 12 15 18 9%27/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:16px;">
+        <select id="nepaProvider" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 36px 10px 14px;color:var(--text);font-size:1rem;font-weight:600;-webkit-appearance:none;appearance:none;background-image:none;">
           <option value="ikeja-electric">Ikeja Electric (IKEDC)</option>
           <option value="eko-electric">Eko Electric (EKEDC)</option>
           <option value="kano-electric">Kano Electric (KEDCO)</option>
@@ -2107,7 +2107,7 @@ function doNepa(){
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:3px;">
         <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Meter Type</div>
-        <select id="nepaType" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 36px 10px 14px;color:var(--text);font-size:1rem;font-weight:600;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%2212%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27rgba(255,255,255,.4)%27 stroke-width=%272.5%27%3E%3Cpolyline points=%276 9 12 15 18 9%27/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:16px;">
+        <select id="nepaType" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 36px 10px 14px;color:var(--text);font-size:1rem;font-weight:600;-webkit-appearance:none;appearance:none;background-image:none;">
           <option value="prepaid">Prepaid</option>
           <option value="postpaid">Postpaid</option>
         </select>
@@ -2227,7 +2227,7 @@ async function verifyDstvCard(){
     </div>
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:3px;">
       <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Bouquet</div>
-      <select id="dstvBouquet" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 36px 10px 14px;color:var(--text);font-size:1rem;font-weight:600;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%2212%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27rgba(255,255,255,.4)%27 stroke-width=%272.5%27%3E%3Cpolyline points=%276 9 12 15 18 9%27/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:16px;">${bouquetOptions}</select>
+      <select id="dstvBouquet" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 36px 10px 14px;color:var(--text);font-size:1rem;font-weight:600;-webkit-appearance:none;appearance:none;background-image:none;">${bouquetOptions}</select>
     </div>
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:18px;">
       <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Phone Number</div>
