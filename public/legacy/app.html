@@ -2491,7 +2491,7 @@ document.addEventListener('DOMContentLoaded',function(){
   }
 })();
 </script>
-<script src="/legacy/app.js?v=1782131663"></script>
+<script src="/legacy/app.js?v=1782132578"></script>
 <script src="/legacy/ui.js?v=1781459118"></script>
 
 <!-- ══ BANK PICKER MODAL ══ -->
@@ -3231,7 +3231,8 @@ function nanPopulateRecent(){
   </script>
 
 
-<!-- Faucet Dropdown -->
+<!-- Faucet Dropdown — must be direct body child, not inside any page div -->
+</div></div></div>
 <div id="nan-faucet-dd" style="position:fixed;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:8px;min-width:240px;z-index:999999;display:none;">
   <div style="font-size:.78rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text2);padding:6px 12px 8px;">Faucets</div>
   <a href="https://faucet.circle.com" target="_blank" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;color:var(--text);font-size:1rem;font-weight:700;font-family:Inter,sans-serif;text-decoration:none;transition:background .15s;" onmouseover="this.style.background='rgba(112,0,255,.08)'" onmouseout="this.style.background='transparent'">

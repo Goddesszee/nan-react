@@ -4855,23 +4855,27 @@ function openBankPicker(){
   var sheet=document.getElementById('bankPickerSheet');
   if(overlay.parentElement!==document.body){document.body.appendChild(overlay);document.body.appendChild(sheet);}
   overlay.style.display='block';
-  sheet.style.display='flex';
-  sheet.style.flexDirection='column';
-  // Position as dropdown below the Select Bank button
+  // Reset ALL inline styles first to clear any accumulated positioning from previous opens
+  sheet.setAttribute('style','display:flex;flex-direction:column;position:fixed;z-index:999999;background:var(--bg);overflow-y:auto;');
+  // Position as dropdown below (or above if no space) the Select Bank button
   var triggerBtn = document.getElementById('bankPickerBtn');
   if(triggerBtn) {
     var rect = triggerBtn.getBoundingClientRect();
-    sheet.style.cssText = sheet.style.cssText +
-      ';position:fixed !important' +
-      ';left:' + rect.left + 'px !important' +
-      ';top:' + (rect.bottom + 4) + 'px !important' +
-      ';width:' + rect.width + 'px !important' +
-      ';max-width:' + rect.width + 'px !important' +
-      ';bottom:auto !important;right:auto !important' +
-      ';transform:none !important' +
-      ';border-radius:14px !important' +
-      ';max-height:300px !important' +
-      ';z-index:999999 !important';
+    var pickerHeight = 300;
+    var topPos = (rect.bottom + 4 + pickerHeight > window.innerHeight)
+      ? Math.max(4, rect.top - pickerHeight - 4)
+      : rect.bottom + 4;
+    sheet.style.setProperty('left', rect.left + 'px', 'important');
+    sheet.style.setProperty('top', topPos + 'px', 'important');
+    sheet.style.setProperty('width', rect.width + 'px', 'important');
+    sheet.style.setProperty('max-width', rect.width + 'px', 'important');
+    sheet.style.setProperty('bottom', 'auto', 'important');
+    sheet.style.setProperty('right', 'auto', 'important');
+    sheet.style.setProperty('transform', 'none', 'important');
+    sheet.style.setProperty('border-radius', '14px', 'important');
+    sheet.style.setProperty('max-height', '300px', 'important');
+    sheet.style.setProperty('border', '1px solid var(--border)', 'important');
+    sheet.style.setProperty('box-shadow', '0 8px 32px rgba(0,0,0,.3)', 'important');
   }
   setTimeout(()=>document.getElementById('bankSearchInput')?.focus(),100);
 }
