@@ -1343,9 +1343,15 @@ function openBillModal(title, bodyHtml){
   document.getElementById('billTitle').textContent = title;
   document.getElementById('billBody').innerHTML = bodyHtml;
   document.getElementById('billOverlay').style.display = 'block';
+  // Hide AI FAB so it doesn't block modal taps on mobile
+  var fab = document.getElementById('aiBtn');
+  if(fab) fab.style.display = 'none';
 }
 function closeBillModal(){
   document.getElementById('billOverlay').style.display = 'none';
+  // Restore AI FAB
+  var fab = document.getElementById('aiBtn');
+  if(fab) fab.style.display = 'flex';
 }
 
 async function vtpassCall(action, payload){
