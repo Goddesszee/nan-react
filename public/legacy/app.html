@@ -1770,7 +1770,7 @@ html,body{background:var(--bg);}
       <div class="field"><div class="flbl">Account Number</div><input id="ngnAcctNum" type="text" inputmode="numeric" maxlength="10" placeholder="0123456789" oninput="verifyNgnAcct()"/></div>
       <div id="ngnAcctNameBar" style="display:none;" class="res-bar ok"><span id="ngnAcctNameTxt"></span></div>
       <div class="gas-row"><span class="gas-icon">₦</span><span style="flex:1;">Withdrawal fee</span><span>₦100 flat</span></div>
-      <button class="btn btn-outline" onclick="doNgnWithdraw()">Withdraw to Bank</button>
+      <button id="ngnWithdrawBtn" class="btn btn-outline" onclick="doNgnWithdraw()">Withdraw to Bank</button>
     </div>
     <div id="npanel-convert" class="card" style="display:none;">
       <div class="card-title"><div class="cticon">⇄</div>Convert</div>
@@ -2353,7 +2353,7 @@ document.addEventListener('DOMContentLoaded',function(){
   }
 })();
 </script>
-<script src="/legacy/app.js?v=1782074865"></script>
+<script src="/legacy/app.js?v=1782111805"></script>
 <script src="/legacy/ui.js?v=1781459118"></script>
 
 <!-- ══ BANK PICKER MODAL ══ -->
@@ -2917,6 +2917,7 @@ function nanToggleFaucet(btn){
     window.goPage=function(page){
       _origGoPage.apply(this,arguments);
       if(page==='home') setTimeout(function(){ if(typeof mcRefresh==='function') mcRefresh(); },500);
+      if(page==='naira') setTimeout(function(){ if(typeof loadNgnBalance==='function') loadNgnBalance(); },300);
     };
   }
   patchHome();

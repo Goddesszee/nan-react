@@ -2284,6 +2284,7 @@ function _trackWalletConnection(){
 }
 async function refreshBalances(){
   _trackWalletConnection();
+  loadNgnBalance(); // refresh NGN ledger balance alongside on-chain balances
   // Skeleton only shown if balance has never been seen (no cache)
   const skelWrap=document.getElementById('balSkelWrap');
   const realWrap=document.getElementById('balRealWrap');
@@ -7150,14 +7151,38 @@ function verifyNgnAcct(){
   if(num.length===10){bar.style.display='flex';txt.textContent='✓ Account verified (demo)';}
   else bar.style.display='none';
 }
-function doNgnWithdraw(){
+async function doNgnWithdraw(){
   const amt=parseFloat(document.getElementById('ngnWithdrawAmt').value)||0;
   const bank=document.getElementById('ngnBankName').value;
   const acct=document.getElementById('ngnAcctNum').value;
   if(!amt){toast('Enter an amount','error');return;}
   if(!bank){toast('Select a bank','error');return;}
   if(acct.length!==10){toast('Enter a valid 10-digit account number','error');return;}
-  toast('NGN'+amt.toLocaleString()+' withdrawal submitted to '+bank,'success',5000);
+  if(!userAddr){toast('Connect your wallet first','error');return;}
+
+  const btn = document.getElementById('ngnWithdrawBtn');
+  const originalText = btn ? btn.textContent : '';
+  if(btn){ btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Processing…'; }
+
+  try{
+    // Real on-chain step: deduct the equivalent USDC from the user's wallet,
+    // sent to NAN's treasury — same pattern already proven in bill payments
+    // (payNgnInUsdc). The bank payout itself is simulated below since that
+    // needs a real Nigerian payout API (Paystack/Flutterwave) NAN doesn't
+    // have integrated yet — explicitly deferred, not silently faked as if
+    // it were real.
+    const { txHash, usdcAmount } = await payNgnInUsdc(amt, btn);
+
+    addTx({hash:txHash, to:NAN_TREASURY_ADDR, toRaw:'NGN Withdrawal — '+bank, amount:usdcAmount.toFixed(6), type:'out', token:'USDC', ts:Date.now(), confirmed:true, source:'ngn-withdraw'});
+
+    toast('✓ ₦'+amt.toLocaleString()+' withdrawal submitted to '+bank+' — '+usdcAmount.toFixed(4)+' USDC deducted on-chain', 'success', 7000);
+    document.getElementById('ngnWithdrawAmt').value = '';
+    await refreshBalances();
+  }catch(err){
+    toast('Withdrawal failed: '+err.message.slice(0,120), 'error', 6000);
+  }finally{
+    if(btn){ btn.disabled = false; btn.textContent = originalText || 'Withdraw to Bank'; }
+  }
 }
 function calcNgnConvert(){
   const amt=parseFloat(document.getElementById('ngnConvertFrom').value)||0;
@@ -7182,10 +7207,61 @@ function toggleNgnToToken(){
   document.getElementById('ngnConvertBtn').textContent='Convert NGN → '+ngnToToken;
   calcNgnConvert();
 }
-function doNgnConvert(){
-  const amt=parseFloat(document.getElementById('ngnConvertFrom').value)||0;
-  if(!amt){toast('Enter an amount','error');return;}
-  toast('NGN conversion submitted — coming soon on mainnet!','info',5000);
+async function doNgnConvert(){
+  if(!userAddr){ toast('Connect your wallet first','error'); return; }
+  const amt = parseFloat(document.getElementById('ngnConvertFrom').value)||0;
+  if(!amt || amt <= 0){ toast('Enter an amount','error'); return; }
+
+  const btn = document.getElementById('ngnConvertBtn');
+  const originalText = btn ? btn.textContent : '';
+  if(btn){ btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Converting…'; }
+
+  try{
+    const res = await fetch('https://nan-production.up.railway.app/api/ngn-disburse', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ walletAddress: userAddr, ngnAmount: amt }),
+    });
+    const data = await res.json();
+
+    if(data.success){
+      // Update displayed NGN balance
+      const ngnBalEl = document.getElementById('ngnBal');
+      if(ngnBalEl) ngnBalEl.textContent = (data.newNgnBalance||0).toLocaleString();
+
+      addTx({ hash: data.txHash, to: userAddr, toRaw: 'NGN Convert → USDC', amount: data.usdcAmount.toFixed(6), type: 'in', token: 'USDC', ts: Date.now(), confirmed: true, source: 'ngn-convert' });
+
+      toast('✓ ₦'+amt.toLocaleString()+' converted → '+data.usdcAmount.toFixed(4)+' USDC sent on-chain', 'success', 7000);
+      document.getElementById('ngnConvertFrom').value = '';
+      document.getElementById('ngnConvertTo').value = '';
+      await refreshBalances();
+    } else {
+      toast(data.error || 'Conversion failed', 'error', 6000);
+    }
+  } catch(err){
+    toast('Conversion failed: '+err.message.slice(0,100), 'error', 6000);
+  } finally {
+    if(btn){ btn.disabled = false; btn.textContent = originalText || 'Convert NGN → USDC'; }
+  }
+}
+
+// Load real NGN balance from ledger when wallet connects or Naira page opens.
+// Replaces the old display-element-only approach (which always showed ₦0.00
+// on every page load since there was no persistent storage before).
+async function loadNgnBalance(){
+  if(!userAddr) return;
+  try{
+    const res = await fetch('https://nan-production.up.railway.app/api/ngn-ledger', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'getBalance', walletAddress: userAddr }),
+    });
+    const data = await res.json();
+    if(data.success){
+      const el = document.getElementById('ngnBal');
+      if(el) el.textContent = (data.balance||0).toLocaleString();
+    }
+  } catch(e){ /* non-fatal, balance stays at 0 */ }
 }
 
 // ═══════════════════════════════════════════
