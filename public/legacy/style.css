@@ -2080,13 +2080,15 @@ a:hover{color:var(--text);}
 .theme-toggle-btn{width:30px;height:30px;border-radius:50%;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
 /* Mobile disconnect icon only, desktop text only */
 #disconnectTopBtnMobile { display:none !important; }
-/* === RELAY-STYLE TOPBAR === */
+/* === RELAY-STYLE TOPBAR — desktop only for the 180px left padding === */
+@media(min-width:769px){
 #globalTopBar {
   display: flex !important;
   align-items: center !important;
   justify-content: flex-start !important;
   padding: 0 28px 0 180px !important;
   gap: 0 !important;
+}
 }
 #globalTopBar > div:last-child {
   margin-left: auto !important;
