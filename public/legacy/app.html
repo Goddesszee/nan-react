@@ -65,7 +65,7 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20width%3D%2232%22%20height%3D%2232%22%20viewBox%3D%220%200%20480%20480%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20transform%3D%22translate%28126.6%2C72%29%20scale%280.7%29%22%3E%3Cpath%20d%3D%22M255%2C0%20L84%2C167%20L71%2C163%20L0%2C97%20L0%2C378%20L246%2C132%20L255%2C110%20Z%22%20fill%3D%22%237000ff%22/%3E%3Cpath%20d%3D%22M69%2C480%20L240%2C313%20L253%2C317%20L324%2C383%20L324%2C102%20L78%2C348%20L69%2C370%20Z%22%20fill%3D%22%237000ff%22/%3E%3C/g%3E%3C/svg%3E"/>
 <link rel="preconnect" href="https://rsms.me/">
 <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
-<link rel="stylesheet" href="/legacy/style.css?v=1782153851"/>
+<link rel="stylesheet" href="/legacy/style.css?v=1782155606"/>
 <style>
 /* ══ THEME TOKENS — scoped per theme so neither fights the other ══ */
 :root,[data-theme="dark"]{
@@ -2491,8 +2491,8 @@ document.addEventListener('DOMContentLoaded',function(){
   }
 })();
 </script>
-<script src="/legacy/app.js?v=1782153539"></script>
-<script src="/legacy/ui.js?v=1782153539"></script>
+<script src="/legacy/app.js?v=1782155606"></script>
+<script src="/legacy/ui.js?v=1782155606"></script>
 
 <!-- ══ BANK PICKER MODAL ══ -->
 <div id="bankPickerOverlay" onclick="closeBankPicker()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:99990;backdrop-filter:blur(4px);"></div>
@@ -3108,129 +3108,6 @@ function nanToggleFaucet(btn){
 </div>
 
 
-  <!-- ══ MOBILE SIDE DRAWER HTML ══ -->
-  <div id="nanDrawerOverlay" onclick="nanCloseDrawer()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:10001;"></div>
-  <div id="nanDrawer" style="display:none;position:fixed;top:0;left:0;bottom:0;width:285px;background:var(--nan-drawer-bg,#0a0a0a);border-right:1px solid rgba(112,0,255,.14);z-index:10002;flex-direction:column;overflow:hidden;">
-    <div style="padding:52px 20px 18px;border-bottom:1px solid rgba(255,255,255,.05);position:relative;">
-      <button onclick="nanCloseDrawer()" style="position:absolute;top:16px;right:16px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;line-height:1;">✕</button>
-      <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#7000ff,#a855f7);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#fff;margin-bottom:11px;">Z</div>
-      <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:3px;letter-spacing:-.3px;">Zara</div>
-      <div id="nanDrawerAddr" style="font-family:'Inter var','Inter',monospace;font-size:10.5px;color:rgba(255,255,255,.35);margin-bottom:10px;">0x6915…556d</div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;">
-        <span style="font-size:10px;font-weight:700;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#a855f7;border-radius:6px;padding:3px 8px;">Arc Testnet</span>
-        <span id="nanDrawerArcBadge" style="display:none;font-size:10px;font-weight:700;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.4);border-radius:6px;padding:3px 8px;">nan.arc</span>
-      </div>
-    </div>
-    <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:10px 0;">
-      <div style="font-size:9.5px;font-weight:700;color:rgba(255,255,255,.2);letter-spacing:.12em;text-transform:uppercase;padding:10px 20px 5px;">Main</div>
-      <button class="nan-drow" id="drow-home" onclick="nanCloseDrawer();goPage('home')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span class="nan-drow-lbl">Home</span></button>
-      <button class="nan-drow" id="drow-swap" onclick="nanCloseDrawer();goPage('swap')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg></span><span class="nan-drow-lbl">Swap</span></button>
-      <button class="nan-drow" id="drow-lend" onclick="nanCloseDrawer();goPage('lend')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></span><span class="nan-drow-lbl">Earn</span></button>
-      <button class="nan-drow" id="drow-market" onclick="nanCloseDrawer();goPage('market')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></span><span class="nan-drow-lbl">Market</span></button>
-      <button class="nan-drow" id="drow-history" onclick="nanCloseDrawer();goPage('history')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span><span class="nan-drow-lbl">History</span></button>
-      <div style="height:1px;background:rgba(255,255,255,.05);margin:8px 20px;"></div>
-      <div style="font-size:9.5px;font-weight:700;color:rgba(255,255,255,.2);letter-spacing:.12em;text-transform:uppercase;padding:10px 20px 5px;">Features</div>
-      <button class="nan-drow" id="drow-agent-wallet" onclick="nanCloseDrawer();goPage('agent-wallet')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><circle cx="12" cy="14" r="2"/></svg></span><span class="nan-drow-lbl">Agent Wallet</span><span style="font-size:9px;font-weight:700;background:rgba(112,0,255,.15);border:1px solid rgba(112,0,255,.25);color:#a855f7;border-radius:5px;padding:2px 6px;margin-left:auto;flex-shrink:0;">Circle</span></button>
-      <button class="nan-drow" id="drow-arcname" onclick="nanCloseDrawer();goPage('arcname')"><span class="nan-drow-ic"><svg width="15" height="9" viewBox="0 0 40 20" fill="none"><path d="M16,10 C16,4 8,4 8,10 C8,16 16,16 20,10 C24,4 32,4 32,10 C32,16 24,16 20,10 Z" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="nan-drow-lbl">.arc Name</span></button>
-      
-      <button class="nan-drow" id="drow-bridge" onclick="nanCloseDrawer();goPage('bridge')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16"/><path d="M4 8h16"/><path d="M4 12h8"/><circle cx="18" cy="16" r="4"/><path d="M18 14v4M16 16h4"/></svg></span><span class="nan-drow-lbl">Bridge</span></button>
-      <button class="nan-drow" id="drow-faucet" onclick="nanCloseDrawer();nanToggleFaucet(this)"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg></span><span class="nan-drow-lbl">Faucet</span></button>
-      
-      
-      
-      <div style="height:1px;background:rgba(255,255,255,.05);margin:8px 20px;"></div>
-      <div style="font-size:9.5px;font-weight:700;color:rgba(255,255,255,.2);letter-spacing:.12em;text-transform:uppercase;padding:10px 20px 5px;">Settings</div>
-
-      <button class="nan-drow" onclick="toggleTheme();nanCloseDrawer();"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></span><span class="nan-drow-lbl">Appearance</span></button>
-      <button class="nan-drow" onclick="nanCloseDrawer();toggleNotifPanel(event)"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></span><span class="nan-drow-lbl">Notifications</span><span id="nanDrawerNotifBadge" style="display:none;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-left:auto;flex-shrink:0;"></span></button>
-    </div>
-    <div style="padding:12px 20px 28px;border-top:1px solid rgba(255,255,255,.05);">
-      <button class="nan-drow" onclick="nanCloseDrawer();disconnect()" style="width:100%;padding:10px 0;"><span class="nan-drow-ic" style="background:rgba(239,68,68,.07);border-color:rgba(239,68,68,.14);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(239,68,68,.7)" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span><span class="nan-drow-lbl" style="color:rgba(239,68,68,.7);">Disconnect</span></button>
-    </div>
-  </div>
-  <script>
-  function nanOpenDrawer(){
-    var overlay=document.getElementById('nanDrawerOverlay');
-    var drawer=document.getElementById('nanDrawer');
-    if(!overlay||!drawer)return;
-    overlay.style.display='block';
-    drawer.style.display='flex';
-    requestAnimationFrame(function(){requestAnimationFrame(function(){
-      overlay.classList.add('nan-drawer-open');
-      drawer.classList.add('nan-drawer-open');
-    });});
-    nanDrawerSetActive(window._nanCurrentPage||'home');
-    var addr=window.userAddr||localStorage.getItem('nan_dynamic_address')||'';
-    if(addr){var el=document.getElementById('nanDrawerAddr');if(el)el.textContent=addr.slice(0,6)+'…'+addr.slice(-4);}
-  }
-  function nanCloseDrawer(){
-    var overlay=document.getElementById('nanDrawerOverlay');
-    var drawer=document.getElementById('nanDrawer');
-    if(!overlay||!drawer)return;
-    overlay.classList.remove('nan-drawer-open');
-    drawer.classList.remove('nan-drawer-open');
-    setTimeout(function(){overlay.style.display='none';drawer.style.display='none';},230);
-  }
-  function nanDrawerSetActive(page){
-    document.querySelectorAll('.nan-drow').forEach(function(b){b.classList.remove('nan-drow-active');});
-    var el=document.getElementById('drow-'+page);
-    if(el)el.classList.add('nan-drow-active');
-  }
-  document.addEventListener('keydown',function(e){if(e.key==='Escape')nanCloseDrawer();});
-  (function(){
-    var _orig=window.goPage;
-    if(typeof _orig==='function'){
-      window.goPage=function(p){window._nanCurrentPage=p;nanDrawerSetActive(p);return _orig.apply(this,arguments);};
-    }
-  })();
-
-/* ── Mobile Recent Transactions ── */
-function nanPopulateRecent(){
-  if(window.innerWidth > 767) return;
-  var list = document.getElementById('mobRecentList');
-  if(!list) return;
-  // Try to get from existing txHistory or txList global
-  var txs = window.txHistory || window.txList || window._txCache || [];
-  if(!txs.length){
-    list.innerHTML = '<div style="padding:12px 16px;font-size:.75rem;color:rgba(255,255,255,.25);text-align:center;">No recent transactions</div>';
-    return;
-  }
-  var recent = txs.slice(0,3);
-  list.innerHTML = recent.map(function(tx){
-    var isOut = tx.type==='send' || tx.direction==='out' || (tx.amount && tx.amount < 0);
-    var icon = isOut
-      ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>'
-      : '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>';
-    var amtClass = isOut ? 'mob-tx-amt neg' : 'mob-tx-amt pos';
-    var prefix = isOut ? '−' : '+';
-    var amt = tx.amount ? (prefix + '$' + Math.abs(parseFloat(tx.amount)).toFixed(2)) : '—';
-    var name = tx.label || tx.to || tx.description || (isOut ? 'Sent' : 'Received');
-    var date = tx.date || tx.timestamp ? new Date(tx.timestamp||tx.date).toLocaleDateString('en',{month:'short',day:'numeric'}) : '—';
-    return '<div class="mob-tx-row">'
-      + '<div class="mob-tx-ico ' + (isOut?'mob-tx-out':'mob-tx-in') + '">' + icon + '</div>'
-      + '<div class="mob-tx-inf"><div class="mob-tx-name">' + name + '</div><div class="mob-tx-date">' + date + '</div></div>'
-      + '<div class="' + amtClass + '">' + amt + '</div>'
-      + '</div>';
-  }).join('');
-}
-// Hook into existing balance refresh if available
-(function(){
-  var _origRefresh = window.refreshBalances || window.loadHome;
-  if(typeof _origRefresh === 'function'){
-    var key = window.refreshBalances ? 'refreshBalances' : 'loadHome';
-    window[key] = function(){
-      var r = _origRefresh.apply(this, arguments);
-      setTimeout(nanPopulateRecent, 800);
-      return r;
-    };
-  }
-  // Also run on page load
-  document.addEventListener('DOMContentLoaded', function(){ setTimeout(nanPopulateRecent, 1500); });
-})();
-
-  </script>
-
-
 <!-- Faucet Dropdown — must be direct body child, not inside any page div -->
 </div></div></div>
 <div id="nan-faucet-dd" style="position:fixed;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:8px;min-width:240px;z-index:999999;display:none;">
@@ -3508,8 +3385,8 @@ function nanPopulateRecent(){
 </div>
 
 <!-- ══ BILL PAYMENT MODAL (Airtime/Data/Electricity/DSTV) ══ -->
-<div id="billOverlay" style="display:none;position:fixed;inset:0;z-index:9999999;background:rgba(7,8,26,.97);backdrop-filter:blur(20px);font-family:'Inter',sans-serif;overflow-y:auto;">
-  <div style="max-width:480px;margin:0 auto;padding:20px 16px 60px;">
+<div id="billOverlay" style="display:none;position:fixed;inset:0;z-index:9999999;background:rgba(7,8,26,.97);backdrop-filter:blur(20px);font-family:'Inter',sans-serif;">
+  <div style="max-width:480px;margin:0 auto;padding:20px 16px 60px;overflow-y:auto;-webkit-overflow-scrolling:touch;height:100%;box-sizing:border-box;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
       <div id="billTitle" style="font-size:1.1rem;font-weight:700;color:var(--text);font-family:'Syne','Inter',sans-serif;">Bill Payment</div>
       <button onclick="closeBillModal()" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:10px;color:#f87171;padding:8px 14px;cursor:pointer;font-size:.8rem;font-weight:700;">Close</button>
@@ -3517,6 +3394,129 @@ function nanPopulateRecent(){
     <div id="billBody"></div>
   </div>
 </div>
+
+
+<!-- ══ MOBILE SIDE DRAWER HTML ══ -->
+  <div id="nanDrawerOverlay" onclick="nanCloseDrawer()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:10001;"></div>
+  <div id="nanDrawer" style="display:none;position:fixed;top:0;left:0;bottom:0;width:285px;background:var(--nan-drawer-bg,#0a0a0a);border-right:1px solid rgba(112,0,255,.14);z-index:10002;flex-direction:column;overflow:hidden;">
+    <div style="padding:52px 20px 18px;border-bottom:1px solid rgba(255,255,255,.05);position:relative;">
+      <button onclick="nanCloseDrawer()" style="position:absolute;top:16px;right:16px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.5);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;line-height:1;">✕</button>
+      <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#7000ff,#a855f7);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#fff;margin-bottom:11px;">Z</div>
+      <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:3px;letter-spacing:-.3px;">Zara</div>
+      <div id="nanDrawerAddr" style="font-family:'Inter var','Inter',monospace;font-size:10.5px;color:rgba(255,255,255,.35);margin-bottom:10px;">0x6915…556d</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <span style="font-size:10px;font-weight:700;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#a855f7;border-radius:6px;padding:3px 8px;">Arc Testnet</span>
+        <span id="nanDrawerArcBadge" style="display:none;font-size:10px;font-weight:700;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.4);border-radius:6px;padding:3px 8px;">nan.arc</span>
+      </div>
+    </div>
+    <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:10px 0;">
+      <div style="font-size:9.5px;font-weight:700;color:rgba(255,255,255,.2);letter-spacing:.12em;text-transform:uppercase;padding:10px 20px 5px;">Main</div>
+      <button class="nan-drow" id="drow-home" onclick="nanCloseDrawer();goPage('home')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span class="nan-drow-lbl">Home</span></button>
+      <button class="nan-drow" id="drow-swap" onclick="nanCloseDrawer();goPage('swap')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg></span><span class="nan-drow-lbl">Swap</span></button>
+      <button class="nan-drow" id="drow-lend" onclick="nanCloseDrawer();goPage('lend')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></span><span class="nan-drow-lbl">Earn</span></button>
+      <button class="nan-drow" id="drow-market" onclick="nanCloseDrawer();goPage('market')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></span><span class="nan-drow-lbl">Market</span></button>
+      <button class="nan-drow" id="drow-history" onclick="nanCloseDrawer();goPage('history')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span><span class="nan-drow-lbl">History</span></button>
+      <div style="height:1px;background:rgba(255,255,255,.05);margin:8px 20px;"></div>
+      <div style="font-size:9.5px;font-weight:700;color:rgba(255,255,255,.2);letter-spacing:.12em;text-transform:uppercase;padding:10px 20px 5px;">Features</div>
+      <button class="nan-drow" id="drow-agent-wallet" onclick="nanCloseDrawer();goPage('agent-wallet')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><circle cx="12" cy="14" r="2"/></svg></span><span class="nan-drow-lbl">Agent Wallet</span><span style="font-size:9px;font-weight:700;background:rgba(112,0,255,.15);border:1px solid rgba(112,0,255,.25);color:#a855f7;border-radius:5px;padding:2px 6px;margin-left:auto;flex-shrink:0;">Circle</span></button>
+      <button class="nan-drow" id="drow-arcname" onclick="nanCloseDrawer();goPage('arcname')"><span class="nan-drow-ic"><svg width="15" height="9" viewBox="0 0 40 20" fill="none"><path d="M16,10 C16,4 8,4 8,10 C8,16 16,16 20,10 C24,4 32,4 32,10 C32,16 24,16 20,10 Z" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="nan-drow-lbl">.arc Name</span></button>
+      
+      <button class="nan-drow" id="drow-bridge" onclick="nanCloseDrawer();goPage('bridge')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16"/><path d="M4 8h16"/><path d="M4 12h8"/><circle cx="18" cy="16" r="4"/><path d="M18 14v4M16 16h4"/></svg></span><span class="nan-drow-lbl">Bridge</span></button>
+      <button class="nan-drow" id="drow-faucet" onclick="nanCloseDrawer();nanToggleFaucet(this)"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg></span><span class="nan-drow-lbl">Faucet</span></button>
+      
+      
+      
+      <div style="height:1px;background:rgba(255,255,255,.05);margin:8px 20px;"></div>
+      <div style="font-size:9.5px;font-weight:700;color:rgba(255,255,255,.2);letter-spacing:.12em;text-transform:uppercase;padding:10px 20px 5px;">Settings</div>
+
+      <button class="nan-drow" onclick="toggleTheme();nanCloseDrawer();"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></span><span class="nan-drow-lbl">Appearance</span></button>
+      <button class="nan-drow" onclick="nanCloseDrawer();toggleNotifPanel(event)"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></span><span class="nan-drow-lbl">Notifications</span><span id="nanDrawerNotifBadge" style="display:none;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-left:auto;flex-shrink:0;"></span></button>
+    </div>
+    <div style="padding:12px 20px 28px;border-top:1px solid rgba(255,255,255,.05);">
+      <button class="nan-drow" onclick="nanCloseDrawer();disconnect()" style="width:100%;padding:10px 0;"><span class="nan-drow-ic" style="background:rgba(239,68,68,.07);border-color:rgba(239,68,68,.14);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(239,68,68,.7)" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span><span class="nan-drow-lbl" style="color:rgba(239,68,68,.7);">Disconnect</span></button>
+    </div>
+  </div>
+  <script>
+  function nanOpenDrawer(){
+    var overlay=document.getElementById('nanDrawerOverlay');
+    var drawer=document.getElementById('nanDrawer');
+    if(!overlay||!drawer)return;
+    overlay.style.display='block';
+    drawer.style.display='flex';
+    requestAnimationFrame(function(){requestAnimationFrame(function(){
+      overlay.classList.add('nan-drawer-open');
+      drawer.classList.add('nan-drawer-open');
+    });});
+    nanDrawerSetActive(window._nanCurrentPage||'home');
+    var addr=window.userAddr||localStorage.getItem('nan_dynamic_address')||'';
+    if(addr){var el=document.getElementById('nanDrawerAddr');if(el)el.textContent=addr.slice(0,6)+'…'+addr.slice(-4);}
+  }
+  function nanCloseDrawer(){
+    var overlay=document.getElementById('nanDrawerOverlay');
+    var drawer=document.getElementById('nanDrawer');
+    if(!overlay||!drawer)return;
+    overlay.classList.remove('nan-drawer-open');
+    drawer.classList.remove('nan-drawer-open');
+    setTimeout(function(){overlay.style.display='none';drawer.style.display='none';},230);
+  }
+  function nanDrawerSetActive(page){
+    document.querySelectorAll('.nan-drow').forEach(function(b){b.classList.remove('nan-drow-active');});
+    var el=document.getElementById('drow-'+page);
+    if(el)el.classList.add('nan-drow-active');
+  }
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')nanCloseDrawer();});
+  (function(){
+    var _orig=window.goPage;
+    if(typeof _orig==='function'){
+      window.goPage=function(p){window._nanCurrentPage=p;nanDrawerSetActive(p);return _orig.apply(this,arguments);};
+    }
+  })();
+
+/* ── Mobile Recent Transactions ── */
+function nanPopulateRecent(){
+  if(window.innerWidth > 767) return;
+  var list = document.getElementById('mobRecentList');
+  if(!list) return;
+  // Try to get from existing txHistory or txList global
+  var txs = window.txHistory || window.txList || window._txCache || [];
+  if(!txs.length){
+    list.innerHTML = '<div style="padding:12px 16px;font-size:.75rem;color:rgba(255,255,255,.25);text-align:center;">No recent transactions</div>';
+    return;
+  }
+  var recent = txs.slice(0,3);
+  list.innerHTML = recent.map(function(tx){
+    var isOut = tx.type==='send' || tx.direction==='out' || (tx.amount && tx.amount < 0);
+    var icon = isOut
+      ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>'
+      : '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>';
+    var amtClass = isOut ? 'mob-tx-amt neg' : 'mob-tx-amt pos';
+    var prefix = isOut ? '−' : '+';
+    var amt = tx.amount ? (prefix + '$' + Math.abs(parseFloat(tx.amount)).toFixed(2)) : '—';
+    var name = tx.label || tx.to || tx.description || (isOut ? 'Sent' : 'Received');
+    var date = tx.date || tx.timestamp ? new Date(tx.timestamp||tx.date).toLocaleDateString('en',{month:'short',day:'numeric'}) : '—';
+    return '<div class="mob-tx-row">'
+      + '<div class="mob-tx-ico ' + (isOut?'mob-tx-out':'mob-tx-in') + '">' + icon + '</div>'
+      + '<div class="mob-tx-inf"><div class="mob-tx-name">' + name + '</div><div class="mob-tx-date">' + date + '</div></div>'
+      + '<div class="' + amtClass + '">' + amt + '</div>'
+      + '</div>';
+  }).join('');
+}
+// Hook into existing balance refresh if available
+(function(){
+  var _origRefresh = window.refreshBalances || window.loadHome;
+  if(typeof _origRefresh === 'function'){
+    var key = window.refreshBalances ? 'refreshBalances' : 'loadHome';
+    window[key] = function(){
+      var r = _origRefresh.apply(this, arguments);
+      setTimeout(nanPopulateRecent, 800);
+      return r;
+    };
+  }
+  // Also run on page load
+  document.addEventListener('DOMContentLoaded', function(){ setTimeout(nanPopulateRecent, 1500); });
+})();
+
+  </script>
 
 </body>
 

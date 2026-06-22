@@ -4788,7 +4788,7 @@ function _ensureAIButton(){
   if(btn){
     // Move to body if not already there
     if(btn.parentElement!==document.body) document.body.appendChild(btn);
-    btn.style.cssText='position:fixed!important;bottom:88px!important;right:18px!important;z-index:2147483647!important;width:52px!important;height:52px!important;border-radius:50%!important;background:#6d28d9!important;border:none!important;cursor:pointer!important;display:flex!important;align-items:center!important;justify-content:center!important;box-shadow:0 4px 20px rgba(109,40,217,.5)!important;';
+    btn.style.cssText='position:fixed!important;bottom:88px!important;right:18px!important;z-index:10000!important;width:52px!important;height:52px!important;border-radius:50%!important;background:#6d28d9!important;border:none!important;cursor:pointer!important;display:flex!important;align-items:center!important;justify-content:center!important;box-shadow:0 4px 20px rgba(109,40,217,.5)!important;';
     btn._aiListenerAdded=false;
   }
   if(panel){
