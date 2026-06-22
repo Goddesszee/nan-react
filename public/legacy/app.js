@@ -4857,6 +4857,22 @@ function openBankPicker(){
   overlay.style.display='block';
   sheet.style.display='flex';
   sheet.style.flexDirection='column';
+  // Position as dropdown below the Select Bank button
+  var triggerBtn = document.getElementById('bankPickerBtn');
+  if(triggerBtn) {
+    var rect = triggerBtn.getBoundingClientRect();
+    sheet.style.cssText = sheet.style.cssText +
+      ';position:fixed !important' +
+      ';left:' + rect.left + 'px !important' +
+      ';top:' + (rect.bottom + 4) + 'px !important' +
+      ';width:' + rect.width + 'px !important' +
+      ';max-width:' + rect.width + 'px !important' +
+      ';bottom:auto !important;right:auto !important' +
+      ';transform:none !important' +
+      ';border-radius:14px !important' +
+      ';max-height:300px !important' +
+      ';z-index:999999 !important';
+  }
   setTimeout(()=>document.getElementById('bankSearchInput')?.focus(),100);
 }
 function filterBanks(q){
