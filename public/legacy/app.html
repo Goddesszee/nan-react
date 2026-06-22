@@ -1680,143 +1680,281 @@ html,body{background:var(--bg);}
 </div> ══ -->
   <div class="page" id="page-naira">
     <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
+      <button class="back-btn" onclick="goBack()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg> Back</button>
+
+      <!-- Balance card -->
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:14px;">
+        <div style="font-size:.85rem;color:var(--text3);margin-bottom:6px;">Naira Balance</div>
+        <div style="font-size:2.2rem;font-weight:800;color:var(--text);font-family:'Inter',sans-serif;"><span id="ngnBal">0.00</span> <span style="font-size:1rem;font-weight:500;color:var(--text3);">NGN</span></div>
+        <div style="font-size:.82rem;color:var(--text3);margin-top:6px;" id="ngnUsd">≈ 0.00 USDC · Rate: ₦1,620 / USDC</div>
+      </div>
+
+      <!-- Tab switcher -->
+      <div style="display:flex;gap:4px;background:var(--surface);border-radius:14px;padding:4px;margin-bottom:14px;">
+        <button class="stab active" id="ntab-deposit" onclick="setNairaTab('deposit')" style="flex:1;padding:10px;border-radius:11px;border:none;font-size:.85rem;font-weight:700;cursor:pointer;">↓ Deposit</button>
+        <button class="stab" id="ntab-withdraw" onclick="setNairaTab('withdraw')" style="flex:1;padding:10px;border-radius:11px;border:none;font-size:.85rem;font-weight:700;cursor:pointer;">🏦 Withdraw</button>
+        <button class="stab" id="ntab-convert" onclick="setNairaTab('convert')" style="flex:1;padding:10px;border-radius:11px;border:none;font-size:.85rem;font-weight:700;cursor:pointer;">⇄ Convert</button>
+      </div>
+
+      <!-- Deposit panel -->
+      <div id="npanel-deposit">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px;margin-bottom:3px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+            <div style="font-size:.95rem;font-weight:700;color:var(--text);">Virtual Account</div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:.78rem;color:#34d399;"><span style="width:6px;height:6px;border-radius:50%;background:#34d399;display:inline-block;animation:pulse 2s infinite;"></span>Active</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border-radius:10px;">
+              <span style="font-size:.85rem;color:var(--text3);">Bank</span>
+              <span style="font-size:.9rem;font-weight:700;color:var(--text);">Providus Bank</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border-radius:10px;">
+              <span style="font-size:.85rem;color:var(--text3);">Account Number</span>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:.9rem;font-weight:700;color:#7000ff;" id="ngnVirtualAcct">9901234567</span>
+                <button onclick="navigator.clipboard.writeText(document.getElementById('ngnVirtualAcct').textContent);toast('Account number copied!','success',2000)" style="background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.25);border-radius:6px;color:#7000ff;font-size:.75rem;padding:3px 8px;cursor:pointer;">Copy</button>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border-radius:10px;">
+              <span style="font-size:.85rem;color:var(--text3);">Account Name</span>
+              <span style="font-size:.9rem;font-weight:700;color:var(--text);">NAN / YOUR NAME</span>
+            </div>
+          </div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px;">
+          <div style="font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:12px;">How to deposit</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:24px;height:24px;border-radius:50%;background:rgba(112,0,255,.12);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#7000ff;flex-shrink:0;">1</div>
+              <span style="font-size:.85rem;color:var(--text3);">Transfer NGN to the Providus account above from any Nigerian bank</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:24px;height:24px;border-radius:50%;background:rgba(112,0,255,.12);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#7000ff;flex-shrink:0;">2</div>
+              <span style="font-size:.85rem;color:var(--text3);">Your NGN balance updates automatically within 30 seconds</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:24px;height:24px;border-radius:50%;background:rgba(112,0,255,.12);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#7000ff;flex-shrink:0;">3</div>
+              <span style="font-size:.85rem;color:var(--text3);">Convert to USDC instantly on the Convert tab</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Withdraw panel -->
+      <div id="npanel-withdraw" style="display:none;">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:3px;">
+          <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Amount (₦)</div>
+          <input id="ngnWithdrawAmt" type="number" placeholder="0" oninput="calcNgnWithdraw()" style="width:100%;background:none;border:none;outline:none;font-size:2.2rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
+          <div style="font-size:.82rem;color:var(--text3);margin-top:6px;" id="ngnWithdrawUsdc">≈ 0.0000 USDC deducted</div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:3px;">
+          <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Bank</div>
+          <input type="hidden" id="ngnBankName" value=""/>
+          <button type="button" id="bankPickerBtn" onclick="openBankPicker()" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;color:var(--text);font-family:'Inter',sans-serif;font-size:1rem;font-weight:600;padding:10px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;box-sizing:border-box;">
+            <span id="bankPickerLabel" style="color:var(--text3);">Select bank</span>
+            <span style="color:#7000ff;">▾</span>
+          </button>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:18px;">
+          <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Account Number</div>
+          <input id="ngnAcctNum" type="text" inputmode="numeric" maxlength="10" placeholder="0123456789" oninput="verifyNgnAcct()" style="width:100%;background:none;border:none;outline:none;font-size:1.4rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
+          <div id="ngnAcctNameBar" style="display:none;margin-top:8px;font-size:.85rem;color:#34d399;"><span id="ngnAcctNameTxt"></span></div>
+          <div style="font-size:.8rem;color:var(--text3);margin-top:6px;">Fee: ₦100 flat</div>
+        </div>
+        <button id="ngnWithdrawBtn" onclick="doNgnWithdraw()" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Withdraw to Bank</button>
+      </div>
+
+      <!-- Convert panel -->
+      <div id="npanel-convert" style="display:none;">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:3px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+            <span style="font-size:.9rem;color:var(--text);">You Pay</span>
+            <span style="font-size:.9rem;color:var(--text3);" id="ngnFromBal">Bal: ₦0.00</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div id="ngnFromToken" onclick="flipNgnConvert()" style="background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:8px 14px;font-size:.9rem;font-weight:700;color:var(--text);white-space:nowrap;cursor:pointer;">₦ NGN ▾</div>
+            <input class="swap-input" id="ngnConvertFrom" type="number" placeholder="0" oninput="calcNgnConvert()" style="flex:1;background:none;border:none;outline:none;font-size:2rem;font-weight:700;color:var(--text);text-align:right;font-family:'Inter',sans-serif;"/>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:center;padding:8px 0;">
+          <button onclick="flipNgnConvert()" style="width:34px;height:34px;border-radius:10px;background:var(--bg);border:1px solid var(--border);color:#7000ff;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">⇅</button>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:14px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+            <span style="font-size:.9rem;color:var(--text);">You Receive</span>
+            <span style="font-size:.9rem;color:var(--text3);" id="ngnToBalLabel">Bal: 0.00 USDC</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div id="ngnToToken" onclick="toggleNgnToToken()" style="background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:8px 14px;font-size:.9rem;font-weight:700;color:#7000ff;white-space:nowrap;cursor:pointer;"><span class="tok-dot usdc-dot"></span>USDC ▾</div>
+            <input class="swap-input" id="ngnConvertTo" type="number" placeholder="0" readonly style="flex:1;background:none;border:none;outline:none;font-size:2rem;font-weight:700;color:var(--text);text-align:right;font-family:'Inter',sans-serif;opacity:.6;"/>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:10px 14px;background:rgba(112,0,255,.05);border:1px solid rgba(112,0,255,.12);border-radius:12px;margin-bottom:12px;">
+          <span style="font-size:.85rem;color:var(--text3);" id="ngnRateDisplay">₦1,620 = 1 USDC</span>
+          <span style="font-size:.85rem;color:var(--text3);">Fee: 0.5%</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+          <button class="ibtn" onclick="document.getElementById('ngnConvertFrom').value=10000;calcNgnConvert()" style="padding:10px;text-align:center;">₦10,000</button>
+          <button class="ibtn" onclick="document.getElementById('ngnConvertFrom').value=50000;calcNgnConvert()" style="padding:10px;text-align:center;">₦50,000</button>
+        </div>
+        <button class="btn" onclick="doNgnConvert()" id="ngnConvertBtn">Convert NGN → USDC</button>
+      </div>
+
+      <!-- Rate cards -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px;">
+          <div style="font-size:.78rem;color:var(--text3);margin-bottom:4px;">NGN / USDC</div>
+          <div style="font-size:1rem;font-weight:700;color:#7000ff;">₦1,620</div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px;">
+          <div style="font-size:.78rem;color:var(--text3);margin-bottom:4px;">NGN / EURC</div>
+          <div style="font-size:1rem;font-weight:700;color:#7000ff;">₦1,765</div>
+        </div>
+      </div>
+    </div>
+  </div><!-- end naira page -->
+
+
+    <!-- ══ BULK PAY PAGE ══ -->
+  <div class="page" id="page-bulk">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
+    <div style="font-size:1.0625rem;font-weight:700;color:var(--text);margin-bottom:4px;">Payroll</div>
+    <div style="font-size:.875rem;color:var(--text);margin-bottom:16px;">Bulk send USDC or EURC to your team</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+      <div>
+        <div class="page-title">Payroll</div>
+        <div class="page-sub">Pay your team · USDC · Scheduled runs · Receipts</div>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button onclick="clearBulkRecipients()" style="background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:8px;color:var(--danger);font-size:.875rem;padding:5px 10px;cursor:pointer;font-family:'Inter',sans-serif;">Clear</button>
+      </div>
+    </div>
+
+    <!-- Payroll group + token selector -->
+    <div style="display:flex;gap:6px;margin-bottom:10px;">
+      <select id="payrollGroupSelect" onchange="loadPayrollGroup()" style="flex:1;padding:9px 12px;border-radius:10px;font-size:16px;font-family:'Inter',sans-serif;-webkit-appearance:auto;appearance:auto;cursor:pointer;">
+        <option value="">— Select saved group —</option>
+      </select>
+      <button onclick="savePayrollGroup()" style="background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.3);border-radius:10px;color:var(--accent3);font-size:1rem;padding:9px 12px;cursor:pointer;white-space:nowrap;font-family:'Inter',sans-serif;font-weight:600;">Save Group</button>
+    </div>
+    <div style="display:flex;gap:6px;margin-bottom:12px;">
+      <button id="bulk-usdc" onclick="setBulkToken('USDC')" style="flex:1;padding:9px;border-radius:10px;font-size:.875rem;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;background:#7000ff;border:none;color:#f3e8ff;">USDC</button>
+      <button id="bulk-eurc" onclick="setBulkToken('EURC')" style="flex:1;padding:9px;border-radius:10px;font-size:.875rem;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;background:var(--surface);border:1px solid var(--border);color:var(--text);">EURC</button>
+    </div>
+
+    <!-- Quick amount selector -->
+    <div style="margin-bottom:12px;">
+      <div style="font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;color:var(--text);letter-spacing:.06em;text-transform:uppercase;margin-bottom:7px;">Default amount per recipient</div>
+      <div style="display:flex;gap:5px;">
+        <button onclick="setBulkDefaultAmt(10)" class="ibtn" style="flex:1;padding:8px;text-align:center;font-size:.875rem;">10</button>
+        <button onclick="setBulkDefaultAmt(20)" class="ibtn" style="flex:1;padding:8px;text-align:center;font-size:.875rem;">20</button>
+        <button onclick="setBulkDefaultAmt(50)" class="ibtn" style="flex:1;padding:8px;text-align:center;font-size:.875rem;">50</button>
+        <button onclick="setBulkDefaultAmt(100)" class="ibtn" style="flex:1;padding:8px;text-align:center;font-size:.875rem;">100</button>
+        <input id="bulkDefaultAmt" type="number" placeholder="Custom" style="flex:1.5;padding:8px;border-radius:8px;font-size:16px;text-align:center;" oninput="updateBulkAmounts()"/>
+      </div>
+    </div>
+
+    <!-- Recipients list -->
+    <div id="bulkRecipientsList" style="margin-bottom:10px;display:flex;flex-direction:column;gap:6px;"></div>
+
+    <!-- Add recipient row -->
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;">
+      <input id="bulkNameInput" type="text" placeholder="Name or role (e.g. Chidi · Lead Dev)" style="width:100%;padding:10px 12px;border-radius:10px;font-size:16px;font-family:'Inter',sans-serif;"/>
+      <div style="display:flex;gap:6px;">
+        <input id="bulkAddrInput" type="text" placeholder="Wallet address or .arc name" style="flex:1;padding:10px 12px;border-radius:10px;font-size:16px;font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;" onkeydown="if(event.key==='Enter')addBulkRecipient()"/>
+        <button onclick="addBulkRecipient()" style="background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.3);border-radius:10px;color:var(--accent3);font-size:1.2rem;padding:10px 14px;cursor:pointer;font-weight:700;">+</button>
+      </div>
+    </div>
+
+    <!-- CSV import -->
+    <div onclick="document.getElementById('bulkCsvInput').click()" style="display:flex;align-items:center;justify-content:center;gap:7px;padding:10px;background:rgba(168,85,247,.04);border:1px dashed rgba(168,85,247,.22);border-radius:10px;margin-bottom:12px;cursor:pointer;">
+      <span style="font-size:1rem;">📋</span>
+      <span style="font-size:.875rem;color:var(--text);">Import from CSV <span style="font-size:.875rem;color:var(--text);opacity:.6;">(address, amount per line)</span></span>
+    </div>
+    <input id="bulkCsvInput" type="file" accept=".csv,.txt" style="display:none;" onchange="importBulkCSV(event)"/>
+
+    <!-- Summary -->
+    <div id="bulkSummary" style="display:none;background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.2);border-radius:12px;padding:12px 14px;margin-bottom:12px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+        <span style="font-size:1rem;color:var(--text);">Recipients</span>
+        <span style="font-size:1rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;" id="bulkRecipCount">0</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+        <span style="font-size:1rem;color:var(--text);">Total amount</span>
+        <span style="font-size:1rem;font-weight:700;color:var(--accent3);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;" id="bulkTotalAmt">0.00 USDC</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+        <span style="font-size:1rem;color:var(--text);">Your balance</span>
+        <span style="font-size:1rem;font-weight:600;font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;" id="bulkBalAmt">0.00</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;">
+        <span style="font-size:1rem;color:var(--text);">Gas (est.)</span>
+        <span style="font-size:.875rem;color:#ffffff;font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;" id="bulkGasAmt">~0.00 USDC</span>
+      </div>
+    </div>
+
+    <!-- Payroll actions -->
+    <button class="btn" id="bulkSendBtn" onclick="doBulkSend()" disabled style="margin-bottom:8px;">Run Payroll</button>
+    <div style="margin-top:18px;">
+      <div style="font-size:1rem;color:var(--text);text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:8px;">Payroll History</div>
+      <div id="payrollHistory"></div>
+    </div>
+    <div style="display:flex;gap:6px;margin-bottom:8px;">
+      <button onclick="schedulePayroll()" style="flex:1;padding:10px;background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.25);border-radius:10px;color:var(--accent3);font-family:'Inter',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;">📅 Schedule Monthly</button>
+      <button onclick="downloadPayrollReceipt()" style="flex:1;padding:10px;background:rgba(112,0,255,.06);border:1px solid rgba(112,0,255,.2);border-radius:10px;color:#ffffff;font-family:'Inter',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;">🧾 Last Receipt</button>
+    </div>
+
+    <!-- Progress -->
+    <div id="bulkProgress" style="display:none;padding:12px;background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.2);border-radius:12px;margin-bottom:8px;">
+      <div style="font-size:.875rem;font-weight:700;color:var(--text);margin-bottom:8px;" id="bulkProgressTitle">Sending...</div>
+      <div style="background:rgba(255,255,255,.06);border-radius:100px;height:6px;overflow:hidden;margin-bottom:8px;">
+        <div id="bulkProgressBar" style="height:100%;background:#7000ff;border-radius:100px;width:0%;transition:width .5s;"></div>
+      </div>
+      <div id="bulkProgressList" style="display:flex;flex-direction:column;gap:4px;max-height:120px;overflow-y:auto;"></div>
+    </div>
+  </div>
+
+    </div><!-- end bulk unified card -->
+  <!-- ══ HISTORY PAGE ══ -->
+  <div class="page" id="page-history">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;padding:20px;">
+
     <button class="back-btn" onclick="goBack()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg> Back</button>
-        <div style="font-size:1.0625rem;font-weight:700;color:var(--text);margin-bottom:4px;">Naira — NGN</div>
-    <div style="font-size:.875rem;color:var(--text);margin-bottom:16px;">Deposit · Withdraw · Convert NGN</div>
-    <div class="page-title" style="display:flex;align-items:center;gap:8px;">
-      <div style="width:32px;height:32px;border-radius:9px;background:#7000ff;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:#f3e8ff;flex-shrink:0;">₦</div>
-      Naira
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div style="font-size:1.125rem;font-weight:700;color:var(--text);letter-spacing:-.02em;">Activity</div>
+      <button class="clear-hist-btn" onclick="clearHistory()">Clear all</button>
     </div>
-    <div class="page-sub">Deposit · Withdraw · Convert NGN ↔ USDC/EURC</div>
-    <div class="bal-card" style="margin-bottom:12px;">
-      <div class="bal-head"><div class="bal-lbl">Naira Balance</div><div class="bal-badge">● NGN · Nigeria</div></div>
-      <div class="bal-num"><span id="ngnBal">0.00</span> <span style="font-size:1rem;color:var(--text);">NGN</span></div>
-      <div class="bal-usd" id="ngnUsd">≈ $0.00 USDC · Rate: ₦1,620 / USDC</div>
-    </div>
-    <div class="send-tabs" style="background:rgba(255,255,255,0.03);border-radius:10px;padding:3px;margin-bottom:12px;">
-      <button class="stab active" id="ntab-deposit" onclick="setNairaTab('deposit')" style="border-radius:8px;">↓ Deposit</button>
-      <button class="stab" id="ntab-withdraw" onclick="setNairaTab('withdraw')" style="border-radius:8px;">🏦 Withdraw</button>
-      <button class="stab" id="ntab-convert" onclick="setNairaTab('convert')" style="border-radius:8px;">⇄ Convert</button>
-    </div>
-    <div id="npanel-deposit" class="card">
-      <div class="card-title"><div class="cticon">↓</div>Deposit Naira</div>
-      <!-- Virtual Account Box -->
-<div style="background:rgba(112,0,255,.06);border:1px solid rgba(112,0,255,.25);border-radius:14px;padding:16px;margin-bottom:14px;">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-    <div style="font-size:1rem;font-weight:700;color:#ffffff;font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;letter-spacing:.05em;">YOUR VIRTUAL ACCOUNT</div>
-    <div style="display:flex;align-items:center;gap:5px;font-size:.875rem;color:#ffffff;font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;"><span style="width:6px;height:6px;border-radius:50%;background:var(--success);display:inline-block;animation:pulse 2s infinite;"></span>Active</div>
-  </div>
-  <div style="display:flex;flex-direction:column;gap:8px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:rgba(255,255,255,.03);border-radius:9px;">
-      <span style="font-size:1rem;color:var(--text);">Bank</span>
-      <span style="font-size:.875rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;">Providus Bank</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:rgba(255,255,255,.03);border-radius:9px;">
-      <span style="font-size:1rem;color:var(--text);">Account Number</span>
-      <div style="display:flex;align-items:center;gap:7px;">
-        <span style="font-size:1rem;font-weight:700;color:var(--accent3);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;" id="ngnVirtualAcct">9901234567</span>
-        <button onclick="navigator.clipboard.writeText('9901234567');toast('Account number copied!','success',2000)" style="background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.25);border-radius:5px;color:var(--accent3);font-size:1rem;padding:2px 7px;cursor:pointer;font-family:'Inter',sans-serif;">Copy</button>
-      </div>
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:rgba(255,255,255,.03);border-radius:9px;">
-      <span style="font-size:1rem;color:var(--text);">Account Name</span>
-      <span style="font-size:.875rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;">NAN / YOUR NAME</span>
-    </div>
-  </div>
-</div>
 
-<!-- How to deposit -->
-<div style="font-size:1rem;font-weight:700;color:var(--text);letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px;">How to deposit</div>
-<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;">
-  <div style="display:flex;align-items:center;gap:10px;padding:9px 11px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:10px;">
-    <div style="width:20px;height:20px;border-radius:50%;background:rgba(168,85,247,.15);display:flex;align-items:center;justify-content:center;font-size:.875rem;font-weight:700;color:var(--accent3);flex-shrink:0;">1</div>
-    <div style="font-size:.875rem;color:var(--text);">Transfer NGN to the Providus account above from any Nigerian bank</div>
-  </div>
-  <div style="display:flex;align-items:center;gap:10px;padding:9px 11px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:10px;">
-    <div style="width:20px;height:20px;border-radius:50%;background:rgba(168,85,247,.15);display:flex;align-items:center;justify-content:center;font-size:.875rem;font-weight:700;color:var(--accent3);flex-shrink:0;">2</div>
-    <div style="font-size:.875rem;color:var(--text);">Your NGN balance updates automatically within 30 seconds</div>
-  </div>
-  <div style="display:flex;align-items:center;gap:10px;padding:9px 11px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:10px;">
-    <div style="width:20px;height:20px;border-radius:50%;background:rgba(168,85,247,.15);display:flex;align-items:center;justify-content:center;font-size:.875rem;font-weight:700;color:var(--accent3);flex-shrink:0;">3</div>
-    <div style="font-size:.875rem;color:var(--text);">Convert to USDC instantly on the Convert tab</div>
-  </div>
-</div>
+    <!-- Stats -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:16px;">
+      <div class="hist-stat">
+        <div class="hist-stat-num" id="statSends">0</div>
+        <div class="hist-stat-lbl">Sends</div>
+      </div>
+      <div class="hist-stat">
+        <div class="hist-stat-num" id="histStatSwaps">0</div>
+        <div class="hist-stat-lbl">Swaps</div>
+      </div>
+      <div class="hist-stat">
+        <div class="hist-stat-num" id="histStatBridges">0</div>
+        <div class="hist-stat-lbl">Bridges</div>
+      </div>
+    </div>
 
-<!-- Simulate deposit for demo -->
-<div style="background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.2);border-radius:12px;padding:13px;margin-bottom:4px;">
-  <div style="font-size:1rem;color:var(--text);margin-bottom:9px;">Simulate an incoming NGN transfer</div>
-  <div style="display:flex;gap:7px;">
-    <input id="ngnSimAmt" type="number" placeholder="Amount in NGN" style="flex:1;padding:9px 12px;border-radius:9px;font-size:16px;"/>
-    <button onclick="simulateNgnDeposit()" style="background:#7000ff;border:none;border-radius:9px;color:#f3e8ff;font-family:'Inter',sans-serif;font-weight:700;font-size:1rem;padding:9px 14px;cursor:pointer;white-space:nowrap;">+ Deposit</button>
-  </div>
-</div>
+    <!-- TX list -->
+    <div id="txList">
+      <div style="text-align:center;padding:40px 20px;">
+        <div style="font-size:2rem;margin-bottom:12px;">◎</div>
+        <div style="font-size:.875rem;color:var(--text);line-height:1.6;">No transactions yet.<br/>Send or swap to get started.</div>
+      </div>
     </div>
-    <div id="npanel-withdraw" class="card" style="display:none;">
-      <div class="card-title"><div class="cticon">🏦</div>Withdraw to Bank</div>
-      <div class="field"><div class="flbl">Amount (NGN)</div>
-        <div class="amt-row"><div class="field" style="margin-bottom:0;position:relative;">
-          <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:1rem;color:var(--text);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;z-index:1;">₦</span>
-          <input id="ngnWithdrawAmt" type="number" placeholder="0.00" style="padding-left:24px;" oninput="calcNgnWithdraw()"/>
-        </div><button class="max-btn">MAX</button></div>
-        <div style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:.875rem;color:var(--text);margin-top:4px;" id="ngnWithdrawUsdc">≈ 0.00 USDC deducted</div>
-      </div>
-      <div class="field"><div class="flbl">Bank</div>
-        <input type="hidden" id="ngnBankName" value=""/>
-        <button type="button" id="bankPickerBtn" onclick="openBankPicker()" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;padding:13px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;box-sizing:border-box;text-align:left;">
-          <span id="bankPickerLabel" style="color:var(--text);">Select bank</span>
-          <span style="color:var(--accent3);font-size:1rem;">▾</span>
-        </button>
-      </div>
-      <div class="field"><div class="flbl">Account Number</div><input id="ngnAcctNum" type="text" inputmode="numeric" maxlength="10" placeholder="0123456789" oninput="verifyNgnAcct()"/></div>
-      <div id="ngnAcctNameBar" style="display:none;" class="res-bar ok"><span id="ngnAcctNameTxt"></span></div>
-      <div class="gas-row"><span class="gas-icon">₦</span><span style="flex:1;">Withdrawal fee</span><span>₦100 flat</span></div>
-      <button id="ngnWithdrawBtn" class="btn btn-outline" onclick="doNgnWithdraw()">Withdraw to Bank</button>
-    </div>
-    <div id="npanel-convert" class="card" style="display:none;">
-      <div class="card-title"><div class="cticon">⇄</div>Convert</div>
-      <div style="background:rgba(255,255,255,0.02);border:1px solid rgba(168,85,247,0.18);border-radius:var(--radius);padding:4px;margin-bottom:10px;">
-        <div style="background:var(--surface);border-radius:14px 14px 4px 4px;padding:14px 16px 10px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-            <span style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:.875rem;color:var(--text);">You Pay</span>
-            <span style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:.875rem;color:var(--text);" id="ngnFromBal">Bal: ₦0.00</span>
-          </div>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <div id="ngnFromToken" onclick="flipNgnConvert()" style="display:flex;align-items:center;gap:6px;background:var(--bg);border:1px solid rgba(168,85,247,.25);border-radius:100px;padding:6px 12px;font-size:1rem;font-weight:600;color:var(--text);white-space:nowrap;cursor:pointer;">₦ NGN <span style="font-size:.875rem;color:var(--text);margin-left:2px;">▾</span></div>
-            <input class="swap-input" id="ngnConvertFrom" type="number" placeholder="0.00" oninput="calcNgnConvert()" style="flex:1;text-align:right;font-size:1.6rem;"/>
-          </div>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:center;position:relative;height:28px;margin:0 -4px;">
-          <div style="position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(168,85,247,.1);"></div>
-          <button onclick="flipNgnConvert()" style="position:relative;width:34px;height:34px;border-radius:10px;background:var(--bg);border:1px solid rgba(168,85,247,.3);color:var(--accent3);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:1;">⇅</button>
-        </div>
-        <div style="background:var(--surface);border-radius:4px 4px 14px 14px;padding:10px 16px 14px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-            <span style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:.875rem;color:var(--text);">You Receive</span>
-            <span style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:.875rem;color:var(--text);" id="ngnToBalLabel">Bal: 0.00 USDC</span>
-          </div>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <div id="ngnToToken" onclick="toggleNgnToToken()" style="display:flex;align-items:center;gap:6px;background:var(--bg);border:1px solid rgba(168,85,247,.25);border-radius:100px;padding:6px 12px;font-size:1rem;font-weight:600;color:var(--accent3);white-space:nowrap;cursor:pointer;"><span class="tok-dot usdc-dot"></span>USDC <span style="font-size:.875rem;color:var(--text);margin-left:2px;">▾</span></div>
-            <input class="swap-input" id="ngnConvertTo" type="number" placeholder="0.00" readonly style="flex:1;text-align:right;font-size:1.6rem;opacity:.65;"/>
-          </div>
-        </div>
-      </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:rgba(168,85,247,.04);border:1px solid rgba(168,85,247,.12);border-radius:10px;margin-bottom:10px;">
-        <span style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:.875rem;color:var(--text);" id="ngnRateDisplay">₦1,620 = 1 USDC</span>
-        <span style="font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:.875rem;color:var(--text);">Fee: 0.5%</span>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">
-        <button class="ibtn" style="padding:8px;text-align:center;" onclick="document.getElementById('ngnConvertFrom').value=10000;calcNgnConvert()">₦10,000</button>
-        <button class="ibtn" style="padding:8px;text-align:center;" onclick="document.getElementById('ngnConvertFrom').value=50000;calcNgnConvert()">₦50,000</button>
-      </div>
-      <button class="btn" onclick="doNgnConvert()" id="ngnConvertBtn">Convert NGN → USDC</button>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;">
-      <div class="card" style="padding:12px;margin-bottom:0;"><div class="bal-lbl" style="margin-bottom:4px;">NGN / USDC</div><div style="font-size:1rem;font-weight:700;color:var(--accent3);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;">₦1,620</div></div>
-      <div class="card" style="padding:12px;margin-bottom:0;"><div class="bal-lbl" style="margin-bottom:4px;">NGN / EURC</div><div style="font-size:1rem;font-weight:700;color:#7000ff;font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;">₦1,765</div></div>
-    </div>
+
+    </div><!-- end history unified card -->
   </div>
 
-    </div><!-- end naira unified card -->
+  <!-- ══ PAYMENT REQUESTS PAGE ══ -->
+  <div class="page" id="page-payreq">
   <!-- ══ BULK PAY PAGE ══ -->
   <div class="page" id="page-bulk">
     <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
@@ -2353,7 +2491,7 @@ document.addEventListener('DOMContentLoaded',function(){
   }
 })();
 </script>
-<script src="/legacy/app.js?v=1782111805"></script>
+<script src="/legacy/app.js?v=1782112681"></script>
 <script src="/legacy/ui.js?v=1781459118"></script>
 
 <!-- ══ BANK PICKER MODAL ══ -->
