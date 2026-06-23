@@ -1695,27 +1695,28 @@ async function submitListService(){
 // exercised end-to-end yet — flagged clearly to the user as beta so funds
 // committed here are understood to carry real risk until that's proven out.
 async function doAjo(){
-  if(!userAddr){ toast('Connect your wallet first', 'error', 3000); return; }
-  openBillModal('Ajo Savings (Beta)', `
-    <details style="margin-bottom:16px;background:var(--card);border:1px solid var(--border);border-radius:16px;">
-      <summary style="cursor:pointer;padding:14px 16px;font-size:.85rem;font-weight:700;color:var(--text);">❓ What is Ajo? (tap to learn)</summary>
-      <div style="padding:0 16px 16px;font-size:.82rem;color:var(--text3);line-height:1.7;">
-        Ajo is a savings circle — a group of people who each put in the same amount of money on a schedule, and take turns receiving the whole pot.
-        <br><br>
-        <b style="color:var(--text);">Example:</b> 5 friends each contribute 10 USDC every week. Each week, one person gets the full 50 USDC. After 5 weeks, everyone has received a payout once.
-        <br><br>
-        On NAN, this happens automatically on-chain — no one can skip their turn to pay, and the payout goes to the right person the moment everyone's contributed.
-      </div>
-    </details>
-    <div style="display:flex;gap:10px;margin-bottom:16px;">
-      <button onclick="showAjoCreate()" style="flex:1;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:13px;font-size:.88rem;font-weight:700;cursor:pointer;">+ Start a Group</button>
-      <button onclick="showAjoJoin()" style="flex:1;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.3);border-radius:14px;color:#7000ff;padding:13px;font-size:.88rem;font-weight:700;cursor:pointer;">Join with a Code</button>
+  if(!userAddr){ toast('Connect your wallet first','error',3000); return; }
+  openBillModal('NANAjo', `
+    <div style="background:rgba(112,0,255,.08);border:0.5px solid rgba(112,0,255,.2);border-radius:18px;padding:16px 18px;margin-bottom:18px;">
+      <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#7000ff;margin-bottom:5px;">Savings circle</div>
+      <div style="font-size:.95rem;font-weight:600;color:var(--text);line-height:1.4;">Pool money. Take turns. No bank needed.</div>
+      <div style="font-size:.76rem;color:var(--text3);margin-top:5px;line-height:1.55;">Everyone puts in the same amount each round. One person gets the full pot per round — on-chain, automatic, no one can skip.</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px;">
+      <button onclick="showAjoCreate()" style="background:#7000ff;border:none;border-radius:14px;color:#fff;padding:13px 10px;font-size:.85rem;font-weight:600;cursor:pointer;">+ Start a group</button>
+      <button onclick="showAjoJoin()" style="background:rgba(112,0,255,.08);border:0.5px solid rgba(112,0,255,.25);border-radius:14px;color:#7000ff;padding:13px 10px;font-size:.85rem;font-weight:600;cursor:pointer;"># Join with code</button>
     </div>
     <div id="ajoBody"></div>
   `);
   loadMyAjoGroups();
 }
 
+function ajoInitials(addr){
+  return addr ? (addr.slice(2,3)+addr.slice(3,4)).toUpperCase() : '?';
+}
+function ajoShortAddr(addr){
+  return addr ? addr.slice(0,6)+'…'+addr.slice(-4) : '';
+}
 function ajoContract(signerOrProvider){
   return new ethers.Contract(AJO_CONTRACT, AJO_ABI, signerOrProvider);
 }
@@ -1723,75 +1724,85 @@ function ajoContract(signerOrProvider){
 async function loadMyAjoGroups(){
   const el = document.getElementById('ajoBody');
   if(!el) return;
-  el.innerHTML = '<div style="text-align:center;padding:20px 0;"><span class="spinner"></span></div>';
+  el.innerHTML = '<div style="text-align:center;padding:24px 0;"><span class="spinner"></span></div>';
   try{
     const readProvider = provider || getArcProvider();
     const c = ajoContract(readProvider);
     const total = await c.nextGroupId();
     const myGroups = [];
-    // Scan recent groups for ones the user is a member of. Capped at last 50
-    // to keep this fast — fine for a brand-new feature with few groups so far.
     const start = total > 50n ? total - 50n : 0n;
     for(let id = start; id < total; id++){
       const member = await c.isMember(id, userAddr).catch(()=>false);
       if(member) myGroups.push(id);
     }
     if(myGroups.length === 0){
-      el.innerHTML = `<div style="text-align:center;padding:30px 0;color:var(--text3);font-size:.85rem;">No groups yet. Create one or join with an ID.</div>`;
+      el.innerHTML = `<div style="text-align:center;padding:28px 0 10px;"><div style="font-size:1.6rem;margin-bottom:10px;">🫂</div><div style="font-size:.85rem;color:var(--text3);line-height:1.6;">No groups yet.<br>Start one or ask a friend for their group code.</div></div>`;
       return;
     }
-    let html = `<div style="font-size:.75rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;font-weight:600;">Your Groups</div>`;
+    const statusLabel = ['Open','Live','Done'];
+    const statusColor = ['#fbbf24','#34d399','#666'];
+    let html = `<div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:10px;">Your groups</div>`;
     for(const id of myGroups){
       const g = await c.getGroup(id);
-      const statusLabel = ['Open','Active','Completed'][g.status] || '?';
-      const statusColor = g.status==0 ? '#fbbf24' : g.status==1 ? '#34d399' : '#888';
+      const sIdx = Number(g.status);
+      const isActive = sIdx===1, isDone = sIdx===2;
+      const isCreator = g.creator.toLowerCase()===userAddr.toLowerCase();
+      let progressPct=0, progressLabel='Waiting to start';
+      if(isActive){
+        const [contrib,tot] = await c.getRoundProgress(id).catch(()=>[0n,1n]);
+        progressPct = Math.round((Number(contrib)/Number(tot))*100);
+        progressLabel = `Round ${Number(g.currentRound)+1} of ${Number(g.memberCount)} · ${Number(contrib)}/${Number(tot)} paid`;
+      } else if(isDone){ progressPct=100; progressLabel='Complete'; }
+      const creatorTag = isCreator ? `<span style="font-size:.62rem;color:#7000ff;font-weight:700;margin-left:6px;">Admin</span>` : '';
       html += `
-        <div onclick="showAjoGroup(${id})" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:10px;cursor:pointer;">
-          <div style="display:flex;justify-content:space-between;align-items:center;">
-            <div style="font-size:.95rem;font-weight:700;color:var(--text);">${g.label || 'Group #'+id}</div>
-            <span style="font-size:.68rem;font-weight:700;padding:3px 10px;border-radius:6px;background:${statusColor}22;color:${statusColor};">${statusLabel}</span>
+        <div onclick="showAjoGroup(${id})" style="background:var(--card);border:0.5px solid var(--border);border-radius:18px;padding:15px 16px;margin-bottom:10px;cursor:pointer;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <div style="font-size:.9rem;font-weight:600;color:var(--text);">${g.label||'Group #'+id}${creatorTag}</div>
+            <span style="font-size:.62rem;font-weight:700;padding:3px 9px;border-radius:20px;background:${statusColor[sIdx]}1a;color:${statusColor[sIdx]};">${statusLabel[sIdx]}</span>
           </div>
-          <div style="font-size:.78rem;color:var(--text3);margin-top:6px;">${g.memberCount}/${g.maxMembers} members · ${ethers.formatUnits(g.contributionAmount,6)} USDC/round</div>
-        </div>
-      `;
+          <div style="font-size:.74rem;color:var(--text3);margin-bottom:10px;">${g.memberCount}/${g.maxMembers} members · ${ethers.formatUnits(g.contributionAmount,6)} USDC/round</div>
+          <div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;">
+            <div style="height:100%;width:${progressPct}%;background:${isDone?'#34d399':'#7000ff'};border-radius:2px;"></div>
+          </div>
+          <div style="font-size:.68rem;color:var(--text3);margin-top:5px;">${progressLabel}</div>
+        </div>`;
     }
     el.innerHTML = html;
   }catch(err){
-    el.innerHTML = '<div style="text-align:center;padding:20px 0;color:#f87171;font-size:.8rem;">'+err.message.slice(0,100)+'</div>';
+    el.innerHTML = `<div style="text-align:center;padding:20px 0;color:#f87171;font-size:.8rem;">${err.message.slice(0,120)}</div>`;
   }
 }
 
 function showAjoCreate(){
   document.getElementById('ajoBody').innerHTML = `
-    <button onclick="doAjo()" style="background:none;border:none;color:var(--text3);font-size:.82rem;cursor:pointer;margin-bottom:14px;padding:0;">← Back</button>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:3px;">
-        <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">What's this group for?</div>
-        <input id="ajoLabel" type="text" placeholder="e.g. Office Savings, Family Ajo" style="width:100%;background:none;border:none;outline:none;font-size:1.2rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
+    <button onclick="doAjo()" style="background:none;border:none;color:var(--text3);font-size:.82rem;cursor:pointer;margin-bottom:16px;padding:0;">← Back</button>
+    <div style="background:var(--card);border:0.5px solid var(--border);border-radius:20px;padding:18px;">
+      <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:8px;">
+        <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px;">Group name</div>
+        <input id="ajoLabel" type="text" placeholder="e.g. Office Savings, Family Ajo" style="width:100%;background:none;border:none;outline:none;font-size:1.1rem;font-weight:600;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
       </div>
-      <div style="display:flex;gap:3px;margin-bottom:3px;">
-        <div style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 16px 14px;">
-          <div style="font-size:.9rem;color:var(--text);font-weight:500;margin-bottom:12px;">People</div>
-          <input id="ajoMaxMembers" type="number" min="2" max="50" placeholder="0" oninput="updateAjoPreview()" style="width:100%;background:none;border:none;outline:none;font-size:1.8rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+        <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:16px;padding:16px;">
+          <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px;">Members</div>
+          <input id="ajoMaxMembers" type="number" min="2" max="50" placeholder="0" oninput="updateAjoPreview()" style="width:100%;background:none;border:none;outline:none;font-size:1.7rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
         </div>
-        <div style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 16px 14px;">
-          <div style="font-size:.9rem;color:var(--text);font-weight:500;margin-bottom:12px;">USDC each</div>
-          <input id="ajoContribution" type="number" min="0.01" step="0.01" placeholder="0" oninput="updateAjoPreview()" style="width:100%;background:none;border:none;outline:none;font-size:1.8rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
+        <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:16px;padding:16px;">
+          <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px;">USDC each</div>
+          <input id="ajoContribution" type="number" min="0.01" step="0.01" placeholder="0" oninput="updateAjoPreview()" style="width:100%;background:none;border:none;outline:none;font-size:1.7rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
         </div>
       </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:12px;">
-        <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">How often does everyone pay?</div>
-        <select id="ajoRoundLength" onchange="updateAjoPreview()" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:10px 36px 10px 14px;color:var(--text);font-size:1rem;font-weight:600;-webkit-appearance:none;appearance:none;background-image:none;">
+      <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:14px;">
+        <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px;">How often does everyone pay?</div>
+        <select id="ajoRoundLength" onchange="updateAjoPreview()" style="width:100%;background:var(--bg);border:0.5px solid var(--border);border-radius:100px;padding:10px 14px;color:var(--text);font-size:.95rem;font-weight:600;-webkit-appearance:none;appearance:none;">
           <option value="3600">Every hour (for testing)</option>
           <option value="86400">Every day</option>
           <option value="604800" selected>Every week</option>
         </select>
       </div>
-      <div id="ajoPreview" style="background:rgba(112,0,255,.06);border:1px solid rgba(112,0,255,.18);border-radius:16px;padding:16px;margin-bottom:18px;font-size:.85rem;color:var(--text3);line-height:1.6;">
-        Fill in the details above to see how much you'll pay and receive.
-      </div>
-      <button onclick="submitAjoCreate()" id="ajoCreateBtn" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Start Group</button>
-      <div id="ajoCreateStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
+      <div id="ajoPreview" style="background:rgba(112,0,255,.06);border:0.5px solid rgba(112,0,255,.18);border-radius:14px;padding:14px;margin-bottom:14px;font-size:.82rem;color:var(--text3);line-height:1.6;">Fill in the details above to see the summary.</div>
+      <div style="background:rgba(255,200,0,.06);border:0.5px solid rgba(255,200,0,.2);border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:.76rem;color:#fbbf24;line-height:1.5;">ℹ️ As the group admin, only you will see and share the invite code — and only you can release each round's payout.</div>
+      <button onclick="submitAjoCreate()" id="ajoCreateBtn" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:.95rem;font-weight:700;cursor:pointer;">Create group</button>
+      <div id="ajoCreateStatus" style="font-size:.78rem;color:var(--text);margin-top:10px;"></div>
     </div>
   `;
 }
@@ -1802,65 +1813,80 @@ function updateAjoPreview(){
   const members = parseInt(document.getElementById('ajoMaxMembers').value);
   const contribution = parseFloat(document.getElementById('ajoContribution').value);
   const roundLength = document.getElementById('ajoRoundLength').value;
-  const roundLabel = {3600:'hour', 86400:'day', 604800:'week'}[roundLength] || 'round';
-
-  if(!members || members < 2 || !contribution || contribution <= 0){
-    previewEl.textContent = 'Fill in the details above to see how much you\'ll pay and receive.';
-    return;
-  }
-  const pot = (members * contribution).toFixed(2);
-  const totalRounds = members;
-  const totalWeeks = totalRounds; // 1 payout per round, 1 round per period
-  previewEl.innerHTML = `
-    <b style="color:var(--text);">💰 ${pot} USDC</b> — that's the full pot, paid to one person each ${roundLabel}.<br>
-    Each member pays <b style="color:var(--text);">${contribution} USDC every ${roundLabel}</b>, for ${totalRounds} ${roundLabel}${totalRounds>1?'s':''} total.<br>
-    Once everyone has had a turn, the group ends automatically.
-  `;
+  const roundLabel = {3600:'hour',86400:'day',604800:'week'}[roundLength]||'round';
+  if(!members||members<2||!contribution||contribution<=0){ previewEl.textContent='Fill in the details above to see the summary.'; return; }
+  const pot=(members*contribution).toFixed(2);
+  previewEl.innerHTML=`<b style="color:var(--text);">${pot} USDC</b> — full pot, one person per ${roundLabel}.<br>Each member pays <b style="color:var(--text);">${contribution} USDC every ${roundLabel}</b>, for ${members} ${roundLabel}${members>1?'s':''} total.`;
 }
 
 async function submitAjoCreate(){
-  const btn = document.getElementById('ajoCreateBtn');
-  const statusEl = document.getElementById('ajoCreateStatus');
-  const label = document.getElementById('ajoLabel').value.trim();
-  const maxMembers = parseInt(document.getElementById('ajoMaxMembers').value);
-  const contribution = parseFloat(document.getElementById('ajoContribution').value);
-  const roundLength = parseInt(document.getElementById('ajoRoundLength').value);
-
-  if(!label){ toast('Enter a group name', 'error', 3000); return; }
-  if(!maxMembers || maxMembers < 2 || maxMembers > 50){ toast('Members must be 2-50', 'error', 3000); return; }
-  if(!contribution || contribution <= 0){ toast('Enter a contribution amount', 'error', 3000); return; }
-  if(!signer){ toast('Connect MetaMask & switch to Arc Testnet — Circle wallet support for Ajo is coming soon', 'error', 5000); return; }
-
-  btn.disabled = true; btn.textContent = 'Creating…';
+  const btn=document.getElementById('ajoCreateBtn');
+  const statusEl=document.getElementById('ajoCreateStatus');
+  const label=document.getElementById('ajoLabel').value.trim();
+  const maxMembers=parseInt(document.getElementById('ajoMaxMembers').value);
+  const contribution=parseFloat(document.getElementById('ajoContribution').value);
+  const roundLength=parseInt(document.getElementById('ajoRoundLength').value);
+  if(!label){ toast('Enter a group name','error',3000); return; }
+  if(!maxMembers||maxMembers<2||maxMembers>50){ toast('Members must be 2–50','error',3000); return; }
+  if(!contribution||contribution<=0){ toast('Enter a contribution amount','error',3000); return; }
+  if(!signer){ toast('Connect MetaMask & switch to Arc Testnet — Circle wallet support coming soon','error',5000); return; }
+  btn.disabled=true; btn.textContent='Creating…';
   try{
-    const c = ajoContract(signer);
-    const amtAtomic = ethers.parseUnits(contribution.toFixed(6), 6);
-    const tx = await c.createGroup(amtAtomic, maxMembers, roundLength, label, arcGasOpts());
-    statusEl.innerHTML = '<span style="color:#888;">Confirming on-chain…</span>';
-    await tx.wait(1);
-    toast('✓ Group created!', 'success', 5000);
-    addTx({hash:tx.hash, to:AJO_CONTRACT, toRaw:'NANAjo Create Group', amount:contribution.toFixed(6), type:'out', token:'USDC', ts:Date.now(), confirmed:true, source:'ajo'});
-    doAjo(); // reload the panel showing the new group
+    const c=ajoContract(signer);
+    const amtAtomic=ethers.parseUnits(contribution.toFixed(6),6);
+    const tx=await c.createGroup(amtAtomic,maxMembers,roundLength,label,arcGasOpts());
+    statusEl.innerHTML='<span style="color:#888;">Confirming on-chain…</span>';
+    const receipt=await tx.wait(1);
+    let newGroupId;
+    try{
+      const iface=new ethers.Interface(['event GroupCreated(uint256 indexed groupId, address indexed creator)']);
+      const log=receipt.logs.find(l=>{ try{ iface.parseLog(l); return true; }catch{ return false; } });
+      newGroupId=log ? Number(iface.parseLog(log).args[0]) : null;
+    }catch(_){}
+    if(newGroupId==null){
+      const rc=ajoContract(provider||getArcProvider());
+      newGroupId=Number(await rc.nextGroupId())-1;
+    }
+    addTx({hash:tx.hash,to:AJO_CONTRACT,toRaw:'NANAjo Create Group',amount:contribution.toFixed(6),type:'out',token:'USDC',ts:Date.now(),confirmed:true,source:'ajo'});
+    toast('✓ Group created!','success',5000);
+    showAjoGroupCode(newGroupId, label||'Group #'+newGroupId);
   }catch(err){
-    statusEl.innerHTML = '<span style="color:#f87171;">'+err.message.slice(0,150)+'</span>';
-    toast('Could not create group: '+err.message.slice(0,100), 'error', 6000);
+    statusEl.innerHTML=`<span style="color:#f87171;">${err.message.slice(0,150)}</span>`;
+    toast('Could not create group: '+err.message.slice(0,100),'error',6000);
   }finally{
-    btn.disabled = false; btn.textContent = 'Create Group';
+    btn.disabled=false; btn.textContent='Create group';
   }
 }
 
+function showAjoGroupCode(groupId, label){
+  document.getElementById('ajoBody').innerHTML=`
+    <div style="text-align:center;padding:8px 0 20px;">
+      <div style="font-size:2rem;margin-bottom:10px;">🎉</div>
+      <div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">${label} is live!</div>
+      <div style="font-size:.78rem;color:var(--text3);">Share this code so your members can join.</div>
+    </div>
+    <div style="background:rgba(112,0,255,.08);border:0.5px solid rgba(112,0,255,.25);border-radius:18px;padding:20px;margin-bottom:14px;text-align:center;">
+      <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#7000ff;margin-bottom:8px;">Invite code</div>
+      <div style="font-size:3rem;font-weight:800;color:#7000ff;letter-spacing:.08em;">${groupId}</div>
+      <div style="font-size:.72rem;color:var(--text3);margin-top:8px;">Only you see this here. Members need this number to join.</div>
+    </div>
+    <button onclick="navigator.clipboard.writeText('${groupId}').then(()=>toast('Code copied!','success',2000))" style="width:100%;background:rgba(112,0,255,.08);border:0.5px solid rgba(112,0,255,.25);border-radius:14px;color:#7000ff;padding:13px;font-size:.9rem;font-weight:600;cursor:pointer;margin-bottom:10px;">Copy code</button>
+    <button onclick="showAjoGroup(${groupId})" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:13px;font-size:.9rem;font-weight:600;cursor:pointer;">Go to group →</button>
+  `;
+}
+
 function showAjoJoin(){
-  document.getElementById('ajoBody').innerHTML = `
-    <button onclick="doAjo()" style="background:none;border:none;color:var(--text3);font-size:.82rem;cursor:pointer;margin-bottom:14px;padding:0;">← Back</button>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:3px;">
-        <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Group Code</div>
+  document.getElementById('ajoBody').innerHTML=`
+    <button onclick="doAjo()" style="background:none;border:none;color:var(--text3);font-size:.82rem;cursor:pointer;margin-bottom:16px;padding:0;">← Back</button>
+    <div style="background:var(--card);border:0.5px solid var(--border);border-radius:20px;padding:18px;">
+      <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:8px;">
+        <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px;">Group code</div>
         <input id="ajoJoinId" type="number" min="0" placeholder="0" oninput="previewAjoJoin()" style="width:100%;background:none;border:none;outline:none;font-size:2.2rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
-        <div style="font-size:.8rem;color:var(--text3);margin-top:6px;">Ask whoever invited you for this number — it's shown when they create the group.</div>
+        <div style="font-size:.72rem;color:var(--text3);margin-top:6px;">Ask the group admin — they get this after creating the group.</div>
       </div>
       <div id="ajoJoinPreview"></div>
-      <button onclick="submitAjoJoin()" id="ajoJoinBtn" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:14px;">Join Group</button>
-      <div id="ajoJoinStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
+      <button onclick="submitAjoJoin()" id="ajoJoinBtn" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:.95rem;font-weight:700;cursor:pointer;margin-top:14px;">Join group</button>
+      <div id="ajoJoinStatus" style="font-size:.78rem;color:var(--text);margin-top:10px;"></div>
     </div>
   `;
 }
@@ -1868,221 +1894,239 @@ function showAjoJoin(){
 let _ajoPreviewTimer = null;
 function previewAjoJoin(){
   clearTimeout(_ajoPreviewTimer);
-  const previewEl = document.getElementById('ajoJoinPreview');
-  const groupId = parseInt(document.getElementById('ajoJoinId').value);
-  if(isNaN(groupId) || groupId < 0){ if(previewEl) previewEl.innerHTML = ''; return; }
-  _ajoPreviewTimer = setTimeout(async () => {
+  const previewEl=document.getElementById('ajoJoinPreview');
+  const groupId=parseInt(document.getElementById('ajoJoinId').value);
+  if(isNaN(groupId)||groupId<0){ if(previewEl) previewEl.innerHTML=''; return; }
+  _ajoPreviewTimer=setTimeout(async()=>{
     if(!previewEl) return;
-    previewEl.innerHTML = `<div style="font-size:.82rem;color:var(--text3);margin-bottom:12px;">Looking up group…</div>`;
+    previewEl.innerHTML=`<div style="font-size:.78rem;color:var(--text3);padding:10px 0;">Looking up group…</div>`;
     try{
-      const readProvider = provider || getArcProvider();
-      const c = ajoContract(readProvider);
-      const g = await c.getGroup(groupId);
-      if(g.status != 0){
-        previewEl.innerHTML = '<div style="font-size:.82rem;color:#f87171;margin-bottom:12px;">This group has already started or finished — you can\'t join it now.</div>';
-        return;
-      }
-      previewEl.innerHTML = `
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:3px;">
-          <div style="font-size:.95rem;font-weight:700;color:var(--text);">${g.label || 'Group #'+groupId}</div>
-          <div style="font-size:.82rem;color:var(--text3);margin-top:6px;">You'll pay ${ethers.formatUnits(g.contributionAmount,6)} USDC each round · ${g.memberCount}/${g.maxMembers} people joined so far</div>
-        </div>
-      `;
+      const c=ajoContract(provider||getArcProvider());
+      const g=await c.getGroup(groupId);
+      if(g.status!=0){ previewEl.innerHTML=`<div style="font-size:.78rem;color:#f87171;padding:10px 0;">This group has already started or finished — you can't join now.</div>`; return; }
+      previewEl.innerHTML=`
+        <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:14px;margin-top:10px;">
+          <div style="font-size:.9rem;font-weight:600;color:var(--text);">${g.label||'Group #'+groupId}</div>
+          <div style="font-size:.76rem;color:var(--text3);margin-top:5px;">${ethers.formatUnits(g.contributionAmount,6)} USDC per round · ${Number(g.memberCount)}/${Number(g.maxMembers)} joined</div>
+        </div>`;
     }catch(err){
-      previewEl.innerHTML = '<div style="font-size:.82rem;color:#f87171;margin-bottom:12px;">Couldn\'t find a group with that code.</div>';
+      previewEl.innerHTML=`<div style="font-size:.78rem;color:#f87171;padding:10px 0;">Couldn't find a group with that code.</div>`;
     }
-  }, 500);
+  },500);
 }
 
 async function submitAjoJoin(){
-  const btn = document.getElementById('ajoJoinBtn');
-  const statusEl = document.getElementById('ajoJoinStatus');
-  const groupId = parseInt(document.getElementById('ajoJoinId').value);
-  if(isNaN(groupId) || groupId < 0){ toast('Enter a valid group ID', 'error', 3000); return; }
-  if(!signer){ toast('Connect MetaMask & switch to Arc Testnet', 'error', 5000); return; }
-
-  btn.disabled = true; btn.textContent = 'Joining…';
+  const btn=document.getElementById('ajoJoinBtn');
+  const statusEl=document.getElementById('ajoJoinStatus');
+  const groupId=parseInt(document.getElementById('ajoJoinId').value);
+  if(isNaN(groupId)||groupId<0){ toast('Enter a valid group code','error',3000); return; }
+  if(!signer){ toast('Connect MetaMask & switch to Arc Testnet','error',5000); return; }
+  btn.disabled=true; btn.textContent='Joining…';
   try{
-    const c = ajoContract(signer);
-    const tx = await c.joinGroup(groupId, arcGasOpts());
-    statusEl.innerHTML = '<span style="color:#888;">Confirming on-chain…</span>';
+    const c=ajoContract(signer);
+    const tx=await c.joinGroup(groupId,arcGasOpts());
+    statusEl.innerHTML='<span style="color:#888;">Confirming…</span>';
     await tx.wait(1);
-    toast('✓ Joined group!', 'success', 5000);
+    toast('✓ Joined group!','success',5000);
     showAjoGroup(groupId);
   }catch(err){
-    statusEl.innerHTML = '<span style="color:#f87171;">'+err.message.slice(0,150)+'</span>';
-    toast('Could not join: '+err.message.slice(0,100), 'error', 6000);
+    statusEl.innerHTML=`<span style="color:#f87171;">${err.message.slice(0,150)}</span>`;
+    toast('Could not join: '+err.message.slice(0,100),'error',6000);
   }finally{
-    btn.disabled = false; btn.textContent = 'Join Group';
+    btn.disabled=false; btn.textContent='Join group';
   }
 }
 
 async function showAjoGroup(groupId){
-  const el = document.getElementById('ajoBody');
-  el.innerHTML = '<div style="text-align:center;padding:20px 0;"><span class="spinner"></span></div>';
+  const el=document.getElementById('ajoBody');
+  el.innerHTML='<div style="text-align:center;padding:24px 0;"><span class="spinner"></span></div>';
   try{
-    const readProvider = provider || getArcProvider();
-    const c = ajoContract(readProvider);
-    const g = await c.getGroup(groupId);
-    const members = await c.getMembers(groupId);
-    const statusLabel = ['Open — waiting for people to join','In progress','Finished'][g.status] || '?';
-    const isOpen = g.status == 0;
-    const isActive = g.status == 1;
-    const isCreator = g.creator.toLowerCase() === userAddr.toLowerCase();
+    const readProvider=provider||getArcProvider();
+    const c=ajoContract(readProvider);
+    const g=await c.getGroup(groupId);
+    const members=await c.getMembers(groupId);
+    const isCreator=g.creator.toLowerCase()===userAddr.toLowerCase();
+    const isOpen=g.status==0, isActive=g.status==1, isDone=g.status==2;
+    const sIdx=Number(g.status);
+    const statusLabel=['Open — waiting to fill','In progress','Finished'];
+    const statusColor=['#fbbf24','#34d399','#666'];
 
-    let actionHtml = '';
-    let itsYourTurn = false;
-
-    if(isOpen){
-      actionHtml = `
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:3px;text-align:center;">
-          <div style="font-size:.78rem;color:var(--text3);margin-bottom:6px;">Share this code so others can join</div>
-          <div style="font-size:1.8rem;font-weight:800;color:#7000ff;">${groupId}</div>
-        </div>
-      `;
-      if(isCreator && g.memberCount == g.maxMembers){
-        actionHtml += `<button onclick="submitAjoStart(${groupId})" id="ajoActionBtn" style="width:100%;background:#34d399;border:none;border-radius:14px;color:#000;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Everyone's here — Start Now!</button>`;
-      } else if(isCreator){
-        actionHtml += `<div style="text-align:center;padding:10px;color:var(--text3);font-size:.82rem;">Waiting for ${Number(g.maxMembers) - Number(g.memberCount)} more person/people to join.</div>`;
-      } else {
-        actionHtml += `<div style="text-align:center;padding:10px;color:var(--text3);font-size:.82rem;">Waiting for the group to fill up before it starts.</div>`;
-      }
-    } else if(isActive){
-      const [contributed, total] = await c.getRoundProgress(groupId);
-      const already = await c.hasContributed(groupId, g.currentRound, userAddr).catch(()=>false);
-      const recipient = await c.getCurrentRecipient(groupId).catch(()=>null);
-      itsYourTurn = !!(recipient && recipient.toLowerCase() === userAddr.toLowerCase());
-      const everyonePaid = contributed == total;
-
-      // Pre-compute every conditional string OUTSIDE the template literal —
-      // avoids nested-ternary-inside-backtick bugs that have bitten this
-      // function twice before (quotes trapping ${...} as literal text).
-      const roundCardBg = itsYourTurn ? 'rgba(52,211,153,.1)' : 'var(--surface)';
-      const roundCardBorder = itsYourTurn ? 'rgba(52,211,153,.35)' : 'var(--border)';
-      const roundLabelText = itsYourTurn
-        ? "🎉 It's your turn to receive this round!"
-        : `Round ${Number(g.currentRound)+1} of ${g.memberCount}`;
-      const roundLabelWeight = itsYourTurn ? '700' : '500';
-
-      actionHtml = `
-        <div style="background:${roundCardBg};border:1px solid ${roundCardBorder};border-radius:16px;padding:16px;margin-bottom:3px;">
-          <div style="font-size:.9rem;color:var(--text);font-weight:${roundLabelWeight};">${roundLabelText}</div>
-          <div style="font-size:.82rem;color:var(--text3);margin-top:6px;">${contributed} of ${total} people have paid this round</div>
-        </div>
-      `;
-
-      // Creator-specific control: a clearly-labeled button to release this
-      // round's payout once everyone's paid. Functionally identical to the
-      // member "Release Payout" button below (the contract pays the correct
-      // recipient regardless of who clicks), but gives the creator a
-      // dedicated, obvious action — useful since they're usually the one
-      // running/coordinating the group.
-      if(isCreator && everyonePaid){
-        const payRecipientWord = (recipient && recipient.toLowerCase() === userAddr.toLowerCase()) ? 'Yourself' : 'Out';
-        actionHtml += `<button onclick="submitAjoClaim(${groupId})" id="ajoCreatorPayBtn" style="width:100%;background:#34d399;border:none;border-radius:14px;color:#000;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;margin-bottom:10px;">👑 Pay ${payRecipientWord} Now (Round ${Number(g.currentRound)+1})</button>`;
-      } else if(isCreator && !everyonePaid){
-        actionHtml += `<div style="text-align:center;padding:10px;color:var(--text3);font-size:.78rem;">As the creator, you'll be able to release this round's payout once everyone has paid.</div>`;
-      }
-
-      const memberBtnLabel = everyonePaid ? 'Release Payout' : "You've Paid — Waiting on Others";
-      actionHtml += already
-          ? `<button onclick="submitAjoClaim(${groupId})" id="ajoActionBtn" style="width:100%;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.3);border-radius:14px;color:#7000ff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">${memberBtnLabel}</button>`
-          : `<button onclick="submitAjoContribute(${groupId})" id="ajoActionBtn" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Pay Your ${ethers.formatUnits(g.contributionAmount,6)} USDC</button>`;
-    } else {
-      actionHtml = `<div style="text-align:center;padding:14px;color:var(--text3);font-size:.82rem;">🎉 This group is finished — everyone has had their turn.</div>`;
+    let inviteHtml='';
+    if(isCreator&&isOpen){
+      inviteHtml=`
+        <div style="background:rgba(112,0,255,.07);border:0.5px solid rgba(112,0,255,.2);border-radius:16px;padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#7000ff;margin-bottom:3px;">Invite code</div>
+            <div style="font-size:2rem;font-weight:800;color:#7000ff;letter-spacing:.06em;">${groupId}</div>
+          </div>
+          <button onclick="navigator.clipboard.writeText('${groupId}').then(()=>toast('Code copied!','success',2000))" style="background:rgba(112,0,255,.12);border:0.5px solid rgba(112,0,255,.25);border-radius:10px;color:#7000ff;padding:8px 14px;font-size:.75rem;font-weight:700;cursor:pointer;">Copy</button>
+        </div>`;
     }
 
-    const memberRows = members.map((m,i) => {
-      const isMe = m.toLowerCase() === userAddr.toLowerCase();
-      const isCurrentTurn = (i==g.currentRound && isActive);
-      const rowColor = isCurrentTurn ? '#34d399' : 'var(--text)';
-      const rowLabel = isMe ? 'You' : (m.slice(0,8)+'…'+m.slice(-6));
-      const rowSuffix = isCurrentTurn ? ' ← gets paid this round' : '';
-      return `<div style="font-family:'JetBrains Mono',monospace;font-size:.78rem;color:${rowColor};padding:6px 0;">${i+1}. ${rowLabel}${rowSuffix}</div>`;
+    let roundHtml='', everyonePaid=false, already=false, recipient=null;
+    if(isActive){
+      const [contributed,total]=await c.getRoundProgress(groupId).catch(()=>[0n,1n]);
+      already=await c.hasContributed(groupId,g.currentRound,userAddr).catch(()=>false);
+      recipient=await c.getCurrentRecipient(groupId).catch(()=>null);
+      const itsYourTurn=!!(recipient&&recipient.toLowerCase()===userAddr.toLowerCase());
+      everyonePaid=contributed>=total;
+      const roundPct=Math.round((Number(contributed)/Number(total))*100);
+      let avatarDots='';
+      for(let i=0;i<members.length;i++){
+        const paid=await c.hasContributed(groupId,g.currentRound,members[i]).catch(()=>false);
+        const bg=paid?'rgba(52,211,153,.25)':'rgba(255,255,255,.07)';
+        const col=paid?'#34d399':'var(--text3)';
+        const init=(members[i].slice(2,3)+members[i].slice(3,4)).toUpperCase();
+        avatarDots+=`<div style="width:30px;height:30px;border-radius:50%;background:${bg};border:1.5px solid var(--bg);display:flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:700;color:${col};margin-left:-6px;flex-shrink:0;">${init}</div>`;
+      }
+      const roundBg=itsYourTurn?'rgba(52,211,153,.08)':'var(--surface)';
+      const roundBorder=itsYourTurn?'rgba(52,211,153,.28)':'var(--border)';
+      roundHtml=`
+        <div style="background:${roundBg};border:0.5px solid ${roundBorder};border-radius:16px;padding:14px 16px;margin-bottom:12px;">
+          ${itsYourTurn?`<div style="font-size:.82rem;font-weight:700;color:#34d399;margin-bottom:8px;">🎉 It's your turn to receive this round!</div>`:`<div style="font-size:.78rem;font-weight:600;color:var(--text);margin-bottom:8px;">Round ${Number(g.currentRound)+1} of ${Number(g.memberCount)}</div>`}
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+            <div style="display:flex;margin-left:6px;">${avatarDots}</div>
+            <div style="font-size:.72rem;color:var(--text3);margin-left:auto;">${Number(contributed)} of ${Number(total)} paid</div>
+          </div>
+          <div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;">
+            <div style="height:100%;width:${roundPct}%;background:${itsYourTurn?'#34d399':'#7000ff'};border-radius:2px;"></div>
+          </div>
+          ${already&&!everyonePaid?`<div style="font-size:.7rem;color:var(--text3);margin-top:8px;">You've paid this round — waiting on others.</div>`:''}
+        </div>`;
+    }
+
+    const memberRows=members.map((m,i)=>{
+      const isMe=m.toLowerCase()===userAddr.toLowerCase();
+      const isThisRound=isActive&&i==Number(g.currentRound);
+      const isPastRound=isActive&&i<Number(g.currentRound);
+      const isCreatorMember=m.toLowerCase()===g.creator.toLowerCase();
+      const avatarBg=isThisRound?'rgba(52,211,153,.2)':isMe?'rgba(112,0,255,.15)':'rgba(255,255,255,.06)';
+      const avatarCol=isThisRound?'#34d399':isMe?'#7000ff':'var(--text3)';
+      const init=(m.slice(2,3)+m.slice(3,4)).toUpperCase();
+      const nameLabel=isMe?'You':m.slice(0,6)+'…'+m.slice(-4);
+      const adminTag=isCreatorMember?`<span style="font-size:.58rem;color:#7000ff;font-weight:700;margin-left:4px;">Admin</span>`:'';
+      let rightTag='';
+      if(isThisRound&&isActive) rightTag=`<span style="font-size:.65rem;color:#34d399;font-weight:700;">← This round</span>`;
+      else if(isPastRound) rightTag=`<span style="font-size:.65rem;color:#888;">Received ✓</span>`;
+      return `<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:0.5px solid rgba(255,255,255,.05);">
+        <div style="width:20px;font-size:.7rem;color:#555;text-align:right;flex-shrink:0;">${i+1}</div>
+        <div style="width:32px;height:32px;border-radius:50%;background:${avatarBg};display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;color:${avatarCol};flex-shrink:0;">${init}</div>
+        <div style="flex:1;font-size:.82rem;color:${isMe||isThisRound?'var(--text)':'var(--text3)'};font-weight:${isMe||isThisRound?'600':'400'};">${nameLabel}${adminTag}</div>
+        ${rightTag}
+      </div>`;
     }).join('');
 
-    el.innerHTML = `
-      <button onclick="doAjo()" style="background:none;border:none;color:var(--text3);font-size:.82rem;cursor:pointer;margin-bottom:14px;padding:0;">← Back</button>
-      <div style="font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:4px;">${g.label || 'Group #'+groupId}</div>
-      <div style="font-size:.82rem;color:var(--text3);margin-bottom:16px;">${statusLabel} · ${g.memberCount}/${g.maxMembers} people</div>
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px 16px;margin-bottom:14px;">
-          <div style="font-size:.78rem;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em;">Payout order (first to join goes first)</div>
-          ${memberRows}
-        </div>
-        ${actionHtml}
-        <div id="ajoGroupStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
+    let actionHtml='';
+    if(isOpen){
+      if(isCreator&&Number(g.memberCount)>=Number(g.maxMembers)){
+        actionHtml=`<button onclick="submitAjoStart(${groupId})" id="ajoActionBtn" style="width:100%;background:#34d399;border:none;border-radius:14px;color:#000;padding:15px;font-size:.95rem;font-weight:700;cursor:pointer;margin-top:4px;">Everyone's here — Start group</button>`;
+      } else if(isCreator){
+        actionHtml=`<div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:14px;margin-top:4px;text-align:center;font-size:.78rem;color:var(--text3);">Waiting for ${Number(g.maxMembers)-Number(g.memberCount)} more member${Number(g.maxMembers)-Number(g.memberCount)===1?'':'s'} to join.</div>`;
+      } else {
+        actionHtml=`<div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:14px;margin-top:4px;text-align:center;font-size:.78rem;color:var(--text3);">Waiting for the group to fill up before it starts.</div>`;
+      }
+    } else if(isActive){
+      if(!already){
+        actionHtml=`<button onclick="submitAjoContribute(${groupId})" id="ajoActionBtn" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:.95rem;font-weight:700;cursor:pointer;margin-top:4px;">Pay your ${ethers.formatUnits(g.contributionAmount,6)} USDC</button>`;
+      } else if(isCreator&&everyonePaid){
+        const recipientLabel=recipient&&recipient.toLowerCase()===userAddr.toLowerCase()?'yourself':'round recipient';
+        actionHtml=`<button onclick="submitAjoClaim(${groupId})" id="ajoCreatorPayBtn" style="width:100%;background:#34d399;border:none;border-radius:14px;color:#000;padding:15px;font-size:.95rem;font-weight:700;cursor:pointer;margin-top:4px;">👑 Release payout to ${recipientLabel}</button>`;
+      } else if(isCreator&&!everyonePaid){
+        actionHtml=`<div style="background:rgba(112,0,255,.06);border:0.5px solid rgba(112,0,255,.18);border-radius:14px;padding:14px;margin-top:4px;text-align:center;font-size:.78rem;color:var(--text3);">You can release the payout once everyone has contributed.</div>`;
+      } else {
+        actionHtml=`<div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:14px;margin-top:4px;text-align:center;font-size:.78rem;color:var(--text3);">${everyonePaid?'Everyone has paid — waiting for the group admin to release the payout.':"You've paid this round — waiting for others."}</div>`;
+      }
+    } else {
+      actionHtml=`<div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:16px;margin-top:4px;text-align:center;font-size:.82rem;color:var(--text3);">🎉 This group is finished — everyone has had their turn.</div>`;
+    }
+
+    el.innerHTML=`
+      <button onclick="doAjo()" style="background:none;border:none;color:var(--text3);font-size:.82rem;cursor:pointer;margin-bottom:16px;padding:0;">← Back</button>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
+        <div style="font-size:1.05rem;font-weight:700;color:var(--text);">${g.label||'Group #'+groupId}</div>
+        <span style="font-size:.62rem;font-weight:700;padding:3px 9px;border-radius:20px;background:${statusColor[sIdx]}1a;color:${statusColor[sIdx]};flex-shrink:0;margin-left:8px;">${statusLabel[sIdx]}</span>
       </div>
-    `;
+      <div style="font-size:.74rem;color:var(--text3);margin-bottom:16px;">${g.memberCount}/${g.maxMembers} members · ${ethers.formatUnits(g.contributionAmount,6)} USDC/round</div>
+      <div style="background:var(--card);border:0.5px solid var(--border);border-radius:20px;padding:16px;margin-bottom:12px;">
+        ${inviteHtml}${roundHtml}
+        <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:8px;">Payout order</div>
+        <div style="border-radius:14px;overflow:hidden;">${memberRows}</div>
+        ${actionHtml}
+        <div id="ajoGroupStatus" style="font-size:.78rem;color:var(--text);margin-top:10px;"></div>
+      </div>`;
   }catch(err){
-    el.innerHTML = '<div style="text-align:center;padding:20px 0;color:#f87171;font-size:.8rem;">'+err.message.slice(0,150)+'</div>';
+    el.innerHTML=`<div style="text-align:center;padding:20px 0;color:#f87171;font-size:.8rem;">${err.message.slice(0,150)}</div>`;
   }
 }
 
 async function submitAjoStart(groupId){
-  const btn = document.getElementById('ajoActionBtn');
-  const statusEl = document.getElementById('ajoGroupStatus');
-  if(!signer){ toast('Connect MetaMask & switch to Arc Testnet', 'error', 5000); return; }
-  btn.disabled = true; btn.textContent = 'Starting…';
+  const btn=document.getElementById('ajoActionBtn');
+  const statusEl=document.getElementById('ajoGroupStatus');
+  if(!signer){ toast('Connect MetaMask & switch to Arc Testnet','error',5000); return; }
+  btn.disabled=true; btn.textContent='Starting…';
   try{
-    const c = ajoContract(signer);
-    const tx = await c.startGroup(groupId, arcGasOpts());
-    statusEl.innerHTML = '<span style="color:#888;">Confirming…</span>';
+    const c=ajoContract(signer);
+    const tx=await c.startGroup(groupId,arcGasOpts());
+    statusEl.innerHTML='<span style="color:#888;">Confirming…</span>';
     await tx.wait(1);
-    toast('✓ Group started!', 'success', 5000);
+    toast('✓ Group started!','success',5000);
     showAjoGroup(groupId);
   }catch(err){
-    statusEl.innerHTML = '<span style="color:#f87171;">'+err.message.slice(0,150)+'</span>';
-    toast('Could not start: '+err.message.slice(0,100), 'error', 6000);
+    statusEl.innerHTML=`<span style="color:#f87171;">${err.message.slice(0,150)}</span>`;
+    toast('Could not start: '+err.message.slice(0,100),'error',6000);
   }
 }
 
 async function submitAjoContribute(groupId){
-  const btn = document.getElementById('ajoActionBtn');
-  const statusEl = document.getElementById('ajoGroupStatus');
-  if(!signer){ toast('Connect MetaMask & switch to Arc Testnet', 'error', 5000); return; }
-  btn.disabled = true; btn.textContent = 'Approving USDC…';
+  const btn=document.getElementById('ajoActionBtn');
+  const statusEl=document.getElementById('ajoGroupStatus');
+  if(!signer){ toast('Connect MetaMask & switch to Arc Testnet','error',5000); return; }
+  btn.disabled=true; btn.textContent='Approving USDC…';
   try{
-    const c = ajoContract(signer);
-    const g = await c.getGroup(groupId);
-    const usdcC = new ethers.Contract(USDC_ADDR, ERC20_ABI, signer);
-    const approveTx = await usdcC.approve(AJO_CONTRACT, g.contributionAmount, arcGasOpts());
+    const c=ajoContract(signer);
+    const g=await c.getGroup(groupId);
+    const usdcC=new ethers.Contract(USDC_ADDR,ERC20_ABI,signer);
+    const approveTx=await usdcC.approve(AJO_CONTRACT,g.contributionAmount,arcGasOpts());
     await approveTx.wait(1);
-    btn.textContent = 'Contributing…';
-    const tx = await c.contribute(groupId, arcGasOpts());
-    statusEl.innerHTML = '<span style="color:#888;">Confirming…</span>';
+    btn.textContent='Contributing…';
+    const tx=await c.contribute(groupId,arcGasOpts());
+    statusEl.innerHTML='<span style="color:#888;">Confirming…</span>';
     await tx.wait(1);
-    toast('✓ Contributed!', 'success', 5000);
-    addTx({hash:tx.hash, to:AJO_CONTRACT, toRaw:'NANAjo Contribute', amount:ethers.formatUnits(g.contributionAmount,6), type:'out', token:'USDC', ts:Date.now(), confirmed:true, source:'ajo'});
+    toast('✓ Contributed!','success',5000);
+    addTx({hash:tx.hash,to:AJO_CONTRACT,toRaw:'NANAjo Contribute',amount:ethers.formatUnits(g.contributionAmount,6),type:'out',token:'USDC',ts:Date.now(),confirmed:true,source:'ajo'});
     showAjoGroup(groupId);
   }catch(err){
-    statusEl.innerHTML = '<span style="color:#f87171;">'+err.message.slice(0,150)+'</span>';
-    toast('Could not contribute: '+err.message.slice(0,100), 'error', 6000);
+    statusEl.innerHTML=`<span style="color:#f87171;">${err.message.slice(0,150)}</span>`;
+    toast('Could not contribute: '+err.message.slice(0,100),'error',6000);
   }
 }
 
 async function submitAjoClaim(groupId){
-  // Could be triggered by either the creator's dedicated button or the
-  // generic member "Release Payout" button — grab whichever exists,
-  // guard against either being absent so this never throws on a null ref.
-  const btn = document.getElementById('ajoCreatorPayBtn') || document.getElementById('ajoActionBtn');
-  const statusEl = document.getElementById('ajoGroupStatus');
-  if(!signer){ toast('Connect MetaMask & switch to Arc Testnet', 'error', 5000); return; }
-  if(btn){ btn.disabled = true; btn.textContent = 'Checking…'; }
+  const gc=ajoContract(provider||getArcProvider());
+  const g=await gc.getGroup(groupId).catch(()=>null);
+  if(g&&g.creator.toLowerCase()!==userAddr.toLowerCase()){
+    toast('Only the group admin can release the payout','error',4000); return;
+  }
+  const btn=document.getElementById('ajoCreatorPayBtn')||document.getElementById('ajoActionBtn');
+  const statusEl=document.getElementById('ajoGroupStatus');
+  if(!signer){ toast('Connect MetaMask & switch to Arc Testnet','error',5000); return; }
+  if(btn){ btn.disabled=true; btn.textContent='Releasing…'; }
   try{
-    const c = ajoContract(signer);
-    const tx = await c.claimRoundPayout(groupId, arcGasOpts());
-    if(statusEl) statusEl.innerHTML = '<span style="color:#888;">Confirming…</span>';
+    const c=ajoContract(signer);
+    const tx=await c.claimRoundPayout(groupId,arcGasOpts());
+    if(statusEl) statusEl.innerHTML='<span style="color:#888;">Confirming…</span>';
     await tx.wait(1);
-    toast('✓ Round paid out!', 'success', 6000);
+    toast('✓ Payout released!','success',6000);
     await refreshBalances();
     showAjoGroup(groupId);
   }catch(err){
-    if(statusEl) statusEl.innerHTML = '<span style="color:#f87171;">Not everyone has contributed yet, or: '+err.message.slice(0,100)+'</span>';
+    if(statusEl) statusEl.innerHTML=`<span style="color:#f87171;">${err.message.slice(0,120)}</span>`;
+    toast('Could not release: '+err.message.slice(0,100),'error',6000);
   }finally{
-    if(btn) btn.disabled = false;
+    if(btn){ btn.disabled=false; btn.textContent='Release payout'; }
   }
 }
+
 
 // ── ELECTRICITY (NEPA) ──────────────────────────────────────────────────
 function doNepa(){
