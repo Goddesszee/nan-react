@@ -1842,14 +1842,21 @@ async function submitAjoCreate(){
   btn.disabled=true; btn.textContent='Creating…';
   try{
     let newGroupId;
+    // Poll nextGroupId until it increments — reliable across MetaMask and Circle
+    const rc=ajoContract(getArcProvider());
+    const idBefore=Number(await rc.nextGroupId());
     if(isCircleWallet){
       statusEl.innerHTML='<span style="color:#888;">Sending to chain…</span>';
       const d=await ajoApi('createGroup',{contributionAmount:contribution,maxMembers,roundLength,label});
       if(!d.success) throw new Error(d.error||'Failed');
-      statusEl.innerHTML='<span style="color:#888;">Confirming… (may take 10s)</span>';
-      await new Promise(r=>setTimeout(r,10000));
-      const rc=ajoContract(getArcProvider());
-      newGroupId=Number(await rc.nextGroupId())-1;
+      statusEl.innerHTML='<span style="color:#888;">Waiting for confirmation…</span>';
+      // Poll up to 30s for nextGroupId to increment
+      for(let i=0;i<30;i++){
+        await new Promise(r=>setTimeout(r,1000));
+        const idNow=Number(await rc.nextGroupId());
+        if(idNow>idBefore){ newGroupId=idNow-1; break; }
+      }
+      if(newGroupId==null) newGroupId=idBefore; // fallback
       addTx({hash:d.txId,to:AJO_CONTRACT,toRaw:'NANAjo Create Group',amount:contribution.toFixed(6),type:'out',token:'USDC',ts:Date.now(),confirmed:true,source:'ajo'});
     } else {
       if(!signer){ toast('Connect MetaMask & switch to Arc Testnet','error',5000); btn.disabled=false; btn.textContent='Create group'; return; }
@@ -1858,14 +1865,20 @@ async function submitAjoCreate(){
       const tx=await c.createGroup(amtAtomic,maxMembers,roundLength,label,arcGasOpts());
       statusEl.innerHTML='<span style="color:#888;">Confirming on-chain…</span>';
       const receipt=await tx.wait(1);
+      // Try event log first (most reliable)
       try{
         const iface=new ethers.Interface(['event GroupCreated(uint256 indexed groupId, address indexed creator)']);
         const log=receipt.logs.find(l=>{ try{ iface.parseLog(l); return true; }catch{ return false; } });
-        newGroupId=log ? Number(iface.parseLog(log).args[0]) : null;
+        if(log) newGroupId=Number(iface.parseLog(log).args[0]);
       }catch(_){}
+      // Fallback: poll until nextGroupId increments
       if(newGroupId==null){
-        const rc=ajoContract(provider||getArcProvider());
-        newGroupId=Number(await rc.nextGroupId())-1;
+        for(let i=0;i<10;i++){
+          const idNow=Number(await rc.nextGroupId());
+          if(idNow>idBefore){ newGroupId=idNow-1; break; }
+          await new Promise(r=>setTimeout(r,1000));
+        }
+        if(newGroupId==null) newGroupId=idBefore;
       }
       addTx({hash:tx.hash,to:AJO_CONTRACT,toRaw:'NANAjo Create Group',amount:contribution.toFixed(6),type:'out',token:'USDC',ts:Date.now(),confirmed:true,source:'ajo'});
     }
@@ -1879,7 +1892,22 @@ async function submitAjoCreate(){
   }
 }
 
+function ajoFormatCode(groupId){
+  // Format: NAN-XXXX-NNN where XXXX = hex slice of creator addr, NNN = zero-padded groupId
+  const addrHex=(userAddr||'0x000000').slice(2,6).toUpperCase();
+  const idPadded=String(groupId).padStart(3,'0');
+  return `NAN-${addrHex}-${idPadded}`;
+}
+function ajoParseCode(code){
+  // Extract raw groupId from formatted code or plain number
+  const trimmed=code.trim();
+  if(/^\d+$/.test(trimmed)) return parseInt(trimmed);
+  const m=trimmed.match(/NAN-[A-F0-9]{4}-(\d+)/i);
+  return m ? parseInt(m[1]) : null;
+}
+
 function showAjoGroupCode(groupId, label){
+  const displayCode=ajoFormatCode(groupId);
   document.getElementById('ajoBody').innerHTML=`
     <div style="text-align:center;padding:8px 0 20px;">
       <div style="font-size:2rem;margin-bottom:10px;">🎉</div>
@@ -1888,10 +1916,10 @@ function showAjoGroupCode(groupId, label){
     </div>
     <div style="background:rgba(112,0,255,.08);border:0.5px solid rgba(112,0,255,.25);border-radius:18px;padding:20px;margin-bottom:14px;text-align:center;">
       <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#7000ff;margin-bottom:8px;">Invite code</div>
-      <div style="font-size:3rem;font-weight:800;color:#7000ff;letter-spacing:.08em;">${groupId}</div>
-      <div style="font-size:.72rem;color:var(--text3);margin-top:8px;">Only you see this here. Members need this number to join.</div>
+      <div style="font-size:1.9rem;font-weight:800;color:#7000ff;letter-spacing:.06em;font-family:'DM Mono','Roboto Mono',monospace;">${displayCode}</div>
+      <div style="font-size:.72rem;color:var(--text3);margin-top:8px;">Only you see this. Members enter this code to join.</div>
     </div>
-    <button onclick="navigator.clipboard.writeText('${groupId}').then(()=>toast('Code copied!','success',2000))" style="width:100%;background:rgba(112,0,255,.08);border:0.5px solid rgba(112,0,255,.25);border-radius:14px;color:#7000ff;padding:13px;font-size:.9rem;font-weight:600;cursor:pointer;margin-bottom:10px;">Copy code</button>
+    <button onclick="navigator.clipboard.writeText('${displayCode}').then(()=>toast('Code copied!','success',2000))" style="width:100%;background:rgba(112,0,255,.08);border:0.5px solid rgba(112,0,255,.25);border-radius:14px;color:#7000ff;padding:13px;font-size:.9rem;font-weight:600;cursor:pointer;margin-bottom:10px;">Copy code</button>
     <button onclick="showAjoGroup(${groupId})" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:13px;font-size:.9rem;font-weight:600;cursor:pointer;">Go to group →</button>
   `;
 }
@@ -1902,7 +1930,7 @@ function showAjoJoin(){
     <div style="background:var(--card);border:0.5px solid var(--border);border-radius:20px;padding:18px;">
       <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:8px;">
         <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px;">Group code</div>
-        <input id="ajoJoinId" type="number" min="0" placeholder="0" oninput="previewAjoJoin()" style="width:100%;background:none;border:none;outline:none;font-size:2.2rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
+        <input id="ajoJoinId" type="text" placeholder="NAN-XXXX-000" oninput="previewAjoJoin()" style="width:100%;background:none;border:none;outline:none;font-size:1.6rem;font-weight:700;color:var(--text);font-family:'DM Mono','Roboto Mono',monospace;box-sizing:border-box;letter-spacing:.04em;"/>
         <div style="font-size:.72rem;color:var(--text3);margin-top:6px;">Ask the group admin — they get this after creating the group.</div>
       </div>
       <div id="ajoJoinPreview"></div>
@@ -1916,8 +1944,9 @@ let _ajoPreviewTimer = null;
 function previewAjoJoin(){
   clearTimeout(_ajoPreviewTimer);
   const previewEl=document.getElementById('ajoJoinPreview');
-  const groupId=parseInt(document.getElementById('ajoJoinId').value);
-  if(isNaN(groupId)||groupId<0){ if(previewEl) previewEl.innerHTML=''; return; }
+  const rawVal=document.getElementById('ajoJoinId').value;
+  const groupId=ajoParseCode(rawVal);
+  if(groupId==null||groupId<0){ if(previewEl) previewEl.innerHTML=''; return; }
   _ajoPreviewTimer=setTimeout(async()=>{
     if(!previewEl) return;
     previewEl.innerHTML=`<div style="font-size:.78rem;color:var(--text3);padding:10px 0;">Looking up group…</div>`;
@@ -1939,8 +1968,9 @@ function previewAjoJoin(){
 async function submitAjoJoin(){
   const btn=document.getElementById('ajoJoinBtn');
   const statusEl=document.getElementById('ajoJoinStatus');
-  const groupId=parseInt(document.getElementById('ajoJoinId').value);
-  if(isNaN(groupId)||groupId<0){ toast('Enter a valid group code','error',3000); return; }
+  const _rawCode=document.getElementById('ajoJoinId').value;
+  const groupId=ajoParseCode(_rawCode);
+  if(groupId==null||groupId<0){ toast('Enter a valid group code','error',3000); return; }
   btn.disabled=true; btn.textContent='Joining…';
   try{
     if(isCircleWallet){
@@ -1982,13 +2012,14 @@ async function showAjoGroup(groupId){
 
     let inviteHtml='';
     if(isCreator&&isOpen){
+      const _dc=ajoFormatCode(groupId);
       inviteHtml=`
         <div style="background:rgba(112,0,255,.07);border:0.5px solid rgba(112,0,255,.2);border-radius:16px;padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;">
           <div>
             <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#7000ff;margin-bottom:3px;">Invite code</div>
-            <div style="font-size:2rem;font-weight:800;color:#7000ff;letter-spacing:.06em;">${groupId}</div>
+            <div style="font-size:1.2rem;font-weight:800;color:#7000ff;letter-spacing:.04em;font-family:'DM Mono','Roboto Mono',monospace;">${_dc}</div>
           </div>
-          <button onclick="navigator.clipboard.writeText('${groupId}').then(()=>toast('Code copied!','success',2000))" style="background:rgba(112,0,255,.12);border:0.5px solid rgba(112,0,255,.25);border-radius:10px;color:#7000ff;padding:8px 14px;font-size:.75rem;font-weight:700;cursor:pointer;">Copy</button>
+          <button onclick="navigator.clipboard.writeText('${_dc}').then(()=>toast('Code copied!','success',2000))" style="background:rgba(112,0,255,.12);border:0.5px solid rgba(112,0,255,.25);border-radius:10px;color:#7000ff;padding:8px 14px;font-size:.75rem;font-weight:700;cursor:pointer;">Copy</button>
         </div>`;
     }
 
