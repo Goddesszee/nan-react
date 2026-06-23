@@ -1694,6 +1694,16 @@ async function submitListService(){
 // live on Arc Testnet. contribute()/claimRoundPayout() have NOT been
 // exercised end-to-end yet — flagged clearly to the user as beta so funds
 // committed here are understood to carry real risk until that's proven out.
+async function ajoApi(action, extra={}){
+  const walletId = circleWalletId || localStorage.getItem('circleWalletId');
+  const res = await fetch('/api/ajo', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ action, walletId, ...extra })
+  });
+  return res.json();
+}
+
 async function doAjo(){
   if(!userAddr){ toast('Connect your wallet first','error',3000); return; }
   openBillModal('NANAjo', `
@@ -1829,25 +1839,36 @@ async function submitAjoCreate(){
   if(!label){ toast('Enter a group name','error',3000); return; }
   if(!maxMembers||maxMembers<2||maxMembers>50){ toast('Members must be 2–50','error',3000); return; }
   if(!contribution||contribution<=0){ toast('Enter a contribution amount','error',3000); return; }
-  if(!signer){ toast('Connect MetaMask & switch to Arc Testnet — Circle wallet support coming soon','error',5000); return; }
   btn.disabled=true; btn.textContent='Creating…';
   try{
-    const c=ajoContract(signer);
-    const amtAtomic=ethers.parseUnits(contribution.toFixed(6),6);
-    const tx=await c.createGroup(amtAtomic,maxMembers,roundLength,label,arcGasOpts());
-    statusEl.innerHTML='<span style="color:#888;">Confirming on-chain…</span>';
-    const receipt=await tx.wait(1);
     let newGroupId;
-    try{
-      const iface=new ethers.Interface(['event GroupCreated(uint256 indexed groupId, address indexed creator)']);
-      const log=receipt.logs.find(l=>{ try{ iface.parseLog(l); return true; }catch{ return false; } });
-      newGroupId=log ? Number(iface.parseLog(log).args[0]) : null;
-    }catch(_){}
-    if(newGroupId==null){
-      const rc=ajoContract(provider||getArcProvider());
+    if(isCircleWallet){
+      statusEl.innerHTML='<span style="color:#888;">Sending to chain…</span>';
+      const d=await ajoApi('createGroup',{contributionAmount:contribution,maxMembers,roundLength,label});
+      if(!d.success) throw new Error(d.error||'Failed');
+      statusEl.innerHTML='<span style="color:#888;">Confirming… (may take 10s)</span>';
+      await new Promise(r=>setTimeout(r,10000));
+      const rc=ajoContract(getArcProvider());
       newGroupId=Number(await rc.nextGroupId())-1;
+      addTx({hash:d.txId,to:AJO_CONTRACT,toRaw:'NANAjo Create Group',amount:contribution.toFixed(6),type:'out',token:'USDC',ts:Date.now(),confirmed:true,source:'ajo'});
+    } else {
+      if(!signer){ toast('Connect MetaMask & switch to Arc Testnet','error',5000); btn.disabled=false; btn.textContent='Create group'; return; }
+      const c=ajoContract(signer);
+      const amtAtomic=ethers.parseUnits(contribution.toFixed(6),6);
+      const tx=await c.createGroup(amtAtomic,maxMembers,roundLength,label,arcGasOpts());
+      statusEl.innerHTML='<span style="color:#888;">Confirming on-chain…</span>';
+      const receipt=await tx.wait(1);
+      try{
+        const iface=new ethers.Interface(['event GroupCreated(uint256 indexed groupId, address indexed creator)']);
+        const log=receipt.logs.find(l=>{ try{ iface.parseLog(l); return true; }catch{ return false; } });
+        newGroupId=log ? Number(iface.parseLog(log).args[0]) : null;
+      }catch(_){}
+      if(newGroupId==null){
+        const rc=ajoContract(provider||getArcProvider());
+        newGroupId=Number(await rc.nextGroupId())-1;
+      }
+      addTx({hash:tx.hash,to:AJO_CONTRACT,toRaw:'NANAjo Create Group',amount:contribution.toFixed(6),type:'out',token:'USDC',ts:Date.now(),confirmed:true,source:'ajo'});
     }
-    addTx({hash:tx.hash,to:AJO_CONTRACT,toRaw:'NANAjo Create Group',amount:contribution.toFixed(6),type:'out',token:'USDC',ts:Date.now(),confirmed:true,source:'ajo'});
     toast('✓ Group created!','success',5000);
     showAjoGroupCode(newGroupId, label||'Group #'+newGroupId);
   }catch(err){
@@ -1920,13 +1941,21 @@ async function submitAjoJoin(){
   const statusEl=document.getElementById('ajoJoinStatus');
   const groupId=parseInt(document.getElementById('ajoJoinId').value);
   if(isNaN(groupId)||groupId<0){ toast('Enter a valid group code','error',3000); return; }
-  if(!signer){ toast('Connect MetaMask & switch to Arc Testnet','error',5000); return; }
   btn.disabled=true; btn.textContent='Joining…';
   try{
-    const c=ajoContract(signer);
-    const tx=await c.joinGroup(groupId,arcGasOpts());
-    statusEl.innerHTML='<span style="color:#888;">Confirming…</span>';
-    await tx.wait(1);
+    if(isCircleWallet){
+      statusEl.innerHTML='<span style="color:#888;">Sending to chain…</span>';
+      const d=await ajoApi('joinGroup',{groupId});
+      if(!d.success) throw new Error(d.error||'Failed');
+      statusEl.innerHTML='<span style="color:#888;">Confirming… (may take 10s)</span>';
+      await new Promise(r=>setTimeout(r,10000));
+    } else {
+      if(!signer){ toast('Connect MetaMask & switch to Arc Testnet','error',5000); btn.disabled=false; btn.textContent='Join group'; return; }
+      const c=ajoContract(signer);
+      const tx=await c.joinGroup(groupId,arcGasOpts());
+      statusEl.innerHTML='<span style="color:#888;">Confirming…</span>';
+      await tx.wait(1);
+    }
     toast('✓ Joined group!','success',5000);
     showAjoGroup(groupId);
   }catch(err){
@@ -2062,13 +2091,21 @@ async function showAjoGroup(groupId){
 async function submitAjoStart(groupId){
   const btn=document.getElementById('ajoActionBtn');
   const statusEl=document.getElementById('ajoGroupStatus');
-  if(!signer){ toast('Connect MetaMask & switch to Arc Testnet','error',5000); return; }
   btn.disabled=true; btn.textContent='Starting…';
   try{
-    const c=ajoContract(signer);
-    const tx=await c.startGroup(groupId,arcGasOpts());
-    statusEl.innerHTML='<span style="color:#888;">Confirming…</span>';
-    await tx.wait(1);
+    if(isCircleWallet){
+      statusEl.innerHTML='<span style="color:#888;">Sending to chain…</span>';
+      const d=await ajoApi('startGroup',{groupId});
+      if(!d.success) throw new Error(d.error||'Failed');
+      statusEl.innerHTML='<span style="color:#888;">Confirming… (may take 10s)</span>';
+      await new Promise(r=>setTimeout(r,10000));
+    } else {
+      if(!signer){ toast('Connect MetaMask & switch to Arc Testnet','error',5000); btn.disabled=false; btn.textContent='Start group'; return; }
+      const c=ajoContract(signer);
+      const tx=await c.startGroup(groupId,arcGasOpts());
+      statusEl.innerHTML='<span style="color:#888;">Confirming…</span>';
+      await tx.wait(1);
+    }
     toast('✓ Group started!','success',5000);
     showAjoGroup(groupId);
   }catch(err){
@@ -2083,17 +2120,29 @@ async function submitAjoContribute(groupId){
   if(!signer){ toast('Connect MetaMask & switch to Arc Testnet','error',5000); return; }
   btn.disabled=true; btn.textContent='Approving USDC…';
   try{
-    const c=ajoContract(signer);
-    const g=await c.getGroup(groupId);
-    const usdcC=new ethers.Contract(USDC_ADDR,ERC20_ABI,signer);
-    const approveTx=await usdcC.approve(AJO_CONTRACT,g.contributionAmount,arcGasOpts());
-    await approveTx.wait(1);
-    btn.textContent='Contributing…';
-    const tx=await c.contribute(groupId,arcGasOpts());
-    statusEl.innerHTML='<span style="color:#888;">Confirming…</span>';
-    await tx.wait(1);
+    const readC=ajoContract(provider||getArcProvider());
+    const g=await readC.getGroup(groupId);
+    const amtFormatted=ethers.formatUnits(g.contributionAmount,6);
+    if(isCircleWallet){
+      statusEl.innerHTML='<span style="color:#888;">Approving & contributing…</span>';
+      const d=await ajoApi('contribute',{groupId,contributionAmount:amtFormatted});
+      if(!d.success) throw new Error(d.error||'Failed');
+      statusEl.innerHTML='<span style="color:#888;">Confirming… (may take 15s)</span>';
+      await new Promise(r=>setTimeout(r,15000));
+      addTx({hash:d.txId,to:AJO_CONTRACT,toRaw:'NANAjo Contribute',amount:amtFormatted,type:'out',token:'USDC',ts:Date.now(),confirmed:true,source:'ajo'});
+    } else {
+      if(!signer){ toast('Connect MetaMask & switch to Arc Testnet','error',5000); btn.disabled=false; return; }
+      const c=ajoContract(signer);
+      const usdcC=new ethers.Contract(USDC_ADDR,ERC20_ABI,signer);
+      const approveTx=await usdcC.approve(AJO_CONTRACT,g.contributionAmount,arcGasOpts());
+      await approveTx.wait(1);
+      btn.textContent='Contributing…';
+      const tx=await c.contribute(groupId,arcGasOpts());
+      statusEl.innerHTML='<span style="color:#888;">Confirming…</span>';
+      await tx.wait(1);
+      addTx({hash:tx.hash,to:AJO_CONTRACT,toRaw:'NANAjo Contribute',amount:amtFormatted,type:'out',token:'USDC',ts:Date.now(),confirmed:true,source:'ajo'});
+    }
     toast('✓ Contributed!','success',5000);
-    addTx({hash:tx.hash,to:AJO_CONTRACT,toRaw:'NANAjo Contribute',amount:ethers.formatUnits(g.contributionAmount,6),type:'out',token:'USDC',ts:Date.now(),confirmed:true,source:'ajo'});
     showAjoGroup(groupId);
   }catch(err){
     statusEl.innerHTML=`<span style="color:#f87171;">${err.message.slice(0,150)}</span>`;
@@ -2109,13 +2158,21 @@ async function submitAjoClaim(groupId){
   }
   const btn=document.getElementById('ajoCreatorPayBtn')||document.getElementById('ajoActionBtn');
   const statusEl=document.getElementById('ajoGroupStatus');
-  if(!signer){ toast('Connect MetaMask & switch to Arc Testnet','error',5000); return; }
   if(btn){ btn.disabled=true; btn.textContent='Releasing…'; }
   try{
-    const c=ajoContract(signer);
-    const tx=await c.claimRoundPayout(groupId,arcGasOpts());
-    if(statusEl) statusEl.innerHTML='<span style="color:#888;">Confirming…</span>';
-    await tx.wait(1);
+    if(isCircleWallet){
+      if(statusEl) statusEl.innerHTML='<span style="color:#888;">Sending to chain…</span>';
+      const d=await ajoApi('claimRoundPayout',{groupId});
+      if(!d.success) throw new Error(d.error||'Failed');
+      if(statusEl) statusEl.innerHTML='<span style="color:#888;">Confirming… (may take 10s)</span>';
+      await new Promise(r=>setTimeout(r,10000));
+    } else {
+      if(!signer){ toast('Connect MetaMask & switch to Arc Testnet','error',5000); if(btn){btn.disabled=false;} return; }
+      const c=ajoContract(signer);
+      const tx=await c.claimRoundPayout(groupId,arcGasOpts());
+      if(statusEl) statusEl.innerHTML='<span style="color:#888;">Confirming…</span>';
+      await tx.wait(1);
+    }
     toast('✓ Payout released!','success',6000);
     await refreshBalances();
     showAjoGroup(groupId);
