@@ -1281,6 +1281,8 @@ async function onConnected(isEmail=false, isDev=false){
     document.getElementById('onboardChecklist').style.display='block';
     setTimeout(()=>{ toast('🎉 Get free USDC at faucet.circle.com','info',8000); addNotification('👋 Wallet connected', 'Welcome to NAN Wallet!', 'info'); },1500);
   }
+  // Auto-open Ajo join flow if ?ajo= param present in URL
+  setTimeout(()=>{ _checkAjoDeepLink(); }, 800);
 }
 
 function disconnect(){
@@ -1906,6 +1908,33 @@ function ajoParseCode(code){
   return m ? parseInt(m[1]) : null;
 }
 
+function _checkAjoDeepLink(){
+  try{
+    const params=new URLSearchParams(window.location.search);
+    const code=params.get('ajo');
+    if(!code) return;
+    // Remove param from URL without reload
+    const url=new URL(window.location.href);
+    url.searchParams.delete('ajo');
+    window.history.replaceState({},'',url.toString());
+    // Open Ajo modal with the code pre-filled
+    openBillModal('NANAjo',`
+      <div style="background:rgba(112,0,255,.08);border:0.5px solid rgba(112,0,255,.2);border-radius:18px;padding:16px 18px;margin-bottom:18px;">
+        <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#7000ff;margin-bottom:5px;">Savings circle</div>
+        <div style="font-size:.95rem;font-weight:600;color:var(--text);line-height:1.4;">You've been invited to join an Ajo group.</div>
+        <div style="font-size:.76rem;color:var(--text3);margin-top:5px;line-height:1.55;">Everyone puts in the same amount each round. One person gets the full pot — on-chain, automatic.</div>
+      </div>
+      <div id="ajoBody"></div>
+    `);
+    // Pre-fill join screen with the code
+    showAjoJoin();
+    setTimeout(()=>{
+      const inp=document.getElementById('ajoJoinId');
+      if(inp){ inp.value=code; previewAjoJoin(); }
+    },100);
+  }catch(e){ console.warn('[ajo deeplink]',e); }
+}
+
 function showAjoGroupCode(groupId, label){
   const displayCode=ajoFormatCode(groupId);
   document.getElementById('ajoBody').innerHTML=`
@@ -1919,9 +1948,21 @@ function showAjoGroupCode(groupId, label){
       <div style="font-size:1.9rem;font-weight:800;color:#7000ff;letter-spacing:.06em;font-family:'DM Mono','Roboto Mono',monospace;">${displayCode}</div>
       <div style="font-size:.72rem;color:var(--text3);margin-top:8px;">Only you see this. Members enter this code to join.</div>
     </div>
-    <button onclick="navigator.clipboard.writeText('${displayCode}').then(()=>toast('Code copied!','success',2000))" style="width:100%;background:rgba(112,0,255,.08);border:0.5px solid rgba(112,0,255,.25);border-radius:14px;color:#7000ff;padding:13px;font-size:.9rem;font-weight:600;cursor:pointer;margin-bottom:10px;">Copy code</button>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+      <button onclick="navigator.clipboard.writeText('${displayCode}').then(()=>toast('Code copied!','success',2000))" style="background:rgba(112,0,255,.08);border:0.5px solid rgba(112,0,255,.25);border-radius:14px;color:#7000ff;padding:13px;font-size:.85rem;font-weight:600;cursor:pointer;">Copy code</button>
+      <button onclick="ajoShareLink(${groupId},'${displayCode}')" style="background:rgba(112,0,255,.08);border:0.5px solid rgba(112,0,255,.25);border-radius:14px;color:#7000ff;padding:13px;font-size:.85rem;font-weight:600;cursor:pointer;">Share link 🔗</button>
+    </div>
     <button onclick="showAjoGroup(${groupId})" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:13px;font-size:.9rem;font-weight:600;cursor:pointer;">Go to group →</button>
   `;
+}
+
+function ajoShareLink(groupId, displayCode){
+  const link='https://nanarc.xyz/legacy/app.html?ajo='+encodeURIComponent(displayCode);
+  if(navigator.share){
+    navigator.share({ title:'Join my Ajo group on NAN', text:'I\'ve invited you to join my savings circle. Use code: '+displayCode, url:link }).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(link).then(()=>toast('Link copied! Share it with your group members.','success',4000));
+  }
 }
 
 function showAjoJoin(){
@@ -2019,7 +2060,10 @@ async function showAjoGroup(groupId){
             <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#7000ff;margin-bottom:3px;">Invite code</div>
             <div style="font-size:1.2rem;font-weight:800;color:#7000ff;letter-spacing:.04em;font-family:'DM Mono','Roboto Mono',monospace;">${_dc}</div>
           </div>
-          <button onclick="navigator.clipboard.writeText('${_dc}').then(()=>toast('Code copied!','success',2000))" style="background:rgba(112,0,255,.12);border:0.5px solid rgba(112,0,255,.25);border-radius:10px;color:#7000ff;padding:8px 14px;font-size:.75rem;font-weight:700;cursor:pointer;">Copy</button>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <button onclick="navigator.clipboard.writeText('${_dc}').then(()=>toast('Code copied!','success',2000))" style="background:rgba(112,0,255,.12);border:0.5px solid rgba(112,0,255,.25);border-radius:10px;color:#7000ff;padding:7px 12px;font-size:.72rem;font-weight:700;cursor:pointer;">Copy</button>
+            <button onclick="ajoShareLink(${groupId},'${_dc}')" style="background:rgba(112,0,255,.12);border:0.5px solid rgba(112,0,255,.25);border-radius:10px;color:#7000ff;padding:7px 12px;font-size:.72rem;font-weight:700;cursor:pointer;">Share 🔗</button>
+          </div>
         </div>`;
     }
 
