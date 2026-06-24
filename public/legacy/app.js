@@ -1345,6 +1345,9 @@ function openBillModal(title, bodyHtml){
   document.getElementById('billTitle').textContent = title;
   document.getElementById('billBody').innerHTML = bodyHtml;
   document.getElementById('billOverlay').style.display = 'block';
+  // Fix inner scroll container — remove scrollbar
+  var inner = document.getElementById('billOverlay').querySelector('div');
+  if(inner){ inner.style.overflowY='hidden'; inner.style.height='auto'; }
   // Hide AI FAB so it doesn't block modal taps on mobile
   var fab = document.getElementById('aiBtn');
   if(fab) fab.style.display = 'none';
