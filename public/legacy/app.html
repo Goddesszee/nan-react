@@ -3385,13 +3385,13 @@ function nanToggleFaucet(btn){
 </div>
 
 <!-- ══ BILL PAYMENT MODAL (Airtime/Data/Electricity/DSTV) ══ -->
-<div id="billOverlay" style="display:none;position:fixed;inset:0;z-index:9999999;background:rgba(7,8,26,.97);backdrop-filter:blur(20px);font-family:'Inter',sans-serif;">
+<div id="billOverlay" style="display:none;position:fixed;inset:0;z-index:9999999;background:var(--bg);backdrop-filter:blur(20px);font-family:'Inter',sans-serif;padding:20px;overflow-y:auto;">
   <div style="max-width:480px;margin:0 auto;padding:20px 16px 60px;overflow-y:auto;-webkit-overflow-scrolling:touch;height:100%;box-sizing:border-box;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
       <div id="billTitle" style="font-size:1.1rem;font-weight:700;color:var(--text);font-family:'Syne','Inter',sans-serif;">Bill Payment</div>
       <button onclick="closeBillModal()" style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:10px;color:#f87171;padding:8px 14px;cursor:pointer;font-size:.8rem;font-weight:700;">Close</button>
     </div>
-    <div id="billBody"></div>
+    <div id="billBody" style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;"></div>
   </div>
 </div>
 
