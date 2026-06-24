@@ -1854,9 +1854,9 @@ async function submitAjoCreate(){
       statusEl.innerHTML='<span style="color:#888;">Sending to chain…</span>';
       const d=await ajoApi('createGroup',{contributionAmount:contribution,maxMembers,roundLength,label});
       if(!d.success) throw new Error(d.error||'Failed');
-      statusEl.innerHTML='<span style="color:#888;">Waiting for confirmation…</span>';
-      // Poll up to 30s for nextGroupId to increment
-      for(let i=0;i<30;i++){
+      statusEl.innerHTML='<span style="color:#888;">Confirmed ✓</span>';
+      // Backend waited for COMPLETE — nextGroupId is already incremented
+      for(let i=0;i<10;i++){
         await new Promise(r=>setTimeout(r,1000));
         const idNow=Number(await rc.nextGroupId());
         if(idNow>idBefore){ newGroupId=idNow-1; break; }
@@ -2021,8 +2021,7 @@ async function submitAjoJoin(){
       statusEl.innerHTML='<span style="color:#888;">Sending to chain…</span>';
       const d=await ajoApi('joinGroup',{groupId});
       if(!d.success) throw new Error(d.error||'Failed');
-      statusEl.innerHTML='<span style="color:#888;">Confirming… (may take 10s)</span>';
-      await new Promise(r=>setTimeout(r,10000));
+      statusEl.innerHTML='<span style="color:#888;">Confirmed ✓</span>';
     } else {
       if(!signer){ toast('Connect MetaMask & switch to Arc Testnet','error',5000); btn.disabled=false; btn.textContent='Join group'; return; }
       const c=ajoContract(signer);
@@ -2175,8 +2174,7 @@ async function submitAjoStart(groupId){
       statusEl.innerHTML='<span style="color:#888;">Sending to chain…</span>';
       const d=await ajoApi('startGroup',{groupId});
       if(!d.success) throw new Error(d.error||'Failed');
-      statusEl.innerHTML='<span style="color:#888;">Confirming… (may take 10s)</span>';
-      await new Promise(r=>setTimeout(r,10000));
+      statusEl.innerHTML='<span style="color:#888;">Confirmed ✓</span>';
     } else {
       if(!signer){ toast('Connect MetaMask & switch to Arc Testnet','error',5000); btn.disabled=false; btn.textContent='Start group'; return; }
       const c=ajoContract(signer);
@@ -2205,8 +2203,7 @@ async function submitAjoContribute(groupId){
       statusEl.innerHTML='<span style="color:#888;">Approving & contributing…</span>';
       const d=await ajoApi('contribute',{groupId,contributionAmount:amtFormatted});
       if(!d.success) throw new Error(d.error||'Failed');
-      statusEl.innerHTML='<span style="color:#888;">Confirming… (may take 15s)</span>';
-      await new Promise(r=>setTimeout(r,15000));
+      statusEl.innerHTML='<span style="color:#888;">Confirmed ✓</span>';
       addTx({hash:d.txId,to:AJO_CONTRACT,toRaw:'NANAjo Contribute',amount:amtFormatted,type:'out',token:'USDC',ts:Date.now(),confirmed:true,source:'ajo'});
     } else {
       if(!signer){ toast('Connect MetaMask & switch to Arc Testnet','error',5000); btn.disabled=false; return; }
@@ -2242,8 +2239,7 @@ async function submitAjoClaim(groupId){
       if(statusEl) statusEl.innerHTML='<span style="color:#888;">Sending to chain…</span>';
       const d=await ajoApi('claimRoundPayout',{groupId});
       if(!d.success) throw new Error(d.error||'Failed');
-      if(statusEl) statusEl.innerHTML='<span style="color:#888;">Confirming… (may take 10s)</span>';
-      await new Promise(r=>setTimeout(r,10000));
+      if(statusEl) statusEl.innerHTML='<span style="color:#888;">Confirmed ✓</span>';
     } else {
       if(!signer){ toast('Connect MetaMask & switch to Arc Testnet','error',5000); if(btn){btn.disabled=false;} return; }
       const c=ajoContract(signer);
