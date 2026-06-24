@@ -28,9 +28,9 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
   // live stats
   const [liveStats, setLiveStats] = useState({ wallets: null, txns: null })
   useEffect(() => {
-    fetch(`${API}/api/analytics`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'get' }) })
+    fetch(`${API}/api/analytics`)
       .then(r => r.json())
-      .then(d => { if (d.wallets || d.totalUsers) setLiveStats({ wallets: d.wallets || d.totalUsers || null, txns: d.txns || d.totalTxns || null }) })
+      .then(d => { if (d && (d.wallets || d.transactions)) setLiveStats({ wallets: d.wallets || null, txns: d.transactions || null }) })
       .catch(() => {})
   }, [])
 
@@ -265,7 +265,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
             { Icon:EarnIco,   title:'Earn 4.80% APY',badge:'On-chain',    bP:true,  desc:'Lend USDC at 4.80% APY via NANLendingPool on Arc. Borrow against collateral at 7.20% APR. Fully liquid — withdraw anytime.' },
             { Icon:AjoIco,    title:'Ajo Savings',   badge:'Africa-native',bA:true, desc:'On-chain rotating savings circles (esusu/ajo). Create a group, invite members, contribute USDC every round — payouts are automatic and trustless.' },
             { Icon:BotIco,    title:'NAN AI Agent',  badge:'Agentic',     bP:true,  desc:'Talk to NAN in plain English. The AI agent executes real USDC transfers, creates Ajo groups, checks balances and schedules payments — all on-chain.' },
-          ].map(({Icon,title,badge,bG,bB,bP,desc},i) => (
+          ].map(({Icon,title,badge,bG,bB,bP,bA,desc},i) => (
             <div key={i} style={{ background: dark?'#1a1a1a':'#ffffff', border:`1px solid ${border}`, borderRadius:18, padding:D?'26px 24px':'18px 16px', display:'flex', flexDirection:'column', gap:12, transition:'border-color .2s' }}>
               <div style={{ display:'flex', alignItems:'center', gap:14 }}>
                 <div style={{ width:42, height:42, borderRadius:12, background:'rgba(112,0,255,.12)', border:'1px solid rgba(112,0,255,.2)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
@@ -463,7 +463,8 @@ const TagIco   = () => ic(<><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 
 const LayersIco= () => ic(<><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></>)
 const GlobeIco = () => ic(<><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></>)
 const NairaIco = () => ic(<><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/><line x1="8" y1="12" x2="16" y2="12"/></>)
-const AjoIco   = () => ic(<><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><circle cx="19" cy="3" r="2" fill="#7000ff" stroke="#7000ff"/></>)
+const AjoIco   = () => ic(<><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><circle cx="19" cy="3" r="2"/></>)
 const BillIco  = () => ic(<><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></>)
 const ZapIco   = () => ic(<><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></>)
+
 
