@@ -25,6 +25,15 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
   const tokenRef = useRef(null)
   const expiryRef = useRef(null)
 
+  // live stats
+  const [liveStats, setLiveStats] = useState({ wallets: null, txns: null })
+  useEffect(() => {
+    fetch(`${API}/api/analytics`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'get' }) })
+      .then(r => r.json())
+      .then(d => { if (d.wallets || d.totalUsers) setLiveStats({ wallets: d.wallets || d.totalUsers || null, txns: d.txns || d.totalTxns || null }) })
+      .catch(() => {})
+  }, [])
+
   // colors — exact match to app
   const bg      = dark ? '#111111' : '#fafafa'
   const surface = dark ? '#1a1a1a' : '#f4f4f4'
@@ -155,7 +164,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
         </h1>
 
         <p style={{ fontSize: D ? '1.1rem' : '.95rem', fontWeight:300, color:text2, maxWidth: D ? 520 : 380, lineHeight:1.7, marginBottom:36 }}>
-          The complete stablecoin wallet on Arc. Send, swap, bridge and earn with USDC and EURC. Zero gas fees. Powered by Circle.
+          The complete stablecoin super-app on Arc. Send, swap, bridge, earn, save in Ajo circles and pay bills — with USDC and EURC. Zero gas fees. AI-powered. Powered by Circle.
         </p>
 
         {/* ── LOGIN FORM ── */}
@@ -229,14 +238,15 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
       </section>
 
       {/* ── STATS ── */}
-      <div style={{ position:'relative', zIndex:1, display:'grid', gridTemplateColumns: D ? 'repeat(4,1fr)' : 'repeat(2,1fr)', borderTop:`1px solid ${border}`, borderBottom:`1px solid ${border}`, background: dark?'rgba(255,255,255,.02)':'rgba(0,0,0,.02)' }}>
+      <div style={{ position:'relative', zIndex:1, display:'grid', gridTemplateColumns: D ? 'repeat(5,1fr)' : 'repeat(2,1fr)', borderTop:`1px solid ${border}`, borderBottom:`1px solid ${border}`, background: dark?'rgba(255,255,255,.02)':'rgba(0,0,0,.02)' }}>
         {[
-          {v:'$0',    l:'Gas fees ever',   g:true},
-          {v:'<1s',   l:'Settlement time'},
-          {v:'4.80%', l:'APY on USDC'},
-          {v:'6',     l:'Chains supported'},
-        ].map((st,i) => (
-          <div key={i} style={{ padding: D ? '24px 16px' : '20px 12px', textAlign:'center', borderRight: D ? (i<3?`1px solid ${border}`:'none') : ([0,2].includes(i)?`1px solid ${border}`:'none'), borderBottom: !D && i<2 ? `1px solid ${border}` : 'none' }}>
+          {v:'$0',                                              l:'Gas fees ever',    g:true},
+          {v:'<1s',                                             l:'Settlement time'},
+          {v:'4.80%',                                           l:'APY on USDC'},
+          {v:'6',                                               l:'Chains supported'},
+          {v: liveStats.wallets ? liveStats.wallets + '+' : '∞', l:'Wallets created',  g:true},
+        ].map((st,i,arr) => (
+          <div key={i} style={{ padding: D ? '24px 16px' : '20px 12px', textAlign:'center', borderRight: D ? (i<arr.length-1?`1px solid ${border}`:'none') : ([0,2].includes(i)?`1px solid ${border}`:'none'), borderBottom: !D && i<2 ? `1px solid ${border}` : 'none' }}>
             <div style={{ fontWeight:700, fontSize: D ? '1.6rem' : '1.4rem', color: st.g ? '#00e5a0' : text, marginBottom:4 }}>{st.v}</div>
             <div style={{ fontSize:'.68rem', color:text3, letterSpacing:'.05em', textTransform:'uppercase' }}>{st.l}</div>
           </div>
@@ -253,6 +263,8 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
             { Icon:SwapIco,   title:'Swap',          badge:'Live FX',     bG:true,  desc:'Exchange USDC and EURC at live Frankfurt ECB rates via NANSwap. Set limit orders that execute automatically at your target rate.' },
             { Icon:BridgeIco, title:'Bridge',        badge:'CCTP V2',     bB:true,  desc:'Move USDC across 6 chains using Circle CCTP V2. Arc to Ethereum, Base, Arbitrum, Optimism and Avalanche. No wrapped tokens.' },
             { Icon:EarnIco,   title:'Earn 4.80% APY',badge:'On-chain',    bP:true,  desc:'Lend USDC at 4.80% APY via NANLendingPool on Arc. Borrow against collateral at 7.20% APR. Fully liquid — withdraw anytime.' },
+            { Icon:AjoIco,    title:'Ajo Savings',   badge:'Africa-native',bA:true, desc:'On-chain rotating savings circles (esusu/ajo). Create a group, invite members, contribute USDC every round — payouts are automatic and trustless.' },
+            { Icon:BotIco,    title:'NAN AI Agent',  badge:'Agentic',     bP:true,  desc:'Talk to NAN in plain English. The AI agent executes real USDC transfers, creates Ajo groups, checks balances and schedules payments — all on-chain.' },
           ].map(({Icon,title,badge,bG,bB,bP,desc},i) => (
             <div key={i} style={{ background: dark?'#1a1a1a':'#ffffff', border:`1px solid ${border}`, borderRadius:18, padding:D?'26px 24px':'18px 16px', display:'flex', flexDirection:'column', gap:12, transition:'border-color .2s' }}>
               <div style={{ display:'flex', alignItems:'center', gap:14 }}>
@@ -261,7 +273,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
                 </div>
                 <div>
                   <div style={{ fontWeight:700, fontSize:'1rem', color:text, marginBottom:5 }}>{title}</div>
-                  <span style={{ display:'inline-block', fontSize:'.68rem', padding:'2px 8px', borderRadius:6, fontWeight:500, ...(bG?{background:'rgba(0,229,160,.12)',border:'1px solid rgba(0,229,160,.2)',color:'#00e5a0'}:bB?{background:'rgba(59,130,246,.1)',border:'1px solid rgba(59,130,246,.2)',color:'#93c5fd'}:{background:'rgba(112,0,255,.12)',border:'1px solid rgba(112,0,255,.25)',color:accent4}) }}>{badge}</span>
+                  <span style={{ display:'inline-block', fontSize:'.68rem', padding:'2px 8px', borderRadius:6, fontWeight:500, ...(bG?{background:'rgba(0,229,160,.12)',border:'1px solid rgba(0,229,160,.2)',color:'#00e5a0'}:bB?{background:'rgba(59,130,246,.1)',border:'1px solid rgba(59,130,246,.2)',color:'#93c5fd'}:bA?{background:'rgba(234,179,8,.1)',border:'1px solid rgba(234,179,8,.2)',color:'#fbbf24'}:{background:'rgba(112,0,255,.12)',border:'1px solid rgba(112,0,255,.25)',color:accent4}) }}>{badge}</span>
                 </div>
               </div>
               <p style={{ fontSize:'.83rem', color:text2, lineHeight:1.7, margin:0 }}>{desc}</p>
@@ -321,7 +333,9 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
             {Icon:TagIco,   title:'.arc Names',      desc:'Register alice.arc and send to names instead of 0x addresses.'},
             {Icon:LayersIco,title:'Multichain View', desc:'See USDC balance across all 6 chains in one unified dashboard.'},
             {Icon:GlobeIco, title:'Circle Gateway',  desc:'Unified USDC balance across chains. Deposit once, use everywhere.'},
-            {Icon:NairaIco, title:'Naira (NGN)',      desc:'Deposit and convert Nigerian Naira at live rates. Coming soon.'},
+            {Icon:NairaIco, title:'Naira (NGN)',      desc:'Deposit and convert Nigerian Naira at live rates. Limit orders trigger automatically.'},
+            {Icon:BillIco,  title:'Bill Payments',   desc:'Pay airtime, data, electricity and cable TV with USDC via VTPass. Real utility payments on-chain.'},
+            {Icon:ZapIco,   title:'x402 Micropayments', desc:'Five monetised API endpoints using the x402 payment protocol. Pay-per-call with USDC nanopayments.'},
           ].map(({Icon,title,desc},i) => (
             <div key={i} style={{ background: dark?'#1a1a1a':'#ffffff', border:`1px solid ${border}`, borderRadius:16, padding: D ? '20px 18px' : '14px 12px' }}>
               <div style={{ marginBottom:10 }}><Icon/></div>
@@ -364,6 +378,9 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
             {name:'Groq AI',         desc:'NAN AI — llama-3.1-8b-instant',         color:'#f97316'},
             {name:'NANLendingPool',  desc:'On-chain lending at 4.80% APY',         color:'#00e5a0'},
             {name:'NANSwap',         desc:'On-chain USDC / EURC swaps',            color:'#3b82f6'},
+            {name:'NANAjo',          desc:'On-chain rotating savings (esusu)',      color:'#fbbf24'},
+            {name:'VTPass',          desc:'Bill payments — airtime, data, utilities', color:'#f97316'},
+            {name:'x402 Protocol',   desc:'Micropayment API endpoints in USDC',    color:'#a855f7'},
             {name:'NANNameRegistry', desc:'.arc identity on-chain',                color:'#a855f7'},
           ].map((p,i) => (
             <div key={i} style={{ display:'flex', alignItems:'center', gap:12, background: dark?'#1a1a1a':'#ffffff', border:`1px solid ${border}`, borderRadius:14, padding:'13px 16px' }}>
@@ -406,7 +423,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
           </a>
         </div>
         <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
-          {['Circle','CCTP V2','Arc','Groq AI','Non-custodial'].map((t,i) => (
+          {['Circle','CCTP V2','Arc','Groq AI','Non-custodial','Ajo Savings','x402'].map((t,i) => (
             <span key={i} style={{ fontSize:'.7rem', background: dark?'rgba(255,255,255,.04)':'rgba(0,0,0,.04)', border:`1px solid ${border}`, borderRadius:6, padding:'3px 9px', color:text2 }}>{t}</span>
           ))}
         </div>
@@ -446,3 +463,7 @@ const TagIco   = () => ic(<><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 
 const LayersIco= () => ic(<><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></>)
 const GlobeIco = () => ic(<><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></>)
 const NairaIco = () => ic(<><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/><line x1="8" y1="12" x2="16" y2="12"/></>)
+const AjoIco   = () => ic(<><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><circle cx="19" cy="3" r="2" fill="#7000ff" stroke="#7000ff"/></>)
+const BillIco  = () => ic(<><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></>)
+const ZapIco   = () => ic(<><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></>)
+
