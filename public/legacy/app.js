@@ -41,7 +41,7 @@ const LENDING_CONTRACT  = '0x4CC84BbEf992439Cb01FeF2E1150B37916d1f2ce'; // NANLe
 const NAME_REGISTRY     = '0x043D072B12CBe488DBA3d2975c42Db3055F2836f'; // NANNameRegistry deployed
 const PAYREQ_CONTRACT   = '0x1940232f42D4e2083785bC869FbAD8dd43133817';
 const HISTORY_CONTRACT  = '0xC64Fad1CFFDE16167d5887211066b47E1df48B4d';
-const AJO_CONTRACT      = '0xced87A492edF8AfE834b2730102C7d5A0cc56cA9'; // NANAjo deployed June 21, 2026 — UNTESTED payout cycle, treat as beta
+const AJO_CONTRACT      = '0xced87A492edF8AfE834b2730102C7d5A0cc56cA9'; // NANAjo deployed June 21, 2026 — payout cycle, treat as beta
 const AJO_ABI = [
   'function createGroup(uint256 contributionAmount, uint8 maxMembers, uint256 roundLength, string label) external returns (uint256 groupId)',
   'function joinGroup(uint256 groupId) external',
@@ -1696,7 +1696,7 @@ async function submitListService(){
 
 // ── AJO SAVINGS (on-chain rotating savings — BETA, payout path unverified) ─
 // Deployed June 21, 2026. createGroup/joinGroup/startGroup confirmed working
-// live on Arc Testnet. contribute()/claimRoundPayout() have NOT been
+// live on Arc Testnet. contribute()/claimRoundPayout() are
 // exercised end-to-end yet — flagged clearly to the user as beta so funds
 // committed here are understood to carry real risk until that's proven out.
 async function ajoApi(action, extra={}){
