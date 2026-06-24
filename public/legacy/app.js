@@ -1607,27 +1607,27 @@ async function doCredit(){
 function doList(){
   if(!userAddr){ toast('Connect your wallet first', 'error', 3000); return; }
   openBillModal('List Your Service', `
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:3px;">
-        <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Service Name</div>
-        <input id="listServiceName" type="text" placeholder="e.g. Logo Design" style="width:100%;background:none;border:none;outline:none;font-size:1.4rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:16px 18px;">
+        <div style="font-size:.72rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">Service Name</div>
+        <input id="listServiceName" type="text" placeholder="e.g. Logo Design" style="width:100%;background:none;border:none;outline:none;font-size:1.2rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
       </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:3px;">
-        <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Price</div>
-        <div style="display:flex;align-items:center;gap:12px;">
-          <input id="listAmount" type="number" min="0.000001" step="0.01" placeholder="0" style="flex:1;background:none;border:none;outline:none;font-size:2.2rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
-          <select id="listToken" style="background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:8px 14px;color:var(--text);font-size:1rem;font-weight:700;flex-shrink:0;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:16px 18px;">
+        <div style="font-size:.72rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">Price</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <input id="listAmount" type="number" min="0.000001" step="0.01" placeholder="0.00" style="flex:1;min-width:0;background:none;border:none;outline:none;font-size:2rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
+          <select id="listToken" style="background:var(--card);border:1px solid var(--border2);border-radius:100px;padding:7px 14px;color:var(--text);font-size:.9rem;font-weight:700;flex-shrink:0;outline:none;cursor:pointer;">
             <option value="USDC">USDC</option>
             <option value="EURC">EURC</option>
           </select>
         </div>
       </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:18px;">
-        <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Description (optional)</div>
-        <input id="listNote" type="text" placeholder="What's this for?" style="width:100%;background:none;border:none;outline:none;font-size:1.1rem;font-weight:500;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:16px 18px;">
+        <div style="font-size:.72rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);margin-bottom:8px;">Description (optional)</div>
+        <input id="listNote" type="text" placeholder="What's this for?" style="width:100%;background:none;border:none;outline:none;font-size:1rem;font-weight:500;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
       </div>
-      <button onclick="submitListService()" id="listBtn" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Create Payment Link</button>
-      <div id="listStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
+      <button onclick="submitListService()" id="listBtn" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:4px;">Create Payment Link</button>
+      <div id="listStatus" style="font-size:.8rem;color:var(--text);"></div>
     </div>
   `);
 }
