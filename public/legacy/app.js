@@ -1773,10 +1773,10 @@ async function loadMyAjoGroups(){
             <span style="font-size:.62rem;font-weight:700;padding:3px 9px;border-radius:20px;background:${statusColor[sIdx]}1a;color:${statusColor[sIdx]};">${statusLabel[sIdx]}</span>
           </div>
           <div style="font-size:.74rem;color:var(--text3);margin-bottom:10px;">${g.memberCount}/${g.maxMembers} members · ${ethers.formatUnits(g.contributionAmount,6)} USDC/round</div>
-          <div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;">
+          ${progressPct>0?`<div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:5px;">
             <div style="height:100%;width:${progressPct}%;background:${isDone?'#34d399':'#7000ff'};border-radius:2px;"></div>
-          </div>
-          <div style="font-size:.68rem;color:var(--text3);margin-top:5px;">${progressLabel}</div>
+          </div>`:''}
+          <div style="font-size:.68rem;color:var(--text3);margin-top:${progressPct>0?0:2}px;">${progressLabel}</div>
         </div>`;
     }
     el.innerHTML = html;
