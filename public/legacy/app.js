@@ -2522,6 +2522,11 @@ async function refreshBalances(){
     if(homeBalNgn)homeBalNgn.textContent='≈ NGN'+(isNaN(totalUsd)?'0':Math.round(totalUsd*NGN_RATE).toLocaleString())+' NGN';
     if(homeUsdcBal)homeUsdcBal.textContent=u+' USDC';
     if(homeEurcBal)homeEurcBal.textContent=e+' EURC';
+    // Also update marketplace balance display
+    const mktBal=document.getElementById('mkt-bal-display');
+    const mktNgn=document.getElementById('mkt-ngn-display');
+    if(mktBal) mktBal.textContent=u+' USDC';
+    if(mktNgn) mktNgn.textContent='≈ ₦'+(isNaN(totalUsd)?'0':Math.round(totalUsd*NGN_RATE).toLocaleString())+' NGN';
     // Update home page asset rows
     const haUsdc    = document.getElementById('homeAssetUsdc');
     const haUsdcSub = document.getElementById('homeAssetUsdcSub');
