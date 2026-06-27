@@ -5309,6 +5309,7 @@ RULES:
   agent-history: <ACTION>{"action":"agent-history"}</ACTION>
   agent-fund:    <ACTION>{"action":"agent-fund"}</ACTION>
   agent-pay:     <ACTION>{"action":"agent-pay","serviceUrl":"https://...","amount":"0.01"}</ACTION>
+  agent-a2a:     <ACTION>{"action":"agent-a2a","amount":5,"token":"USDC","to":"friend.arc"}</ACTION>
   swap:          <ACTION>{"action":"swap","amount":1,"from":"USDC","to":"EURC"}</ACTION>
   limit:         <ACTION>{"action":"limit","amount":50,"sellToken":"USDC","buyToken":"EURC","targetRate":0.95,"condition":"gte"}</ACTION>
   schedule:      <ACTION>{"action":"schedule","amount":20,"token":"USDC","to":"0x...","when":"friday"}</ACTION>
@@ -5321,6 +5322,7 @@ RULES:
   history:       <ACTION>{"action":"navigate","tab":"history"}</ACTION>
 - ALWAYS include <ACTION> tag when user wants to DO something — never just describe it
 - Use agent-send/agent-balance/agent-history/agent-fund when user says "agent wallet" or "agent"
+- Use agent-a2a when user wants to pay ANOTHER person's agent wallet specifically ("send to their agent", "agent to agent", "a2a")
 - Use regular send/swap for main wallet actions
 - The ACTION block is COMPLETELY INVISIBLE to user — NEVER write ACTION or JSON in your text
 - Your text reply must be plain English only — confirm what you're about to do, then add ACTION tag
@@ -5397,6 +5399,18 @@ RULES:
           const cleanLabel = labelM ? labelM[1].trim() : (amtM ? `${amtM[1]} ${amtM[2]} Payment` : 'Payment Request');
           action={action:'payreq-create',amount:amtM?parseFloat(amtM[1]):null,token:amtM?amtM[2].toUpperCase():'USDC',label:cleanLabel};
           console.log('[agent] fallback payreq inferred:', action);
+        }
+      }
+      // agent-a2a: "send from my agent to [person]'s agent" / "agent to agent"
+      if(!action){
+        const a2aM = reply.match(/(?:agent[- ](?:to[- ])?agent|a2a|their agent wallet|send.*agent.*to)/i);
+        if(a2aM){
+          var _a2aAmtM = reply.match(/([\d.]+)\s*(USDC|EURC)/i);
+          var _a2aToM  = reply.match(/(?:to|pay)\s+([\w]+(?:\.arc)?)/i);
+          if(_a2aAmtM || _a2aToM){
+            action={action:'agent-a2a',amount:_a2aAmtM?parseFloat(_a2aAmtM[1]):null,token:_a2aAmtM?_a2aAmtM[2].toUpperCase():'USDC',to:_a2aToM?_a2aToM[1].toLowerCase():null};
+            console.log('[agent] fallback a2a inferred:', action);
+          }
         }
       }
       // swap
@@ -5549,7 +5563,7 @@ RULES:
     }
     agentMsgs[agentMsgs.length-1]={role:'assistant',content:clean,action};
     // Auto-execute agent wallet actions immediately (no button needed)
-    const autoActions = ['agent-send','agent-bulk-send','agent-balance','agent-history','agent-fund','agent-pay','agent-swap','agent-bridge','agent-multichain','agent-offramp','agent-payroll','agent-ngn-rate','agent-bills','agent-data','agent-portfolio','agent-analytics','agent-price-alert','agent-auto-sweep','agent-receipt','agent-remita','fx-limit-offramp','payreq-create','list_orders','cancel_order','cancel_all'];
+    const autoActions = ['agent-send','agent-a2a','agent-bulk-send','agent-balance','agent-history','agent-fund','agent-pay','agent-swap','agent-bridge','agent-multichain','agent-offramp','agent-payroll','agent-ngn-rate','agent-bills','agent-data','agent-portfolio','agent-analytics','agent-price-alert','agent-auto-sweep','agent-receipt','agent-remita','fx-limit-offramp','payreq-create','list_orders','cancel_order','cancel_all'];
     if(action && action.action && autoActions.includes(action.action)){
       setTimeout(()=>executeAgentAction(action), 500);
     }
@@ -5720,6 +5734,105 @@ function executeAgentAction(action){
             last.appendChild(btns);
           }
         }, 100);
+      })();
+      break;
+    case 'agent-a2a':
+      // Agent-to-agent payment: look up recipient's agent wallet, then transfer
+      if(!agentWalletAddr){
+        addAgentMsg('\u26a0\ufe0f Agent wallet not connected. Connect your agent wallet first.');
+        renderAgentMsgs(); break;
+      }
+      (async()=>{
+        var a2aTo   = action.to;
+        var a2aAmt  = action.amount;
+        var a2aTok  = action.token||'USDC';
+
+        if(!a2aTo){ addAgentMsg('\u274c Please specify a recipient (address or .arc name).'); renderAgentMsgs(); return; }
+        if(!a2aAmt||isNaN(a2aAmt)||parseFloat(a2aAmt)<=0){ addAgentMsg('\u274c Please specify an amount.'); renderAgentMsgs(); return; }
+        a2aAmt = parseFloat(a2aAmt);
+
+        // Step 1: resolve recipient → find their agent wallet
+        addAgentMsg('\ud83d\udd0d Looking up recipient agent wallet for '+a2aTo+'...');
+        renderAgentMsgs();
+
+        var isAddress = /^0x[a-fA-F0-9]{40}$/.test(a2aTo);
+        var lookupBody = isAddress
+          ? {action:'lookup-by-arc', userAddress:userAddr, recipientAddress:a2aTo}
+          : {action:'lookup-by-arc', userAddress:userAddr, arcName:a2aTo.replace('.arc','').toLowerCase()};
+
+        var lookupData;
+        try{
+          var lr = await fetch('https://nan-production.up.railway.app/api/agent-wallets',{
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body:JSON.stringify(lookupBody)
+          });
+          lookupData = await lr.json();
+        }catch(e){
+          addAgentMsg('\u274c Lookup failed: '+e.message); renderAgentMsgs(); return;
+        }
+
+        if(!lookupData.success){ addAgentMsg('\u274c '+lookupData.error); renderAgentMsgs(); return; }
+
+        var recipMainAddr  = lookupData.mainAddress || (isAddress ? a2aTo : null);
+        var recipAgentAddr = lookupData.agentWalletAddress || null;
+        var destAddr       = recipAgentAddr || recipMainAddr;
+        var destLabel      = recipAgentAddr ? 'agent wallet' : 'main wallet (no agent wallet found)';
+
+        if(!destAddr){ addAgentMsg('\u274c Could not resolve recipient address.'); renderAgentMsgs(); return; }
+
+        // Step 2: show confirm dialog
+        window._pendingA2A = {fromAgent:agentWalletAddr, toAgent:recipAgentAddr, toMain:recipMainAddr, destAddr, amount:a2aAmt, token:a2aTok, destLabel};
+        var shortDest = destAddr.slice(0,6)+'...'+destAddr.slice(-4);
+        var agentBadge = recipAgentAddr ? ' \ud83e\udd16' : ' \ud83d\udc64';
+        addAgentMsg('\u26a0\ufe0f Confirm A2A payment:\n'+a2aAmt+' '+a2aTok+' from your agent wallet\nTo: '+shortDest+' ('+destLabel+')'+agentBadge);
+        renderAgentMsgs();
+
+        setTimeout(()=>{
+          var mc = document.getElementById('agentMessages');
+          var last = mc ? mc.lastElementChild : null;
+          if(!last) return;
+          var btns = document.createElement('div');
+          btns.style.cssText = 'display:flex;gap:8px;margin-top:10px;';
+          var confirmBtn = document.createElement('button');
+          confirmBtn.textContent = '\u2713 Confirm';
+          confirmBtn.style.cssText = 'padding:8px 18px;border-radius:10px;background:#7000ff;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
+          confirmBtn.onclick = function(){
+            btns.remove();
+            var p = window._pendingA2A;
+            if(!p){ addAgentMsg('\u274c Payment expired.'); renderAgentMsgs(); return; }
+            window._pendingA2A = null;
+            addAgentMsg('\u23f3 Sending '+p.amount+' '+p.token+' agent\u2192'+p.destLabel+'...');
+            renderAgentMsgs();
+            fetch('https://nan-production.up.railway.app/api/agent-wallets',{
+              method:'POST', headers:{'Content-Type':'application/json'},
+              body:JSON.stringify({
+                action:'a2a-transfer',
+                userAddress:userAddr,
+                agentWalletAddress:p.fromAgent,
+                toAgentAddress:p.toAgent||undefined,
+                toMainAddress:p.toMain||undefined,
+                amount:String(p.amount),
+                token:p.token
+              })
+            }).then(r=>r.json()).then(d=>{
+              if(d.success){
+                addAgentMsg('\u2705 Sent! TX: '+(d.txId||'pending')+'\n'+(d.message||''));
+                renderAgentMsgs();
+                setTimeout(fetchAgentBalance,1500);
+                setTimeout(updateHomeScreen,2000);
+              } else {
+                addAgentMsg('\u274c '+(d.error||'Transfer failed'));
+                renderAgentMsgs();
+              }
+            }).catch(e=>{ addAgentMsg('\u274c Error: '+e.message); renderAgentMsgs(); });
+          };
+          var cancelBtn = document.createElement('button');
+          cancelBtn.textContent = 'Cancel';
+          cancelBtn.style.cssText = 'padding:8px 14px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;';
+          cancelBtn.onclick = function(){ window._pendingA2A=null; btns.remove(); addAgentMsg('\u274c A2A payment cancelled'); renderAgentMsgs(); };
+          btns.appendChild(confirmBtn); btns.appendChild(cancelBtn);
+          last.appendChild(btns);
+        },100);
       })();
       break;
     case 'agent-balance':
