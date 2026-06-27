@@ -5352,7 +5352,12 @@ RULES:
     });
     const data=await res.json();
     if(!res.ok || data.error){
-      agentMsgs[agentMsgs.length-1]={role:'assistant',content:`⚠️ ${data.error||'API error '+res.status}. Make sure OPENAI_API_KEY is set in Railway → Variables.`};
+      agentMsgs[agentMsgs.length-1]={role:'assistant',content:(()=>{
+        var e=data.error||'API error '+res.status;
+        if(res.status===429||e.toLowerCase().includes('too many')) return '⚠️ '+e+' Please wait a moment and try again.';
+        if(e.includes('OPENAI_API_KEY')) return '⚠️ '+e;
+        return '⚠️ '+e+' If this persists, check Railway → Variables for OPENAI_API_KEY.';
+      })()};
       renderAgentMsgs();scrollAgentBottom();
       return;
     }
@@ -5571,7 +5576,7 @@ RULES:
     speakResponse(clean);
   }catch(err){
     console.error('Agent error:', err);
-    agentMsgs[agentMsgs.length-1]={role:'assistant',content:`⚠️ ${err.message||'Connection error'}. Check that OPENAI_API_KEY is set in Railway → Variables.`};
+    agentMsgs[agentMsgs.length-1]={role:'assistant',content:'⚠️ '+(err.message||'Connection error')+'. Check your connection and try again.'};
   }
   renderAgentMsgs();scrollAgentBottom();
 }
