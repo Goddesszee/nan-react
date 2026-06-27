@@ -10263,6 +10263,10 @@ async function agentConfirmedSend(to, amount, token) {
     d = await _awRes.json();
     // If Circle SDK found the wallet, use its result
     if(d.success || (d.error && !d.notCircleWallet)) {
+        if(d.policyViolation){
+          addAgentMsg('🚫 Spending policy blocked this transfer:\n'+d.error);
+          renderAgentMsgs(); return;
+        }
       if(d.success){
         addAgentMsg('✅ Sent! TX: '+(d.txId||d.txHash||d.transactionId||'pending'));
         setTimeout(()=>{
@@ -10383,14 +10387,78 @@ async function agentHistory() {
   } catch (e) { const listEl = document.getElementById('agentHistoryList'); if(listEl) listEl.textContent = 'Error: ' + e.message; }
 }
 
-function agentSetSpendingLimit() {
+async function agentSetSpendingLimit() {
   if (!agentWalletAddr) return;
   const id = 'agentPanelLimits';
   if (document.getElementById(id)) { document.getElementById(id).remove(); return; }
   const el = document.createElement('div');
   el.id = id;
   el.style.cssText = 'background:var(--surface);border:1px solid rgba(112,0,255,.25);border-radius:14px;padding:14px;margin-bottom:12px;';
-  el.innerHTML = `<div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:10px;">Set Spending Limits</div><input id="agentLimitPerTx" placeholder="Max per transaction (USDC)" type="number" min="0" step="any" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-family:'Inter var','Inter',sans-serif;box-sizing:border-box;margin-bottom:8px;" value="10"/><input id="agentLimitDaily" placeholder="Daily limit (USDC)" type="number" min="0" step="any" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-family:'Inter var','Inter',sans-serif;box-sizing:border-box;margin-bottom:10px;" value="50"/><div style="display:flex;gap:8px;"><button onclick="(function(){const perTx=document.getElementById('agentLimitPerTx').value;const daily=document.getElementById('agentLimitDaily').value;if(!perTx||!daily){agentShowResult('Enter both limits');return;}document.getElementById('agentPanelLimits').remove();agentShowResult('Setting limits...');fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'set-policy',address:agentWalletAddr,chain:'ARC-TESTNET',perTx,daily})}).then(r=>r.json()).then(d=>agentShowResult(d.success?'✅ Limits set! Per-tx: $'+perTx+' · Daily: $'+daily:'❌ '+(d.error||'Failed'))).catch(e=>agentShowResult('❌ '+e.message));})()" style="flex:1;padding:11px;border-radius:10px;background:#7000ff;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;">Set Limits</button><button onclick="document.getElementById('agentPanelLimits').remove()" style="padding:11px 16px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;">Cancel</button></div>`;
+
+  // Load existing policy from Railway
+  var existingPolicy = null;
+  var existingSpend  = null;
+  try {
+    var pr = await fetch('https://nan-production.up.railway.app/api/agent-wallets',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'get-policy', userAddress:userAddr, walletAddress:agentWalletAddr})
+    });
+    var pd = await pr.json();
+    if (pd.success) { existingPolicy = pd.policy; existingSpend = pd.spend; }
+  } catch(e) {}
+
+  var perTxVal   = existingPolicy?.perTx   ?? 10;
+  var dailyVal   = existingPolicy?.daily   ?? 50;
+  var weeklyVal  = existingPolicy?.weekly  ?? '';
+  var spendInfo  = existingSpend
+    ? '<div style="font-size:.75rem;color:var(--text3);margin-bottom:10px;padding:8px 10px;background:rgba(112,0,255,.06);border-radius:8px;">Today: <b>$'+existingSpend.today.toFixed(2)+'</b> · This week: <b>$'+existingSpend.week.toFixed(2)+'</b></div>'
+    : '';
+  var policyBadge = existingPolicy
+    ? '<div style="font-size:.73rem;color:#7000ff;margin-bottom:8px;">Active policy: $'+existingPolicy.perTx+' per tx · $'+existingPolicy.daily+'/day'+(existingPolicy.weekly?(' · $'+existingPolicy.weekly+'/wk'):'' )+'</div>'
+    : '<div style="font-size:.73rem;color:var(--text3);margin-bottom:8px;">No policy set — all transfers unlimited</div>';
+
+  el.innerHTML = `
+    <div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:6px;">⚙️ Spending Policy</div>
+    ${policyBadge}${spendInfo}
+    <input id="agentLimitPerTx" placeholder="Max per transaction (USDC)" type="number" min="0" step="any"
+      style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-family:'Inter var','Inter',sans-serif;box-sizing:border-box;margin-bottom:8px;" value="${perTxVal}"/>
+    <input id="agentLimitDaily" placeholder="Daily limit (USDC)" type="number" min="0" step="any"
+      style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-family:'Inter var','Inter',sans-serif;box-sizing:border-box;margin-bottom:8px;" value="${dailyVal}"/>
+    <input id="agentLimitWeekly" placeholder="Weekly limit (USDC) — optional" type="number" min="0" step="any"
+      style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-family:'Inter var','Inter',sans-serif;box-sizing:border-box;margin-bottom:10px;" value="${weeklyVal}"/>
+    <div style="display:flex;gap:8px;">
+      <button onclick="(function(){
+        var perTx=document.getElementById('agentLimitPerTx').value;
+        var daily=document.getElementById('agentLimitDaily').value;
+        var weekly=document.getElementById('agentLimitWeekly').value;
+        if(!perTx||!daily){agentShowResult('Enter per-tx and daily limits');return;}
+        document.getElementById('agentPanelLimits').remove();
+        agentShowResult('Setting policy...');
+        fetch('https://nan-production.up.railway.app/api/agent-wallets',{
+          method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({action:'set-policy',userAddress:userAddr,walletAddress:agentWalletAddr,
+            perTx:parseFloat(perTx),daily:parseFloat(daily),weekly:weekly?parseFloat(weekly):null})
+        }).then(r=>r.json()).then(d=>{
+          if(d.success){
+            agentShowResult('✅ Policy set! Per-tx: $'+perTx+' · Daily: $'+daily+(weekly?' · Weekly: $'+weekly:''));
+            localStorage.setItem('nan_agent_policy_'+agentWalletAddr,JSON.stringify(d.policy));
+          } else { agentShowResult('❌ '+(d.error||'Failed')); }
+        }).catch(e=>agentShowResult('❌ '+e.message));
+      })()" style="flex:1;padding:11px;border-radius:10px;background:#7000ff;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;">Set Policy</button>
+      <button onclick="(function(){
+        if(!confirm('Remove all spending limits?')) return;
+        document.getElementById('agentPanelLimits').remove();
+        agentShowResult('Clearing policy...');
+        fetch('https://nan-production.up.railway.app/api/agent-wallets',{
+          method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({action:'clear-policy',userAddress:userAddr,walletAddress:agentWalletAddr})
+        }).then(r=>r.json()).then(d=>{
+          agentShowResult(d.success?'✅ Policy cleared — no limits':'❌ '+(d.error||'Failed'));
+          localStorage.removeItem('nan_agent_policy_'+agentWalletAddr);
+        }).catch(e=>agentShowResult('❌ '+e.message));
+      })()" style="padding:11px 14px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.82rem;cursor:pointer;">Clear</button>
+      <button onclick="document.getElementById('agentPanelLimits').remove()" style="padding:11px 14px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.82rem;cursor:pointer;">Cancel</button>
+    </div>`;
   const grid = document.querySelector('[onclick="agentFund()"]')?.closest('[style*="grid-template-columns"]');
   if (grid) grid.parentElement.insertBefore(el, grid);
   document.getElementById('agentLimitPerTx')?.focus();
