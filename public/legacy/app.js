@@ -5310,6 +5310,9 @@ RULES:
   agent-fund:    <ACTION>{"action":"agent-fund"}</ACTION>
   agent-pay:     <ACTION>{"action":"agent-pay","serviceUrl":"https://...","amount":"0.01"}</ACTION>
   agent-a2a:     <ACTION>{"action":"agent-a2a","amount":5,"token":"USDC","to":"friend.arc"}</ACTION>
+  agent-set-policy: <ACTION>{"action":"agent-set-policy","perTx":10,"daily":50,"weekly":200}</ACTION>
+  agent-get-policy: <ACTION>{"action":"agent-get-policy"}</ACTION>
+  agent-clear-policy: <ACTION>{"action":"agent-clear-policy"}</ACTION>
   swap:          <ACTION>{"action":"swap","amount":1,"from":"USDC","to":"EURC"}</ACTION>
   limit:         <ACTION>{"action":"limit","amount":50,"sellToken":"USDC","buyToken":"EURC","targetRate":0.95,"condition":"gte"}</ACTION>
   schedule:      <ACTION>{"action":"schedule","amount":20,"token":"USDC","to":"0x...","when":"friday"}</ACTION>
@@ -5322,7 +5325,10 @@ RULES:
   history:       <ACTION>{"action":"navigate","tab":"history"}</ACTION>
 - ALWAYS include <ACTION> tag when user wants to DO something — never just describe it
 - Use agent-send/agent-balance/agent-history/agent-fund when user says "agent wallet" or "agent"
-- Use agent-a2a when user wants to pay ANOTHER person's agent wallet specifically ("send to their agent", "agent to agent", "a2a")
+- Use agent-a2a when user wants to pay ANOTHER person's agent wallet specifically
+- Use agent-set-policy when user says "set limit", "spending limit", "max per tx", "daily limit" etc
+- Use agent-get-policy when user asks "what are my limits", "show my policy", "spending rules"
+- Use agent-clear-policy when user says "remove limits", "clear policy", "no limits" ("send to their agent", "agent to agent", "a2a")
 - Use regular send/swap for main wallet actions
 - The ACTION block is COMPLETELY INVISIBLE to user — NEVER write ACTION or JSON in your text
 - Your text reply must be plain English only — confirm what you're about to do, then add ACTION tag
@@ -5568,7 +5574,7 @@ RULES:
     }
     agentMsgs[agentMsgs.length-1]={role:'assistant',content:clean,action};
     // Auto-execute agent wallet actions immediately (no button needed)
-    const autoActions = ['agent-send','agent-a2a','agent-bulk-send','agent-balance','agent-history','agent-fund','agent-pay','agent-swap','agent-bridge','agent-multichain','agent-offramp','agent-payroll','agent-ngn-rate','agent-bills','agent-data','agent-portfolio','agent-analytics','agent-price-alert','agent-auto-sweep','agent-receipt','agent-remita','fx-limit-offramp','payreq-create','list_orders','cancel_order','cancel_all'];
+    const autoActions = ['agent-send','agent-a2a','agent-set-policy','agent-get-policy','agent-clear-policy','agent-bulk-send','agent-balance','agent-history','agent-fund','agent-pay','agent-swap','agent-bridge','agent-multichain','agent-offramp','agent-payroll','agent-ngn-rate','agent-bills','agent-data','agent-portfolio','agent-analytics','agent-price-alert','agent-auto-sweep','agent-receipt','agent-remita','fx-limit-offramp','payreq-create','list_orders','cancel_order','cancel_all'];
     if(action && action.action && autoActions.includes(action.action)){
       setTimeout(()=>executeAgentAction(action), 500);
     }
@@ -5741,6 +5747,56 @@ function executeAgentAction(action){
         }, 100);
       })();
       break;
+    case 'agent-set-policy':{
+      if(!agentWalletAddr){addAgentMsg('⚠️ Connect agent wallet first.');renderAgentMsgs();break;}
+      var _perTx=action.perTx,_daily=action.daily,_weekly=action.weekly||null;
+      if(!_perTx&&!_daily){addAgentMsg('❌ Please specify at least perTx and daily limits.');renderAgentMsgs();break;}
+      addAgentMsg('⏳ Setting spending policy...');renderAgentMsgs();
+      fetch('https://nan-production.up.railway.app/api/agent-wallets',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action:'set-policy',userAddress:userAddr,walletAddress:agentWalletAddr,perTx:_perTx,daily:_daily,weekly:_weekly})
+      }).then(r=>r.json()).then(d=>{
+        if(d.success){
+          var p=d.policy;
+          addAgentMsg('✅ Spending policy set!\n💳 Per transaction: $'+p.perTx+'\n📅 Daily limit: $'+p.daily+(p.weekly?'\n📆 Weekly limit: $'+p.weekly:'')+'\n\nYour agent wallet will block any transfer that exceeds these limits.');
+          localStorage.setItem('nan_agent_policy_'+agentWalletAddr,JSON.stringify(p));
+        } else { addAgentMsg('❌ '+(d.error||'Failed to set policy')); }
+        renderAgentMsgs();
+      }).catch(e=>{addAgentMsg('❌ Error: '+e.message);renderAgentMsgs();});
+      break;
+    }
+    case 'agent-get-policy':{
+      if(!agentWalletAddr){addAgentMsg('⚠️ Connect agent wallet first.');renderAgentMsgs();break;}
+      addAgentMsg('⏳ Fetching your spending policy...');renderAgentMsgs();
+      fetch('https://nan-production.up.railway.app/api/agent-wallets',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action:'get-policy',userAddress:userAddr,walletAddress:agentWalletAddr})
+      }).then(r=>r.json()).then(d=>{
+        if(d.success){
+          var p=d.policy,s=d.spend;
+          if(!p){
+            addAgentMsg('ℹ️ No spending policy set — all transfers are unlimited.\n\nSay "set limit $10 per tx, $50 daily" to add one.');
+          } else {
+            addAgentMsg('⚙️ Your Spending Policy:\n💳 Per transaction: $'+p.perTx+'\n📅 Daily limit: $'+p.daily+(p.weekly?'\n📆 Weekly limit: $'+p.weekly:'')+'\n\n📊 Usage today: $'+(s?.today||0).toFixed(2)+'\n📊 Usage this week: $'+(s?.week||0).toFixed(2));
+          }
+        } else { addAgentMsg('❌ '+(d.error||'Failed')); }
+        renderAgentMsgs();
+      }).catch(e=>{addAgentMsg('❌ Error: '+e.message);renderAgentMsgs();});
+      break;
+    }
+    case 'agent-clear-policy':{
+      if(!agentWalletAddr){addAgentMsg('⚠️ Connect agent wallet first.');renderAgentMsgs();break;}
+      addAgentMsg('⏳ Clearing spending policy...');renderAgentMsgs();
+      fetch('https://nan-production.up.railway.app/api/agent-wallets',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action:'clear-policy',userAddress:userAddr,walletAddress:agentWalletAddr})
+      }).then(r=>r.json()).then(d=>{
+        addAgentMsg(d.success?'✅ Spending policy cleared — your agent wallet now has no limits.':'❌ '+(d.error||'Failed'));
+        if(d.success) localStorage.removeItem('nan_agent_policy_'+agentWalletAddr);
+        renderAgentMsgs();
+      }).catch(e=>{addAgentMsg('❌ Error: '+e.message);renderAgentMsgs();});
+      break;
+    }
     case 'agent-a2a':
       // Agent-to-agent payment: look up recipient's agent wallet, then transfer
       if(!agentWalletAddr){
