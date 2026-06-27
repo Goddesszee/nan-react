@@ -5352,7 +5352,7 @@ RULES:
     });
     const data=await res.json();
     if(!res.ok || data.error){
-      agentMsgs[agentMsgs.length-1]={role:'assistant',content:`⚠️ ${data.error||'API error '+res.status}. Make sure GROQ_API_KEY is set in Vercel → Settings → Environment Variables.`};
+      agentMsgs[agentMsgs.length-1]={role:'assistant',content:`⚠️ ${data.error||'API error '+res.status}. Make sure OPENAI_API_KEY is set in Railway → Variables.`};
       renderAgentMsgs();scrollAgentBottom();
       return;
     }
@@ -5571,7 +5571,7 @@ RULES:
     speakResponse(clean);
   }catch(err){
     console.error('Agent error:', err);
-    agentMsgs[agentMsgs.length-1]={role:'assistant',content:`⚠️ ${err.message||'Connection error'}. Check that GROQ_API_KEY is set in Vercel environment variables.`};
+    agentMsgs[agentMsgs.length-1]={role:'assistant',content:`⚠️ ${err.message||'Connection error'}. Check that OPENAI_API_KEY is set in Railway → Variables.`};
   }
   renderAgentMsgs();scrollAgentBottom();
 }
