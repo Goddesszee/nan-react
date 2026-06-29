@@ -3259,6 +3259,164 @@ function _applyQuote(q){
   const el=document.getElementById('swapRate');
   if(el)el.innerHTML=`1 ${q.tokenIn} ≈ ${parseFloat(q.rate).toFixed(4)} ${q.tokenOut}${feeStr} &nbsp;·&nbsp; <span style="color:var(--success);font-size:.65rem;">● App Kit ${t}</span>`;
 }
+
+// ── cirBTC Lend/Borrow (NANLendingPool v2) ──────────────────────────────────
+// Uses LendingBorrowing contract: cirBTC collateral → USDC loans (50% LTV)
+// Contract: see LENDING_CONTRACT constant (existing NANLendingPool)
+// Note: Full on-chain integration pending contract upgrade to cirBTC collateral.
+// Current version shows UI + balance reads. Tx functions show guidance toast.
+
+function setLBTab(tab, el) {
+  document.querySelectorAll('#page-lend .stake-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('#page-lend .stab').forEach(b => b.classList.remove('active'));
+  const panel = document.getElementById('lb-'+tab);
+  if (panel) panel.classList.add('active');
+  if (el) el.classList.add('active');
+  refreshLBStats();
+}
+
+function lbCalcDeposit() {
+  const amt = parseFloat(document.getElementById('lbDepositAmt')?.value) || 0;
+  // 50% LTV — use rough BTC price $100k for testnet display
+  const BTC_PRICE_USDC = 100000;
+  const capacity = (amt * BTC_PRICE_USDC * 0.5).toFixed(2);
+  const el = document.getElementById('lbDepositCapacity');
+  if (el) el.textContent = '≈ ' + capacity + ' USDC';
+}
+
+function refreshLBStats() {
+  // Update wallet balance displays
+  const cirWal = document.getElementById('lbCirbtcWallet');
+  if (cirWal) cirWal.textContent = parseFloat(cirbtcBal||0).toFixed(6);
+  // Refresh on-chain stats from LENDING_CONTRACT if connected
+  if (!userAddr || !provider) return;
+  try {
+    const iface = [
+      'function collateralBalances(address) view returns(uint256)',
+      'function loans(address) view returns(uint256 amount,uint256 collateral,bool isActive)',
+      'function maxBorrow(address) view returns(uint256)',
+      'function availableCollateral(address) view returns(uint256)'
+    ];
+    const c = new ethers.Contract(LENDING_CONTRACT, iface, provider);
+    Promise.all([
+      c.collateralBalances(userAddr),
+      c.loans(userAddr),
+      c.maxBorrow(userAddr),
+      c.availableCollateral(userAddr)
+    ]).then(([col, loan, mb, avail]) => {
+      // collateral in cirBTC (8 decimals)
+      const colFmt = parseFloat(ethers.formatUnits(col, CIRBTC_DECIMALS)).toFixed(6);
+      const loanFmt = parseFloat(ethers.formatUnits(loan.amount, 6)).toFixed(2);
+      const mbFmt = parseFloat(ethers.formatUnits(mb, 6)).toFixed(2);
+      const availFmt = parseFloat(ethers.formatUnits(avail, CIRBTC_DECIMALS)).toFixed(6);
+      const elC = document.getElementById('lbCollateralBal'); if(elC) elC.textContent = colFmt;
+      const elL = document.getElementById('lbLoanAmt'); if(elL) elL.textContent = loanFmt;
+      const elM = document.getElementById('lbMaxBorrow'); if(elM) elM.textContent = mbFmt;
+      const elM2 = document.getElementById('lbMaxBorrow2'); if(elM2) elM2.textContent = mbFmt;
+      const elW = document.getElementById('lbAvailWithdraw'); if(elW) elW.textContent = availFmt;
+      const elO = document.getElementById('lbOwed'); if(elO) elO.textContent = loanFmt;
+    }).catch(()=>{});
+  } catch(e){}
+}
+
+function lbShowStatus(msg, type='info') {
+  const el = document.getElementById('lbStatus');
+  if (!el) return;
+  el.style.display = 'block';
+  el.style.background = type==='error' ? 'rgba(239,68,68,.1)' : type==='success' ? 'rgba(52,211,153,.1)' : 'rgba(112,0,255,.1)';
+  el.style.color = type==='error' ? '#f87171' : type==='success' ? '#34d399' : '#a855f7';
+  el.style.border = type==='error' ? '1px solid rgba(239,68,68,.2)' : type==='success' ? '1px solid rgba(52,211,153,.2)' : '1px solid rgba(112,0,255,.2)';
+  el.textContent = msg;
+  setTimeout(()=>{ if(el) el.style.display='none'; }, 6000);
+}
+
+async function doLBDeposit() {
+  if (!signer || !userAddr) { toast('Connect MetaMask first','error',3000); return; }
+  if (!onArcNetwork) { toast('Switch to Arc Testnet first','error',3000); return; }
+  const amt = parseFloat(document.getElementById('lbDepositAmt')?.value);
+  if (!amt || amt <= 0) { lbShowStatus('Enter an amount','error'); return; }
+  if (amt > parseFloat(cirbtcBal||0)) { lbShowStatus('Insufficient cirBTC balance','error'); return; }
+  try {
+    lbShowStatus('Approving cirBTC…','info');
+    const cirbtcC = new ethers.Contract(CIRBTC_ADDR, ERC20_ABI, signer);
+    const amtBig = ethers.parseUnits(amt.toFixed(8), CIRBTC_DECIMALS);
+    const approveTx = await cirbtcC.approve(LENDING_CONTRACT, amtBig, arcGasOpts());
+    await approveTx.wait();
+    lbShowStatus('Depositing cirBTC…','info');
+    const lendABI = ['function depositCollateral(uint256) external'];
+    const lendC = new ethers.Contract(LENDING_CONTRACT, lendABI, signer);
+    const tx = await lendC.depositCollateral(amtBig, arcGasOpts());
+    await tx.wait();
+    lbShowStatus('✓ cirBTC deposited as collateral!','success');
+    document.getElementById('lbDepositAmt').value = '';
+    setTimeout(()=>{ refreshLBStats(); loadBalances(); }, 2000);
+  } catch(e) {
+    lbShowStatus('Error: '+(e.reason||e.message||'tx failed').slice(0,80),'error');
+  }
+}
+
+async function doLBWithdraw() {
+  if (!signer || !userAddr) { toast('Connect MetaMask first','error',3000); return; }
+  const amt = parseFloat(document.getElementById('lbWithdrawAmt')?.value);
+  if (!amt || amt <= 0) { lbShowStatus('Enter an amount','error'); return; }
+  try {
+    lbShowStatus('Withdrawing cirBTC…','info');
+    const lendABI = ['function withdrawCollateral(uint256) external'];
+    const lendC = new ethers.Contract(LENDING_CONTRACT, lendABI, signer);
+    const amtBig = ethers.parseUnits(amt.toFixed(8), CIRBTC_DECIMALS);
+    const tx = await lendC.withdrawCollateral(amtBig, arcGasOpts());
+    await tx.wait();
+    lbShowStatus('✓ cirBTC withdrawn!','success');
+    document.getElementById('lbWithdrawAmt').value = '';
+    setTimeout(()=>{ refreshLBStats(); loadBalances(); }, 2000);
+  } catch(e) {
+    lbShowStatus('Error: '+(e.reason||e.message||'tx failed').slice(0,80),'error');
+  }
+}
+
+async function doLBBorrow() {
+  if (!signer || !userAddr) { toast('Connect MetaMask first','error',3000); return; }
+  const amt = parseFloat(document.getElementById('lbBorrowAmt')?.value);
+  if (!amt || amt <= 0) { lbShowStatus('Enter an amount','error'); return; }
+  try {
+    lbShowStatus('Borrowing USDC…','info');
+    const lendABI = ['function takeLoan(uint256) external'];
+    const lendC = new ethers.Contract(LENDING_CONTRACT, lendABI, signer);
+    const amtBig = ethers.parseUnits(amt.toFixed(6), 6);
+    const tx = await lendC.takeLoan(amtBig, arcGasOpts());
+    await tx.wait();
+    lbShowStatus('✓ USDC borrowed successfully!','success');
+    document.getElementById('lbBorrowAmt').value = '';
+    setTimeout(()=>{ refreshLBStats(); loadBalances(); }, 2000);
+  } catch(e) {
+    lbShowStatus('Error: '+(e.reason||e.message||'tx failed').slice(0,80),'error');
+  }
+}
+
+async function doLBRepay() {
+  if (!signer || !userAddr) { toast('Connect MetaMask first','error',3000); return; }
+  const amt = parseFloat(document.getElementById('lbRepayAmt')?.value);
+  if (!amt || amt <= 0) { lbShowStatus('Enter an amount','error'); return; }
+  try {
+    lbShowStatus('Approving USDC for repayment…','info');
+    const usdcC = new ethers.Contract(USDC_ADDR, ERC20_ABI, signer);
+    const amtBig = ethers.parseUnits(amt.toFixed(6), 6);
+    const approveTx = await usdcC.approve(LENDING_CONTRACT, amtBig, arcGasOpts());
+    await approveTx.wait();
+    lbShowStatus('Repaying loan…','info');
+    const lendABI = ['function repayLoan(uint256) external'];
+    const lendC = new ethers.Contract(LENDING_CONTRACT, lendABI, signer);
+    const tx = await lendC.repayLoan(amtBig, arcGasOpts());
+    await tx.wait();
+    lbShowStatus('✓ Loan repaid! cirBTC unlocked.','success');
+    document.getElementById('lbRepayAmt').value = '';
+    setTimeout(()=>{ refreshLBStats(); loadBalances(); }, 2000);
+  } catch(e) {
+    lbShowStatus('Error: '+(e.reason||e.message||'tx failed').slice(0,80),'error');
+  }
+}
+
+
 function flipSwap(){
   // Cycle: 0=USDC→EURC, 1=EURC→USDC, 2=USDC→cirBTC, 3=cirBTC→USDC
   if(typeof window._swapMode==='undefined') window._swapMode=0;
@@ -3286,7 +3444,7 @@ function flipSwap(){
   document.getElementById('swapFrom').value='';document.getElementById('swapTo').value='';
   document.getElementById('swapFromBal').textContent=parseFloat(m.fromBal||0).toFixed(m.from==='cirBTC'?6:2);
   document.getElementById('swapToBal').textContent=parseFloat(m.toBal||0).toFixed(m.to==='cirBTC'?6:2);
-  const rateEl=document.getElementById('swapRateDisplay');
+  const rateEl=document.getElementById('swapRate');
   if(rateEl&&m.pair==='cirbtc'){
     rateEl.innerHTML='<span style="color:var(--accent);font-size:.82rem;">₿ cirBTC/USDC pool — coming soon</span>';
     return;
