@@ -236,8 +236,13 @@ const CCTP_TRANSMITTER_ABI = [
 // ═══════════════════════════════════════════
 const GATEWAY_CONTRACT = '0x0077777d7EBA4688BDeF3E311b846F25870A19B9';
 const GATEWAY_DOMAIN   = 26; // Arc Testnet domain per Circle docs
+// Per Circle's Gateway Contract Interfaces docs (developers.circle.com/gateway/
+// references/contract-interfaces-and-events), GatewayWallet's deposit function
+// is deposit(address token, uint256 value) — a plain deposit crediting the
+// caller's own balance. depositForBurn is CCTP's TokenMessenger signature and
+// doesn't exist on this contract; calling it here always reverted.
 const GATEWAY_ABI = [
-  'function depositForBurn(uint256 amount, uint32 destinationDomain, bytes32 mintRecipient, address burnToken) external',
+  'function deposit(address token, uint256 value) external',
   'function balanceOf(address) view returns (uint256)',
 ];
 
@@ -6925,13 +6930,10 @@ async function depositToGateway() {
     }
     // depositForBurn — deposits USDC into the Gateway unified balance
     if(btn) btn.textContent = 'Depositing…';
-    const recipientPadded = '0x' + userAddr.replace('0x','').toLowerCase().padStart(64,'0');
     const gatewayC = new ethers.Contract(GATEWAY_CONTRACT, GATEWAY_ABI, signer);
-    const burnTx = await gatewayC.depositForBurn(
-      amtAtomic,
-      GATEWAY_DOMAIN,
-      recipientPadded,
+    const burnTx = await gatewayC.deposit(
       USDC_ADDR,
+      amtAtomic,
       arcGasOpts()
     );
     await burnTx.wait(1);
