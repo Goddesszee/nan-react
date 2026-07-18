@@ -5868,62 +5868,18 @@ function executeAgentAction(action){
         setTimeout(()=>{document.getElementById('recipInput').value=agentWalletAddr;document.getElementById('amtInput').value=action.amount||'';sendToken=action.token||'USDC';document.getElementById('sendTokenLabel').textContent=sendToken;validateSend();},300);
         break;
       }
-      // Resolve arc name if needed, then confirm, then send
+      // Resolve arc name if needed, then send immediately — no confirm step.
+      // Autonomous by design: this is the agent-to-agent / no-human-in-loop path.
+      // A spending policy (perTx/daily/weekly) can still be set via the
+      // 'agent-set-policy' action below if the user wants a safety rail —
+      // agentConfirmedSend already checks and honors it server-side.
       (async()=>{
         var to = action.to;
         var token = action.token||'USDC';
         var amount = action.amount;
-        // Resolve .arc name
-        if(to && !to.startsWith('0x') && (to.endsWith('.arc') || !to.includes('.'))){
-          var arcName = to.replace('.arc','').toLowerCase();
-          addAgentMsg('🔍 Resolving '+arcName+'.arc...');
-          renderAgentMsgs();
-          try {
-            var readProvider = getArcProvider();
-            var nameContract = new ethers.Contract(NAME_REGISTRY,NAME_ABI,readProvider);
-            var resolved = await Promise.race([
-              nameContract.resolve(arcName),
-              new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),6000))
-            ]);
-            if(resolved && resolved!=='0x0000000000000000000000000000000000000000'){
-              to = resolved;
-              addAgentMsg('✓ Resolved '+arcName+'.arc → '+to.slice(0,6)+'...'+to.slice(-4));
-              renderAgentMsgs();
-            } else {
-              addAgentMsg('❌ Arc name "'+arcName+'.arc" not found. Check the name and try again.');
-              renderAgentMsgs();
-              return;
-            }
-          } catch(e) {
-            addAgentMsg('❌ Could not resolve arc name: '+e.message);
-            renderAgentMsgs();
-            return;
-          }
-        }
-        // Store pending send and show confirm buttons
-        window._pendingAgentSend = {to, amount, token};
-        addAgentMsg('⚠️ Confirm send:\n' + amount + ' ' + token + ' from agent wallet\nTo: ' + to.slice(0,6) + '...' + to.slice(-4));
+        addAgentMsg('⚡ Autonomous send: '+amount+' '+token+' to '+to);
         renderAgentMsgs();
-        // Add confirm/cancel buttons to last message
-        setTimeout(()=>{
-          var msgsContainer = document.getElementById('agentMessages');
-          var last = msgsContainer ? msgsContainer.lastElementChild : null;
-          if(last){
-            var btns = document.createElement('div');
-            btns.style.cssText = 'display:flex;gap:8px;margin-top:10px;';
-            var confirmBtn = document.createElement('button');
-            confirmBtn.textContent = '✓ Confirm';
-            confirmBtn.style.cssText = 'padding:8px 18px;border-radius:10px;background:#7000ff;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
-            confirmBtn.onclick = function(){ agentConfirmedSend(window._pendingAgentSend.to,window._pendingAgentSend.amount,window._pendingAgentSend.token); btns.remove(); };
-            var cancelBtn = document.createElement('button');
-            cancelBtn.textContent = 'Cancel';
-            cancelBtn.style.cssText = 'padding:8px 14px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;';
-            cancelBtn.onclick = function(){ window._pendingAgentSend=null; addAgentMsg('❌ Send cancelled'); renderAgentMsgs(); btns.remove(); };
-            btns.appendChild(confirmBtn);
-            btns.appendChild(cancelBtn);
-            last.appendChild(btns);
-          }
-        }, 100);
+        await agentConfirmedSend(to, amount, token);
       })();
       break;
     case 'agent-set-policy':{
