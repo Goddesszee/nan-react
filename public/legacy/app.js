@@ -10810,6 +10810,389 @@ function agentPayService() {
   document.getElementById('agentPayUrl')?.focus();
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// AGENT PAY+ HUB — trust tiers, escrow, recurring payments, invoices, netting
+// ═══════════════════════════════════════════════════════════════════════════
+var AGENT_WALLETS_API = 'https://nan-production.up.railway.app/api/agent-wallets';
+var _a2aTab = 'trust';
+
+function agentA2AHub() {
+  const id = 'agentPanelA2A';
+  if (document.getElementById(id)) { document.getElementById(id).remove(); return; }
+  if (!agentWalletAddr) { agentShowResult('⚠️ Connect agent wallet first'); return; }
+  const el = document.createElement('div');
+  el.id = id;
+  el.style.cssText = 'background:var(--surface);border:1px solid rgba(112,0,255,.25);border-radius:14px;padding:14px;margin-bottom:12px;';
+  el.innerHTML = `
+    <div style="font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:2px;">🤝 Agent Pay+</div>
+    <div style="font-size:.7rem;color:var(--text3);margin-bottom:10px;">Trust tiers · Escrow · Recurring · Invoices · Netting</div>
+    <div id="a2aTabs" style="display:flex;gap:4px;margin-bottom:10px;overflow-x:auto;padding-bottom:2px;"></div>
+    <div id="a2aContent"></div>
+    <button onclick="document.getElementById('agentPanelA2A').remove()" style="margin-top:10px;width:100%;padding:9px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.78rem;cursor:pointer;">Close</button>
+  `;
+  const grid = document.querySelector('[onclick="agentFund()"]')?.closest('[style*="grid-template-columns"]');
+  if (grid) grid.parentElement.insertBefore(el, grid);
+  _a2aRenderTabs();
+  agentA2ASwitchTab('trust');
+}
+
+function _a2aRenderTabs() {
+  const tabs = [['trust','Trust'],['escrow','Escrow'],['recurring','Recurring'],['invoices','Invoices'],['net','Netting']];
+  const c = document.getElementById('a2aTabs');
+  if (!c) return;
+  c.innerHTML = tabs.map(([k,label]) => `<button onclick="agentA2ASwitchTab('${k}')" id="a2atab_${k}" style="flex-shrink:0;padding:6px 12px;border-radius:20px;border:0.5px solid ${_a2aTab===k?'#7000ff':'var(--border)'};background:${_a2aTab===k?'#7000ff':'transparent'};color:${_a2aTab===k?'#fff':'var(--text3)'};font-size:.75rem;font-weight:600;cursor:pointer;white-space:nowrap;">${label}</button>`).join('');
+}
+
+function agentA2ASwitchTab(tab) {
+  _a2aTab = tab;
+  _a2aRenderTabs();
+  const c = document.getElementById('a2aContent');
+  if (!c) return;
+  if (tab === 'trust') return _a2aRenderTrust(c);
+  if (tab === 'escrow') return _a2aRenderEscrow(c);
+  if (tab === 'recurring') return _a2aRenderRecurring(c);
+  if (tab === 'invoices') return _a2aRenderInvoices(c);
+  if (tab === 'net') return _a2aRenderNet(c);
+}
+
+function _a2aAddrInput(id, placeholder) {
+  return `<input id="${id}" placeholder="${placeholder||'0x... or .arc name'}" style="width:100%;padding:9px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.8rem;font-family:monospace;box-sizing:border-box;margin-bottom:6px;"/>`;
+}
+function _a2aAmtInput(id, placeholder) {
+  return `<input id="${id}" type="number" min="0" step="any" placeholder="${placeholder||'Amount USDC'}" style="width:100%;padding:9px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.8rem;box-sizing:border-box;margin-bottom:6px;"/>`;
+}
+
+// Resolve an .arc name or raw address to an address, using the existing resolver
+async function _a2aResolveAddr(raw) {
+  raw = (raw || '').trim();
+  if (!raw) return null;
+  if (/^0x[a-fA-F0-9]{40}$/.test(raw)) return raw;
+  try {
+    const readProvider = getArcProvider();
+    const nameContract = new ethers.Contract(NAME_REGISTRY, NAME_ABI, readProvider);
+    const resolved = await nameContract.resolve(raw.replace(/\.arc$/i,'').toLowerCase());
+    if (resolved && resolved !== '0x0000000000000000000000000000000000000000') return resolved;
+  } catch(e) {}
+  return null;
+}
+
+// ── TRUST ──────────────────────────────────────────────────────────────────
+function _a2aRenderTrust(c) {
+  c.innerHTML = `
+    <div style="font-size:.72rem;color:var(--text3);margin-bottom:8px;">Check the trust tier and auto-approve cap for a counterparty. New relationships start at $5 auto-approve; the cap grows $20 per 3 successful payments, up to $500.</div>
+    ${_a2aAddrInput('a2aTrustAddr')}
+    <button onclick="_a2aCheckTrust()" style="width:100%;padding:9px;border-radius:10px;background:#7000ff;border:none;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;margin-bottom:8px;">Check Trust</button>
+    <div id="a2aTrustResult"></div>
+  `;
+}
+async function _a2aCheckTrust() {
+  const raw = document.getElementById('a2aTrustAddr')?.value;
+  const out = document.getElementById('a2aTrustResult');
+  const addr = await _a2aResolveAddr(raw);
+  if (!addr) { out.innerHTML = '<div style="color:#ef4444;font-size:.78rem;">Could not resolve address</div>'; return; }
+  out.innerHTML = '<div style="color:var(--text3);font-size:.78rem;">Checking...</div>';
+  try {
+    const r = await fetch(AGENT_WALLETS_API, {method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'trust', userAddress:userAddr, agentWalletAddress:agentWalletAddr, counterpartyAddress:addr})});
+    const d = await r.json();
+    if (!d.success) { out.innerHTML = `<div style="color:#ef4444;font-size:.78rem;">${d.error||'Failed'}</div>`; return; }
+    out.innerHTML = `<div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;">
+      <div style="font-size:.72rem;color:var(--text3);margin-bottom:4px;">Auto-approve cap</div>
+      <div style="font-size:1.4rem;font-weight:800;color:#7000ff;margin-bottom:8px;">$${d.autoApproveCap}</div>
+      <div style="font-size:.78rem;color:var(--text);">✅ ${d.trust.successCount} successful payment${d.trust.successCount===1?'':'s'} · $${d.trust.totalVolume.toFixed(2)} total volume</div>
+      ${d.trust.successCount===0?'<div style="font-size:.72rem;color:var(--text3);margin-top:4px;">No history yet — capped at the new-counterparty limit.</div>':''}
+    </div>`;
+  } catch(e) { out.innerHTML = `<div style="color:#ef4444;font-size:.78rem;">${e.message}</div>`; }
+}
+
+// ── ESCROW ─────────────────────────────────────────────────────────────────
+function _a2aRenderEscrow(c) {
+  c.innerHTML = `
+    <div style="display:flex;gap:6px;margin-bottom:8px;">
+      <button onclick="_a2aEscrowMode('create')" id="a2aEscBtnCreate" style="flex:1;padding:7px;border-radius:8px;border:0.5px solid #7000ff;background:#7000ff;color:#fff;font-size:.74rem;font-weight:700;cursor:pointer;">+ New</button>
+      <button onclick="_a2aEscrowMode('sent')" id="a2aEscBtnSent" style="flex:1;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;color:var(--text3);font-size:.74rem;font-weight:700;cursor:pointer;">Sent</button>
+      <button onclick="_a2aEscrowMode('received')" id="a2aEscBtnReceived" style="flex:1;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;color:var(--text3);font-size:.74rem;font-weight:700;cursor:pointer;">Received</button>
+    </div>
+    <div id="a2aEscrowBody"></div>
+  `;
+  _a2aEscrowMode('create');
+}
+function _a2aEscrowMode(mode) {
+  ['create','sent','received'].forEach(m => {
+    const b = document.getElementById('a2aEscBtn'+m.charAt(0).toUpperCase()+m.slice(1));
+    if (b) { b.style.background = m===mode?'#7000ff':'transparent'; b.style.color = m===mode?'#fff':'var(--text3)'; b.style.borderColor = m===mode?'#7000ff':'var(--border)'; }
+  });
+  const body = document.getElementById('a2aEscrowBody');
+  if (mode === 'create') {
+    body.innerHTML = `
+      ${_a2aAddrInput('a2aEscTo','Pay to (.arc or 0x...)')}
+      ${_a2aAmtInput('a2aEscAmt')}
+      <input id="a2aEscTask" placeholder="Task description" style="width:100%;padding:9px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.8rem;box-sizing:border-box;margin-bottom:8px;"/>
+      <div style="font-size:.68rem;color:var(--text3);margin-bottom:8px;">Funds stay in your wallet, locked until you release. Recipient must attest completion first.</div>
+      <button onclick="_a2aEscrowCreate()" style="width:100%;padding:9px;border-radius:10px;background:#7000ff;border:none;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;">Create Escrow</button>
+      <div id="a2aEscCreateResult" style="margin-top:8px;"></div>
+    `;
+  } else {
+    body.innerHTML = '<div style="color:var(--text3);font-size:.78rem;">Loading...</div>';
+    _a2aEscrowList(mode);
+  }
+}
+async function _a2aEscrowCreate() {
+  const toRaw = document.getElementById('a2aEscTo')?.value;
+  const amt = document.getElementById('a2aEscAmt')?.value;
+  const task = document.getElementById('a2aEscTask')?.value;
+  const out = document.getElementById('a2aEscCreateResult');
+  const to = await _a2aResolveAddr(toRaw);
+  if (!to || !amt) { out.innerHTML = '<div style="color:#ef4444;font-size:.78rem;">Enter a valid recipient and amount</div>'; return; }
+  out.innerHTML = '<div style="color:var(--text3);font-size:.78rem;">Creating...</div>';
+  try {
+    const r = await fetch(AGENT_WALLETS_API, {method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'escrow-create', userAddress:userAddr, agentWalletAddress:agentWalletAddr, toAgentAddress:to, amount:amt, task})});
+    const d = await r.json();
+    out.innerHTML = d.success
+      ? `<div style="color:#22c55e;font-size:.78rem;">✅ Escrow created — ${amt} USDC locked, awaiting attestation</div>`
+      : `<div style="color:#ef4444;font-size:.78rem;">${d.error||'Failed'}</div>`;
+    if (d.success) { document.getElementById('a2aEscTo').value=''; document.getElementById('a2aEscAmt').value=''; document.getElementById('a2aEscTask').value=''; }
+  } catch(e) { out.innerHTML = `<div style="color:#ef4444;font-size:.78rem;">${e.message}</div>`; }
+}
+async function _a2aEscrowList(direction) {
+  const body = document.getElementById('a2aEscrowBody');
+  try {
+    const r = await fetch(AGENT_WALLETS_API, {method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'escrow-list', userAddress:userAddr, agentWalletAddress:agentWalletAddr, direction})});
+    const d = await r.json();
+    if (!d.success || !d.escrows?.length) { body.innerHTML = '<div style="color:var(--text3);font-size:.78rem;padding:8px 0;">No escrows.</div>'; return; }
+    body.innerHTML = d.escrows.map(e => `
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:6px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <span style="font-size:.85rem;font-weight:700;color:var(--text);">${e.amount} ${e.token}</span>
+          <span style="font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:10px;background:${_a2aStatusColor(e.status)}22;color:${_a2aStatusColor(e.status)};text-transform:uppercase;">${e.status}</span>
+        </div>
+        <div style="font-size:.7rem;color:var(--text3);margin-bottom:6px;">${e.task || 'No description'}</div>
+        <div style="font-size:.68rem;font-family:monospace;color:var(--text3);margin-bottom:6px;">${direction==='sent'?'To':'From'}: ${(direction==='sent'?e.toWallet:e.fromWallet).slice(0,10)}...</div>
+        ${direction==='received' && e.status==='pending' ? `<button onclick="_a2aEscrowAttest('${e.id}')" style="width:100%;padding:7px;border-radius:8px;background:#7000ff;border:none;color:#fff;font-size:.74rem;font-weight:700;cursor:pointer;">Attest Completion</button>` : ''}
+        ${direction==='sent' && e.status==='attested' ? `<button onclick="_a2aEscrowRelease('${e.id}')" style="width:100%;padding:7px;border-radius:8px;background:#22c55e;border:none;color:#fff;font-size:.74rem;font-weight:700;cursor:pointer;">Release Funds</button>` : ''}
+        ${direction==='sent' && e.status==='pending' ? `<button onclick="_a2aEscrowRefund('${e.id}')" style="width:100%;padding:7px;border-radius:8px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.74rem;cursor:pointer;">Cancel / Refund</button>` : ''}
+      </div>
+    `).join('');
+  } catch(e) { body.innerHTML = `<div style="color:#ef4444;font-size:.78rem;">${e.message}</div>`; }
+}
+function _a2aStatusColor(s) { return {pending:'#eab308',attested:'#7000ff',released:'#22c55e',refunded:'#6b7280'}[s] || '#6b7280'; }
+async function _a2aEscrowAttest(id) {
+  await fetch(AGENT_WALLETS_API, {method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({action:'escrow-attest', userAddress:userAddr, escrowId:id})});
+  _a2aEscrowList('received');
+}
+async function _a2aEscrowRelease(id) {
+  const r = await fetch(AGENT_WALLETS_API, {method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({action:'escrow-release', userAddress:userAddr, escrowId:id})});
+  const d = await r.json();
+  if (!d.success) agentShowResult('❌ ' + (d.error||'Release failed'));
+  _a2aEscrowList('sent');
+  fetchAgentBalance();
+}
+async function _a2aEscrowRefund(id) {
+  await fetch(AGENT_WALLETS_API, {method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({action:'escrow-refund', userAddress:userAddr, escrowId:id})});
+  _a2aEscrowList('sent');
+}
+
+// ── RECURRING ──────────────────────────────────────────────────────────────
+function _a2aRenderRecurring(c) {
+  c.innerHTML = `
+    <div style="font-size:.72rem;color:var(--text3);margin-bottom:8px;">Schedule a repeating agent-to-agent payment. Optionally skip a run (without cancelling) if the recipient's balance looks drained.</div>
+    ${_a2aAddrInput('a2aRecTo','Pay to (.arc or 0x...)')}
+    ${_a2aAmtInput('a2aRecAmt')}
+    <select id="a2aRecInterval" style="width:100%;padding:9px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.8rem;box-sizing:border-box;margin-bottom:6px;">
+      <option value="3600">Every hour</option>
+      <option value="86400" selected>Every day</option>
+      <option value="604800">Every week</option>
+    </select>
+    <input id="a2aRecMinBal" type="number" min="0" step="any" placeholder="Skip run if recipient balance below (optional)" style="width:100%;padding:9px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.8rem;box-sizing:border-box;margin-bottom:6px;"/>
+    <input id="a2aRecLabel" placeholder="Label (e.g. 'Weekly service fee')" style="width:100%;padding:9px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.8rem;box-sizing:border-box;margin-bottom:8px;"/>
+    <button onclick="_a2aRecurringCreate()" style="width:100%;padding:9px;border-radius:10px;background:#7000ff;border:none;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;margin-bottom:10px;">Create Schedule</button>
+    <div style="font-size:.72rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Active Schedules</div>
+    <div id="a2aRecList">Loading...</div>
+  `;
+  _a2aRecurringList();
+}
+async function _a2aRecurringCreate() {
+  const toRaw = document.getElementById('a2aRecTo')?.value;
+  const amt = document.getElementById('a2aRecAmt')?.value;
+  const interval = document.getElementById('a2aRecInterval')?.value;
+  const minBal = document.getElementById('a2aRecMinBal')?.value;
+  const label = document.getElementById('a2aRecLabel')?.value;
+  const to = await _a2aResolveAddr(toRaw);
+  if (!to || !amt) { agentShowResult('⚠️ Enter a valid recipient and amount'); return; }
+  try {
+    const body = {action:'recurring-create', userAddress:userAddr, agentWalletAddress:agentWalletAddr, toAgentAddress:to, amount:amt, intervalSeconds:interval, label};
+    if (minBal) body.condition = { type:'min-balance', minUsd: parseFloat(minBal) };
+    const r = await fetch(AGENT_WALLETS_API, {method:'POST',headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+    const d = await r.json();
+    if (d.success) {
+      document.getElementById('a2aRecTo').value=''; document.getElementById('a2aRecAmt').value=''; document.getElementById('a2aRecLabel').value=''; document.getElementById('a2aRecMinBal').value='';
+      _a2aRecurringList();
+    } else agentShowResult('❌ ' + (d.error||'Failed'));
+  } catch(e) { agentShowResult('❌ ' + e.message); }
+}
+async function _a2aRecurringList() {
+  const list = document.getElementById('a2aRecList');
+  try {
+    const r = await fetch(AGENT_WALLETS_API, {method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'recurring-list', userAddress:userAddr, agentWalletAddress:agentWalletAddr})});
+    const d = await r.json();
+    if (!d.success || !d.schedules?.length) { list.innerHTML = '<div style="color:var(--text3);font-size:.78rem;">No active schedules.</div>'; return; }
+    list.innerHTML = d.schedules.map(s => `
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:6px;opacity:${s.active?1:.5};">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <span style="font-size:.85rem;font-weight:700;color:var(--text);">${s.amount} ${s.token} ${s.label?'· '+s.label:''}</span>
+          <span style="font-size:.68rem;color:${s.active?'#22c55e':'#6b7280'};font-weight:700;">${s.active?'ACTIVE':'CANCELLED'}</span>
+        </div>
+        <div style="font-size:.68rem;font-family:monospace;color:var(--text3);margin-bottom:4px;">To: ${s.toWallet.slice(0,10)}... · every ${s.intervalSeconds>=86400?(s.intervalSeconds/86400)+'d':(s.intervalSeconds/3600)+'h'}</div>
+        <div style="font-size:.68rem;color:var(--text3);margin-bottom:6px;">${s.runCount} run${s.runCount===1?'':'s'}${s.skipCount?', '+s.skipCount+' skipped':''}${s.condition?' · min-balance condition set':''}</div>
+        ${s.active ? `<button onclick="_a2aRecurringCancel('${s.id}')" style="width:100%;padding:6px;border-radius:8px;background:none;border:1px solid var(--border);color:#ef4444;font-size:.72rem;cursor:pointer;">Cancel</button>` : ''}
+      </div>
+    `).join('');
+  } catch(e) { list.innerHTML = `<div style="color:#ef4444;font-size:.78rem;">${e.message}</div>`; }
+}
+async function _a2aRecurringCancel(id) {
+  await fetch(AGENT_WALLETS_API, {method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({action:'recurring-cancel', userAddress:userAddr, scheduleId:id})});
+  _a2aRecurringList();
+}
+
+// ── INVOICES ───────────────────────────────────────────────────────────────
+function _a2aRenderInvoices(c) {
+  c.innerHTML = `
+    <div style="display:flex;gap:6px;margin-bottom:8px;">
+      <button onclick="_a2aInvMode('create')" id="a2aInvBtnCreate" style="flex:1;padding:7px;border-radius:8px;border:0.5px solid #7000ff;background:#7000ff;color:#fff;font-size:.74rem;font-weight:700;cursor:pointer;">Request</button>
+      <button onclick="_a2aInvMode('incoming')" id="a2aInvBtnIncoming" style="flex:1;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;color:var(--text3);font-size:.74rem;font-weight:700;cursor:pointer;">Incoming</button>
+      <button onclick="_a2aInvMode('outgoing')" id="a2aInvBtnOutgoing" style="flex:1;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;color:var(--text3);font-size:.74rem;font-weight:700;cursor:pointer;">Outgoing</button>
+    </div>
+    <div id="a2aInvBody"></div>
+  `;
+  _a2aInvMode('create');
+}
+function _a2aInvMode(mode) {
+  ['create','incoming','outgoing'].forEach(m => {
+    const b = document.getElementById('a2aInvBtn'+m.charAt(0).toUpperCase()+m.slice(1));
+    if (b) { b.style.background = m===mode?'#7000ff':'transparent'; b.style.color = m===mode?'#fff':'var(--text3)'; b.style.borderColor = m===mode?'#7000ff':'var(--border)'; }
+  });
+  const body = document.getElementById('a2aInvBody');
+  if (mode === 'create') {
+    body.innerHTML = `
+      <div style="font-size:.68rem;color:var(--text3);margin-bottom:8px;">Request payment from another agent. If you're within their trust tier and spending policy, it may auto-honor immediately.</div>
+      ${_a2aAddrInput('a2aInvFrom','Request from (.arc or 0x...)')}
+      ${_a2aAmtInput('a2aInvAmt')}
+      <input id="a2aInvReason" placeholder="Reason" style="width:100%;padding:9px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.8rem;box-sizing:border-box;margin-bottom:8px;"/>
+      <button onclick="_a2aInvoiceCreate()" style="width:100%;padding:9px;border-radius:10px;background:#7000ff;border:none;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;">Send Request</button>
+      <div id="a2aInvCreateResult" style="margin-top:8px;"></div>
+    `;
+  } else {
+    body.innerHTML = '<div style="color:var(--text3);font-size:.78rem;">Loading...</div>';
+    _a2aInvoiceList(mode);
+  }
+}
+async function _a2aInvoiceCreate() {
+  const fromRaw = document.getElementById('a2aInvFrom')?.value;
+  const amt = document.getElementById('a2aInvAmt')?.value;
+  const reason = document.getElementById('a2aInvReason')?.value;
+  const out = document.getElementById('a2aInvCreateResult');
+  const from = await _a2aResolveAddr(fromRaw);
+  if (!from || !amt) { out.innerHTML = '<div style="color:#ef4444;font-size:.78rem;">Enter a valid payer address and amount</div>'; return; }
+  out.innerHTML = '<div style="color:var(--text3);font-size:.78rem;">Sending...</div>';
+  try {
+    const r = await fetch(AGENT_WALLETS_API, {method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'invoice-create', userAddress:userAddr, agentWalletAddress:agentWalletAddr, fromAgentAddress:from, amount:amt, reason})});
+    const d = await r.json();
+    if (!d.success) { out.innerHTML = `<div style="color:#ef4444;font-size:.78rem;">${d.error||'Failed'}</div>`; return; }
+    out.innerHTML = d.autoEval?.autoHonored
+      ? `<div style="color:#22c55e;font-size:.78rem;">✅ Request sent — within their trust tier, likely to auto-honor</div>`
+      : `<div style="color:#eab308;font-size:.78rem;">⏳ Request sent — pending manual review (${d.autoEval?.reason||'not auto-evaluated'})</div>`;
+    document.getElementById('a2aInvFrom').value=''; document.getElementById('a2aInvAmt').value=''; document.getElementById('a2aInvReason').value='';
+  } catch(e) { out.innerHTML = `<div style="color:#ef4444;font-size:.78rem;">${e.message}</div>`; }
+}
+async function _a2aInvoiceList(direction) {
+  const body = document.getElementById('a2aInvBody');
+  try {
+    const r = await fetch(AGENT_WALLETS_API, {method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'invoice-list', userAddress:userAddr, agentWalletAddress:agentWalletAddr, direction})});
+    const d = await r.json();
+    if (!d.success || !d.invoices?.length) { body.innerHTML = '<div style="color:var(--text3);font-size:.78rem;padding:8px 0;">No invoices.</div>'; return; }
+    body.innerHTML = d.invoices.map(inv => `
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:6px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <span style="font-size:.85rem;font-weight:700;color:var(--text);">${inv.amount} ${inv.token}</span>
+          <span style="font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:10px;background:${_a2aStatusColor(inv.status==='honored'?'released':inv.status==='pending'?'pending':'refunded')}22;color:${_a2aStatusColor(inv.status==='honored'?'released':inv.status==='pending'?'pending':'refunded')};text-transform:uppercase;">${inv.status}</span>
+        </div>
+        <div style="font-size:.7rem;color:var(--text3);margin-bottom:6px;">${inv.reason || 'No reason given'}</div>
+        <div style="font-size:.68rem;font-family:monospace;color:var(--text3);margin-bottom:6px;">${direction==='incoming'?'Requested by':'Requested from'}: ${(direction==='incoming'?inv.toWallet:inv.fromWallet).slice(0,10)}...</div>
+        ${direction==='incoming' && inv.status==='pending' ? `
+          <div style="display:flex;gap:6px;">
+            <button onclick="_a2aInvoiceRespond('${inv.id}',true)" style="flex:1;padding:7px;border-radius:8px;background:#22c55e;border:none;color:#fff;font-size:.74rem;font-weight:700;cursor:pointer;">Honor</button>
+            <button onclick="_a2aInvoiceRespond('${inv.id}',false)" style="flex:1;padding:7px;border-radius:8px;background:none;border:1px solid var(--border);color:#ef4444;font-size:.74rem;cursor:pointer;">Reject</button>
+          </div>` : ''}
+      </div>
+    `).join('');
+  } catch(e) { body.innerHTML = `<div style="color:#ef4444;font-size:.78rem;">${e.message}</div>`; }
+}
+async function _a2aInvoiceRespond(id, honor) {
+  const r = await fetch(AGENT_WALLETS_API, {method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({action:'invoice-respond', userAddress:userAddr, invoiceId:id, honor})});
+  const d = await r.json();
+  if (honor && !d.success) agentShowResult('❌ ' + (d.error||'Could not honor'));
+  _a2aInvoiceList('incoming');
+  if (honor) fetchAgentBalance();
+}
+
+// ── NETTING ────────────────────────────────────────────────────────────────
+function _a2aRenderNet(c) {
+  c.innerHTML = `
+    <div style="font-size:.72rem;color:var(--text3);margin-bottom:8px;">Track running obligations with a counterparty and settle only the net difference in one transfer, instead of paying on every interaction.</div>
+    ${_a2aAddrInput('a2aNetAddr','Counterparty (.arc or 0x...)')}
+    <button onclick="_a2aNetCheck()" style="width:100%;padding:9px;border-radius:10px;background:#7000ff;border:none;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;margin-bottom:10px;">Check Ledger</button>
+    <div id="a2aNetResult"></div>
+  `;
+}
+async function _a2aNetCheck() {
+  const raw = document.getElementById('a2aNetAddr')?.value;
+  const out = document.getElementById('a2aNetResult');
+  const addr = await _a2aResolveAddr(raw);
+  if (!addr) { out.innerHTML = '<div style="color:#ef4444;font-size:.78rem;">Could not resolve address</div>'; return; }
+  out.innerHTML = '<div style="color:var(--text3);font-size:.78rem;">Loading...</div>';
+  try {
+    const r = await fetch(AGENT_WALLETS_API, {method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'net-status', userAddress:userAddr, agentWalletAddress:agentWalletAddr, counterpartyAddress:addr})});
+    const d = await r.json();
+    if (!d.success) { out.innerHTML = `<div style="color:#ef4444;font-size:.78rem;">${d.error||'Failed'}</div>`; return; }
+    const net = d.currentNet;
+    const iAmPayer = net.payer?.toLowerCase() === agentWalletAddr.toLowerCase();
+    out.innerHTML = `
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;">
+        ${net.amount === 0
+          ? '<div style="font-size:.85rem;color:#22c55e;font-weight:700;">✅ Ledger is balanced — nothing owed either way</div>'
+          : `<div style="font-size:.78rem;color:var(--text3);margin-bottom:4px;">Net owed</div>
+             <div style="font-size:1.3rem;font-weight:800;color:${iAmPayer?'#ef4444':'#22c55e'};">${iAmPayer?'You owe':'They owe you'} $${net.amount.toFixed(2)}</div>`
+        }
+        <div style="font-size:.68rem;color:var(--text3);margin-top:8px;">${d.ledger.entries.length} recorded entr${d.ledger.entries.length===1?'y':'ies'} since last settlement</div>
+      </div>
+      ${net.amount > 0 && iAmPayer ? `<button onclick="_a2aNetSettle('${addr}')" style="width:100%;padding:9px;border-radius:10px;background:#22c55e;border:none;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;">Settle Now — Pay $${net.amount.toFixed(2)}</button>` : ''}
+      ${net.amount > 0 && !iAmPayer ? '<div style="font-size:.72rem;color:var(--text3);text-align:center;">Waiting on the other side to settle</div>' : ''}
+    `;
+  } catch(e) { out.innerHTML = `<div style="color:#ef4444;font-size:.78rem;">${e.message}</div>`; }
+}
+async function _a2aNetSettle(addr) {
+  try {
+    const r = await fetch(AGENT_WALLETS_API, {method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'net-settle', userAddress:userAddr, agentWalletAddress:agentWalletAddr, counterpartyAddress:addr})});
+    const d = await r.json();
+    if (d.success && d.settled) { agentShowResult(`✅ Settled $${d.netAmount.toFixed(2)}`); fetchAgentBalance(); }
+    else if (d.success) agentShowResult('Ledger already balanced');
+    else agentShowResult('❌ ' + (d.error||'Settlement failed'));
+    _a2aNetCheck();
+  } catch(e) { agentShowResult('❌ ' + e.message); }
+}
+
 async function agentDisconnect() {
   clearInterval(agentPollTimer);
   stopAgentSessionCheck();
