@@ -708,12 +708,14 @@ function nanSyncWalletBtn(connected){
   const dot=document.getElementById('nanWalletDot');
   const lbl=document.getElementById('nanWalletDropLabel');
   if(!lbl)return;
-  if(connected && window.userAddr){
-    const addr=window.userAddr;
+  // userAddr/otpEmail are `let`-declared, not window properties — read them
+  // directly, not via window.userAddr/window.otpEmail (always undefined).
+  if(connected && userAddr){
+    const addr=userAddr;
     lbl.textContent=addr.slice(0,6)+'…'+addr.slice(-4);
     if(dot)dot.style.background='#22c55e';
-  } else if(connected && window.otpEmail){
-    lbl.textContent='⚡ '+window.otpEmail.split('@')[0].slice(0,10);
+  } else if(connected && otpEmail){
+    lbl.textContent='⚡ '+otpEmail.split('@')[0].slice(0,10);
     if(dot)dot.style.background='#22c55e';
   } else {
     lbl.textContent='Connect';
@@ -745,7 +747,7 @@ function nanCloseSettings(){
   if(s)s.style.display='none';
 }
 function nanWalletCopyAddr(){
-  const addr=window.userAddr||'';
+  const addr=userAddr||'';
   nanCloseAll();
   if(!addr){showWalletPicker();return;}
   navigator.clipboard.writeText(addr).then(()=>{
