@@ -141,13 +141,23 @@ async function getDynamicSigner() {
   if (localStorage.getItem('nan_login_type') === 'circle') return null;
   if (localStorage.getItem('circleWalletId')) return null; // already logged in via email
 
-  // Try injected providers
-  var injected = window.rabby
-    || window.ethereum
-    || (window.evmproviders && Object.values(window.evmproviders)[0])
-    || window.coinbaseWalletExtension
-    || window.trustwallet
-    || null;
+  // Try injected providers — window.ethereum (and its standard multi-provider
+  // array) takes priority. Rabby is checked last: it's known to aggressively
+  // claim window.rabby (and sometimes window.ethereum itself) even when the
+  // user actually connected a different wallet, which was silently switching
+  // sessions back to Rabby on every page reload.
+  var injected = null;
+  if (window.ethereum?.providers?.length) {
+    // Multiple wallets registered properly — prefer a non-Rabby one if any exists
+    injected = window.ethereum.providers.find(p => !p.isRabby) || window.ethereum.providers[0];
+  } else {
+    injected = window.ethereum
+      || window.rabby
+      || (window.evmproviders && Object.values(window.evmproviders)[0])
+      || window.coinbaseWalletExtension
+      || window.trustwallet
+      || null;
+  }
 
   if (!injected) return null;
 
@@ -6863,6 +6873,24 @@ async function connectSpecific(walletType){
     if(!detectedWp) detectedWp=providers[0];
   } else {
     detectedWp=window.ethereum||null;
+    // Single injected provider (no .providers array) — verify it actually
+    // matches what was requested. Rabby is known to aggressively take over
+    // window.ethereum without registering in the multi-provider array, which
+    // would otherwise silently hand back Rabby even when MetaMask was picked.
+    if(detectedWp){
+      if(walletType==='metamask' && detectedWp.isRabby){
+        toast('MetaMask not detected — Rabby is intercepting window.ethereum. Disable Rabby temporarily or pick "Rabby" instead.','error',8000);
+        return;
+      }
+      if(walletType==='rabby' && !detectedWp.isRabby){
+        toast('Rabby not detected — is it installed and enabled?','error',6000);
+        return;
+      }
+      if(walletType==='coinbase' && !detectedWp.isCoinbaseWallet){
+        toast('Coinbase Wallet not detected.','error',6000);
+        return;
+      }
+    }
   }
   if(!detectedWp){toast(walletType+' not found — is it installed?','error',6000);return;}
   await _doConnect(detectedWp, walletType);
