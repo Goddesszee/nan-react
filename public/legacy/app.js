@@ -7802,7 +7802,23 @@ window.addEventListener('load',()=>{
   const _dynCircleWalletId = localStorage.getItem('circleWalletId');
   const _dynCircleAddr     = localStorage.getItem('circleWalletAddr');
 
-  if (_dynAddr && _dynToken === 'dynamic_authenticated' && !_ct) {
+  // A stale leftover from the old Dynamic SDK handoff — an address with no
+  // matching Circle wallet and no email attached — used to be treated as an
+  // "external wallet" and silently passed to getDynamicSigner(), which reaches
+  // into whatever injected wallet (Rabby/MetaMask) is installed and calls
+  // eth_accounts on it. If that wallet is locked, the extension pops its
+  // unlock notification — on every single page load. There's no legitimate
+  // session to restore in this case, so just clear the stale keys and let
+  // the normal init flow below handle showing the landing page / any real
+  // Circle session restore.
+  if (_dynAddr && !(_dynCircleWalletId && _dynCircleAddr) && !_dynEmail) {
+    console.log('[init] Clearing stale nan_dynamic_address with no linked wallet/email');
+    localStorage.removeItem('nan_dynamic_address');
+    localStorage.removeItem('nan_dynamic_email');
+    localStorage.removeItem('nan_dynamic_token');
+  }
+
+  if (_dynAddr && _dynToken === 'dynamic_authenticated' && !_ct && ((_dynCircleWalletId && _dynCircleAddr) || _dynEmail)) {
     // Hide landing immediately
     if (_land) { _land.style.display = 'none'; _land.classList.remove('active'); }
 
@@ -7848,22 +7864,6 @@ window.addEventListener('load',()=>{
         if (loader) loader.remove();
         toast('Wallet error: '+e.message, 'error');
       });
-    } else {
-      // Have address but no email — treat as external wallet address
-      userAddr     = _dynAddr;
-      isCircleWallet = false;
-      provider     = getArcProvider();
-      onArcNetwork = true;
-      // Try to get signer from injected provider
-      getDynamicSigner().then(s => {
-        if (s) {
-          signer = s;
-          // Also restore wp so bridge/swap/send work after page reload
-          if(!wp) wp = window.rabby || window.ethereum || null;
-          onConnected(false, false);
-        }
-        else { onConnected(false, false); }
-      }).catch(() => onConnected(false, false));
     }
 
     // Skip the rest of the init flow
