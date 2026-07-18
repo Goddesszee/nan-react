@@ -2648,8 +2648,9 @@ function onRecipInput(){
       const currentVal = document.getElementById('recipInput').value.trim();
       if(currentVal !== val) return; // user kept typing — stale, abort
       try{
-        // Use fresh provider for name resolution — cached provider can have stale state
-        const readProvider = new ethers.JsonRpcProvider(ARC_RPC, { chainId: ARC_CHAIN_ID, name: 'arc-testnet', ensAddress: null });
+        // Use the shared cached provider — creating a fresh one here re-triggers
+        // ethers' network detection (eth_chainId) and can hit rate limits
+        const readProvider = getArcProvider();
         const nameContract = new ethers.Contract(NAME_REGISTRY, NAME_ABI, readProvider);
         // 6s timeout — never hang forever
         const addr = await Promise.race([
@@ -5779,7 +5780,7 @@ function executeAgentAction(action){
           addAgentMsg('🔍 Resolving '+arcName+'.arc...');
           renderAgentMsgs();
           try {
-            var readProvider = new ethers.JsonRpcProvider(ARC_RPC,{chainId:ARC_CHAIN_ID,name:'arc-testnet',ensAddress:null});
+            var readProvider = getArcProvider();
             var nameContract = new ethers.Contract(NAME_REGISTRY,NAME_ABI,readProvider);
             var resolved = await Promise.race([
               nameContract.resolve(arcName),
@@ -5836,7 +5837,7 @@ function executeAgentAction(action){
             addAgentMsg('🔍 Resolving '+arcName+'.arc...');
             renderAgentMsgs();
             try{
-              var rp = new ethers.JsonRpcProvider(ARC_RPC,{chainId:ARC_CHAIN_ID,name:'arc-testnet',ensAddress:null});
+              var rp = getArcProvider();
               var nc = new ethers.Contract(NAME_REGISTRY,NAME_ABI,rp);
               var resolved = await Promise.race([nc.resolve(arcName),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),6000))]);
               if(resolved && resolved!=='0x0000000000000000000000000000000000000000'){
@@ -5878,7 +5879,7 @@ function executeAgentAction(action){
           addAgentMsg('🔍 Resolving '+arcName+'.arc...');
           renderAgentMsgs();
           try {
-            var readProvider = new ethers.JsonRpcProvider(ARC_RPC,{chainId:ARC_CHAIN_ID,name:'arc-testnet',ensAddress:null});
+            var readProvider = getArcProvider();
             var nameContract = new ethers.Contract(NAME_REGISTRY,NAME_ABI,readProvider);
             var resolved = await Promise.race([
               nameContract.resolve(arcName),
@@ -6307,7 +6308,7 @@ function executeAgentAction(action){
           const arcName = to.replace('.arc','').toLowerCase();
           addAgentMsg('🔍 Resolving '+arcName+'.arc...'); renderAgentMsgs();
           try{
-            const rp = new ethers.JsonRpcProvider(ARC_RPC,{chainId:ARC_CHAIN_ID,name:'arc-testnet',ensAddress:null});
+            const rp = getArcProvider();
             const nc = new ethers.Contract(NAME_REGISTRY,NAME_ABI,rp);
             const resolved = await Promise.race([nc.resolve(arcName),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),6000))]);
             if(resolved && resolved!=='0x0000000000000000000000000000000000000000'){
@@ -6462,7 +6463,7 @@ function executeAgentAction(action){
             addAgentMsg('🔍 Resolving '+arcName+'.arc...');
             renderAgentMsgs();
             try{
-              const rp = new ethers.JsonRpcProvider(ARC_RPC,{chainId:ARC_CHAIN_ID,name:'arc-testnet',ensAddress:null});
+              const rp = getArcProvider();
               const nc = new ethers.Contract(NAME_REGISTRY,NAME_ABI,rp);
               const addr = await Promise.race([nc.resolve(arcName), new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),6000))]);
               if(addr && addr!=='0x0000000000000000000000000000000000000000'){
@@ -10473,7 +10474,7 @@ async function agentConfirmedSend(to, amount, token) {
       renderAgentMsgs();
       try{
         const arcName = to.replace('.arc','').toLowerCase();
-        const rp = new ethers.JsonRpcProvider(ARC_RPC,{chainId:ARC_CHAIN_ID,name:'arc-testnet',ensAddress:null});
+        const rp = getArcProvider();
         const nc = new ethers.Contract(NAME_REGISTRY,NAME_ABI,rp);
         const addr = await Promise.race([nc.resolve(arcName),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),6000))]);
         if(addr && addr!=='0x0000000000000000000000000000000000000000'){
