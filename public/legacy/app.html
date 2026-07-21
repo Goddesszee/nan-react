@@ -3398,6 +3398,41 @@ function nanPopulateRecent(){
 
   </script>
 
+<script>
+// Force full desktop layout unconditionally, regardless of actual viewport
+// width (covers cases where browser zoom or other factors shrink the
+// reported viewport below the normal desktop breakpoint). Rewrites
+// min-width media queries to always match, and max-width (mobile-only)
+// media queries to never match.
+(function(){
+  function forceDesktopLayout(){
+    for (const sheet of document.styleSheets) {
+      let rules;
+      try { rules = sheet.cssRules; } catch (e) { continue; }
+      if (!rules) continue;
+      for (const rule of rules) {
+        if (rule.type === CSSRule.MEDIA_RULE) {
+          const text = rule.media.mediaText;
+          try {
+            if (text.includes('min-width') && !text.includes('max-width')) {
+              rule.media.mediaText = 'all';
+            } else if (text.includes('max-width') && !text.includes('min-width')) {
+              rule.media.mediaText = 'not all';
+            }
+          } catch (e) {}
+        }
+      }
+    }
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', forceDesktopLayout);
+  } else {
+    forceDesktopLayout();
+  }
+  window.addEventListener('load', forceDesktopLayout);
+})();
+</script>
+
 </body>
 
 
