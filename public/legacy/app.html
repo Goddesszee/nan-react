@@ -565,49 +565,42 @@ html,body{background:var(--bg);}
 
   <!-- ══ AGENT WALLET PAGE ══ -->
 <div class="page" id="page-agent-wallet">
-<div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;">
+<div style="background:var(--bg);min-height:calc(100vh - 140px);">
 
-<div style="padding:16px 20px 14px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
-  <span style="font-size:17px;font-weight:600;color:var(--text);">Agent Wallet</span>
-  <div id="agentWalletBadge" style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;background:var(--surface,rgba(0,0,0,.04));color:var(--text3);border:0.5px solid var(--border);">Offline</div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:0.5px solid var(--border);">
+  <div style="display:flex;align-items:center;gap:8px;">
+    <span id="agentStatusDot" style="width:7px;height:7px;border-radius:50%;background:var(--text3);display:inline-block;"></span>
+    <span id="agentWalletBadge" style="font-family:monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);">agent &middot; not connected</span>
+  </div>
+  <span style="font-family:monospace;font-size:11px;color:var(--text3);">arc testnet</span>
 </div>
 
 <div id="agentLoginSection">
-  <div style="padding:32px 20px 8px;display:flex;flex-direction:column;align-items:center;text-align:center;">
-    <div style="width:56px;height:56px;border-radius:16px;background:rgba(112,0,255,.08);border:0.5px solid rgba(112,0,255,.18);display:flex;align-items:center;justify-content:center;margin-bottom:14px;">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7000ff" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><circle cx="12" cy="14" r="2"/></svg>
+  <div style="padding:48px 24px 32px;max-width:440px;">
+    <div style="font-size:1.7rem;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:12px;letter-spacing:-.02em;">Money that moves itself, inside limits you set.</div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:28px;">One connection gives your agent a wallet of its own &mdash; it pays bills, runs schedules, and settles with other agents without you in the loop.</div>
+
+    <div style="display:flex;gap:8px;margin-bottom:32px;">
+      <input id="agentEmailInput" type="email" placeholder="Email address"
+        style="flex:1;background:var(--card2);border:0.5px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-size:13px;font-family:monospace;box-sizing:border-box;outline:none;"
+        onfocus="this.style.borderColor='#7000ff'" onblur="this.style.borderColor='var(--border)'"/>
+      <button id="agentLoginBtn" onclick="agentLoginInit()"
+        style="padding:12px 22px;background:#7000ff;border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;">Connect</button>
     </div>
-    <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:4px;">Circle Agent Wallet</div>
-    <div style="font-size:12px;color:var(--text3);margin-bottom:24px;">Gas-free &#xB7; spending limits &#xB7; auto payments</div>
-  </div>
-  <div style="padding:0 16px 16px;">
-    <input id="agentEmailInput" type="email" placeholder="Email address"
-      style="width:100%;background:var(--card2);border:0.5px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-size:14px;box-sizing:border-box;margin-bottom:8px;outline:none;"
-      onfocus="this.style.borderColor='#7000ff'" onblur="this.style.borderColor='var(--border)'"/>
-    <button id="agentLoginBtn" onclick="agentLoginInit()"
-      style="width:100%;padding:13px;background:#7000ff;border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:600;cursor:pointer;">Connect</button>
-  </div>
-  <div style="height:0.5px;background:var(--border);margin:0 16px 12px;"></div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 20px;">
-    <div style="background:var(--card2);border:0.5px solid var(--border);border-radius:10px;padding:12px;">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7000ff" stroke-width="2" stroke-linecap="round" style="margin-bottom:7px;display:block;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;">Spending Limits</div>
-      <div style="font-size:11px;color:var(--text3);line-height:1.5;">Daily &amp; per-tx caps</div>
-    </div>
-    <div style="background:var(--card2);border:0.5px solid var(--border);border-radius:10px;padding:12px;">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7000ff" stroke-width="2" stroke-linecap="round" style="margin-bottom:7px;display:block;"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;">Gas-free</div>
-      <div style="font-size:11px;color:var(--text3);line-height:1.5;">No ETH for fees</div>
-    </div>
-    <div style="background:var(--card2);border:0.5px solid var(--border);border-radius:10px;padding:12px;">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7000ff" stroke-width="2" stroke-linecap="round" style="margin-bottom:7px;display:block;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;">Auto Payments</div>
-      <div style="font-size:11px;color:var(--text3);line-height:1.5;">Schedule sends</div>
-    </div>
-    <div style="background:var(--card2);border:0.5px solid var(--border);border-radius:10px;padding:12px;">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7000ff" stroke-width="2" stroke-linecap="round" style="margin-bottom:7px;display:block;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;">x402 Pay</div>
-      <div style="font-size:11px;color:var(--text3);line-height:1.5;">Nanopayments via Circle</div>
+
+    <div style="border-top:0.5px solid var(--border);">
+      <div style="display:flex;justify-content:space-between;padding:13px 0;border-bottom:0.5px solid var(--border);font-family:monospace;font-size:12px;">
+        <span style="color:var(--text3);">spending_limit</span><span style="color:var(--text);">not set</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:13px 0;border-bottom:0.5px solid var(--border);font-family:monospace;font-size:12px;">
+        <span style="color:var(--text3);">gas</span><span style="color:var(--text);">paid in usdc</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:13px 0;border-bottom:0.5px solid var(--border);font-family:monospace;font-size:12px;">
+        <span style="color:var(--text3);">auto_pay</span><span style="color:var(--text3);">off</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:13px 0;font-family:monospace;font-size:12px;">
+        <span style="color:var(--text3);">x402</span><span style="color:#7000ff;">ready</span>
+      </div>
     </div>
   </div>
 </div>
