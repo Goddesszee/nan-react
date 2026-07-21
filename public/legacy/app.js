@@ -10273,6 +10273,7 @@ function agentShowResult(text) {
   const box = document.getElementById('agentResultBox');
   const txt = document.getElementById('agentResultText');
   if (!box || !txt) return;
+  if (!text) { box.style.display = 'none'; return; }
   txt.textContent = typeof text === 'object' ? JSON.stringify(text, null, 2) : String(text);
   box.style.cssText = 'display:block;margin:0 16px 4px;background:var(--surface,rgba(0,0,0,.03));border:0.5px solid var(--border);border-radius:10px;padding:12px 14px;';
   setTimeout(() => { box.style.display = 'none'; }, 14000);
