@@ -3398,6 +3398,26 @@ function nanPopulateRecent(){
 
   </script>
 
+<script>
+// Auto-compensate for browser zoom != 100% so the layout always fills the
+// real viewport width, regardless of what zoom level the user's browser is
+// stuck at. Detected via outerWidth/innerWidth ratio (a proxy for zoom
+// since JS cannot read or set actual browser zoom directly).
+(function(){
+  function applyZoomFix(){
+    var zoomLevel = Math.round((window.outerWidth / window.innerWidth) * 100) / 100;
+    if (zoomLevel > 1.05 || zoomLevel < 0.95) {
+      document.body.style.zoom = (1 / zoomLevel);
+    } else {
+      document.body.style.zoom = '';
+    }
+  }
+  applyZoomFix();
+  window.addEventListener('resize', applyZoomFix);
+  document.addEventListener('DOMContentLoaded', applyZoomFix);
+})();
+</script>
+
 </body>
 
 
