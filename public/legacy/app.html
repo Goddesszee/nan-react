@@ -3398,6 +3398,45 @@ function nanPopulateRecent(){
 
   </script>
 
+<script>
+// Compensate for stuck browser zoom on this origin so the layout renders at
+// its real intended width. Confirmed working approach: apply inverse zoom to
+// document.body (not documentElement — that breaks it) only when a genuine
+// zoom mismatch is detected (outer/inner width ratio away from 1). Also
+// strips any leftover max-width:600px cap specifically on the Agent Wallet
+// page as a safety net.
+(function(){
+  function applyZoomFix(){
+    var zoomLevel = Math.round((window.outerWidth / window.innerWidth) * 100) / 100;
+    if (zoomLevel > 1.05 || zoomLevel < 0.95) {
+      document.body.style.zoom = (1 / zoomLevel);
+    } else {
+      document.body.style.zoom = '';
+    }
+
+    var page = document.getElementById('page-agent-wallet');
+    if (page) {
+      page.style.setProperty('max-width', 'none', 'important');
+      page.style.setProperty('width', '100%', 'important');
+      Array.prototype.forEach.call(page.querySelectorAll('*'), function(el){
+        var cs = getComputedStyle(el);
+        if (cs.maxWidth === '600px') {
+          el.style.setProperty('max-width', 'none', 'important');
+          el.style.setProperty('width', '100%', 'important');
+        }
+      });
+    }
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', applyZoomFix);
+  } else {
+    applyZoomFix();
+  }
+  window.addEventListener('load', applyZoomFix);
+  window.addEventListener('resize', applyZoomFix);
+})();
+</script>
+
 </body>
 
 
