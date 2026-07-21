@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { ethers } from 'ethers'
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'https://nan-production.up.railway.app'
-const ARC_RPC  = 'https://rpc.arc.fun'
+const ARC_RPC  = 'https://rpc.testnet.arc.network'
 const CHAIN_ID = 5042002
 
 export const USDC_ADDR = '0x3600000000000000000000000000000000000000'
