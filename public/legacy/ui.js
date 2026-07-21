@@ -25,7 +25,7 @@ function goPage(name) {
 
   // Map tab → page
   const pageMap = {
-    home:       'page-agent-wallet',
+    home:       'page-home',
     send:       'page-send',
     earn:       'page-lend',
     more:       'page-more',
