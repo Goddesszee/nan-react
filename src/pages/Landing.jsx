@@ -147,25 +147,20 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
         </div>
       </nav>
 
-      {/* ── HERO ── */}
+      {/* ── DIRECT CONNECT ── */}
       <section style={{ position:'relative', zIndex:1, minHeight:'100vh', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center', padding: D ? '130px 48px 80px' : '100px 20px 60px' }}>
 
-        {/* Live pill */}
-        <div style={{ display:'inline-flex', alignItems:'center', gap:8, background: dark ? 'rgba(255,255,255,.04)' : 'rgba(0,0,0,.04)', border:`1px solid ${border2}`, borderRadius:100, padding:'6px 14px', fontSize:'.7rem', fontWeight:500, letterSpacing:'.07em', color:text2, marginBottom:28 }}>
-          <span style={{ width:6, height:6, borderRadius:'50%', background:'#00e5a0', boxShadow:'0 0 8px #00e5a0', display:'inline-block', animation:'pd 2s ease infinite' }}/>
-          LIVE ON ARC TESTNET
+        <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:28 }}>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 480" width={D?34:28} height={D?51:42} style={{flexShrink:0}}>
+            <path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill={accent}/>
+            <path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill={accent}/>
+          </svg>
+          <span style={{ fontWeight:800, fontSize: D ? '1.6rem' : '1.35rem', letterSpacing:'.02em', color:text }}>NAN</span>
         </div>
-        <style>{`@keyframes pd{0%,100%{opacity:1}50%{opacity:.3}}`}</style>
 
-        <h1 style={{ fontSize: D ? 'clamp(3rem,5vw,5.2rem)' : 'clamp(2.4rem,8vw,3.6rem)', fontWeight:800, lineHeight:1.04, letterSpacing:'-.035em', marginBottom:20 }}>
-          Payments<br/>
-          Without{' '}
-          <span style={{ background:'linear-gradient(135deg,#a855f7,#7000ff 45%,#3b82f6)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>Borders.</span>
+        <h1 style={{ fontSize: D ? '2rem' : '1.5rem', fontWeight:800, lineHeight:1.15, letterSpacing:'-.02em', marginBottom:32 }}>
+          Connect your wallet
         </h1>
-
-        <p style={{ fontSize: D ? '1.1rem' : '.95rem', fontWeight:300, color:text2, maxWidth: D ? 520 : 380, lineHeight:1.7, marginBottom:36 }}>
-          The complete stablecoin super-app on Arc. Send, swap, bridge, earn, save in Ajo circles and pay bills — with USDC and EURC. Zero gas fees. AI-powered. Powered by Circle.
-        </p>
 
         {/* ── LOGIN FORM ── */}
         <div style={{ width:'100%', maxWidth: D ? 440 : 360, display:'flex', flexDirection:'column', gap:10 }}>
@@ -237,198 +232,6 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
         </div>
       </section>
 
-      {/* ── STATS ── */}
-      <div style={{ position:'relative', zIndex:1, display:'grid', gridTemplateColumns: D ? 'repeat(5,1fr)' : 'repeat(2,1fr)', borderTop:`1px solid ${border}`, borderBottom:`1px solid ${border}`, background: dark?'rgba(255,255,255,.02)':'rgba(0,0,0,.02)' }}>
-        {[
-          {v:'$0',                                              l:'Gas fees ever',    g:true},
-          {v:'<1s',                                             l:'Settlement time'},
-          {v:'4.80%',                                           l:'APY on USDC'},
-          {v:'6',                                               l:'Chains supported'},
-          {v: liveStats.wallets ? liveStats.wallets + '+' : '∞', l:'Wallets created',  g:true},
-        ].map((st,i,arr) => (
-          <div key={i} style={{ padding: D ? '24px 16px' : '20px 12px', textAlign:'center', borderRight: D ? (i<arr.length-1?`1px solid ${border}`:'none') : ([0,2].includes(i)?`1px solid ${border}`:'none'), borderBottom: !D && i<2 ? `1px solid ${border}` : 'none' }}>
-            <div style={{ fontWeight:700, fontSize: D ? '1.6rem' : '1.4rem', color: st.g ? '#00e5a0' : text, marginBottom:4 }}>{st.v}</div>
-            <div style={{ fontSize:'.68rem', color:text3, letterSpacing:'.05em', textTransform:'uppercase' }}>{st.l}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* ── CORE FEATURES ── */}
-      <Sec D={D} border={border} bg={bg}>
-        <Tag color={accent3}>Core features</Tag>
-        <H2 text={text} D={D}>Everything stablecoin,<br/>in one wallet</H2>
-        <div style={{ display: D ? 'grid' : 'flex', gridTemplateColumns: D ? 'repeat(2,1fr)' : undefined, flexDirection: D ? undefined : 'column', gap: D ? 16 : 12 }}>
-          {[
-            { Icon:ArrowUp,   title:'Send',          badge:'Zero gas',    bG:true,  desc:'Transfer USDC and EURC to any wallet or .arc name instantly. Use human-readable names like zara.arc instead of 0x addresses.' },
-            { Icon:SwapIco,   title:'Swap',          badge:'Live FX',     bG:true,  desc:'Exchange USDC and EURC at live Frankfurt ECB rates via NANSwap. Set limit orders that execute automatically at your target rate.' },
-            { Icon:BridgeIco, title:'Bridge',        badge:'CCTP V2',     bB:true,  desc:'Move USDC across 6 chains using Circle CCTP V2. Arc to Ethereum, Base, Arbitrum, Optimism and Avalanche. No wrapped tokens.' },
-            { Icon:EarnIco,   title:'Earn 4.80% APY',badge:'On-chain',    bP:true,  desc:'Lend USDC at 4.80% APY via NANLendingPool on Arc. Borrow against collateral at 7.20% APR. Fully liquid — withdraw anytime.' },
-            { Icon:AjoIco,    title:'Ajo Savings',   badge:'Africa-native',bA:true, desc:'On-chain rotating savings circles (esusu/ajo). Create a group, invite members, contribute USDC every round — payouts are automatic and trustless.' },
-            { Icon:BotIco,    title:'NAN AI Agent',  badge:'Agentic',     bP:true,  desc:'Talk to NAN in plain English. The AI agent executes real USDC transfers, creates Ajo groups, checks balances and schedules payments — all on-chain.' },
-          ].map(({Icon,title,badge,bG,bB,bP,bA,desc},i) => (
-            <div key={i} style={{ background: dark?'#1a1a1a':'#ffffff', border:`1px solid ${border}`, borderRadius:18, padding:D?'26px 24px':'18px 16px', display:'flex', flexDirection:'column', gap:12, transition:'border-color .2s' }}>
-              <div style={{ display:'flex', alignItems:'center', gap:14 }}>
-                <div style={{ width:42, height:42, borderRadius:12, background:'rgba(112,0,255,.12)', border:'1px solid rgba(112,0,255,.2)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-                  <Icon/>
-                </div>
-                <div>
-                  <div style={{ fontWeight:700, fontSize:'1rem', color:text, marginBottom:5 }}>{title}</div>
-                  <span style={{ display:'inline-block', fontSize:'.68rem', padding:'2px 8px', borderRadius:6, fontWeight:500, ...(bG?{background:'rgba(0,229,160,.12)',border:'1px solid rgba(0,229,160,.2)',color:'#00e5a0'}:bB?{background:'rgba(59,130,246,.1)',border:'1px solid rgba(59,130,246,.2)',color:'#93c5fd'}:bA?{background:'rgba(234,179,8,.1)',border:'1px solid rgba(234,179,8,.2)',color:'#fbbf24'}:{background:'rgba(112,0,255,.12)',border:'1px solid rgba(112,0,255,.25)',color:accent4}) }}>{badge}</span>
-                </div>
-              </div>
-              <p style={{ fontSize:'.83rem', color:text2, lineHeight:1.7, margin:0 }}>{desc}</p>
-            </div>
-          ))}
-        </div>
-      </Sec>
-
-      {/* ── BRIDGE CHAINS ── */}
-      <Sec D={D} border={border} bg={bg} tight>
-        <Tag color={accent3}>Bridge destinations</Tag>
-        <H2 text={text} D={D} tight>Bridge USDC to any chain</H2>
-        <div style={{ display:'flex', flexWrap:'wrap', gap:8 }}>
-          {[
-            {name:'Arc Testnet',    color:'#7000ff'},
-            {name:'Ethereum',       color:'#627EEA'},
-            {name:'Base',           color:'#0052FF'},
-            {name:'Arbitrum',       color:'#28A0F0'},
-            {name:'Optimism',       color:'#FF0420'},
-            {name:'Avalanche',      color:'#E84142'},
-          ].map((c,i) => (
-            <div key={i} style={{ display:'flex', alignItems:'center', gap:8, padding:'8px 14px', borderRadius:100, background: dark?'#1a1a1a':'#f4f4f4', border:`1px solid ${border}`, fontSize:'.82rem', color:text2 }}>
-              <span style={{ width:8, height:8, borderRadius:'50%', background:c.color, display:'inline-block', flexShrink:0 }}/>
-              {c.name}
-            </div>
-          ))}
-        </div>
-      </Sec>
-
-      {/* ── EARN ── */}
-      <Sec D={D} border={border} bg={bg} tight>
-        <Tag color={accent3}>Earn</Tag>
-        <H2 text={text} D={D} tight>Your stablecoins should work for you</H2>
-        <div style={{ display: D ? 'grid' : 'flex', gridTemplateColumns: D ? 'auto 1fr' : undefined, flexDirection: D ? undefined : 'column', gap: D ? 40 : 20, alignItems:'center', background:'linear-gradient(135deg,rgba(112,0,255,.1),rgba(168,85,247,.05))', border:`1px solid rgba(112,0,255,.2)`, borderRadius:20, padding: D ? '36px 40px' : '24px 20px' }}>
-          <div>
-            <div style={{ fontWeight:800, fontSize: D ? '3.5rem' : '2.8rem', color:'#00e5a0', lineHeight:1 }}>4.80<span style={{ fontSize: D?'1.8rem':'1.4rem' }}>%</span></div>
-            <div style={{ fontSize:'.82rem', color:text2, marginTop:6 }}>APY on USDC — NANLendingPool</div>
-          </div>
-          <div>
-            <p style={{ fontSize:'.88rem', color:text2, lineHeight:1.75 }}>Deposit USDC into NANLendingPool on Arc Testnet. Earn 4.80% APY automatically. Borrow at 7.20% APR. Fully liquid — withdraw anytime.</p>
-            <p style={{ marginTop:10, fontSize:'.72rem', color:text3 }}>Contract: <code style={{ color:text2, fontFamily:'monospace', fontSize:'.68rem' }}>0x4CC84BbEf992439Cb01FeF2E1150B37916d1f2ce</code></p>
-          </div>
-        </div>
-      </Sec>
-
-      {/* ── MORE FEATURES ── */}
-      <Sec D={D} border={border} bg={bg} tight>
-        <Tag color={accent3}>Advanced</Tag>
-        <H2 text={text} D={D} tight>Built for power users too</H2>
-        <div style={{ display:'grid', gridTemplateColumns: D ? 'repeat(3,1fr)' : 'repeat(2,1fr)', gap: D ? 12 : 10 }}>
-          {[
-            {Icon:BotIco,   title:'NAN AI',         desc:'Ask in plain English. AI executes sends, swaps and orders. Voice input supported.'},
-            {Icon:TargetIco,title:'Limit Orders',    desc:'Auto-swap when USDC/EURC hits your target rate. Runs 24/7 in the background.'},
-            {Icon:ClockIco, title:'Scheduled Sends', desc:'One-off or recurring payments — weekly, monthly or any custom interval.'},
-            {Icon:UsersIco, title:'Bulk Pay',        desc:'Pay your whole team in one transaction with USDC or EURC.'},
-            {Icon:LinkIco,  title:'Payment Links',   desc:'Create shareable payment requests with a fixed amount and expiry.'},
-            {Icon:TagIco,   title:'.arc Names',      desc:'Register alice.arc and send to names instead of 0x addresses.'},
-            {Icon:LayersIco,title:'Multichain View', desc:'See USDC balance across all 6 chains in one unified dashboard.'},
-            {Icon:GlobeIco, title:'Circle Gateway',  desc:'Unified USDC balance across chains. Deposit once, use everywhere.'},
-            {Icon:NairaIco, title:'Naira (NGN)',      desc:'Deposit and convert Nigerian Naira at live rates. Limit orders trigger automatically.'},
-            {Icon:BillIco,  title:'Bill Payments',   desc:'Pay airtime, data, electricity and cable TV with USDC via VTPass. Real utility payments on-chain.'},
-            {Icon:ZapIco,   title:'x402 Micropayments', desc:'Five monetised API endpoints using the x402 payment protocol. Pay-per-call with USDC nanopayments.'},
-          ].map(({Icon,title,desc},i) => (
-            <div key={i} style={{ background: dark?'#1a1a1a':'#ffffff', border:`1px solid ${border}`, borderRadius:16, padding: D ? '20px 18px' : '14px 12px' }}>
-              <div style={{ marginBottom:10 }}><Icon/></div>
-              <div style={{ fontWeight:600, fontSize: D?'.9rem':'.8rem', color:text, marginBottom:5 }}>{title}</div>
-              <div style={{ fontSize: D?'.8rem':'.73rem', color:text2, lineHeight:1.6 }}>{desc}</div>
-            </div>
-          ))}
-        </div>
-      </Sec>
-
-      {/* ── HOW IT WORKS ── */}
-      <Sec D={D} border={border} bg={bg} tight>
-        <Tag color={accent3}>How it works</Tag>
-        <H2 text={text} D={D} tight>Up in 30 seconds</H2>
-        {[
-          {n:1,title:'Enter your email',         badge:'Non-custodial', desc:'No seed phrase, no downloads. A Circle MPC wallet is created instantly — you own the keys, we never hold them.'},
-          {n:2,title:'Verify your email',         badge:'Secure OTP',   desc:'A 6-digit code is sent to your email. Enter it to confirm your identity — no password needed.'},
-          {n:3,title:'Get free testnet USDC',     badge:'Free',         desc:'Tap Faucet to receive USDC on Arc Testnet. No real money, no KYC. Explore every feature freely.'},
-          {n:4,title:'Send, swap, bridge, earn',  badge:'AI-powered',   desc:'The full stablecoin stack at your fingertips. Talk to NAN AI or use the app — everything works instantly.'},
-        ].map((step,i,arr) => (
-          <div key={i} style={{ display:'flex', gap: D?20:16, padding:D?'24px 0':'20px 0', borderBottom: i<arr.length-1?`1px solid ${border}`:'none' }}>
-            <div style={{ width:34, height:34, borderRadius:10, background:'rgba(112,0,255,.12)', border:'1px solid rgba(112,0,255,.25)', display:'flex', alignItems:'center', justifyContent:'center', fontWeight:700, fontSize:'.85rem', color:accent4, flexShrink:0 }}>{step.n}</div>
-            <div style={{ flex:1, minWidth:0 }}>
-              <div style={{ fontWeight:600, fontSize: D?'.95rem':'.88rem', color:text, marginBottom:4 }}>{step.title}</div>
-              <div style={{ fontSize: D?'.82rem':'.78rem', color:text2, lineHeight:1.65, marginBottom:6 }}>{step.desc}</div>
-              <span style={{ display:'inline-block', fontSize:'.66rem', padding:'2px 8px', borderRadius:5, background:'rgba(0,229,160,.1)', border:'1px solid rgba(0,229,160,.2)', color:'#00e5a0', fontWeight:500 }}>{step.badge}</span>
-            </div>
-          </div>
-        ))}
-      </Sec>
-
-      {/* ── POWERED BY ── */}
-      <Sec D={D} border={border} bg={bg} tight>
-        <Tag color={accent3}>Built on</Tag>
-        <H2 text={text} D={D} tight>Trusted infrastructure</H2>
-        <div style={{ display:'grid', gridTemplateColumns: D ? 'repeat(3,1fr)' : 'repeat(1,1fr)', gap:10 }}>
-          {[
-            {name:'Circle',          desc:'Developer Wallets · CCTP V2 · Gateway', color:'#7000ff'},
-            {name:'Arc Network',     desc:'Chain ID 5042002 · USDC-native gas',    color:'#a855f7'},
-            {name:'Groq AI',         desc:'NAN AI — llama-3.1-8b-instant',         color:'#f97316'},
-            {name:'NANLendingPool',  desc:'On-chain lending at 4.80% APY',         color:'#00e5a0'},
-            {name:'NANSwap',         desc:'On-chain USDC / EURC swaps',            color:'#3b82f6'},
-            {name:'NANAjo',          desc:'On-chain rotating savings (esusu)',      color:'#fbbf24'},
-            {name:'VTPass',          desc:'Bill payments — airtime, data, utilities', color:'#f97316'},
-            {name:'x402 Protocol',   desc:'Micropayment API endpoints in USDC',    color:'#a855f7'},
-            {name:'NANNameRegistry', desc:'.arc identity on-chain',                color:'#a855f7'},
-          ].map((p,i) => (
-            <div key={i} style={{ display:'flex', alignItems:'center', gap:12, background: dark?'#1a1a1a':'#ffffff', border:`1px solid ${border}`, borderRadius:14, padding:'13px 16px' }}>
-              <span style={{ width:8, height:8, borderRadius:'50%', background:p.color, flexShrink:0, display:'inline-block' }}/>
-              <div>
-                <div style={{ fontWeight:600, fontSize:'.88rem', color:text }}>{p.name}</div>
-                <div style={{ fontSize:'.72rem', color:text3 }}>{p.desc}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </Sec>
-
-      {/* ── FOOTER CTA ── */}
-      <div style={{ position:'relative', zIndex:1, margin: D ? '0 48px 80px' : '0 20px 60px', background:'linear-gradient(135deg,rgba(112,0,255,.12),rgba(168,85,247,.06))', border:`1px solid rgba(112,0,255,.22)`, borderRadius:24, padding: D ? '64px 64px' : '40px 24px', textAlign:'center', overflow:'hidden' }}>
-        <h2 style={{ fontWeight:800, fontSize: D ? '2.6rem' : '1.8rem', letterSpacing:'-.03em', marginBottom:12, color:text }}>Ready to start?</h2>
-        <p style={{ fontSize: D ? '1rem' : '.9rem', color:text2, marginBottom:28, lineHeight:1.6 }}>Create your free wallet in 30 seconds.<br/>No crypto experience needed.</p>
-        <button onClick={() => window.scrollTo({top:0,behavior:'smooth'})} style={{ background:accent, color:'#fff', fontFamily:'Inter,sans-serif', fontWeight:600, fontSize:'1rem', padding: D ? '14px 40px' : '13px 32px', borderRadius:13, border:'none', cursor:'pointer', width: D ? 'auto' : '100%', maxWidth:300 }}>
-          Create Free Wallet
-        </button>
-      </div>
-
-      {/* ── FOOTER ── */}
-      <footer style={{ position:'relative', zIndex:1, borderTop:`1px solid ${border}`, padding: D ? '24px 48px' : '20px 20px', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:12 }}>
-        <div style={{ display:'flex', alignItems:'center', gap:8, fontSize:'.78rem', color:text3 }}>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 480" width="18" height="26" style={{flexShrink:0}}>
-            <path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill={accent}/>
-            <path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill={accent}/>
-          </svg>
-          NAN Wallet · Arc Testnet · v1.0.0
-        </div>
-        <div style={{ display:'flex', alignItems:'center', gap:16, fontSize:'.78rem' }}>
-          <a href="https://x.com/nan_arc" target="_blank" rel="noopener noreferrer" style={{ display:'flex', alignItems:'center', gap:6, color:text2, textDecoration:'none' }}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.262 10.94H16.17l-5.214-6.817L4.99 21.45H1.68l7.73-8.835L1.5 2.25H8.08l4.713 6.231zm-2.66 16.91h1.71L7.51 4.07H5.7z"/></svg>
-            @nan_arc
-          </a>
-          <a href="https://x.com/zarafatoluu" target="_blank" rel="noopener noreferrer" style={{ display:'flex', alignItems:'center', gap:6, color:text2, textDecoration:'none' }}>
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.262 10.94H16.17l-5.214-6.817L4.99 21.45H1.68l7.73-8.835L1.5 2.25H8.08l4.713 6.231zm-2.66 16.91h1.71L7.51 4.07H5.7z"/></svg>
-            @zarafatoluu
-          </a>
-        </div>
-        <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
-          {['Circle','CCTP V2','Arc','Groq AI','Non-custodial','Ajo Savings','x402'].map((t,i) => (
-            <span key={i} style={{ fontSize:'.7rem', background: dark?'rgba(255,255,255,.04)':'rgba(0,0,0,.04)', border:`1px solid ${border}`, borderRadius:6, padding:'3px 9px', color:text2 }}>{t}</span>
-          ))}
-        </div>
-      </footer>
-
     </div>
   )
 }
@@ -466,5 +269,6 @@ const NairaIco = () => ic(<><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5
 const AjoIco   = () => ic(<><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><circle cx="19" cy="3" r="2"/></>)
 const BillIco  = () => ic(<><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></>)
 const ZapIco   = () => ic(<><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></>)
+
 
 
