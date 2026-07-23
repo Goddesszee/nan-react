@@ -969,6 +969,7 @@ a:hover{color:var(--text);}
     max-width:560px;
     border-radius:24px;
     top:50%;
+    left:50%;
     transform:translate(-50%,-50%);
     height:min(820px,95dvh);
     position:fixed;
