@@ -2502,7 +2502,16 @@ async function refreshBalances(){
     const cu=new ethers.Contract(USDC_ADDR,ERC20_ABI,readProvider);
     const ce=new ethers.Contract(EURC_ADDR,ERC20_ABI,readProvider);
     const cc=new ethers.Contract(CIRBTC_ADDR,ERC20_ABI,readProvider);
-    const[ur,er,cr]=await Promise.all([cu.balanceOf(userAddr),ce.balanceOf(userAddr),cc.balanceOf(userAddr)]);
+    let ur, er, cr;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        [ur, er, cr] = await Promise.all([cu.balanceOf(userAddr), ce.balanceOf(userAddr), cc.balanceOf(userAddr)]);
+        break;
+      } catch (retryErr) {
+        if (attempt === 2) throw retryErr;
+        await new Promise(r => setTimeout(r, 2000 * (attempt + 1)));
+      }
+    }
     usdcBal=ethers.formatUnits(ur,USDC_DECIMALS);
     eurcBal=ethers.formatUnits(er,EURC_DECIMALS);
     cirbtcBal=ethers.formatUnits(cr,CIRBTC_DECIMALS);
