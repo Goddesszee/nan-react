@@ -4917,9 +4917,8 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
 /* end @media(max-width:767px) */
 
 @media(min-width:769px){
-  /* ── Desktop: restore card on bridge/market ── */
-  html body #page-bridge > div:first-child,
-  html body #page-market > div:first-child {
+  /* ── Desktop: restore card on bridge ── */
+  html body #page-bridge > div:first-child {
     background: var(--card) !important;
     border: 1px solid var(--border) !important;
     border-radius: 22px !important;
@@ -4927,6 +4926,18 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
     padding-left: 0 !important;
     padding-right: 0 !important;
     max-width: 600px !important;
+    width: 100% !important;
+    flex-shrink: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* ── Desktop: no boxed card on market page (full-width colorful redesign) ── */
+  html body #page-market > div:first-child {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+    max-width: none !important;
     width: 100% !important;
     flex-shrink: 0 !important;
     box-sizing: border-box !important;
