@@ -495,6 +495,34 @@ html,body{background:var(--bg);}
   </div>
 </div>
 
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+  <div id="mkt-outstanding" onclick="doAjo()" style="display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:20px 16px;min-height:190px;background:var(--card);border-radius:18px;box-shadow:0 2px 10px rgba(0,0,0,.06);border-top:4px solid #7000ff;cursor:pointer;transition:transform .15s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
+    <span style="font-size:9px;font-weight:800;background:linear-gradient(135deg,#7000ff,#a855f7);color:#fff;border-radius:100px;padding:3px 10px;">UNIQUE</span>
+    <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#7000ff,#a855f7);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 10px rgba(112,0,255,.35);margin-top:4px;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
+    <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text);">Ajo Savings</div><div style="font-size:12px;color:var(--text3);margin-top:2px;">On-chain rotating savings circle</div></div>
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2.5" stroke-linecap="round" style="align-self:flex-end;"><polyline points="9 18 15 12 9 6"/></svg>
+  </div>
+
+  <div id="mkt-money" onclick="comingSoon('BVN Verification')" style="display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:20px 16px;min-height:190px;background:var(--card);border-radius:18px;box-shadow:0 2px 10px rgba(0,0,0,.06);border-top:4px solid #06b6d4;cursor:pointer;transition:transform .15s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
+    <span style="font-size:9px;font-weight:800;background:rgba(0,0,0,.06);color:var(--text3);border-radius:100px;padding:3px 10px;">SOON</span>
+    <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#06b6d4,#22d3ee);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 10px rgba(6,182,212,.35);margin-top:4px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h1v6H9M14 15h1V9l-3 3"/></svg></div>
+    <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text);">BVN Verification</div><div style="font-size:12px;color:var(--text3);margin-top:2px;">Verify identity on-chain</div></div>
+  </div>
+
+  <div id="mkt-agents" onclick="doCredit()" style="display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:20px 16px;min-height:190px;background:var(--card);border-radius:18px;box-shadow:0 2px 10px rgba(0,0,0,.06);border-top:4px solid #10b981;cursor:pointer;transition:transform .15s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
+    <span style="font-size:9px;font-weight:800;background:rgba(0,0,0,.06);color:var(--text3);border-radius:100px;padding:3px 10px;">x402</span>
+    <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#10b981,#34d399);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 10px rgba(16,185,129,.35);margin-top:4px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+    <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text);">Credit Scoring</div><div style="font-size:12px;color:var(--text3);margin-top:2px;">On-chain reputation from your activity</div></div>
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2.5" stroke-linecap="round" style="align-self:flex-end;"><polyline points="9 18 15 12 9 6"/></svg>
+  </div>
+
+  <div onclick="doList()" style="display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:20px 16px;min-height:190px;background:linear-gradient(135deg,#f59e0b,#fbbf24);border-radius:18px;box-shadow:0 4px 14px rgba(245,158,11,.3);cursor:pointer;transition:transform .15s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
+    <div style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:17px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+    <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:#fff;">List your service</div><div style="font-size:12px;color:rgba(255,255,255,.85);margin-top:2px;">Accept USDC payments via NAN</div></div>
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" style="align-self:flex-end;"><polyline points="9 18 15 12 9 6"/></svg>
+  </div>
+</div>
+
 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
   <div onclick="doAirtime()" style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 10px;background:var(--card);border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.06);cursor:pointer;transition:transform .15s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
     <div style="width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,#3b82f6,#60a5fa);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px rgba(59,130,246,.35);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div>
@@ -512,45 +540,6 @@ html,body{background:var(--bg);}
     <div style="width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,#ef4444,#f87171);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 10px rgba(239,68,68,.35);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg></div>
     <span style="font-size:12px;font-weight:700;color:var(--text);">DSTV</span>
   </div>
-</div>
-
-<div>
-  <div id="mkt-outstanding" style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-    <span style="font-size:12px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;">Only on NAN</span>
-    <span style="font-size:10px;font-weight:800;background:linear-gradient(135deg,#7000ff,#a855f7);color:#fff;border-radius:100px;padding:3px 10px;">UNIQUE</span>
-  </div>
-  <div onclick="doAjo()" style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--card);border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.06);border-left:4px solid #7000ff;cursor:pointer;">
-    <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#7000ff,#a855f7);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 10px rgba(112,0,255,.35);"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
-    <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text);">Ajo Savings</div><div style="font-size:12px;color:var(--text3);">On-chain rotating savings circle</div></div>
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
-  </div>
-</div>
-
-<div>
-  <div id="mkt-money" style="font-size:12px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">Money services</div>
-  <div onclick="comingSoon('BVN Verification')" style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--card);border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.06);border-left:4px solid #06b6d4;cursor:pointer;">
-    <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#06b6d4,#22d3ee);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 10px rgba(6,182,212,.35);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h1v6H9M14 15h1V9l-3 3"/></svg></div>
-    <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text);">BVN Verification</div><div style="font-size:12px;color:var(--text3);">Verify identity on-chain</div></div>
-    <span style="font-size:9px;font-weight:800;background:rgba(0,0,0,.06);color:var(--text3);border-radius:100px;padding:3px 9px;flex-shrink:0;">SOON</span>
-  </div>
-</div>
-
-<div>
-  <div id="mkt-agents" style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-    <span style="font-size:12px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;">AI services</span>
-    <span style="font-size:10px;font-weight:800;background:rgba(0,0,0,.06);color:var(--text3);border-radius:100px;padding:3px 10px;">x402</span>
-  </div>
-  <div onclick="doCredit()" style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--card);border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.06);border-left:4px solid #10b981;cursor:pointer;">
-    <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#10b981,#34d399);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 10px rgba(16,185,129,.35);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-    <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:var(--text);">Credit Scoring</div><div style="font-size:12px;color:var(--text3);">On-chain reputation from your activity</div></div>
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
-  </div>
-</div>
-
-<div onclick="doList()" style="display:flex;align-items:center;gap:14px;padding:16px;background:linear-gradient(135deg,#f59e0b,#fbbf24);border-radius:16px;box-shadow:0 4px 14px rgba(245,158,11,.3);cursor:pointer;">
-  <div style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
-  <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:#fff;">List your service</div><div style="font-size:12px;color:rgba(255,255,255,.85);">Accept USDC payments via NAN</div></div>
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0;"><polyline points="9 18 15 12 9 6"/></svg>
 </div>
 
 <div style="display:none;"><span id="mkt-net"></span><span id="mkt-bname"></span><span id="mkt-bngn"></span><span id="mkt-fx-r"></span><span id="mkt-or-u"></span><div id="mkt-sheet-inner"></div></div>
