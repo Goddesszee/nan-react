@@ -10028,7 +10028,7 @@ async function fetchAgentBalance(){
     }
     // Update UI
     var balEl = document.getElementById('agentBalDisplay');
-    if(balEl) balEl.innerHTML = '<span style="background:rgba(112,0,255,.12);border:1px solid rgba(112,0,255,.2);border-radius:8px;padding:2px 10px;font-size:1.3rem;font-weight:800;color:var(--text);">' + (agentWalletBalance || '0.00 USDC') + '</span>';
+    if(balEl) balEl.textContent = agentWalletBalance || '0.00 USDC';
     updateHomeWithAgentBalance();
   } catch(e){ console.log('[agent] fetchAgentBalance error:', e.message); }
 }
@@ -10249,7 +10249,7 @@ function agentPageRefresh() {
   if (connected) {
     if (status) status.textContent = 'Connected \u00b7 Arc Testnet';
     if (badge)  { badge.textContent = 'Active'; badge.style.cssText = 'font-size:.72rem;padding:3px 9px;border-radius:100px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#4ade80;font-weight:600;'; }
-    if (addr)   addr.innerHTML = '<span style="color:var(--text2);font-family:monospace;">Arc: ' + agentWalletAddr.slice(0,6)+'...'+agentWalletAddr.slice(-4) + '</span><button onclick="navigator.clipboard.writeText(\''+agentWalletAddr+'\').then(()=>{this.textContent=\'✓\';setTimeout(()=>this.textContent=\'Copy\',1500)})" style="padding:2px 8px;border-radius:6px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#7000ff;font-size:.7rem;font-weight:600;cursor:pointer;">Copy</button>';
+    if (addr)   addr.innerHTML = '<span style="color:var(--text2);font-family:monospace;">Agent Wallet: ' + agentWalletAddr.slice(0,6)+'...'+agentWalletAddr.slice(-4) + '</span><button onclick="navigator.clipboard.writeText(\''+agentWalletAddr+'\').then(()=>{this.textContent=\'✓\';setTimeout(()=>this.textContent=\'Copy\',1500)})" style="padding:2px 8px;border-radius:6px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#7000ff;font-size:.7rem;font-weight:600;cursor:pointer;">Copy</button>';
     const dot = document.getElementById('aiBtnDot');
     const dotD = document.getElementById('aiBtnDesktopDot');
     if(dot) dot.style.display='block';
