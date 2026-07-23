@@ -3363,7 +3363,7 @@ function nanPopulateRecent(){
   var list = document.getElementById('mobRecentList');
   if(!list) return;
   // Try to get from existing txHistory or txList global
-  var txs = window.txHistory || window.txList || window._txCache || [];
+  var txs = (typeof txHistory !== 'undefined' && Array.isArray(txHistory)) ? txHistory : [];
   if(!txs.length){
     list.innerHTML = '<div style="padding:12px 16px;font-size:.75rem;color:rgba(255,255,255,.25);text-align:center;">No recent transactions</div>';
     return;
