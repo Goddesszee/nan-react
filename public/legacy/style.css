@@ -5027,3 +5027,15 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
     align-items:stretch !important;
   }
 }
+
+/* Remove the floating card shape entirely for Agent Wallet - no rounded
+   corners, no shadow, full-bleed background at every screen width. */
+#app-root:has(#page-agent-wallet.active) {
+  max-width: 100% !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: #0a0a0a !important;
+  top: 0 !important;
+  left: 0 !important;
+  transform: none !important;
+}
