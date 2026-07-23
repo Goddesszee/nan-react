@@ -618,41 +618,38 @@ html,body{background:var(--bg);}
 </div>
 
 <div id="agentConnectedSection" style="display:none;">
-  <div style="padding:24px;border-bottom:0.5px solid rgba(255,255,255,.08);">
-    <div style="font-size:12px;color:#767671;margin-bottom:4px;">Total balance</div>
-    <div style="display:flex;align-items:baseline;gap:8px;">
-      <div id="agentBalDisplay" style="font-size:2.4rem;font-weight:600;color:#f5f5f0;letter-spacing:-.02em;">&#x2014;</div>
-      <button onclick="agentRefreshBalance()" style="background:none;border:none;color:#7000ff;font-size:12px;font-weight:600;cursor:pointer;font-family:monospace;margin-left:auto;">&#x21BB; refresh</button>
-    </div>
+  <div style="background:#161616;padding:32px 24px 24px;text-align:center;border-bottom:0.5px solid rgba(255,255,255,.06);">
+    <div style="font-size:12px;color:#767671;margin-bottom:6px;">Total balance</div>
+    <div id="agentBalDisplay" style="font-size:3rem;font-weight:500;color:#f5f5f0;letter-spacing:-.02em;">&#x2014;</div>
   </div>
 
   <div id="agentResultBox" style="display:none;padding:12px 24px 0;">
     <div id="agentResultText" style="font-size:12px;color:#f5f5f0;line-height:1.6;font-family:monospace;white-space:pre-wrap;word-break:break-all;"></div>
   </div>
 
-  <div style="padding:18px 24px;">
-    <div onclick="nanAgentChatShortcut('Discover other agent services I can pay, and show me Agent Pay plus options')" style="display:flex;align-items:center;justify-content:space-between;padding:16px;background:rgba(112,0,255,.08);border:0.5px solid rgba(112,0,255,.25);border-radius:12px;cursor:pointer;">
-      <div style="display:flex;align-items:center;gap:10px;">
+  <div style="display:flex;padding:16px 24px;gap:10px;border-bottom:0.5px solid rgba(255,255,255,.06);">
+    <button onclick="agentRefreshBalance()" style="flex:1;background:#7000ff;border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:500;padding:13px;cursor:pointer;">&#x21BB; Refresh</button>
+    <button onclick="nanAgentChatShortcut('I want to fund my agent wallet with testnet USDC, open the faucet')" style="flex:1;background:transparent;border:0.5px solid rgba(255,255,255,.15);border-radius:10px;color:#f5f5f0;font-size:13px;font-weight:500;padding:13px;cursor:pointer;">Fund</button>
+    <button onclick="agentDisconnect()" style="flex:1;background:transparent;border:0.5px solid rgba(226,75,74,.3);border-radius:10px;color:#e24b4a;font-size:13px;font-weight:500;padding:13px;cursor:pointer;">Disconnect</button>
+  </div>
+
+  <div style="padding:20px 24px;">
+    <div onclick="nanAgentChatShortcut('Discover other agent services I can pay, and show me Agent Pay plus options')" style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:0.5px solid rgba(255,255,255,.06);cursor:pointer;">
+      <div style="width:40px;height:40px;border-radius:11px;background:rgba(112,0,255,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#c9b8ff" stroke-width="2" stroke-linecap="round"><circle cx="7" cy="12" r="3"/><circle cx="17" cy="12" r="3"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
-        <div>
-          <div style="font-size:13px;font-weight:500;color:#f5f5f0;">Agent-to-agent</div>
-          <div style="font-size:11px;color:#9a9a94;">Discover services, pay with x402, Agent Pay+</div>
-        </div>
       </div>
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#c9b8ff" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+      <div style="flex:1;">
+        <div style="font-size:14px;color:#f5f5f0;font-weight:500;">Agent-to-agent</div>
+        <div style="font-size:12px;color:#9a9a94;">Discover services, pay with x402, Agent Pay+</div>
+      </div>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#767671" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
     </div>
-  </div>
 
-  <div style="padding:6px 24px 18px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-      <span style="font-size:12px;font-weight:500;color:#767671;text-transform:uppercase;letter-spacing:.08em;">Recent activity</span>
-      <span onclick="nanAgentChatShortcut('Show my agent wallet transaction history')" style="font-size:12px;color:#7000ff;cursor:pointer;">See all</span>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 0 8px;">
+      <span style="font-size:12px;font-weight:500;color:#9a9a94;text-transform:uppercase;letter-spacing:.06em;">Recent activity</span>
+      <span onclick="nanAgentChatShortcut('Show my agent wallet transaction history')" style="font-size:12px;color:#c084fc;cursor:pointer;">See all</span>
     </div>
-    <div id="agentRecentActivityRows" style="font-size:12px;color:#767671;">Connect and make a transaction to see activity here.</div>
-  </div>
-
-  <div style="padding:0 24px 24px;">
-    <div onclick="agentDisconnect()" style="text-align:center;font-size:13px;color:#e24b4a;cursor:pointer;">Disconnect</div>
+    <div id="agentRecentActivityRows" style="font-size:12px;color:#767671;padding:8px 0 4px;">Connect and make a transaction to see activity here.</div>
   </div>
 </div>
 <style>@media(max-width:767px){@keyframes agentSpin{to{transform:rotate(360deg)}}}</style>
