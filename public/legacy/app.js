@@ -1238,7 +1238,7 @@ async function onConnected(isEmail=false, isDev=false){
     p.style.display='none';
   });
   document.getElementById('bottomNav').classList.add('show');
-  showPage('home');
+  showPage('agent-wallet');
   updateTopBar(true);
   if(typeof updateDesktopNav === 'function') updateDesktopNav();
   // Mobile UI enhancements
@@ -6128,7 +6128,7 @@ function executeAgentAction(action){
       if(!agentWalletAddr){
         addAgentMsg('💧 Opening faucet to fund your wallet...');
         renderAgentMsgs();
-        document.getElementById('tnav-faucet-btn')?.click() || goPage('home');
+        document.getElementById('tnav-faucet-btn')?.click() || goPage('agent-wallet');
         break;
       }
       addAgentMsg('⏳ Requesting faucet for agent wallet...');renderAgentMsgs();
@@ -9511,7 +9511,7 @@ function startIncomingPoller() {
     const dy = Math.abs(e.changedTouches[0].clientY - startY);
     // Right swipe from left edge (within 40px) — go back
     if (startX < 40 && dx > 80 && dy < 60) {
-      if (window._currentPage && window._currentPage !== 'home') {
+      if (window._currentPage && window._currentPage !== 'agent-wallet') {
         goBack();
       }
     }
@@ -9526,7 +9526,7 @@ function startIncomingPoller() {
     if (['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)) return;
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     const shortcuts = {
-      'h': 'home',
+      'h': 'agent-wallet',
       's': 'send',
       'w': 'swap',
       'b': 'bridge',
@@ -11250,3 +11250,4 @@ async function agentDisconnect() {
   }
   if(agentWalletAddr) setTimeout(fetchAgentBalance, 2000);
 })();
+
