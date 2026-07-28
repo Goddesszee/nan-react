@@ -73,31 +73,31 @@
   --surface:#161616;
   --card:#161616;
   --card2:#1c1c1c;
-  --border:rgba(255,255,255,.07);
-  --border2:rgba(255,255,255,.11);
+  --border:rgba(255,255,255,.09);
+  --border2:rgba(255,255,255,.16);
   --accent:#7000ff;
-  --accent3:#7000ff;
+  --accent3:#a855f7;
   --accent4:#a855f7;
-  --text:#e8e8e8;
-  --text2:#787878;
-  --text3:#4a4a4a;
+  --text:#ffffff;
+  --text2:rgba(255,255,255,.62);
+  --text3:rgba(255,255,255,.38);
   --success:#7000ff;
   --topbar-bg:#0f0f0f;
   --nav-bg:#0f0f0f;
 }
 [data-theme="light"]{
-  --bg:#f0f0f0;
+  --bg:#f5f2ff;
   --surface:#ffffff;
   --card:#ffffff;
-  --card2:#f5f5f5;
-  --border:#e8e8e8;
-  --border2:#d8d8d8;
+  --card2:#f7f3ff;
+  --border:rgba(0,0,0,.10);
+  --border2:rgba(0,0,0,.16);
   --accent:#7000ff;
   --accent3:#7000ff;
   --accent4:#7000ff;
-  --text:#111111;
-  --text2:#999999;
-  --text3:#bbbbbb;
+  --text:#000000;
+  --text2:rgba(0,0,0,.62);
+  --text3:rgba(0,0,0,.38);
   --success:#7000ff;
   --topbar-bg:#ffffff;
   --nav-bg:#ffffff;
@@ -116,7 +116,7 @@ html,body{background:var(--bg);}
 
 /* Dark nav */
 :root .nav-pill-wrap,[data-theme="dark"] .nav-pill-wrap{background:rgba(255,255,255,.04) !important;border:1px solid rgba(255,255,255,.07) !important;}
-:root .nav-btn,[data-theme="dark"] .nav-btn{color:#555555 !important;}
+:root .nav-btn,[data-theme="dark"] .nav-btn{color:rgba(0,0,0,.72) !important;}
 :root .nav-btn.active,[data-theme="dark"] .nav-btn.active{background:rgba(112,0,255,.15) !important;color:#7000ff !important;border:1px solid rgba(112,0,255,.2) !important;}
 
 /* Light nav */
@@ -142,15 +142,15 @@ html,body{background:var(--bg);}
 /* Light mode: fix inline dark backgrounds */
 [data-theme="light"] *[style*="background:#1a1a1a"],
 [data-theme="light"] *[style*="background:#111111"],
-[data-theme="light"] *[style*="background:#0a0a0a"]{background:#f5f5f5 !important;border-color:#e0e0e0 !important;}
+[data-theme="light"] *[style*="background:#0a0a0a"]{background:#f5f5f5 !important;border-color:#e9dfff !important;}
 
 /* Light mode: fix Agent Wallet redesign colors (built dark-first) */
 [data-theme="light"] *[style*="color:#f5f5f0"]{color:#111111 !important;font-weight:700 !important;}
-[data-theme="light"] *[style*="color:#9a9a94"]{color:#444444 !important;font-weight:500 !important;}
-[data-theme="light"] *[style*="color:#767671"]{color:#555555 !important;font-weight:600 !important;}
+[data-theme="light"] *[style*="color:#9a9a94"]{color:rgba(0,0,0,.78) !important;font-weight:500 !important;}
+[data-theme="light"] *[style*="color:#767671"]{color:rgba(0,0,0,.72) !important;font-weight:600 !important;}
 [data-theme="light"] *[style*="color:#c9b8ff"]{color:#5b21b6 !important;}
 [data-theme="light"] *[style*="border:0.5px solid rgba(255,255,255,.15)"],
-[data-theme="light"] *[style*="border-bottom:0.5px solid rgba(255,255,255,.1)"]{border-color:#e0e0e0 !important;}
+[data-theme="light"] *[style*="border-bottom:0.5px solid rgba(255,255,255,.1)"]{border-color:#e9dfff !important;}
 [data-theme="light"] *[style*="background:rgba(255,255,255,.04)"]{background:#ffffff !important;}
 [data-theme="light"] *[style*="background:rgba(255,255,255,.0"]{background:rgba(0,0,0,.02) !important;}
 [data-theme="light"] *[style*="background:rgba(255,255,255,.03)"]{background:rgba(0,0,0,.02) !important;}
@@ -159,7 +159,7 @@ html,body{background:var(--bg);}
 
 /* Light mode: inputs */
 [data-theme="light"] input,
-[data-theme="light"] select{background:#fff !important;color:#111 !important;border-color:#e0e0e0 !important;}
+[data-theme="light"] select{background:#fff !important;color:#111 !important;border-color:#e9dfff !important;}
 
 /* Light mode: balance card */
 [data-theme="light"] .home-bal-card{background:linear-gradient(135deg,#7000ff,#9333ea) !important;}
@@ -168,11 +168,11 @@ html,body{background:var(--bg);}
 [data-theme="light"] .bal-card *{color:#fff !important;}
 
 /* Light mode: action buttons */
-[data-theme="light"] .home-action{background:#f5f5f5 !important;border-color:#e0e0e0 !important;}
+[data-theme="light"] .home-action{background:#f5f5f5 !important;border-color:#e9dfff !important;}
 [data-theme="light"] .home-action:first-child{background:linear-gradient(135deg,rgba(112,0,255,.15),rgba(112,0,255,.08)) !important;border-color:rgba(112,0,255,.3) !important;}
 
 /* Light mode: topbar */
-[data-theme="light"] #globalTopBar{background:#ffffff !important;border-bottom:1px solid #e0e0e0 !important;}
+[data-theme="light"] #globalTopBar{background:#ffffff !important;border-bottom:1px solid #e9dfff !important;}
 
 /* Light mode: more page items */
 [data-theme="light"] .more-item{background:#fff !important;border-color:#e8e8e8 !important;}

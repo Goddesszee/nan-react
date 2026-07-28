@@ -1350,12 +1350,12 @@ const VTPASS_API = 'https://nan-production.up.railway.app/api/vtpass';
 function bpColors(){
   const isLight = document.documentElement.getAttribute('data-theme') === 'light';
   return isLight ? {
-    card: '#ffffff', cardBorder: '#e5e5e5',
-    text: '#111111', text2: '#666666', text3: '#999999',
+    card: '#ffffff', cardBorder: '#ede4ff',
+    text: '#111111', text2: 'rgba(0,0,0,.68)', text3: 'rgba(0,0,0,.45)',
     inputBg: '#ffffff', inputBorder: '#dcdcdc',
   } : {
     card: '#1a1a1a', cardBorder: 'rgba(255,255,255,.10)',
-    text: '#f5f5f7', text2: '#aaaaaa', text3: '#888888',
+    text: '#f5f5f7', text2: '#aaaaaa', text3: 'rgba(0,0,0,.55)',
     inputBg: '#1a1a1a', inputBorder: 'rgba(255,255,255,.14)',
   };
 }
@@ -2134,7 +2134,7 @@ async function showAjoGroup(groupId){
       if(isThisRound&&isActive) rightTag=`<span style="font-size:.65rem;color:#34d399;font-weight:700;">← This round</span>`;
       else if(isPastRound) rightTag=`<span style="font-size:.65rem;color:#888;">Received ✓</span>`;
       return `<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:0.5px solid rgba(255,255,255,.05);">
-        <div style="width:20px;font-size:.7rem;color:#555;text-align:right;flex-shrink:0;">${i+1}</div>
+        <div style="width:20px;font-size:.7rem;color:rgba(0,0,0,.72);text-align:right;flex-shrink:0;">${i+1}</div>
         <div style="width:32px;height:32px;border-radius:50%;background:${avatarBg};display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;color:${avatarCol};flex-shrink:0;">${init}</div>
         <div style="flex:1;font-size:.82rem;color:${isMe||isThisRound?'var(--text)':'var(--text3)'};font-weight:${isMe||isThisRound?'600':'400'};">${nameLabel}${adminTag}</div>
         ${rightTag}
@@ -7971,8 +7971,8 @@ window.addEventListener('load',()=>{
     const _isLight = document.documentElement.getAttribute('data-theme')==='light';
     const _bg = _isLight ? '#ffffff' : '#000000';
     const _txt = _isLight ? '#111111' : '#ffffff';
-    const _txt2 = _isLight ? '#555' : 'rgba(255,255,255,.7)';
-    const _txt3 = _isLight ? '#999' : 'rgba(255,255,255,.35)';
+    const _txt2 = _isLight ? 'rgba(0,0,0,.72)' : 'rgba(255,255,255,.7)';
+    const _txt3 = _isLight ? 'rgba(0,0,0,.45)' : 'rgba(255,255,255,.35)';
     const _btn = _isLight ? 'rgba(0,0,0,.08)' : 'rgba(255,255,255,.12)';
     const _nanLogoL='<svg width="180" height="44" viewBox="0 0 280 70" fill="none"><g transform="translate(35,35)"><g transform="translate(15,-15) scale(0.0625)"><path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill="#7000ff"/><path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill="#7000ff"/></g><line x1="65" y1="-13" x2="65" y2="13" stroke="#111" stroke-width="5.5" stroke-linecap="round"/><line x1="65" y1="-13" x2="83" y2="13" stroke="#111" stroke-width="5.5" stroke-linecap="round"/><line x1="83" y1="-13" x2="83" y2="13" stroke="#111" stroke-width="5.5" stroke-linecap="round"/><line x1="91" y1="13" x2="100" y2="-13" stroke="#111" stroke-width="5.5" stroke-linecap="round"/><line x1="109" y1="13" x2="100" y2="-13" stroke="#111" stroke-width="5.5" stroke-linecap="round"/><line x1="94" y1="3" x2="106" y2="3" stroke="#111" stroke-width="5.5" stroke-linecap="round"/><line x1="117" y1="-13" x2="117" y2="13" stroke="#111" stroke-width="5.5" stroke-linecap="round"/><line x1="117" y1="-13" x2="135" y2="13" stroke="#111" stroke-width="5.5" stroke-linecap="round"/><line x1="135" y1="-13" x2="135" y2="13" stroke="#111" stroke-width="5.5" stroke-linecap="round"/></g></svg>';
     const _nanLogoD=_nanLogoL.replace(/stroke="#111"/g,'stroke="#fff"');
