@@ -1161,6 +1161,19 @@ html,body{background:var(--bg);}
     reader.onload = () => { document.getElementById('careerCvText').value = reader.result; };
     reader.readAsText(f);
   }
+  async function careerShowCompanyProfile(idx, company, jobTitle){
+    const el = document.getElementById('companyProfile'+idx);
+    if(el.style.display === 'block'){ el.style.display = 'none'; return; }
+    el.style.display = 'block';
+    el.textContent = 'Looking up ' + company + '...';
+    try{
+      const r = await fetch(CAREER_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'company-profile', company, jobTitle})});
+      const d = await r.json();
+      if(!d.success) throw new Error(d.error || 'Lookup failed');
+      const p = d.profile || {};
+      el.innerHTML = `<b style="color:var(--text);">${company}</b><br/>${p.summary||''}<br/>${p.size?('Size: '+p.size+'<br/>'):''}${p.stage?('Stage: '+p.stage+'<br/>'):''}${p.notableSignal?('Note: '+p.notableSignal):''}<br/><span style="color:#eab308;">AI-researched — cross-check independently.</span>`;
+    }catch(err){ el.textContent = '❌ ' + err.message; }
+  }
   const CAREER_API = 'https://nan-production.up.railway.app/api/career';
   async function careerGenerateCv(){
     const name = document.getElementById('careerGenName').value.trim();
@@ -1207,7 +1220,7 @@ html,body{background:var(--bg);}
       if(jobs.length === 0){
         document.getElementById('careerResults').innerHTML = '<div style="color:var(--text3);font-size:.85rem;">No matches came back. Try widening location or skills.</div>';
       } else {
-        document.getElementById('careerResults').innerHTML = jobs.map(j => `
+        document.getElementById('careerResults').innerHTML = jobs.map((j,i) => `
           <div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;">
             <div style="display:flex;justify-content:space-between;align-items:start;">
               <div>
@@ -1217,10 +1230,14 @@ html,body{background:var(--bg);}
               <div style="font-size:.75rem;font-weight:700;color:#c084fc;background:rgba(112,0,255,.1);border-radius:8px;padding:4px 8px;white-space:nowrap;">${j.matchScore||'--'}%</div>
             </div>
             <div style="font-size:.8rem;color:var(--text2);margin-top:8px;">${j.reason||''}</div>
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;gap:8px;">
               <span style="font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:6px;${j.verified ? 'background:rgba(34,197,94,.1);color:#22c55e;' : 'background:rgba(255,193,7,.1);color:#eab308;'}">${j.verified ? '✓ Verified listing' : 'AI-found — verify before applying'}</span>
-              ${j.url ? `<a href="${j.url}" target="_blank" style="font-size:.78rem;color:var(--accent3);">View listing &rarr;</a>` : ''}
+              <span style="display:flex;gap:10px;align-items:center;">
+                <span onclick="careerShowCompanyProfile(${i},'${(j.company||'').replace(/'/g,"\\'")}','${(j.title||'').replace(/'/g,"\\'")}')" style="font-size:.78rem;color:var(--text3);cursor:pointer;text-decoration:underline;">Company profile</span>
+                ${j.url ? `<a href="${j.url}" target="_blank" style="font-size:.78rem;color:var(--accent3);">View listing &rarr;</a>` : ''}
+              </span>
             </div>
+            <div id="companyProfile${i}" style="display:none;margin-top:10px;padding-top:10px;border-top:0.5px solid var(--border);font-size:.78rem;color:var(--text2);"></div>
           </div>`).join('');
       }
     }catch(err){
@@ -1229,16 +1246,66 @@ html,body{background:var(--bg);}
   }
   </script>
 
-  <!-- ══ SUPPLIER AGENT PAGE (placeholder) ══ -->
+  <!-- ══ SUPPLIER AGENT PAGE ══ -->
   <div class="page" id="page-supplier-agent">
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px 20px;text-align:center;">
-      <div style="width:48px;height:48px;border-radius:14px;background:rgba(112,0,255,.12);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="2" stroke-linecap="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 9h1M9 13h1M14 9h1M14 13h1"/></svg>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;">
+      <div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">Global supplier agent</div>
+      <div style="font-size:.82rem;color:var(--text2);margin-bottom:16px;">Search for manufacturers and suppliers of anything, anywhere. Results are AI-researched from public web content — verify before ordering.</div>
+
+      <input id="supplierProduct" placeholder="What are you sourcing? e.g. school bags" style="width:100%;padding:11px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+      <input id="supplierLocation" placeholder="Preferred location, e.g. Guangzhou (optional)" style="width:100%;padding:11px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <input id="supplierBudget" placeholder="Target unit budget (optional)" style="flex:1;padding:11px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+        <input id="supplierMoq" placeholder="Max MOQ (optional)" style="flex:1;padding:11px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
       </div>
-      <div style="font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:6px;">Global supplier agent</div>
-      <div style="font-size:.85rem;color:var(--text2);max-width:320px;margin:0 auto;">Search verified manufacturers, compare pricing, MOQ, and risk, and get a landed-cost estimate. Paid per search with x402 — coming soon.</div>
+
+      <button class="btn" id="supplierSearchBtn" onclick="supplierRunSearch()" style="width:100%;height:48px;border-radius:14px;font-weight:700;">Find suppliers</button>
+      <div id="supplierStatus" style="font-size:.8rem;color:var(--text3);margin-top:8px;"></div>
+      <div id="supplierResults" style="margin-top:16px;"></div>
     </div>
   </div>
+
+  <script>
+  const SUPPLIER_API = 'https://nan-production.up.railway.app/api/supplier';
+  async function supplierRunSearch(){
+    const product = document.getElementById('supplierProduct').value.trim();
+    if(!product){ document.getElementById('supplierStatus').textContent = 'Enter what you\'re sourcing first.'; return; }
+    const btn = document.getElementById('supplierSearchBtn'); btn.disabled = true;
+    document.getElementById('supplierStatus').textContent = 'Searching sourcing platforms...';
+    document.getElementById('supplierResults').innerHTML = '';
+    try{
+      const r = await fetch(SUPPLIER_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+        action:'search-suppliers', product,
+        location: document.getElementById('supplierLocation').value.trim(),
+        budget: document.getElementById('supplierBudget').value.trim(),
+        moqLimit: document.getElementById('supplierMoq').value.trim(),
+      })});
+      const d = await r.json();
+      if(!d.success) throw new Error(d.error || 'Search failed');
+      document.getElementById('supplierStatus').textContent = '';
+      const suppliers = d.suppliers || [];
+      if(suppliers.length === 0){
+        document.getElementById('supplierResults').innerHTML = '<div style="color:var(--text3);font-size:.85rem;">No matches came back. Try a broader product description.</div>';
+        return;
+      }
+      document.getElementById('supplierResults').innerHTML = suppliers.map(s => `
+        <div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;">
+          <div style="font-weight:700;color:var(--text);">${s.companyName||''}</div>
+          <div style="font-size:.8rem;color:var(--text2);margin-top:2px;">${s.whatTheySell||''}</div>
+          <div style="font-size:.78rem;color:var(--text3);margin-top:6px;">${s.location||'Location unknown'} &middot; MOQ ${s.moq||'n/a'} &middot; ${s.priceRange||'price n/a'}</div>
+          ${(s.certifications&&s.certifications.length) ? `<div style="font-size:.75rem;color:var(--text3);margin-top:4px;">Certifications: ${s.certifications.join(', ')}</div>` : ''}
+          ${(s.exportMarkets&&s.exportMarkets.length) ? `<div style="font-size:.75rem;color:var(--text3);margin-top:2px;">Exports to: ${s.exportMarkets.join(', ')}</div>` : ''}
+          <div style="font-size:.75rem;color:#eab308;margin-top:6px;">${s.riskNote||''}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+            <span style="font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:6px;background:rgba(255,193,7,.1);color:#eab308;">AI-researched — verify before ordering</span>
+            ${s.url ? `<a href="${s.url}" target="_blank" style="font-size:.78rem;color:var(--accent3);">View source &rarr;</a>` : ''}
+          </div>
+        </div>`).join('');
+    }catch(err){
+      document.getElementById('supplierStatus').textContent = '❌ ' + err.message;
+    }finally{ btn.disabled = false; }
+  }
+  </script>
 
   <!-- ══ SWAP PAGE ══ -->
   <div class="page" id="page-swap">
