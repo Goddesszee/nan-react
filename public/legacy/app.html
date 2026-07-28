@@ -2647,6 +2647,11 @@ function startQRScan() {
 <style>
 .nan-dd-item{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;cursor:pointer;transition:background .15s;}
 .nan-dd-item:hover{background:rgba(112,0,255,.08);}
+.nan-dd-tile{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;cursor:pointer;transition:background .15s,border-color .15s;}
+.nan-dd-tile:hover{background:rgba(112,0,255,.08);border-color:rgba(112,0,255,.25);}
+.nan-dd-tile-wide{flex-direction:row;align-items:center;padding:14px;}
+.nan-dd-tile-icon{width:34px;height:34px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.nan-dd-tile span{font-size:.95rem;font-weight:700;color:var(--text);}
 
 /* ══ MOBILE TOPBAR CLEANUP ══ */
 
@@ -2657,6 +2662,18 @@ function startQRScan() {
 
 </script>
 <script>
+function nanShowTradeBackdrop(){
+  var backdrop=document.getElementById('nan-trade-backdrop');
+  if(!backdrop) return;
+  var topbar=document.getElementById('globalTopBar');
+  var topbarHeight=topbar?topbar.getBoundingClientRect().height:0;
+  backdrop.style.top=topbarHeight+'px';
+  backdrop.style.display='block';
+}
+function nanHideTradeBackdrop(){
+  var backdrop=document.getElementById('nan-trade-backdrop');
+  if(backdrop) backdrop.style.display='none';
+}
 function nanToggleDd(name,btn){
   var dd=document.getElementById('nan-'+name+'-dd');
   if(!dd) return;
@@ -2666,15 +2683,29 @@ function nanToggleDd(name,btn){
   var rect=btn.getBoundingClientRect();
   var open=dd.style.display!=='block';
   dd.style.display=open?'block':'none';
-  dd.style.top=(rect.bottom+4)+'px';
-  dd.style.left=rect.left+'px';
-  dd.style.width='210px';
   dd.style.zIndex='9999999';
+  if(name==='trade'){
+    if(open){
+      dd.style.top='50%';
+      dd.style.left='50%';
+      dd.style.transform='translate(-50%, -50%)';
+      nanShowTradeBackdrop();
+    } else {
+      nanHideTradeBackdrop();
+    }
+  } else {
+    dd.style.top=(rect.bottom+4)+'px';
+    dd.style.left=rect.left+'px';
+    dd.style.width='210px';
+    dd.style.transform='';
+    if(other && other.id==='nan-trade-dd') nanHideTradeBackdrop();
+  }
   if(other) other.style.display='none';
   btn.querySelectorAll('.nan-caret').forEach(function(c){c.style.transform=open?'rotate(180deg)':''});
 }
 function nanCloseDds(){
   ['nan-trade-dd','nan-more-dd'].forEach(function(id){var el=document.getElementById(id);if(el)el.style.display='none';});
+  nanHideTradeBackdrop();
   document.querySelectorAll('.nan-caret').forEach(function(c){c.style.transform='';});
 }
 document.addEventListener('click',function(e){
@@ -2683,6 +2714,7 @@ document.addEventListener('click',function(e){
     var btn=document.getElementById(n==='trade'?'tnav-trade-btn':'tnav-more');
     if(dd&&btn&&!dd.contains(e.target)&&!btn.contains(e.target)){
       dd.style.display='none';
+      if(n==='trade') nanHideTradeBackdrop();
       btn.querySelectorAll('.nan-caret').forEach(function(c){c.style.transform='';});
     }
   });
@@ -2724,7 +2756,7 @@ function nanToggleFaucet(btn){
     dd.style.background='';
     dd.style.color='';
   }
-  if(tradeDd) tradeDd.style.display='none';
+  if(tradeDd){ tradeDd.style.display='none'; nanHideTradeBackdrop(); }
   document.addEventListener('click',function _fc(e){
     if(!btn.contains(e.target)&&!dd.contains(e.target)){
       dd.style.display='none';
@@ -2821,32 +2853,40 @@ function nanToggleFaucet(btn){
   <div id="nanNotifList"><div id="nanNotifEmpty">No notifications yet</div></div>
 </div>
 
+<!-- Trade dropdown backdrop — blanks out the page behind the menu, matches page bg in both themes -->
+<div id="nan-trade-backdrop" onclick="nanCloseDds()" style="position:fixed;left:0;right:0;bottom:0;background:var(--bg);z-index:9999998;display:none;"></div>
+
 <!-- Trade dropdown — must be direct child of body to escape overflow:hidden containers -->
-<div id="nan-trade-dd" onclick="event.stopPropagation()" style="position:fixed;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:8px;min-width:210px;z-index:999999;display:none;">
-  <div class="nan-dd-item" onclick="goPage('swap');nanCloseDds()">
-    <div style="width:32px;height:32px;border-radius:9px;background:#7000ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg></div>
-    <div><div style="font-size:1rem;font-weight:700;color:var(--text);">Swap</div><div style="font-size:.75rem;color:var(--text3);">USDC ↔ EURC on Arc</div></div>
+<div id="nan-trade-dd" onclick="event.stopPropagation()" style="position:fixed;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;width:380px;z-index:9999999;display:none;">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+    <div class="nan-dd-tile" onclick="goPage('swap');nanCloseDds()">
+      <div class="nan-dd-tile-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg></div>
+      <span>Swap</span>
+    </div>
+    <div class="nan-dd-tile" onclick="goPage('bridge');nanCloseDds()">
+      <div class="nan-dd-tile-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M4 4h16"/><path d="M4 8h16"/><path d="M4 12h8"/><circle cx="18" cy="16" r="4"/></svg></div>
+      <span>Bridge</span>
+    </div>
+    <div class="nan-dd-tile" onclick="goPage('lend');nanCloseDds()">
+      <div class="nan-dd-tile-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+      <span>Earn</span>
+    </div>
+    <div class="nan-dd-tile" onclick="goPage('send');setTimeout(()=>setSendTab('send'),100);nanCloseDds()">
+      <div class="nan-dd-tile-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></div>
+      <span>Send</span>
+    </div>
+    <div class="nan-dd-tile" onclick="goPage('payreq');nanCloseDds()">
+      <div class="nan-dd-tile-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+      <span>Payment</span>
+    </div>
+    <div class="nan-dd-tile" onclick="goPage('bulk');nanCloseDds()">
+      <div class="nan-dd-tile-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/><polyline points="17 8 21 12 17 16"/></svg></div>
+      <span>Payroll</span>
+    </div>
   </div>
-  <div class="nan-dd-item" style="margin-top:2px;" onclick="goPage('bridge');nanCloseDds()">
-    <div style="width:32px;height:32px;border-radius:9px;background:#5b21b6;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M4 4h16"/><path d="M4 8h16"/><path d="M4 12h8"/><circle cx="18" cy="16" r="4"/><path d="M18 14v4M16 16h4"/></svg></div>
-    <div><div style="font-size:1rem;font-weight:700;color:var(--text);">Bridge</div><div style="font-size:.75rem;color:var(--text3);">Cross-chain via CCTP</div></div>
-  </div>
-  <div class="nan-dd-item" style="margin-top:2px;" onclick="goPage('lend');nanCloseDds()">
-    <div style="width:32px;height:32px;border-radius:9px;background:#0f766e;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
-    <div><div style="font-size:1rem;font-weight:700;color:var(--text);">Earn</div><div style="font-size:.75rem;color:var(--text3);">4.80% APY · No lockup</div></div>
-  </div>
-  <div style="height:0.5px;background:var(--border);margin:6px 4px;"></div>
-  <div class="nan-dd-item" onclick="goPage('send');setTimeout(()=>setSendTab('send'),100);nanCloseDds()">
-    <div style="width:32px;height:32px;border-radius:9px;background:#7000ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></div>
-    <div><div style="font-size:1rem;font-weight:700;color:var(--text);">Send</div><div style="font-size:.75rem;color:var(--text3);">USDC or EURC to any address</div></div>
-  </div>
-  <div class="nan-dd-item" style="margin-top:2px;" onclick="goPage('payreq');nanCloseDds()">
-    <div style="width:32px;height:32px;border-radius:9px;background:#7000ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
-    <div><div style="font-size:1rem;font-weight:700;color:var(--text);">Payment</div><div style="font-size:.75rem;color:var(--text3);">Request or share a payment link</div></div>
-  </div>
-  <div class="nan-dd-item" style="margin-top:2px;" onclick="goPage('bulk');nanCloseDds()">
-    <div style="width:32px;height:32px;border-radius:9px;background:#7000ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/><polyline points="17 8 21 12 17 16"/></svg></div>
-    <div><div style="font-size:1rem;font-weight:700;color:var(--text);">Payroll</div><div style="font-size:.75rem;color:var(--text3);">Pay your team in USDC</div></div>
+  <div class="nan-dd-tile nan-dd-tile-wide" style="margin-top:10px;" onclick="goPage('history');nanCloseDds()">
+    <div class="nan-dd-tile-icon" style="width:28px;height:28px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg></div>
+    <span>History</span>
   </div>
 </div>
 
