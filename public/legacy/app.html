@@ -337,6 +337,10 @@ html,body{background:var(--bg);}
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 9h1M9 13h1M14 9h1M14 13h1"/></svg>
         Supplier agent
       </button>
+      <button onclick="goPage('marketplace')" id="tnav-marketplace" class="tnav-btn" style="display:flex;align-items:center;gap:4px;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l1.5-5h15L21 9M3 9v10a1 1 0 001 1h16a1 1 0 001-1V9M3 9h18M9 13a2 2 0 11-4 0M19 13a2 2 0 11-4 0"/></svg>
+        Marketplace
+      </button>
       <button id="tnav-trade-btn" class="tnav-btn" onclick="event.stopPropagation();nanToggleDd('trade',this)">Wallet <span class="nan-caret" style="font-size:10px;margin-left:3px;display:inline-block;transition:transform .2s;">&#9660;</span></button>
       
       <button id="tnav-ai" onclick="toggleAgent()" style="display:none;align-items:center;gap:5px;background:rgba(109,40,217,.15);border:1px solid rgba(109,40,217,.3);border-radius:100px;padding:6px 12px;font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;color:#c084fc;cursor:pointer;white-space:nowrap;">✦ NAN AI</button>
@@ -1332,6 +1336,192 @@ html,body{background:var(--bg);}
       document.getElementById('supplierStatus').textContent = '❌ ' + err.message;
     }finally{ btn.disabled = false; }
   }
+  </script>
+
+  <!-- ══ MARKETPLACE PAGE ══ -->
+  <div class="page" id="page-marketplace">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;">
+      <div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">Marketplace</div>
+      <div style="font-size:.82rem;color:var(--text2);margin-bottom:14px;">Buy and sell anything — payment held in real escrow until you confirm receipt.</div>
+
+      <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;">
+        <button id="mktTabBrowse" class="tnav-btn" onclick="mktSwitchTab('browse')">Browse</button>
+        <button id="mktTabSell" class="tnav-btn" onclick="mktSwitchTab('sell')">Sell</button>
+        <button id="mktTabOrders" class="tnav-btn" onclick="mktSwitchTab('orders')">My orders</button>
+        <button id="mktTabListings" class="tnav-btn" onclick="mktSwitchTab('listings')">Offers on my listings</button>
+      </div>
+
+      <div id="mktBrowsePane">
+        <div style="display:flex;gap:8px;margin-bottom:12px;">
+          <input id="mktSearchQuery" placeholder="Search listings..." style="flex:1;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+          <button class="btn" onclick="mktBrowse()" style="padding:0 18px;border-radius:10px;">Search</button>
+        </div>
+        <div id="mktBrowseResults" style="font-size:.85rem;color:var(--text3);">Loading listings...</div>
+      </div>
+
+      <div id="mktSellPane" style="display:none;">
+        <input id="mktNewTitle" placeholder="What are you selling?" style="width:100%;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+        <textarea id="mktNewDesc" placeholder="Description, condition, etc." style="width:100%;min-height:80px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;font-family:inherit;"></textarea>
+        <div style="display:flex;gap:8px;margin-bottom:8px;">
+          <input id="mktNewPrice" type="number" min="0" step="0.01" placeholder="Price (USDC)" style="flex:1;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+          <input id="mktNewCategory" placeholder="Category (e.g. phones)" style="flex:1;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+        </div>
+        <input id="mktNewLocation" placeholder="Location (optional)" style="width:100%;padding:10px 12px;margin-bottom:10px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+        <button class="btn" onclick="mktCreateListing()" style="width:100%;height:46px;border-radius:12px;font-weight:700;">List item</button>
+        <div id="mktSellStatus" style="font-size:.8rem;color:var(--text3);margin-top:8px;"></div>
+      </div>
+
+      <div id="mktOrdersPane" style="display:none;">
+        <div id="mktOrdersResults" style="font-size:.85rem;color:var(--text3);">Loading orders...</div>
+      </div>
+
+      <div id="mktListingsPane" style="display:none;">
+        <div id="mktListingsResults" style="font-size:.85rem;color:var(--text3);">Loading offers...</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  const MARKETPLACE_API = 'https://nan-production.up.railway.app/api/marketplace';
+  async function mktCall(action, body){
+    const r = await fetch(MARKETPLACE_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action, ...body})});
+    return r.json();
+  }
+  function mktRequireWallet(){
+    if (typeof circleWalletAddress === 'undefined' || !circleWalletAddress) {
+      alert('Connect your NAN wallet first.');
+      return false;
+    }
+    return true;
+  }
+  function mktSwitchTab(tab){
+    ['browse','sell','orders','listings'].forEach(t => {
+      document.getElementById('mkt'+t.charAt(0).toUpperCase()+t.slice(1)+'Pane').style.display = (t===tab)?'block':'none';
+      const btn = document.getElementById('mktTab'+t.charAt(0).toUpperCase()+t.slice(1));
+      btn.style.background = (t===tab) ? '#2c2c2a' : '';
+      btn.style.color = (t===tab) ? '#fff' : '';
+    });
+    if (tab === 'browse') mktBrowse();
+    if (tab === 'orders') mktLoadOrders();
+    if (tab === 'listings') mktLoadListingsOffers();
+  }
+  async function mktBrowse(){
+    const el = document.getElementById('mktBrowseResults');
+    el.textContent = 'Searching...';
+    try{
+      const d = await mktCall('listing-list', { query: document.getElementById('mktSearchQuery').value.trim() });
+      if(!d.success) throw new Error(d.error||'Search failed');
+      if(d.listings.length === 0){ el.innerHTML = 'No listings found.'; return; }
+      el.innerHTML = d.listings.map(l => `
+        <div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;">
+          <div style="display:flex;justify-content:space-between;">
+            <div style="font-weight:700;color:var(--text);">${l.title}</div>
+            <div style="font-weight:700;color:#c084fc;">$${l.price}</div>
+          </div>
+          <div style="font-size:.8rem;color:var(--text2);margin:6px 0;">${l.description||''}</div>
+          <div style="font-size:.75rem;color:var(--text3);margin-bottom:8px;">${l.category||''} ${l.location?(' &middot; '+l.location):''}</div>
+          <button class="btn" style="padding:8px 16px;border-radius:8px;font-size:.8rem;" onclick="mktMakeOffer('${l.id}', ${l.price})">Make offer</button>
+        </div>`).join('');
+    }catch(err){ el.textContent = '❌ ' + err.message; }
+  }
+  async function mktMakeOffer(listingId, askingPrice){
+    if(!mktRequireWallet()) return;
+    const input = prompt('Your offer (USDC):', askingPrice);
+    if(input === null) return;
+    const d = await mktCall('offer-create', { listingId, buyerAddress: circleWalletAddress, buyerWalletId: circleWalletId||'', offerPrice: input });
+    if(!d.success){ alert('❌ ' + d.error); return; }
+    alert('Offer sent — the seller needs to accept it before you can pay.');
+  }
+  async function mktCreateListing(){
+    if(!mktRequireWallet()) return;
+    const title = document.getElementById('mktNewTitle').value.trim();
+    const price = document.getElementById('mktNewPrice').value;
+    if(!title || !price){ document.getElementById('mktSellStatus').textContent = 'Title and price are required.'; return; }
+    const d = await mktCall('listing-create', {
+      sellerAddress: circleWalletAddress, title, price,
+      description: document.getElementById('mktNewDesc').value.trim(),
+      category: document.getElementById('mktNewCategory').value.trim(),
+      location: document.getElementById('mktNewLocation').value.trim(),
+    });
+    if(!d.success){ document.getElementById('mktSellStatus').textContent = '❌ ' + d.error; return; }
+    document.getElementById('mktSellStatus').textContent = 'Listed! Switch to Browse to see it.';
+    document.getElementById('mktNewTitle').value = document.getElementById('mktNewDesc').value = document.getElementById('mktNewPrice').value = document.getElementById('mktNewCategory').value = document.getElementById('mktNewLocation').value = '';
+  }
+  function mktOrderCard(o, myAddr){
+    const iAmBuyer = o.buyerAddress?.toLowerCase() === myAddr.toLowerCase();
+    let action = '';
+    if(o.status === 'awaiting_payment' && iAmBuyer) action = `<button class="btn" style="padding:8px 16px;border-radius:8px;font-size:.8rem;" onclick="mktPay('${o.id}')">Pay $${o.amount}</button>`;
+    else if(o.status === 'escrowed' && !iAmBuyer) action = `<button class="btn" style="padding:8px 16px;border-radius:8px;font-size:.8rem;" onclick="mktMarkShipped('${o.id}')">Mark shipped</button>`;
+    else if(o.status === 'shipped' && iAmBuyer) action = `<button class="btn" style="padding:8px 16px;border-radius:8px;font-size:.8rem;" onclick="mktConfirmReceived('${o.id}','${o.sellerAddress}')">Confirm received</button>`;
+    const disputable = ['escrowed','shipped'].includes(o.status);
+    return `<div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;">
+        <div style="font-weight:700;color:var(--text);">${iAmBuyer?'Buying':'Selling'} &middot; $${o.amount}</div>
+        <div style="font-size:.75rem;font-weight:700;color:var(--text3);text-transform:uppercase;">${o.status}</div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:8px;align-items:center;">
+        ${action}
+        ${disputable ? `<span onclick="mktDispute('${o.id}')" style="font-size:.78rem;color:#e24b4a;cursor:pointer;">Dispute</span>` : ''}
+      </div>
+    </div>`;
+  }
+  async function mktLoadOrders(){
+    const el = document.getElementById('mktOrdersResults');
+    if(!mktRequireWallet()){ el.textContent = 'Connect your wallet to see your orders.'; return; }
+    el.textContent = 'Loading...';
+    const d = await mktCall('my-orders', { walletAddress: circleWalletAddress });
+    if(!d.success){ el.textContent = '❌ ' + d.error; return; }
+    if(d.orders.length === 0){ el.innerHTML = 'No orders yet.'; return; }
+    el.innerHTML = d.orders.map(o => mktOrderCard(o, circleWalletAddress)).join('');
+  }
+  async function mktPay(orderId){
+    const d = await mktCall('order-pay', { orderId, buyerWalletAddress: circleWalletAddress });
+    if(!d.success){ alert('❌ ' + d.error); return; }
+    alert('Paid into escrow — tx ' + (d.order.escrowTxId||'').slice(0,12) + '...');
+    mktLoadOrders();
+  }
+  async function mktMarkShipped(orderId){
+    const d = await mktCall('order-mark-shipped', { orderId });
+    if(!d.success){ alert('❌ ' + d.error); return; }
+    mktLoadOrders();
+  }
+  async function mktConfirmReceived(orderId, sellerWalletAddress){
+    const d = await mktCall('order-confirm-received', { orderId, sellerWalletAddress });
+    if(!d.success){ alert('❌ ' + d.error); return; }
+    alert('Released to seller — tx ' + (d.order.releaseTxId||'').slice(0,12) + '...');
+    mktLoadOrders();
+  }
+  async function mktDispute(orderId){
+    const reason = prompt('What went wrong?');
+    if(reason === null) return;
+    const d = await mktCall('order-dispute', { orderId, reason, raisedBy: circleWalletAddress });
+    if(!d.success){ alert('❌ ' + d.error); return; }
+    alert('Dispute raised — this order is now locked until it is manually resolved.');
+    mktLoadOrders();
+  }
+  async function mktLoadListingsOffers(){
+    const el = document.getElementById('mktListingsResults');
+    if(!mktRequireWallet()){ el.textContent = 'Connect your wallet first.'; return; }
+    el.textContent = 'Loading...';
+    const d = await mktCall('my-listings-offers', { sellerAddress: circleWalletAddress });
+    if(!d.success){ el.textContent = '❌ ' + d.error; return; }
+    if(d.offers.length === 0){ el.innerHTML = 'No pending offers.'; return; }
+    const listingById = Object.fromEntries(d.listings.map(l => [l.id, l]));
+    el.innerHTML = d.offers.map(o => `
+      <div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;">
+        <div style="font-weight:700;color:var(--text);">${listingById[o.listingId]?.title||'Listing'} — offer $${o.price}</div>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <button class="btn" style="padding:8px 16px;border-radius:8px;font-size:.8rem;" onclick="mktRespondOffer('${o.id}','accept')">Accept</button>
+          <button style="padding:8px 16px;border-radius:8px;font-size:.8rem;background:none;border:1px solid var(--border);color:var(--text3);cursor:pointer;" onclick="mktRespondOffer('${o.id}','reject')">Reject</button>
+        </div>
+      </div>`).join('');
+  }
+  async function mktRespondOffer(offerId, response){
+    const d = await mktCall('offer-respond', { offerId, response, sellerWalletId: circleWalletId||'' });
+    if(!d.success){ alert('❌ ' + d.error); return; }
+    mktLoadListingsOffers();
+  }
+  mktBrowse();
   </script>
 
   <!-- ══ SWAP PAGE ══ -->
