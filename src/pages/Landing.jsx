@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTheme } from '../hooks/useTheme'
+import { NanRibbons } from '../components/NanRibbons'
 
 const API = 'https://nan-production.up.railway.app'
 
@@ -113,6 +114,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
 
   return (
     <div style={{ background:bg, color:text, fontFamily:'Inter,sans-serif', minHeight:'100vh', overflowX:'hidden', position:'relative' }}>
+      <NanRibbons dark={dark} />
 
       {/* Orbs */}
       <div style={{ position:'fixed', width:500, height:500, borderRadius:'50%', background:`radial-gradient(circle,rgba(112,0,255,${dark?.15:.08}) 0%,transparent 70%)`, top:-200, left:-150, filter:'blur(80px)', pointerEvents:'none', zIndex:0 }}/>
