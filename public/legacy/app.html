@@ -560,20 +560,32 @@ html,body{background:var(--bg);}
 </div>
 
 <div id="agentLoginSection">
-  <div style="padding:48px 40px;max-width:460px;">
-    <div style="color:var(--text);font-weight:600;font-size:1.3rem;margin-bottom:28px;">Connect &rarr; Fund &rarr; Automate</div>
-    <div style="display:flex;align-items:center;margin-bottom:28px;">
-      <div style="width:26px;height:26px;border-radius:50%;background:#7000ff;color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
-      <div style="flex:1;height:2px;background:rgba(112,0,255,.3);"></div>
-      <div style="width:26px;height:26px;border-radius:50%;background:var(--card);border:1px solid var(--border2);color:var(--text3);font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
-      <div style="flex:1;height:2px;background:var(--border);"></div>
-      <div style="width:26px;height:26px;border-radius:50%;background:var(--card);border:1px solid var(--border2);color:var(--text3);font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
+  <div class="nan-aur-wrap">
+    <div class="nan-aur-badge">Step 1 of 3</div>
+    <div class="nan-aur-h1">Money that moves itself</div>
+    <div class="nan-aur-sub">A wallet your agents can spend from. Per call, per task, per second, inside limits you set and revoke at any time.</div>
+
+    <input id="agentEmailInput" type="email" placeholder="Email address" class="nan-aur-input"/>
+    <div><button id="agentLoginBtn" onclick="agentLoginInit()" class="nan-aur-cta">Connect agent wallet</button></div>
+    <div class="nan-aur-note">Takes about 30 seconds. Nothing leaves your wallet yet.</div>
+
+    <div class="nan-aur-grid">
+      <div class="nan-aur-card">
+        <div class="nan-aur-tile" style="background:linear-gradient(145deg,rgba(192,38,211,.55),rgba(112,0,255,.45));">&#9889;</div>
+        <div class="nan-aur-ct">Pay per call</div>
+        <div class="nan-aur-cd">Nanopayments over x402, settled the moment the work is done.</div>
+      </div>
+      <div class="nan-aur-card">
+        <div class="nan-aur-tile" style="background:linear-gradient(145deg,rgba(37,99,235,.55),rgba(112,0,255,.45));">&#9670;</div>
+        <div class="nan-aur-ct">Limits you own</div>
+        <div class="nan-aur-cd">Daily caps and trust tiers that only your signature can change.</div>
+      </div>
+      <div class="nan-aur-card">
+        <div class="nan-aur-tile" style="background:linear-gradient(145deg,rgba(112,0,255,.55),rgba(192,38,211,.45));">&#8644;</div>
+        <div class="nan-aur-ct">Agents that trade</div>
+        <div class="nan-aur-cd">Escrow, recurring and conditional payments, agent to agent.</div>
+      </div>
     </div>
-    <input id="agentEmailInput" type="email" placeholder="Email address"
-      style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;color:var(--text);font-size:13px;margin-bottom:10px;box-sizing:border-box;outline:none;"
-      onfocus="this.style.borderColor='#7000ff'" onblur="this.style.borderColor='var(--border)'"/>
-    <button id="agentLoginBtn" onclick="agentLoginInit()"
-      style="width:100%;background:#7000ff;color:#fff;font-weight:600;font-size:13px;padding:14px;border-radius:8px;border:none;cursor:pointer;">Connect to begin</button>
   </div>
 </div>
 
