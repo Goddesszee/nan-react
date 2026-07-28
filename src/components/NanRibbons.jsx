@@ -1,3 +1,9 @@
+// Animated landing background: layered sine-wave ribbons.
+// Tune these two to make the waves stronger (higher) or fainter (lower).
+// 1 = the built-in opacities below, 0.5 = half as visible, 2 = twice.
+const OPACITY_DARK = 1
+const OPACITY_LIGHT = 0.5
+
 const W = 2720
 
 function wave(y, amp, per, close) {
@@ -15,7 +21,7 @@ const BANDS = [
 const TOPLINE = { d: wave(120, 18, 340), stroke: '#a855f7', o: 0.182, dur: 22 }
 
 export function NanRibbons({ dark = true }) {
-  const k = dark ? 1 : 1.15
+  const k = dark ? OPACITY_DARK : OPACITY_LIGHT
   return (
     <div
       aria-hidden="true"
