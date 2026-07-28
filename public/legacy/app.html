@@ -65,6 +65,9 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20width%3D%2232%22%20height%3D%2232%22%20viewBox%3D%220%200%20480%20480%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20transform%3D%22translate%28126.6%2C72%29%20scale%280.7%29%22%3E%3Cpath%20d%3D%22M255%2C0%20L84%2C167%20L71%2C163%20L0%2C97%20L0%2C378%20L246%2C132%20L255%2C110%20Z%22%20fill%3D%22%237000ff%22/%3E%3Cpath%20d%3D%22M69%2C480%20L240%2C313%20L253%2C317%20L324%2C383%20L324%2C102%20L78%2C348%20L69%2C370%20Z%22%20fill%3D%22%237000ff%22/%3E%3C/g%3E%3C/svg%3E"/>
 <link rel="preconnect" href="https://rsms.me/">
 <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="/legacy/style.css?v=1782760866"/>
 <style>
 /* ══ THEME TOKENS — scoped per theme so neither fights the other ══ */
@@ -102,8 +105,31 @@
   --topbar-bg:#ffffff;
   --nav-bg:#ffffff;
 }
-html,body{background:var(--bg);}
-#app-root{background:var(--bg);}
+
+/* ══ GLOBAL DISPLAY FONT — bold geometric sans throughout, overriding scattered inline Inter declarations ══ */
+body, button, input, textarea, select, div, span, p, h1, h2, h3, h4, h5, h6, a {
+  font-family: 'Space Grotesk', 'Inter var', 'Inter', sans-serif !important;
+}
+
+html,body{background-color:var(--bg);}
+#app-root{background-color:var(--bg);}
+#app-root{
+  background-image:
+    radial-gradient(ellipse 900px 650px at 88% 6%,  rgba(112,0,255,.16), transparent 62%),
+    radial-gradient(ellipse 700px 550px at 100% 42%, rgba(168,85,247,.13), transparent 65%),
+    radial-gradient(ellipse 650px 600px at 78% 88%,  rgba(112,0,255,.10), transparent 68%),
+    radial-gradient(ellipse 500px 400px at 8% 96%,   rgba(168,85,247,.08), transparent 70%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+[data-theme="light"] #app-root{
+  background-image:
+    radial-gradient(ellipse 900px 650px at 88% 6%,  rgba(112,0,255,.07), transparent 62%),
+    radial-gradient(ellipse 700px 550px at 100% 42%, rgba(168,85,247,.06), transparent 65%),
+    radial-gradient(ellipse 650px 600px at 78% 88%,  rgba(112,0,255,.05), transparent 68%),
+    radial-gradient(ellipse 500px 400px at 8% 96%,   rgba(168,85,247,.04), transparent 70%);
+}
 .bottom-nav{background:var(--nav-bg) !important;border-top:1px solid var(--border) !important;}
     /* ── MOBILE DARK MODE & DROPDOWN FIXES ── */
     
