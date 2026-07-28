@@ -152,14 +152,6 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
       {/* ── DIRECT CONNECT ── */}
       <section style={{ position:'relative', zIndex:1, minHeight:'100vh', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center', padding: D ? '130px 48px 80px' : '100px 20px 60px' }}>
 
-        <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:28 }}>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 480" width={D?34:28} height={D?51:42} style={{flexShrink:0}}>
-            <path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill={accent}/>
-            <path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill={accent}/>
-          </svg>
-          <span style={{ fontWeight:800, fontSize: D ? '1.6rem' : '1.35rem', letterSpacing:'.02em', color:text }}>NAN</span>
-        </div>
-
         <h1 style={{ fontSize: D ? '2rem' : '1.5rem', fontWeight:800, lineHeight:1.15, letterSpacing:'-.02em', marginBottom:32 }}>
           Connect your wallet
         </h1>
