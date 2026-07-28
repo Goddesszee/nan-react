@@ -1369,6 +1369,9 @@ html,body{background:var(--bg);}
           <input id="mktNewCategory" placeholder="Category (e.g. phones)" style="flex:1;min-width:140px;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
         </div>
         <input id="mktNewLocation" placeholder="Location (optional)" style="width:100%;padding:10px 12px;margin-bottom:10px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+        <input type="file" id="mktNewImagesInput" accept="image/*" multiple style="display:none;" onchange="mktHandleNewImages(event)"/>
+        <div onclick="document.getElementById('mktNewImagesInput').click()" style="border:1px dashed var(--border2);border-radius:12px;padding:16px;text-align:center;cursor:pointer;margin-bottom:8px;color:var(--text3);font-size:.8rem;">Click to add up to 4 photos</div>
+        <div id="mktNewImagesPreview" style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;"></div>
         <button class="btn" onclick="mktCreateListing()" style="width:100%;height:46px;border-radius:12px;font-weight:700;">List item</button>
         <div id="mktSellStatus" style="font-size:.8rem;color:var(--text3);margin-top:8px;"></div>
       </div>
@@ -1417,13 +1420,18 @@ html,body{background:var(--bg);}
       if(d.listings.length === 0){ el.innerHTML = 'No listings found.'; return; }
       el.innerHTML = d.listings.map(l => `
         <div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;">
+          ${l.images && l.images.length ? `<div style="display:flex;gap:6px;margin-bottom:8px;overflow-x:auto;">${l.images.map(src=>`<img src="${src}" style="width:72px;height:72px;object-fit:cover;border-radius:8px;flex-shrink:0;"/>`).join('')}</div>` : ''}
           <div style="display:flex;justify-content:space-between;">
             <div style="font-weight:700;color:var(--text);">${l.title}</div>
             <div style="font-weight:700;color:#c084fc;">$${l.price}</div>
           </div>
           <div style="font-size:.8rem;color:var(--text2);margin:6px 0;">${l.description||''}</div>
           <div style="font-size:.75rem;color:var(--text3);margin-bottom:8px;">${l.category||''} ${l.location?(' &middot; '+l.location):''}</div>
-          <button class="btn" style="padding:8px 16px;border-radius:8px;font-size:.8rem;" onclick="mktMakeOffer('${l.id}', ${l.price})">Make offer</button>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <button class="btn" style="padding:8px 16px;border-radius:8px;font-size:.8rem;" onclick="mktMakeOffer('${l.id}', ${l.price})">Make offer</button>
+            <span onclick="mktToggleReviews('${l.id}')" style="font-size:.78rem;color:var(--text3);cursor:pointer;text-decoration:underline;">Reviews</span>
+          </div>
+          <div id="mktReviews-${l.id}" style="display:none;margin-top:10px;padding-top:10px;border-top:0.5px solid var(--border);"></div>
         </div>`).join('');
     }catch(err){ el.textContent = '❌ ' + err.message; }
   }
@@ -1435,6 +1443,39 @@ html,body{background:var(--bg);}
     if(!d.success){ alert('❌ ' + d.error); return; }
     alert('Offer sent — the seller needs to accept it before you can pay.');
   }
+  function mktCompressImage(file, maxDim, quality){
+    maxDim = maxDim || 800; quality = quality || 0.7;
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = reject;
+      reader.onload = e => {
+        const img = new Image();
+        img.onerror = reject;
+        img.onload = () => {
+          let w = img.width, h = img.height;
+          if (w > h && w > maxDim) { h = Math.round(h * maxDim / w); w = maxDim; }
+          else if (h >= w && h > maxDim) { w = Math.round(w * maxDim / h); h = maxDim; }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+  let mktNewImages = [];
+  async function mktHandleNewImages(event){
+    const files = Array.from(event.target.files || []).slice(0, 4 - mktNewImages.length);
+    for (const f of files) {
+      try { mktNewImages.push(await mktCompressImage(f)); }
+      catch { /* skip unreadable file */ }
+    }
+    const prev = document.getElementById('mktNewImagesPreview');
+    prev.innerHTML = mktNewImages.map((src,i) => `<div style="position:relative;"><img src="${src}" style="width:64px;height:64px;object-fit:cover;border-radius:8px;"/><span onclick="mktRemoveNewImage(${i})" style="position:absolute;top:-6px;right:-6px;background:#e24b4a;color:#fff;border-radius:50%;width:18px;height:18px;font-size:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;">&times;</span></div>`).join('');
+  }
+  function mktRemoveNewImage(i){ mktNewImages.splice(i,1); const prev = document.getElementById('mktNewImagesPreview'); prev.innerHTML = mktNewImages.map((src,idx) => `<div style="position:relative;"><img src="${src}" style="width:64px;height:64px;object-fit:cover;border-radius:8px;"/><span onclick="mktRemoveNewImage(${idx})" style="position:absolute;top:-6px;right:-6px;background:#e24b4a;color:#fff;border-radius:50%;width:18px;height:18px;font-size:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;">&times;</span></div>`).join(''); }
   async function mktCreateListing(){
     if(!mktRequireWallet()) return;
     const title = document.getElementById('mktNewTitle').value.trim();
@@ -1445,10 +1486,12 @@ html,body{background:var(--bg);}
       description: document.getElementById('mktNewDesc').value.trim(),
       category: document.getElementById('mktNewCategory').value.trim(),
       location: document.getElementById('mktNewLocation').value.trim(),
+      images: mktNewImages,
     });
     if(!d.success){ document.getElementById('mktSellStatus').textContent = '❌ ' + d.error; return; }
     document.getElementById('mktSellStatus').textContent = 'Listed! Switch to Browse to see it.';
     document.getElementById('mktNewTitle').value = document.getElementById('mktNewDesc').value = document.getElementById('mktNewPrice').value = document.getElementById('mktNewCategory').value = document.getElementById('mktNewLocation').value = '';
+    mktNewImages = []; document.getElementById('mktNewImagesPreview').innerHTML = '';
   }
   function mktOrderCard(o, myAddr){
     const iAmBuyer = o.buyerAddress?.toLowerCase() === myAddr.toLowerCase();
@@ -1456,6 +1499,7 @@ html,body{background:var(--bg);}
     if(o.status === 'awaiting_payment' && iAmBuyer) action = `<button class="btn" style="padding:8px 16px;border-radius:8px;font-size:.8rem;" onclick="mktPay('${o.id}')">Pay $${o.amount}</button>`;
     else if(o.status === 'escrowed' && !iAmBuyer) action = `<button class="btn" style="padding:8px 16px;border-radius:8px;font-size:.8rem;" onclick="mktMarkShipped('${o.id}')">Mark shipped</button>`;
     else if(o.status === 'shipped' && iAmBuyer) action = `<button class="btn" style="padding:8px 16px;border-radius:8px;font-size:.8rem;" onclick="mktConfirmReceived('${o.id}','${o.sellerAddress}')">Confirm received</button>`;
+    else if(o.status === 'released' && iAmBuyer) action = `<span onclick="mktShowReviewForm('${o.id}')" style="font-size:.78rem;color:var(--accent3);cursor:pointer;text-decoration:underline;">Leave a review</span>`;
     const disputable = ['escrowed','shipped'].includes(o.status);
     return `<div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;">
       <div style="display:flex;justify-content:space-between;">
@@ -1466,7 +1510,58 @@ html,body{background:var(--bg);}
         ${action}
         ${disputable ? `<span onclick="mktDispute('${o.id}')" style="font-size:.78rem;color:#e24b4a;cursor:pointer;">Dispute</span>` : ''}
       </div>
+      <div id="mktReviewForm-${o.id}" style="display:none;margin-top:10px;padding-top:10px;border-top:0.5px solid var(--border);"></div>
     </div>`;
+  }
+  async function mktToggleReviews(listingId){
+    const el = document.getElementById('mktReviews-'+listingId);
+    if(el.style.display === 'block'){ el.style.display = 'none'; return; }
+    el.style.display = 'block';
+    el.textContent = 'Loading reviews...';
+    const d = await mktCall('review-list', { listingId });
+    if(!d.success){ el.textContent = '❌ ' + d.error; return; }
+    if(d.reviews.length === 0){ el.innerHTML = '<span style="font-size:.78rem;color:var(--text3);">No reviews yet.</span>'; return; }
+    const stars = n => '★'.repeat(n) + '☆'.repeat(5-n);
+    el.innerHTML = `<div style="font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:8px;">${stars(Math.round(d.avgRating))} ${d.avgRating.toFixed(1)} (${d.count})</div>` +
+      d.reviews.map(r => `
+        <div style="margin-bottom:10px;">
+          <div style="color:#c084fc;font-size:.85rem;">${stars(r.rating)}</div>
+          <div style="font-size:.8rem;color:var(--text2);">${r.comment||''}</div>
+          ${r.images && r.images.length ? `<div style="display:flex;gap:6px;margin-top:6px;">${r.images.map(src=>`<img src="${src}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;"/>`).join('')}</div>` : ''}
+        </div>`).join('');
+  }
+  let mktReviewImages = [];
+  async function mktHandleReviewImages(event, orderId){
+    const files = Array.from(event.target.files || []).slice(0, 3 - mktReviewImages.length);
+    for (const f of files) {
+      try { mktReviewImages.push(await mktCompressImage(f)); }
+      catch { /* skip unreadable file */ }
+    }
+    const prev = document.getElementById('mktReviewImagesPreview-'+orderId);
+    if (prev) prev.innerHTML = mktReviewImages.map(src => `<img src="${src}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;"/>`).join('');
+  }
+  function mktShowReviewForm(orderId){
+    mktReviewImages = [];
+    const el = document.getElementById('mktReviewForm-'+orderId);
+    el.style.display = 'block';
+    el.innerHTML = `
+      <select id="mktReviewRating-${orderId}" style="width:100%;padding:8px;margin-bottom:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;">
+        <option value="5">★★★★★ (5)</option><option value="4">★★★★☆ (4)</option><option value="3">★★★☆☆ (3)</option><option value="2">★★☆☆☆ (2)</option><option value="1">★☆☆☆☆ (1)</option>
+      </select>
+      <textarea id="mktReviewComment-${orderId}" placeholder="How was it?" style="width:100%;min-height:60px;padding:8px;margin-bottom:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;font-family:inherit;"></textarea>
+      <input type="file" id="mktReviewImagesInput-${orderId}" accept="image/*" multiple style="display:none;" onchange="mktHandleReviewImages(event,'${orderId}')"/>
+      <div onclick="document.getElementById('mktReviewImagesInput-${orderId}').click()" style="border:1px dashed var(--border2);border-radius:10px;padding:10px;text-align:center;cursor:pointer;margin-bottom:8px;color:var(--text3);font-size:.78rem;">Add up to 3 photos</div>
+      <div id="mktReviewImagesPreview-${orderId}" style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;"></div>
+      <button class="btn" style="width:100%;padding:10px;border-radius:8px;font-size:.85rem;" onclick="mktSubmitReview('${orderId}')">Submit review</button>
+    `;
+  }
+  async function mktSubmitReview(orderId){
+    const rating = document.getElementById('mktReviewRating-'+orderId).value;
+    const comment = document.getElementById('mktReviewComment-'+orderId).value.trim();
+    const d = await mktCall('review-create', { orderId, reviewerAddress: circleWalletAddress, rating, comment, images: mktReviewImages });
+    if(!d.success){ alert('❌ ' + d.error); return; }
+    alert('Review submitted — thank you!');
+    mktLoadOrders();
   }
   async function mktLoadOrders(){
     const el = document.getElementById('mktOrdersResults');
