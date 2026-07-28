@@ -10401,6 +10401,11 @@ async function agentVerifyOtp() {
         startAgentSessionCheck();
         window._reconnectPromptShown = false;
         if(typeof showToast==='function') showToast('Agent Wallet connected!', 'success', 4000);
+        if (window._agentWalletReturnTo) {
+          const dest = window._agentWalletReturnTo;
+          window._agentWalletReturnTo = null;
+          goPage(dest);
+        }
       } else if (d.error) {
         clearInterval(agentPollTimer);
         agentResetLogin();

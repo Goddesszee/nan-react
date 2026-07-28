@@ -1181,7 +1181,8 @@ html,body{background:var(--bg);}
   const CAREER_API = 'https://nan-production.up.railway.app/api/career';
   function requireAgentWallet(){
     if (typeof agentWalletAddr === 'undefined' || !agentWalletAddr) {
-      document.getElementById('careerStatus').textContent = 'Connect your Agent wallet first (Wallet ▾ → Agent wallet · connect / x402) — these actions are paid via x402.';
+      window._agentWalletReturnTo = 'career-agent';
+      goPage('agent-wallet');
       return false;
     }
     return true;
@@ -1291,7 +1292,8 @@ html,body{background:var(--bg);}
     const product = document.getElementById('supplierProduct').value.trim();
     if(!product){ document.getElementById('supplierStatus').textContent = 'Enter what you\'re sourcing first.'; return; }
     if (typeof agentWalletAddr === 'undefined' || !agentWalletAddr) {
-      document.getElementById('supplierStatus').textContent = 'Connect your Agent wallet first (Wallet ▾ → Agent wallet · connect / x402) — this is paid via x402.';
+      window._agentWalletReturnTo = 'supplier-agent';
+      goPage('agent-wallet');
       return;
     }
     const btn = document.getElementById('supplierSearchBtn'); btn.disabled = true;
@@ -1389,7 +1391,8 @@ html,body{background:var(--bg);}
   }
   function mktRequireWallet(){
     if (typeof circleWalletAddress === 'undefined' || !circleWalletAddress) {
-      alert('Connect your NAN wallet first.');
+      window._agentWalletReturnTo = 'marketplace';
+      goPage('agent-wallet');
       return false;
     }
     return true;
