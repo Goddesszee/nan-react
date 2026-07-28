@@ -1229,7 +1229,9 @@ html,body{background:var(--bg);}
       }, '0.05');
       if(!searchData.success) throw new Error(searchData.error || 'Job search failed');
 
-      document.getElementById('careerStatus').textContent = '';
+      document.getElementById('careerStatus').textContent = searchData.payment
+        ? `Paid ${searchData.payment.amount} on ${searchData.payment.network} — tx ${(searchData.payment.transaction||'').slice(0,10)}...`
+        : '';
       const jobs = searchData.jobs || [];
       if(jobs.length === 0){
         document.getElementById('careerResults').innerHTML = '<div style="color:var(--text3);font-size:.85rem;">No matches came back. Try widening location or skills.</div>';
@@ -1305,7 +1307,9 @@ html,body{background:var(--bg);}
       if(!wrapped.success) throw new Error(wrapped.error || 'Payment or request failed');
       const d = wrapped.result;
       if(!d.success) throw new Error(d.error || 'Search failed');
-      document.getElementById('supplierStatus').textContent = '';
+      document.getElementById('supplierStatus').textContent = d.payment
+        ? `Paid ${d.payment.amount} on ${d.payment.network} — tx ${(d.payment.transaction||'').slice(0,10)}...`
+        : '';
       const suppliers = d.suppliers || [];
       if(suppliers.length === 0){
         document.getElementById('supplierResults').innerHTML = '<div style="color:var(--text3);font-size:.85rem;">No matches came back. Try a broader product description.</div>';
