@@ -3081,7 +3081,7 @@ a:hover{color:var(--text);}
 
   /* ── Light mode: remove dark band ── */
   [data-theme="light"] #app-root{
-    background:#f5f5f5 !important;
+    background:transparent !important;
   }
   [data-theme="light"] .page{
     background:#f5f5f5 !important;
