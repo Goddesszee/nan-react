@@ -5153,3 +5153,53 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
 
 .nan-aur-ct{font-size:15px !important;font-weight:600 !important;letter-spacing:-.01em !important;}
 .nan-aur-cd{font-size:12.5px !important;line-height:1.6 !important;}
+
+/* ══════════════════════════════════════════════════════════
+   NAN REFERENCE TREATMENT — agent wallet
+   ══════════════════════════════════════════════════════════ */
+#page-agent-wallet > div:first-child{position:relative;background:#0d0d0d !important;}
+html[data-theme=light] #page-agent-wallet > div:first-child{background:#f4f3ef !important;}
+
+.nan-status-row{display:none !important;}
+
+.nan-tex{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.nan-tex svg{position:absolute;top:0;right:0;width:66%;height:100%;opacity:.62;}
+.nan-tex-fade{position:absolute;top:0;right:0;width:66%;height:100%;background:linear-gradient(90deg,#0d0d0d 0%,transparent 45%);}
+html[data-theme=light] .nan-tex svg{opacity:.5;}
+html[data-theme=light] .nan-tex-fade{background:linear-gradient(90deg,#f4f3ef 0%,transparent 45%);}
+
+#agentLoginSection,#agentOtpSection,#agentPendingSection{position:relative;z-index:1;}
+
+html .nan-aur-wrap{padding:26px 24px 26px !important;}
+html .nan-aur-badge{background:none !important;border:none !important;padding:0 !important;color:#a855f7 !important;font-size:10.5px !important;font-weight:700 !important;letter-spacing:.15em !important;margin-bottom:14px !important;}
+html[data-theme=light] .nan-aur-badge{color:#7000ff !important;}
+html .nan-aur-h1{background:none !important;-webkit-background-clip:border-box !important;background-clip:border-box !important;color:#e8e8e8 !important;font-size:clamp(30px,3.6vw,44px) !important;font-weight:800 !important;letter-spacing:-.04em !important;line-height:1 !important;margin-bottom:14px !important;}
+html[data-theme=light] .nan-aur-h1{color:#111111 !important;}
+html .nan-aur-sub{color:#9a9a9a !important;font-size:13.5px !important;line-height:1.6 !important;max-width:450px !important;margin-bottom:20px !important;}
+html[data-theme=light] .nan-aur-sub{color:#5a5a5a !important;}
+html .nan-aur-cta{background:#7000ff !important;color:#ffffff !important;font-size:12.5px !important;font-weight:700 !important;padding:12px 24px !important;border-radius:6px !important;box-shadow:none !important;}
+html .nan-aur-cta:hover{background:#8b3dff !important;transform:none !important;}
+html .nan-aur-note{color:#6a6a6a !important;font-size:11px !important;margin-top:10px !important;}
+html[data-theme=light] .nan-aur-note{color:#8a8a8a !important;}
+
+html .nan-aur-grid{margin-top:28px !important;gap:0 !important;border-top:1px solid rgba(255,255,255,.1) !important;grid-template-columns:repeat(3,minmax(0,1fr)) !important;}
+html[data-theme=light] .nan-aur-grid{border-top-color:rgba(0,0,0,.14) !important;}
+html .nan-aur-card{background:none !important;border:none !important;border-right:1px solid rgba(255,255,255,.1) !important;border-radius:0 !important;box-shadow:none !important;padding:18px 22px !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;}
+html[data-theme=light] .nan-aur-card{border-right-color:rgba(0,0,0,.14) !important;}
+html .nan-aur-grid > .nan-aur-card:last-child{border-right:none !important;}
+html .nan-aur-card:hover{transform:none !important;box-shadow:none !important;}
+html .nan-aur-tile{background:none !important;box-shadow:none !important;width:auto !important;height:auto !important;justify-content:flex-start !important;color:#a855f7 !important;margin-bottom:10px !important;}
+html[data-theme=light] .nan-aur-tile{color:#7000ff !important;}
+html .nan-aur-tile svg{width:18px;height:18px;}
+html .nan-aur-ct{color:#ffffff !important;font-size:13.5px !important;font-weight:700 !important;margin-bottom:4px !important;}
+html[data-theme=light] .nan-aur-ct{color:#111111 !important;}
+html .nan-aur-cd{color:#7a7a7a !important;font-size:12px !important;line-height:1.55 !important;}
+html[data-theme=light] .nan-aur-cd{color:#5f5f5f !important;}
+
+@media(max-width:767px){
+  html .nan-aur-grid{grid-template-columns:1fr !important;}
+  html .nan-aur-card{border-right:none !important;border-bottom:1px solid rgba(255,255,255,.1) !important;}
+  html[data-theme=light] .nan-aur-card{border-bottom-color:rgba(0,0,0,.14) !important;}
+  .nan-tex svg,.nan-tex-fade{width:100% !important;}
+  html .nan-aur-h1{font-size:26px !important;}
+}
