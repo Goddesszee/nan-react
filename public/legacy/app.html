@@ -1103,16 +1103,128 @@ html,body{background:var(--bg);}
     </div><!-- end more unified card -->
   </div>
 
-  <!-- ══ CAREER AGENT PAGE (placeholder) ══ -->
+  <!-- ══ CAREER AGENT PAGE ══ -->
   <div class="page" id="page-career-agent">
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px 20px;text-align:center;">
-      <div style="width:48px;height:48px;border-radius:14px;background:rgba(112,0,255,.12);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;">
+      <div id="careerStep1">
+        <div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">Career agent</div>
+        <div style="font-size:.82rem;color:var(--text2);margin-bottom:16px;">Upload your CV, or generate one, then search for matching jobs — including web3 roles.</div>
+
+        <div style="display:flex;gap:8px;margin-bottom:12px;">
+          <button id="careerTabUpload" onclick="careerSwitchTab('upload')" class="tnav-btn" style="flex:1;">Upload CV</button>
+          <button id="careerTabGenerate" onclick="careerSwitchTab('generate')" class="tnav-btn" style="flex:1;">Generate CV</button>
+        </div>
+
+        <div id="careerUploadPane">
+          <input type="file" id="careerFileInput" accept=".txt" onchange="careerHandleFile(event)" style="display:none;"/>
+          <div onclick="document.getElementById('careerFileInput').click()" style="border:1px dashed var(--border2);border-radius:12px;padding:20px;text-align:center;cursor:pointer;margin-bottom:10px;color:var(--text3);font-size:.82rem;">
+            Click to upload a .txt CV, or paste your CV text below
+          </div>
+          <textarea id="careerCvText" placeholder="Paste your CV text here..." style="width:100%;min-height:140px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--text);font-size:.85rem;box-sizing:border-box;font-family:inherit;"></textarea>
+          <div style="font-size:.72rem;color:var(--text3);margin-top:6px;">PDF/DOCX upload isn't wired up yet — paste text or upload .txt for now.</div>
+        </div>
+
+        <div id="careerGeneratePane" style="display:none;">
+          <input id="careerGenName" placeholder="Full name" style="width:100%;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+          <input id="careerGenRole" placeholder="Target role (e.g. Frontend Engineer)" style="width:100%;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+          <input id="careerGenSkills" placeholder="Key skills, comma separated" style="width:100%;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+          <textarea id="careerGenExp" placeholder="Brief experience summary" style="width:100%;min-height:80px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;font-family:inherit;"></textarea>
+          <button class="btn" onclick="careerGenerateCv()" style="width:100%;height:44px;border-radius:12px;font-weight:700;">Generate CV</button>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;margin:14px 0;">
+          <label style="font-size:.8rem;color:var(--text2);"><input type="checkbox" id="careerRemoteOnly"/> Remote only</label>
+          <label style="font-size:.8rem;color:var(--text2);"><input type="checkbox" id="careerIncludeWeb3" checked/> Prioritize web3 roles</label>
+        </div>
+        <input id="careerLocation" placeholder="Preferred location (optional)" style="width:100%;padding:10px 12px;margin-bottom:10px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+
+        <button class="btn" id="careerSearchBtn" onclick="careerRunSearch()" style="width:100%;height:48px;border-radius:14px;font-weight:700;">Find matching jobs</button>
+        <div id="careerStatus" style="font-size:.8rem;color:var(--text3);margin-top:8px;"></div>
       </div>
-      <div style="font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:6px;">Career agent</div>
-      <div style="font-size:.85rem;color:var(--text2);max-width:320px;margin:0 auto;">Upload your CV, get matched to jobs with a compatibility score, and generate tailored resumes and cover letters. Paid per action with x402 — coming soon.</div>
+
+      <div id="careerResults" style="margin-top:16px;"></div>
     </div>
   </div>
+
+  <script>
+  function careerSwitchTab(tab){
+    document.getElementById('careerUploadPane').style.display = tab==='upload' ? 'block':'none';
+    document.getElementById('careerGeneratePane').style.display = tab==='generate' ? 'block':'none';
+    document.getElementById('careerTabUpload').style.background = tab==='upload' ? '#2c2c2a':'';
+    document.getElementById('careerTabUpload').style.color = tab==='upload' ? '#fff':'';
+    document.getElementById('careerTabGenerate').style.background = tab==='generate' ? '#2c2c2a':'';
+    document.getElementById('careerTabGenerate').style.color = tab==='generate' ? '#fff':'';
+  }
+  function careerHandleFile(e){
+    const f = e.target.files[0]; if(!f) return;
+    const reader = new FileReader();
+    reader.onload = () => { document.getElementById('careerCvText').value = reader.result; };
+    reader.readAsText(f);
+  }
+  const CAREER_API = 'https://nan-production.up.railway.app/api/career';
+  async function careerGenerateCv(){
+    const name = document.getElementById('careerGenName').value.trim();
+    const targetRole = document.getElementById('careerGenRole').value.trim();
+    if(!name || !targetRole){ document.getElementById('careerStatus').textContent = 'Enter a name and target role.'; return; }
+    document.getElementById('careerStatus').textContent = 'Generating CV...';
+    try{
+      const r = await fetch(CAREER_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+        action:'generate-cv', name, targetRole,
+        skills: document.getElementById('careerGenSkills').value.trim(),
+        experienceSummary: document.getElementById('careerGenExp').value.trim(),
+      })});
+      const d = await r.json();
+      if(!d.success) throw new Error(d.error || 'Generation failed');
+      careerSwitchTab('upload');
+      document.getElementById('careerCvText').value = d.cvText;
+      document.getElementById('careerStatus').textContent = 'CV generated below — review, then search.';
+    }catch(err){ document.getElementById('careerStatus').textContent = '❌ ' + err.message; }
+  }
+  async function careerRunSearch(){
+    const cvText = document.getElementById('careerCvText').value.trim();
+    if(cvText.length < 20){ document.getElementById('careerStatus').textContent = 'Add or generate CV text first.'; return; }
+    const btn = document.getElementById('careerSearchBtn'); btn.disabled = true;
+    document.getElementById('careerStatus').textContent = 'Parsing CV...';
+    document.getElementById('careerResults').innerHTML = '';
+    try{
+      const parseRes = await fetch(CAREER_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'parse-cv', cvText})});
+      const parseData = await parseRes.json();
+      if(!parseData.success) throw new Error(parseData.error || 'CV parsing failed');
+
+      document.getElementById('careerStatus').textContent = 'Searching for matching jobs...';
+      const searchRes = await fetch(CAREER_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+        action:'search-jobs',
+        profile: parseData.profile,
+        location: document.getElementById('careerLocation').value.trim(),
+        remoteOnly: document.getElementById('careerRemoteOnly').checked,
+        includeWeb3: document.getElementById('careerIncludeWeb3').checked,
+      })});
+      const searchData = await searchRes.json();
+      if(!searchData.success) throw new Error(searchData.error || 'Job search failed');
+
+      document.getElementById('careerStatus').textContent = '';
+      const jobs = searchData.jobs || [];
+      if(jobs.length === 0){
+        document.getElementById('careerResults').innerHTML = '<div style="color:var(--text3);font-size:.85rem;">No matches came back. Try widening location or skills.</div>';
+      } else {
+        document.getElementById('careerResults').innerHTML = jobs.map(j => `
+          <div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:start;">
+              <div>
+                <div style="font-weight:700;color:var(--text);">${j.title||''}</div>
+                <div style="font-size:.8rem;color:var(--text2);">${j.company||''} &middot; ${j.location||''}</div>
+              </div>
+              <div style="font-size:.75rem;font-weight:700;color:#c084fc;background:rgba(112,0,255,.1);border-radius:8px;padding:4px 8px;">${j.matchScore||'--'}%</div>
+            </div>
+            <div style="font-size:.8rem;color:var(--text2);margin-top:8px;">${j.reason||''}</div>
+            ${j.url ? `<a href="${j.url}" target="_blank" style="font-size:.78rem;color:var(--accent3);">View listing &rarr;</a>` : ''}
+          </div>`).join('');
+      }
+    }catch(err){
+      document.getElementById('careerStatus').textContent = '❌ ' + err.message;
+    }finally{ btn.disabled = false; }
+  }
+  </script>
 
   <!-- ══ SUPPLIER AGENT PAGE (placeholder) ══ -->
   <div class="page" id="page-supplier-agent">
@@ -2914,8 +3026,8 @@ function nanToggleFaucet(btn){
     </div>
   </div>
   <div class="nan-dd-tile nan-dd-tile-wide" style="margin-top:6px;" onclick="goPage('agent-wallet');nanCloseDds()">
-    <div class="nan-dd-tile-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="7" cy="12" r="3"/><circle cx="17" cy="12" r="3"/><line x1="10" y1="12" x2="14" y2="12"/></svg></div>
-    <span>Agent-to-agent</span>
+    <div class="nan-dd-tile-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
+    <span>Agent wallet &middot; connect / x402</span>
   </div>
   <div class="nan-dd-tile nan-dd-tile-wide" style="margin-top:6px;" onclick="goPage('history');nanCloseDds()">
     <div class="nan-dd-tile-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg></div>
