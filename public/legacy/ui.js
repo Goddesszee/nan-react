@@ -61,8 +61,11 @@ function goPage(name) {
     payreq:     'nav-more',
     'payreq-new': 'nav-more',
     multichain:  'nav-more',
-    market:      'nav-market',
+    market:      'nav-more',
     'agent-wallet': 'nav-agent',
+    'career-agent': 'nav-career',
+    'supplier-agent': 'nav-supplier',
+    marketplace: 'nav-marketplace',
   };
 
   const pageId = pageMap[name] || ('page-' + name);
