@@ -728,10 +728,10 @@ function nanSyncWalletBtn(connected){
   if(connected && userAddr){
     const addr=userAddr;
     lbl.textContent=addr.slice(0,6)+'…'+addr.slice(-4);
-    if(dot)dot.style.background='#22c55e';
+    if(dot)dot.style.background='#7000ff';
   } else if(connected && otpEmail){
     lbl.textContent='⚡ '+otpEmail.split('@')[0].slice(0,10);
-    if(dot)dot.style.background='#22c55e';
+    if(dot)dot.style.background='#7000ff';
   } else {
     lbl.textContent='Connect';
     if(dot)dot.style.background='#6b7280';
@@ -1043,7 +1043,7 @@ function initVoice(){
     btn.innerHTML='⏹';
     btn.style.background='rgba(248,113,113,.2)';
     btn.style.borderColor='rgba(248,113,113,.5)';
-    btn.style.color='#f87171';
+    btn.style.color='#a855f7';
     document.getElementById('voiceStatus').style.display='block';
   };
 
@@ -1352,7 +1352,7 @@ function bpColors(){
   return isLight ? {
     card: '#ffffff', cardBorder: '#ede4ff',
     text: '#111111', text2: 'rgba(0,0,0,.68)', text3: 'rgba(0,0,0,.45)',
-    inputBg: '#ffffff', inputBorder: '#dcdcdc',
+    inputBg: '#ffffff', inputBorder: '#eee2ff',
   } : {
     card: '#1a1a1a', cardBorder: 'rgba(255,255,255,.10)',
     text: '#f5f5f7', text2: '#aaaaaa', text3: 'rgba(0,0,0,.55)',
@@ -1453,21 +1453,21 @@ async function submitAirtime(){
   btn.disabled = true;
   try{
     const { txHash, usdcAmount } = await payNgnInUsdc(ngnAmount, btn);
-    statusEl.innerHTML = '<span style="color:#888;">Payment sent ('+usdcAmount.toFixed(4)+' USDC) · Delivering airtime…</span>';
+    statusEl.innerHTML = '<span style="color:rgba(0,0,0,.55);">Payment sent ('+usdcAmount.toFixed(4)+' USDC) · Delivering airtime…</span>';
     const result = await vtpassCall('purchase', { serviceID, phone, amount: ngnAmount });
     if(result.success){
-      statusEl.innerHTML = '<span style="color:#34d399;">✓ Airtime delivered! Ref: '+result.requestId+'</span>';
+      statusEl.innerHTML = '<span style="color:#a855f7;">✓ Airtime delivered! Ref: '+result.requestId+'</span>';
       toast('✓ ₦'+ngnAmount+' airtime sent to '+phone, 'success', 6000);
       await refreshBalances();
     } else if(result.pending){
-      statusEl.innerHTML = '<span style="color:#fbbf24;">⏳ Pending — checking status…</span>';
+      statusEl.innerHTML = '<span style="color:#a855f7;">⏳ Pending — checking status…</span>';
       toast('Airtime purchase pending, checking status', 'info', 5000);
     } else {
-      statusEl.innerHTML = '<span style="color:#f87171;">Payment sent but delivery failed: '+(result.responseDescription||result.error||'Unknown error')+'</span>';
+      statusEl.innerHTML = '<span style="color:#a855f7;">Payment sent but delivery failed: '+(result.responseDescription||result.error||'Unknown error')+'</span>';
       toast('Airtime delivery failed — your USDC was sent, contact support with tx: '+txHash.slice(0,10), 'error', 10000);
     }
   }catch(err){
-    statusEl.innerHTML = '<span style="color:#f87171;">'+err.message.slice(0,150)+'</span>';
+    statusEl.innerHTML = '<span style="color:#a855f7;">'+err.message.slice(0,150)+'</span>';
     toast('Airtime purchase failed: '+err.message.slice(0,100), 'error', 6000);
   }finally{
     btn.disabled = false;
@@ -1526,20 +1526,20 @@ async function submitData(){
   btn.disabled = true;
   try{
     const { txHash, usdcAmount } = await payNgnInUsdc(ngnAmount, btn);
-    statusEl.innerHTML = '<span style="color:#888;">Payment sent ('+usdcAmount.toFixed(4)+' USDC) · Delivering data…</span>';
+    statusEl.innerHTML = '<span style="color:rgba(0,0,0,.55);">Payment sent ('+usdcAmount.toFixed(4)+' USDC) · Delivering data…</span>';
     const result = await vtpassCall('purchase', { serviceID, phone, variationCode });
     if(result.success){
-      statusEl.innerHTML = '<span style="color:#34d399;">✓ Data delivered! Ref: '+result.requestId+'</span>';
+      statusEl.innerHTML = '<span style="color:#a855f7;">✓ Data delivered! Ref: '+result.requestId+'</span>';
       toast('✓ Data bundle sent to '+phone, 'success', 6000);
       await refreshBalances();
     } else if(result.pending){
-      statusEl.innerHTML = '<span style="color:#fbbf24;">⏳ Pending — checking status…</span>';
+      statusEl.innerHTML = '<span style="color:#a855f7;">⏳ Pending — checking status…</span>';
     } else {
-      statusEl.innerHTML = '<span style="color:#f87171;">Payment sent but delivery failed: '+(result.responseDescription||result.error||'Unknown error')+'</span>';
+      statusEl.innerHTML = '<span style="color:#a855f7;">Payment sent but delivery failed: '+(result.responseDescription||result.error||'Unknown error')+'</span>';
       toast('Data delivery failed — your USDC was sent, contact support with tx: '+txHash.slice(0,10), 'error', 10000);
     }
   }catch(err){
-    statusEl.innerHTML = '<span style="color:#f87171;">'+err.message.slice(0,150)+'</span>';
+    statusEl.innerHTML = '<span style="color:#a855f7;">'+err.message.slice(0,150)+'</span>';
     toast('Data purchase failed: '+err.message.slice(0,100), 'error', 6000);
   }finally{
     btn.disabled = false;
@@ -1595,10 +1595,10 @@ async function doCredit(){
     if(collateral > 0) score += Math.min(50, collateral / 20);
     score = Math.min(850, Math.round(score));
 
-    const tier = score >= 700 ? {label:'Excellent', color:'#34d399'}
+    const tier = score >= 700 ? {label:'Excellent', color:'#a855f7'}
                : score >= 600 ? {label:'Good', color:'#7000ff'}
-               : score >= 450 ? {label:'Fair', color:'#fbbf24'}
-               : {label:'Building', color:'#f87171'};
+               : score >= 450 ? {label:'Fair', color:'#a855f7'}
+               : {label:'Building', color:'#a855f7'};
 
     document.getElementById('billBody').innerHTML = `
       <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
@@ -1615,7 +1615,7 @@ async function doCredit(){
       </div>
     `;
   }catch(err){
-    document.getElementById('billBody').innerHTML = `<div style="text-align:center;padding:30px 0;color:#f87171;font-size:.85rem;">Could not compute score: ${err.message.slice(0,100)}</div>`;
+    document.getElementById('billBody').innerHTML = `<div style="text-align:center;padding:30px 0;color:#a855f7;font-size:.85rem;">Could not compute score: ${err.message.slice(0,100)}</div>`;
   }
 }
 
@@ -1698,15 +1698,15 @@ async function submitListService(){
     const link = buildPRLink(pr);
 
     statusEl.innerHTML = `
-      <div style="background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2);border-radius:14px;padding:14px;margin-top:6px;">
-        <div style="font-size:.85rem;color:#34d399;font-weight:700;margin-bottom:8px;">✓ Listed! Share this link to get paid:</div>
+      <div style="background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:14px;padding:14px;margin-top:6px;">
+        <div style="font-size:.85rem;color:#a855f7;font-weight:700;margin-bottom:8px;">✓ Listed! Share this link to get paid:</div>
         <div style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text);word-break:break-all;margin-bottom:12px;">${link}</div>
         <button onclick="navigator.clipboard.writeText('${link}').then(()=>{this.textContent='✓ Copied!';setTimeout(()=>this.textContent='📋 Copy Link',2000)})" style="background:#7000ff;border:none;border-radius:10px;color:#fff;padding:9px 16px;font-size:.82rem;font-weight:700;cursor:pointer;">📋 Copy Link</button>
       </div>
     `;
     toast('✓ Service listed', 'success', 4000);
   }catch(err){
-    statusEl.innerHTML = '<span style="color:#f87171;">'+err.message.slice(0,150)+'</span>';
+    statusEl.innerHTML = '<span style="color:#a855f7;">'+err.message.slice(0,150)+'</span>';
     toast('Could not create listing: '+err.message.slice(0,100), 'error', 6000);
   }finally{
     btn.disabled = false; btn.textContent = 'Create Payment Link';
@@ -1774,7 +1774,7 @@ async function loadMyAjoGroups(){
       return;
     }
     const statusLabel = ['Open','Live','Done'];
-    const statusColor = ['#fbbf24','#34d399','#666'];
+    const statusColor = ['#a855f7','#a855f7','#666'];
     let html = `<div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:10px;">Your groups</div>`;
     for(const id of myGroups){
       const g = await c.getGroup(id);
@@ -1796,14 +1796,14 @@ async function loadMyAjoGroups(){
           </div>
           <div style="font-size:.74rem;color:var(--text3);margin-bottom:10px;">${g.memberCount}/${g.maxMembers} members · ${ethers.formatUnits(g.contributionAmount,6)} USDC/round</div>
           ${progressPct>0?`<div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:5px;">
-            <div style="height:100%;width:${progressPct}%;background:${isDone?'#34d399':'#7000ff'};border-radius:2px;"></div>
+            <div style="height:100%;width:${progressPct}%;background:${isDone?'#a855f7':'#7000ff'};border-radius:2px;"></div>
           </div>`:''}
           <div style="font-size:.68rem;color:var(--text3);margin-top:${progressPct>0?0:2}px;">${progressLabel}</div>
         </div>`;
     }
     el.innerHTML = html;
   }catch(err){
-    el.innerHTML = `<div style="text-align:center;padding:20px 0;color:#f87171;font-size:.8rem;">${err.message.slice(0,120)}</div>`;
+    el.innerHTML = `<div style="text-align:center;padding:20px 0;color:#a855f7;font-size:.8rem;">${err.message.slice(0,120)}</div>`;
   }
 }
 
@@ -1834,7 +1834,7 @@ function showAjoCreate(){
         </select>
       </div>
       <div id="ajoPreview" style="background:rgba(112,0,255,.06);border:0.5px solid rgba(112,0,255,.18);border-radius:14px;padding:14px;margin-bottom:14px;font-size:.82rem;color:var(--text3);line-height:1.6;">Fill in the details above to see the summary.</div>
-      <div style="background:rgba(255,200,0,.06);border:0.5px solid rgba(255,200,0,.2);border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:.76rem;color:#fbbf24;line-height:1.5;">ℹ️ As the group admin, only you will see and share the invite code — and only you can release each round's payout.</div>
+      <div style="background:rgba(255,200,0,.06);border:0.5px solid rgba(255,200,0,.2);border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:.76rem;color:#a855f7;line-height:1.5;">ℹ️ As the group admin, only you will see and share the invite code — and only you can release each round's payout.</div>
       <button onclick="submitAjoCreate()" id="ajoCreateBtn" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:.95rem;font-weight:700;cursor:pointer;">Create group</button>
       <div id="ajoCreateStatus" style="font-size:.78rem;color:var(--text);margin-top:10px;"></div>
     </div>
@@ -1870,10 +1870,10 @@ async function submitAjoCreate(){
     const rc=ajoContract(getArcProvider());
     const idBefore=Number(await rc.nextGroupId());
     if(isCircleWallet){
-      statusEl.innerHTML='<span style="color:#888;">Sending to chain…</span>';
+      statusEl.innerHTML='<span style="color:rgba(0,0,0,.55);">Sending to chain…</span>';
       const d=await ajoApi('createGroup',{contributionAmount:contribution,maxMembers,roundLength,label});
       if(!d.success) throw new Error(d.error||'Failed');
-      statusEl.innerHTML='<span style="color:#888;">Confirmed ✓</span>';
+      statusEl.innerHTML='<span style="color:rgba(0,0,0,.55);">Confirmed ✓</span>';
       // Backend waited for COMPLETE — nextGroupId is already incremented
       for(let i=0;i<10;i++){
         await new Promise(r=>setTimeout(r,1000));
@@ -1887,7 +1887,7 @@ async function submitAjoCreate(){
       const c=ajoContract(signer);
       const amtAtomic=ethers.parseUnits(contribution.toFixed(6),6);
       const tx=await c.createGroup(amtAtomic,maxMembers,roundLength,label,arcGasOpts());
-      statusEl.innerHTML='<span style="color:#888;">Confirming on-chain…</span>';
+      statusEl.innerHTML='<span style="color:rgba(0,0,0,.55);">Confirming on-chain…</span>';
       const receipt=await tx.wait(1);
       // Try event log first (most reliable)
       try{
@@ -1909,7 +1909,7 @@ async function submitAjoCreate(){
     toast('✓ Group created!','success',5000);
     showAjoGroupCode(newGroupId, label||'Group #'+newGroupId);
   }catch(err){
-    statusEl.innerHTML=`<span style="color:#f87171;">${err.message.slice(0,150)}</span>`;
+    statusEl.innerHTML=`<span style="color:#a855f7;">${err.message.slice(0,150)}</span>`;
     toast('Could not create group: '+err.message.slice(0,100),'error',6000);
   }finally{
     btn.disabled=false; btn.textContent='Create group';
@@ -2016,14 +2016,14 @@ function previewAjoJoin(){
     try{
       const c=ajoContract(provider||getArcProvider());
       const g=await c.getGroup(groupId);
-      if(g.status!=0){ previewEl.innerHTML=`<div style="font-size:.78rem;color:#f87171;padding:10px 0;">This group has already started or finished — you can't join now.</div>`; return; }
+      if(g.status!=0){ previewEl.innerHTML=`<div style="font-size:.78rem;color:#a855f7;padding:10px 0;">This group has already started or finished — you can't join now.</div>`; return; }
       previewEl.innerHTML=`
         <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:14px;margin-top:10px;">
           <div style="font-size:.9rem;font-weight:600;color:var(--text);">${g.label||'Group #'+groupId}</div>
           <div style="font-size:.76rem;color:var(--text3);margin-top:5px;">${ethers.formatUnits(g.contributionAmount,6)} USDC per round · ${Number(g.memberCount)}/${Number(g.maxMembers)} joined</div>
         </div>`;
     }catch(err){
-      previewEl.innerHTML=`<div style="font-size:.78rem;color:#f87171;padding:10px 0;">Couldn't find a group with that code.</div>`;
+      previewEl.innerHTML=`<div style="font-size:.78rem;color:#a855f7;padding:10px 0;">Couldn't find a group with that code.</div>`;
     }
   },500);
 }
@@ -2037,21 +2037,21 @@ async function submitAjoJoin(){
   btn.disabled=true; btn.textContent='Joining…';
   try{
     if(isCircleWallet){
-      statusEl.innerHTML='<span style="color:#888;">Sending to chain…</span>';
+      statusEl.innerHTML='<span style="color:rgba(0,0,0,.55);">Sending to chain…</span>';
       const d=await ajoApi('joinGroup',{groupId});
       if(!d.success) throw new Error(d.error||'Failed');
-      statusEl.innerHTML='<span style="color:#888;">Confirmed ✓</span>';
+      statusEl.innerHTML='<span style="color:rgba(0,0,0,.55);">Confirmed ✓</span>';
     } else {
       if(!signer){ toast('Connect MetaMask & switch to Arc Testnet','error',5000); btn.disabled=false; btn.textContent='Join group'; return; }
       const c=ajoContract(signer);
       const tx=await c.joinGroup(groupId,arcGasOpts());
-      statusEl.innerHTML='<span style="color:#888;">Confirming…</span>';
+      statusEl.innerHTML='<span style="color:rgba(0,0,0,.55);">Confirming…</span>';
       await tx.wait(1);
     }
     toast('✓ Joined group!','success',5000);
     showAjoGroup(groupId);
   }catch(err){
-    statusEl.innerHTML=`<span style="color:#f87171;">${err.message.slice(0,150)}</span>`;
+    statusEl.innerHTML=`<span style="color:#a855f7;">${err.message.slice(0,150)}</span>`;
     toast('Could not join: '+err.message.slice(0,100),'error',6000);
   }finally{
     btn.disabled=false; btn.textContent='Join group';
@@ -2070,7 +2070,7 @@ async function showAjoGroup(groupId){
     const isOpen=g.status==0, isActive=g.status==1, isDone=g.status==2;
     const sIdx=Number(g.status);
     const statusLabel=['Open — waiting to fill','In progress','Finished'];
-    const statusColor=['#fbbf24','#34d399','#666'];
+    const statusColor=['#a855f7','#a855f7','#666'];
 
     let inviteHtml='';
     if(isCreator&&isOpen){
@@ -2099,22 +2099,22 @@ async function showAjoGroup(groupId){
       let avatarDots='';
       for(let i=0;i<members.length;i++){
         const paid=await c.hasContributed(groupId,g.currentRound,members[i]).catch(()=>false);
-        const bg=paid?'rgba(52,211,153,.25)':'rgba(255,255,255,.07)';
-        const col=paid?'#34d399':'var(--text3)';
+        const bg=paid?'rgba(168,85,247,.25)':'rgba(255,255,255,.07)';
+        const col=paid?'#a855f7':'var(--text3)';
         const init=(members[i].slice(2,3)+members[i].slice(3,4)).toUpperCase();
         avatarDots+=`<div style="width:30px;height:30px;border-radius:50%;background:${bg};border:1.5px solid var(--bg);display:flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:700;color:${col};margin-left:-6px;flex-shrink:0;">${init}</div>`;
       }
-      const roundBg=itsYourTurn?'rgba(52,211,153,.08)':'var(--surface)';
-      const roundBorder=itsYourTurn?'rgba(52,211,153,.28)':'var(--border)';
+      const roundBg=itsYourTurn?'rgba(168,85,247,.08)':'var(--surface)';
+      const roundBorder=itsYourTurn?'rgba(168,85,247,.28)':'var(--border)';
       roundHtml=`
         <div style="background:${roundBg};border:0.5px solid ${roundBorder};border-radius:16px;padding:14px 16px;margin-bottom:12px;">
-          ${itsYourTurn?`<div style="font-size:.82rem;font-weight:700;color:#34d399;margin-bottom:8px;">🎉 It's your turn to receive this round!</div>`:`<div style="font-size:.78rem;font-weight:600;color:var(--text);margin-bottom:8px;">Round ${Number(g.currentRound)+1} of ${Number(g.memberCount)}</div>`}
+          ${itsYourTurn?`<div style="font-size:.82rem;font-weight:700;color:#a855f7;margin-bottom:8px;">🎉 It's your turn to receive this round!</div>`:`<div style="font-size:.78rem;font-weight:600;color:var(--text);margin-bottom:8px;">Round ${Number(g.currentRound)+1} of ${Number(g.memberCount)}</div>`}
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
             <div style="display:flex;margin-left:6px;">${avatarDots}</div>
             <div style="font-size:.72rem;color:var(--text3);margin-left:auto;">${Number(contributed)} of ${Number(total)} paid</div>
           </div>
           <div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;">
-            <div style="height:100%;width:${roundPct}%;background:${itsYourTurn?'#34d399':'#7000ff'};border-radius:2px;"></div>
+            <div style="height:100%;width:${roundPct}%;background:${itsYourTurn?'#a855f7':'#7000ff'};border-radius:2px;"></div>
           </div>
           ${already&&!everyonePaid?`<div style="font-size:.7rem;color:var(--text3);margin-top:8px;">You've paid this round — waiting on others.</div>`:''}
         </div>`;
@@ -2125,14 +2125,14 @@ async function showAjoGroup(groupId){
       const isThisRound=isActive&&i==Number(g.currentRound);
       const isPastRound=isActive&&i<Number(g.currentRound);
       const isCreatorMember=m.toLowerCase()===g.creator.toLowerCase();
-      const avatarBg=isThisRound?'rgba(52,211,153,.2)':isMe?'rgba(112,0,255,.15)':'rgba(255,255,255,.06)';
-      const avatarCol=isThisRound?'#34d399':isMe?'#7000ff':'var(--text3)';
+      const avatarBg=isThisRound?'rgba(168,85,247,.2)':isMe?'rgba(112,0,255,.15)':'rgba(255,255,255,.06)';
+      const avatarCol=isThisRound?'#a855f7':isMe?'#7000ff':'var(--text3)';
       const init=(m.slice(2,3)+m.slice(3,4)).toUpperCase();
       const nameLabel=isMe?'You':m.slice(0,6)+'…'+m.slice(-4);
       const adminTag=isCreatorMember?`<span style="font-size:.58rem;color:#7000ff;font-weight:700;margin-left:4px;">Admin</span>`:'';
       let rightTag='';
-      if(isThisRound&&isActive) rightTag=`<span style="font-size:.65rem;color:#34d399;font-weight:700;">← This round</span>`;
-      else if(isPastRound) rightTag=`<span style="font-size:.65rem;color:#888;">Received ✓</span>`;
+      if(isThisRound&&isActive) rightTag=`<span style="font-size:.65rem;color:#a855f7;font-weight:700;">← This round</span>`;
+      else if(isPastRound) rightTag=`<span style="font-size:.65rem;color:rgba(0,0,0,.55);">Received ✓</span>`;
       return `<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:0.5px solid rgba(255,255,255,.05);">
         <div style="width:20px;font-size:.7rem;color:rgba(0,0,0,.72);text-align:right;flex-shrink:0;">${i+1}</div>
         <div style="width:32px;height:32px;border-radius:50%;background:${avatarBg};display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;color:${avatarCol};flex-shrink:0;">${init}</div>
@@ -2144,7 +2144,7 @@ async function showAjoGroup(groupId){
     let actionHtml='';
     if(isOpen){
       if(isCreator&&Number(g.memberCount)>=Number(g.maxMembers)){
-        actionHtml=`<button onclick="submitAjoStart(${groupId})" id="ajoActionBtn" style="width:100%;background:#34d399;border:none;border-radius:14px;color:#000;padding:15px;font-size:.95rem;font-weight:700;cursor:pointer;margin-top:4px;">Everyone's here — Start group</button>`;
+        actionHtml=`<button onclick="submitAjoStart(${groupId})" id="ajoActionBtn" style="width:100%;background:#a855f7;border:none;border-radius:14px;color:#000;padding:15px;font-size:.95rem;font-weight:700;cursor:pointer;margin-top:4px;">Everyone's here — Start group</button>`;
       } else if(isCreator){
         actionHtml=`<div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:14px;margin-top:4px;text-align:center;font-size:.78rem;color:var(--text3);">Waiting for ${Number(g.maxMembers)-Number(g.memberCount)} more member${Number(g.maxMembers)-Number(g.memberCount)===1?'':'s'} to join.</div>`;
       } else {
@@ -2155,7 +2155,7 @@ async function showAjoGroup(groupId){
         actionHtml=`<button onclick="submitAjoContribute(${groupId})" id="ajoActionBtn" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:.95rem;font-weight:700;cursor:pointer;margin-top:4px;">Pay your ${ethers.formatUnits(g.contributionAmount,6)} USDC</button>`;
       } else if(isCreator&&everyonePaid){
         const recipientLabel=recipient&&recipient.toLowerCase()===userAddr.toLowerCase()?'yourself':'round recipient';
-        actionHtml=`<button onclick="submitAjoClaim(${groupId})" id="ajoCreatorPayBtn" style="width:100%;background:#34d399;border:none;border-radius:14px;color:#000;padding:15px;font-size:.95rem;font-weight:700;cursor:pointer;margin-top:4px;">👑 Release payout to ${recipientLabel}</button>`;
+        actionHtml=`<button onclick="submitAjoClaim(${groupId})" id="ajoCreatorPayBtn" style="width:100%;background:#a855f7;border:none;border-radius:14px;color:#000;padding:15px;font-size:.95rem;font-weight:700;cursor:pointer;margin-top:4px;">👑 Release payout to ${recipientLabel}</button>`;
       } else if(isCreator&&!everyonePaid){
         actionHtml=`<div style="background:rgba(112,0,255,.06);border:0.5px solid rgba(112,0,255,.18);border-radius:14px;padding:14px;margin-top:4px;text-align:center;font-size:.78rem;color:var(--text3);">You can release the payout once everyone has contributed.</div>`;
       } else {
@@ -2180,7 +2180,7 @@ async function showAjoGroup(groupId){
         <div id="ajoGroupStatus" style="font-size:.78rem;color:var(--text);margin-top:10px;"></div>
       </div>`;
   }catch(err){
-    el.innerHTML=`<div style="text-align:center;padding:20px 0;color:#f87171;font-size:.8rem;">${err.message.slice(0,150)}</div>`;
+    el.innerHTML=`<div style="text-align:center;padding:20px 0;color:#a855f7;font-size:.8rem;">${err.message.slice(0,150)}</div>`;
   }
 }
 
@@ -2190,21 +2190,21 @@ async function submitAjoStart(groupId){
   btn.disabled=true; btn.textContent='Starting…';
   try{
     if(isCircleWallet){
-      statusEl.innerHTML='<span style="color:#888;">Sending to chain…</span>';
+      statusEl.innerHTML='<span style="color:rgba(0,0,0,.55);">Sending to chain…</span>';
       const d=await ajoApi('startGroup',{groupId});
       if(!d.success) throw new Error(d.error||'Failed');
-      statusEl.innerHTML='<span style="color:#888;">Confirmed ✓</span>';
+      statusEl.innerHTML='<span style="color:rgba(0,0,0,.55);">Confirmed ✓</span>';
     } else {
       if(!signer){ toast('Connect MetaMask & switch to Arc Testnet','error',5000); btn.disabled=false; btn.textContent='Start group'; return; }
       const c=ajoContract(signer);
       const tx=await c.startGroup(groupId,arcGasOpts());
-      statusEl.innerHTML='<span style="color:#888;">Confirming…</span>';
+      statusEl.innerHTML='<span style="color:rgba(0,0,0,.55);">Confirming…</span>';
       await tx.wait(1);
     }
     toast('✓ Group started!','success',5000);
     showAjoGroup(groupId);
   }catch(err){
-    statusEl.innerHTML=`<span style="color:#f87171;">${err.message.slice(0,150)}</span>`;
+    statusEl.innerHTML=`<span style="color:#a855f7;">${err.message.slice(0,150)}</span>`;
     toast('Could not start: '+err.message.slice(0,100),'error',6000);
   }
 }
@@ -2219,10 +2219,10 @@ async function submitAjoContribute(groupId){
     const g=await readC.getGroup(groupId);
     const amtFormatted=ethers.formatUnits(g.contributionAmount,6);
     if(isCircleWallet){
-      statusEl.innerHTML='<span style="color:#888;">Approving & contributing…</span>';
+      statusEl.innerHTML='<span style="color:rgba(0,0,0,.55);">Approving & contributing…</span>';
       const d=await ajoApi('contribute',{groupId,contributionAmount:amtFormatted});
       if(!d.success) throw new Error(d.error||'Failed');
-      statusEl.innerHTML='<span style="color:#888;">Confirmed ✓</span>';
+      statusEl.innerHTML='<span style="color:rgba(0,0,0,.55);">Confirmed ✓</span>';
       addTx({hash:d.txId,to:AJO_CONTRACT,toRaw:'NANAjo Contribute',amount:amtFormatted,type:'out',token:'USDC',ts:Date.now(),confirmed:true,source:'ajo'});
     } else {
       if(!signer){ toast('Connect MetaMask & switch to Arc Testnet','error',5000); btn.disabled=false; return; }
@@ -2232,14 +2232,14 @@ async function submitAjoContribute(groupId){
       await approveTx.wait(1);
       btn.textContent='Contributing…';
       const tx=await c.contribute(groupId,arcGasOpts());
-      statusEl.innerHTML='<span style="color:#888;">Confirming…</span>';
+      statusEl.innerHTML='<span style="color:rgba(0,0,0,.55);">Confirming…</span>';
       await tx.wait(1);
       addTx({hash:tx.hash,to:AJO_CONTRACT,toRaw:'NANAjo Contribute',amount:amtFormatted,type:'out',token:'USDC',ts:Date.now(),confirmed:true,source:'ajo'});
     }
     toast('✓ Contributed!','success',5000);
     showAjoGroup(groupId);
   }catch(err){
-    statusEl.innerHTML=`<span style="color:#f87171;">${err.message.slice(0,150)}</span>`;
+    statusEl.innerHTML=`<span style="color:#a855f7;">${err.message.slice(0,150)}</span>`;
     toast('Could not contribute: '+err.message.slice(0,100),'error',6000);
   }
 }
@@ -2255,22 +2255,22 @@ async function submitAjoClaim(groupId){
   if(btn){ btn.disabled=true; btn.textContent='Releasing…'; }
   try{
     if(isCircleWallet){
-      if(statusEl) statusEl.innerHTML='<span style="color:#888;">Sending to chain…</span>';
+      if(statusEl) statusEl.innerHTML='<span style="color:rgba(0,0,0,.55);">Sending to chain…</span>';
       const d=await ajoApi('claimRoundPayout',{groupId});
       if(!d.success) throw new Error(d.error||'Failed');
-      if(statusEl) statusEl.innerHTML='<span style="color:#888;">Confirmed ✓</span>';
+      if(statusEl) statusEl.innerHTML='<span style="color:rgba(0,0,0,.55);">Confirmed ✓</span>';
     } else {
       if(!signer){ toast('Connect MetaMask & switch to Arc Testnet','error',5000); if(btn){btn.disabled=false;} return; }
       const c=ajoContract(signer);
       const tx=await c.claimRoundPayout(groupId,arcGasOpts());
-      if(statusEl) statusEl.innerHTML='<span style="color:#888;">Confirming…</span>';
+      if(statusEl) statusEl.innerHTML='<span style="color:rgba(0,0,0,.55);">Confirming…</span>';
       await tx.wait(1);
     }
     toast('✓ Payout released!','success',6000);
     await refreshBalances();
     showAjoGroup(groupId);
   }catch(err){
-    if(statusEl) statusEl.innerHTML=`<span style="color:#f87171;">${err.message.slice(0,120)}</span>`;
+    if(statusEl) statusEl.innerHTML=`<span style="color:#a855f7;">${err.message.slice(0,120)}</span>`;
     toast('Could not release: '+err.message.slice(0,100),'error',6000);
   }finally{
     if(btn){ btn.disabled=false; btn.textContent='Release payout'; }
@@ -2328,7 +2328,7 @@ async function verifyNepaMeter(){
   btn.disabled = false; btn.textContent = 'Verify Meter';
 
   if(!result.success){
-    document.getElementById('nepaVerifyResult').innerHTML = '<div style="font-size:.8rem;color:#f87171;">'+(result.error||'Verification failed')+'</div>';
+    document.getElementById('nepaVerifyResult').innerHTML = '<div style="font-size:.8rem;color:#a855f7;">'+(result.error||'Verification failed')+'</div>';
     return;
   }
   const c = result.customer;
@@ -2362,21 +2362,21 @@ async function submitNepa(){
   btn.disabled = true;
   try{
     const { txHash, usdcAmount } = await payNgnInUsdc(ngnAmount, btn);
-    statusEl.innerHTML = '<span style="color:#888;">Payment sent ('+usdcAmount.toFixed(4)+' USDC) · Processing…</span>';
+    statusEl.innerHTML = '<span style="color:rgba(0,0,0,.55);">Payment sent ('+usdcAmount.toFixed(4)+' USDC) · Processing…</span>';
     const result = await vtpassCall('purchase', { serviceID, billersCode, variationCode, amount: ngnAmount, phone });
     if(result.success){
       const token = result.purchasedCode || result.transaction?.token || '';
-      statusEl.innerHTML = '<span style="color:#34d399;">✓ Bill paid!'+(token?' '+token:'')+'</span>';
+      statusEl.innerHTML = '<span style="color:#a855f7;">✓ Bill paid!'+(token?' '+token:'')+'</span>';
       toast('✓ Electricity bill paid', 'success', 6000);
       await refreshBalances();
     } else if(result.pending){
-      statusEl.innerHTML = '<span style="color:#fbbf24;">⏳ Pending — checking status…</span>';
+      statusEl.innerHTML = '<span style="color:#a855f7;">⏳ Pending — checking status…</span>';
     } else {
-      statusEl.innerHTML = '<span style="color:#f87171;">Payment sent but delivery failed: '+(result.responseDescription||result.error||'Unknown error')+'</span>';
+      statusEl.innerHTML = '<span style="color:#a855f7;">Payment sent but delivery failed: '+(result.responseDescription||result.error||'Unknown error')+'</span>';
       toast('Electricity payment failed — your USDC was sent, contact support with tx: '+txHash.slice(0,10), 'error', 10000);
     }
   }catch(err){
-    statusEl.innerHTML = '<span style="color:#f87171;">'+err.message.slice(0,150)+'</span>';
+    statusEl.innerHTML = '<span style="color:#a855f7;">'+err.message.slice(0,150)+'</span>';
     toast('Electricity payment failed: '+err.message.slice(0,100), 'error', 6000);
   }finally{
     btn.disabled = false;
@@ -2407,7 +2407,7 @@ async function verifyDstvCard(){
   btn.disabled = false; btn.textContent = 'Verify Smartcard';
 
   if(!result.success){
-    document.getElementById('dstvVerifyResult').innerHTML = '<div style="font-size:.8rem;color:#f87171;">'+(result.error||'Verification failed')+'</div>';
+    document.getElementById('dstvVerifyResult').innerHTML = '<div style="font-size:.8rem;color:#a855f7;">'+(result.error||'Verification failed')+'</div>';
     return;
   }
   const c = result.customer;
@@ -2448,20 +2448,20 @@ async function submitDstv(){
     if(!amount){ throw new Error('Could not determine bouquet price'); }
 
     const { txHash, usdcAmount } = await payNgnInUsdc(amount, btn);
-    statusEl.innerHTML = '<span style="color:#888;">Payment sent ('+usdcAmount.toFixed(4)+' USDC) · Processing…</span>';
+    statusEl.innerHTML = '<span style="color:rgba(0,0,0,.55);">Payment sent ('+usdcAmount.toFixed(4)+' USDC) · Processing…</span>';
     const result = await vtpassCall('purchase', { serviceID:'dstv', billersCode, variationCode, phone, subscriptionType:'change' });
     if(result.success){
-      statusEl.innerHTML = '<span style="color:#34d399;">✓ Subscription updated!</span>';
+      statusEl.innerHTML = '<span style="color:#a855f7;">✓ Subscription updated!</span>';
       toast('✓ DSTV subscription updated', 'success', 6000);
       await refreshBalances();
     } else if(result.pending){
-      statusEl.innerHTML = '<span style="color:#fbbf24;">⏳ Pending — checking status…</span>';
+      statusEl.innerHTML = '<span style="color:#a855f7;">⏳ Pending — checking status…</span>';
     } else {
-      statusEl.innerHTML = '<span style="color:#f87171;">Payment sent but delivery failed: '+(result.responseDescription||result.error||'Unknown error')+'</span>';
+      statusEl.innerHTML = '<span style="color:#a855f7;">Payment sent but delivery failed: '+(result.responseDescription||result.error||'Unknown error')+'</span>';
       toast('DSTV subscription failed — your USDC was sent, contact support with tx: '+txHash.slice(0,10), 'error', 10000);
     }
   }catch(err){
-    statusEl.innerHTML = '<span style="color:#f87171;">'+err.message.slice(0,150)+'</span>';
+    statusEl.innerHTML = '<span style="color:#a855f7;">'+err.message.slice(0,150)+'</span>';
     toast('DSTV subscription failed: '+err.message.slice(0,100), 'error', 6000);
   }finally{
     btn.disabled = false;
@@ -2947,7 +2947,7 @@ function showReceipt(){
           <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
             <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(112,0,255,.07);border:1px solid rgba(112,0,255,.15);border-radius:10px;">
               <span style="font-size:.75rem;color:#a855f7;font-weight:600;letter-spacing:.04em;">NETWORK</span>
-              <span style="font-size:.75rem;color:var(--text);font-family:monospace;display:flex;align-items:center;gap:5px;"><span style="width:6px;height:6px;background:#22c55e;border-radius:50%;display:inline-block;box-shadow:0 0 5px #22c55e;"></span>Arc Testnet</span>
+              <span style="font-size:.75rem;color:var(--text);font-family:monospace;display:flex;align-items:center;gap:5px;"><span style="width:6px;height:6px;background:#7000ff;border-radius:50%;display:inline-block;box-shadow:0 0 5px #7000ff;"></span>Arc Testnet</span>
             </div>
             <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(112,0,255,.07);border:1px solid rgba(112,0,255,.15);border-radius:10px;">
               <span style="font-size:.75rem;color:#a855f7;font-weight:600;letter-spacing:.04em;">STATUS</span>
@@ -2981,7 +2981,7 @@ function showReceipt(){
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               Download
             </button>
-            <button onclick="shareReceiptX()" style="padding:11px;background:#000;border:1px solid #333;border-radius:12px;color:#fff;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+            <button onclick="shareReceiptX()" style="padding:11px;background:#000;border:1px solid rgba(0,0,0,.78);border-radius:12px;color:#fff;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
               Post on X
             </button>
@@ -3216,7 +3216,7 @@ function _setSendTabOrig(tab){
     if(box){
       box.innerHTML='';
       try{new QRCode(box,{text:userAddr,width:160,height:160,colorDark:'#111111',colorLight:'#ffffff'});}
-      catch(e){box.innerHTML='<p style="padding:10px;font-size:.7rem;color:#888">QR unavailable</p>';}
+      catch(e){box.innerHTML='<p style="padding:10px;font-size:.7rem;color:rgba(0,0,0,.55)">QR unavailable</p>';}
     }
     document.getElementById('recvAddr').textContent=userAddr||'Connect wallet';
     // Also update .arc name display
@@ -3350,9 +3350,9 @@ function lbShowStatus(msg, type='info') {
   const el = document.getElementById('lbStatus');
   if (!el) return;
   el.style.display = 'block';
-  el.style.background = type==='error' ? 'rgba(239,68,68,.1)' : type==='success' ? 'rgba(52,211,153,.1)' : 'rgba(112,0,255,.1)';
-  el.style.color = type==='error' ? '#f87171' : type==='success' ? '#34d399' : '#a855f7';
-  el.style.border = type==='error' ? '1px solid rgba(239,68,68,.2)' : type==='success' ? '1px solid rgba(52,211,153,.2)' : '1px solid rgba(112,0,255,.2)';
+  el.style.background = type==='error' ? 'rgba(112,0,255,.1)' : type==='success' ? 'rgba(168,85,247,.1)' : 'rgba(112,0,255,.1)';
+  el.style.color = type==='error' ? '#a855f7' : type==='success' ? '#a855f7' : '#a855f7';
+  el.style.border = type==='error' ? '1px solid rgba(112,0,255,.2)' : type==='success' ? '1px solid rgba(168,85,247,.2)' : '1px solid rgba(112,0,255,.2)';
   el.textContent = msg;
   setTimeout(()=>{ if(el) el.style.display='none'; }, 6000);
 }
@@ -3961,7 +3961,7 @@ async function pollIrisAttestation(txHash, destChain) {
           mintEl.innerHTML = `
             <div style="margin-top:10px;background:#1a1a1a;border:1px solid #1a1a1a;border-radius:12px;padding:14px;">
               <div style="font-weight:700;color:#fff;margin-bottom:8px;">✅ Burn complete — mint on ${destName}</div>
-              <div style="font-size:.72rem;color:#888;line-height:1.7;margin-bottom:10px;">
+              <div style="font-size:.72rem;color:rgba(0,0,0,.55);line-height:1.7;margin-bottom:10px;">
                 Your USDC is burned on Arc. To receive it on <strong style="color:#ccc;">${destName}</strong>, complete the mint using the attestation below.
               </div>
               <div style="font-size:.68rem;font-family:'JetBrains Mono',monospace;color:#aaa;margin-bottom:6px;">MessageTransmitter on ${destName}:</div>
@@ -4053,7 +4053,7 @@ async function pollIrisAttestation(txHash, destChain) {
           );
           const bal=await destUSDC.balanceOf(userAddr);
           const balFmt=parseFloat(ethers.formatUnits(bal,6)).toFixed(2);
-          if(mintEl) mintEl.innerHTML+='<div style="margin-top:8px;padding:8px;background:rgba(52,211,153,.1);border-radius:8px;font-size:.78rem;color:#34d399;">💰 Your USDC on '+destConfig.chainName+': '+balFmt+' USDC</div>';
+          if(mintEl) mintEl.innerHTML+='<div style="margin-top:8px;padding:8px;background:rgba(168,85,247,.1);border-radius:8px;font-size:.78rem;color:#a855f7;">💰 Your USDC on '+destConfig.chainName+': '+balFmt+' USDC</div>';
         }catch(e){ console.log('dest balance check:',e.message); }
 
       } catch(mintErr) {
@@ -4180,7 +4180,7 @@ function renderHistory(){
     in:`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7000ff" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>`,
     swap:`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="2.2" stroke-linecap="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>`,
     bridge:`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="2.2" stroke-linecap="round"><path d="M4 12h16"/><path d="M4 6q4 6 16 0"/><path d="M4 18q4-6 16 0"/></svg>`,
-    stake:`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>`
+    stake:`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>`
   };
   const ICO_BG={out:'rgba(112,0,255,.1)',in:'rgba(112,0,255,.1)',swap:'rgba(112,0,255,.1)',bridge:'rgba(112,0,255,.1)',stake:'rgba(112,0,255,.1)'};
   const ICO_BD={out:'rgba(112,0,255,.2)',in:'rgba(112,0,255,.2)',swap:'rgba(112,0,255,.2)',bridge:'rgba(112,0,255,.2)',stake:'rgba(112,0,255,.2)'};
@@ -4203,7 +4203,7 @@ function renderHistory(){
   }
   function statusBadge(tx){
     const isSim=tx.hash?.startsWith('sim-');
-    if(isSim) return `<span style="font-size:.55rem;background:rgba(251,191,36,.1);color:#fbbf24;border:1px solid rgba(251,191,36,.2);border-radius:100px;padding:2px 7px;">simulated</span>`;
+    if(isSim) return `<span style="font-size:.55rem;background:rgba(168,85,247,.1);color:#a855f7;border:1px solid rgba(168,85,247,.2);border-radius:100px;padding:2px 7px;">simulated</span>`;
     const isRealHash=tx.hash&&tx.hash.startsWith('0x')&&tx.hash.length===66;
     const st=(!isRealHash||tx.confirmed)?'confirmed':tx.failed?'failed':'pending';
     const map={confirmed:['rgba(112,0,255,.1)','#7000ff','rgba(112,0,255,.2)'],failed:['rgba(112,0,255,.1)','#c084fc','rgba(112,0,255,.2)'],pending:['rgba(112,0,255,.08)','#a855f7','rgba(112,0,255,.15)']};
@@ -4292,7 +4292,7 @@ function renderQR(a){
   if(!a)return;
   const isDark=document.documentElement.getAttribute('data-theme')!=='light';
   try{new QRCode(b,{text:a,width:100,height:100,colorDark:isDark?'#111111':'#111111',colorLight:'#ffffff'});}
-  catch{b.innerHTML='<p style="padding:10px;font-size:.7rem;color:#888">QR unavailable</p>';}
+  catch{b.innerHTML='<p style="padding:10px;font-size:.7rem;color:rgba(0,0,0,.55)">QR unavailable</p>';}
 }
 function copyAddr(){
   if(!userAddr)return;
@@ -4629,10 +4629,10 @@ function downloadPayrollReceipt(){
     ctx.textAlign = 'left'; ctx.fillText(r.name||r.addr.slice(0,16)+'…', 28, y+4);
     ctx.fillStyle = '#c084fc'; ctx.font = '10px monospace';
     ctx.fillText(r.addr.slice(0,18)+'…', 28, y+18);
-    ctx.fillStyle = r.status==='done'?'#7000ff':'#f87171';
+    ctx.fillStyle = r.status==='done'?'#7000ff':'#a855f7';
     ctx.font = 'bold 13px monospace'; ctx.textAlign = 'right';
     ctx.fillText(r.amount.toFixed(2)+' '+bulkToken, 572, y+4);
-    ctx.fillStyle = r.status==='done'?'#7000ff':'#f87171';
+    ctx.fillStyle = r.status==='done'?'#7000ff':'#a855f7';
     ctx.font = '10px monospace';
     ctx.fillText(r.status==='done'?'✓ Sent':'✗ Failed', 572, y+18);
   });
@@ -4737,7 +4737,7 @@ async function doBulkSend(){
   await refreshBalances();
   progressTitle.textContent = `Done! ${done}/${total} sent successfully`;
   progressBar.style.width = '100%';
-  progressBar.style.background = done===total ? 'linear-gradient(90deg,#7000ff,#7000ff)' : 'linear-gradient(90deg,#f87171,#f87171)';
+  progressBar.style.background = done===total ? 'linear-gradient(90deg,#7000ff,#7000ff)' : 'linear-gradient(90deg,#a855f7,#a855f7)';
   renderBulkRecipients();
   toast(done===total ? `✅ All ${done} payments sent!` : `Sent ${done}/${total} — ${total-done} failed`, done===total?'success':'error', 5000);
 
@@ -7046,8 +7046,8 @@ async function checkPoolLiquidity(){
       const healthy=poolStats.usdcLiq>=10&&poolStats.eurcLiq>=10;
       poolEl.style.display='flex';
       poolEl.innerHTML=healthy
-        ?'<span style="color:#34d399;">● Pool healthy · '+poolStats.usdcLiq.toFixed(0)+' USDC / '+poolStats.eurcLiq.toFixed(0)+' EURC</span>'
-        :'<span style="color:#f87171;">⚠ Pool low · swaps may fail</span>';
+        ?'<span style="color:#a855f7;">● Pool healthy · '+poolStats.usdcLiq.toFixed(0)+' USDC / '+poolStats.eurcLiq.toFixed(0)+' EURC</span>'
+        :'<span style="color:#a855f7;">⚠ Pool low · swaps may fail</span>';
     }
     // Auto-seed ONLY if pool is low AND this is the contract owner wallet
     const POOL_OWNER='0x86b2245d0b48bbdc58f08caea971a24ba377c366a';
@@ -8569,7 +8569,7 @@ async function loadAdminStats(){
   statsEl.style.display='none';
 
   function setMsg(msg){
-    loading.innerHTML=`<div style="font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#888;text-align:center;padding:20px;line-height:2;">${msg}</div>`;
+    loading.innerHTML=`<div style="font-family:'JetBrains Mono',monospace;font-size:.78rem;color:rgba(0,0,0,.55);text-align:center;padding:20px;line-height:2;">${msg}</div>`;
   }
 
   // Total Connected Wallets — independent of the on-chain scan below, since
@@ -8914,7 +8914,7 @@ async function loadAdminStats(){
 
   }catch(err){
     console.error('Admin error:',err);
-    loading.innerHTML=`<div style="font-size:.78rem;color:#f87171;text-align:center;padding:20px;"><div style="margin-bottom:8px;">⚠️ ${err.message}</div><div style="font-size:.7rem;color:#666;margin-bottom:14px;">Make sure you are on nanarc.xyz</div><button onclick="loadAdminStats()" style="background:#1a1a1a;border:1px solid #1a1a1a;border-radius:8px;color:#c084fc;padding:8px 16px;cursor:pointer;">↻ Retry</button></div>`;
+    loading.innerHTML=`<div style="font-size:.78rem;color:#a855f7;text-align:center;padding:20px;"><div style="margin-bottom:8px;">⚠️ ${err.message}</div><div style="font-size:.7rem;color:#666;margin-bottom:14px;">Make sure you are on nanarc.xyz</div><button onclick="loadAdminStats()" style="background:#1a1a1a;border:1px solid #1a1a1a;border-radius:8px;color:#c084fc;padding:8px 16px;cursor:pointer;">↻ Retry</button></div>`;
   }
 }
 
@@ -8934,7 +8934,7 @@ async function loadAdminPoolStats(){
     const statusEl=document.getElementById('adminSeedStatus');
     if(statusEl){
       if(u<10||e<10){
-        statusEl.innerHTML='<span style="color:#f87171;">⚠️ Swap pool low — MetaMask swaps may fail. Tap Seed Pool.</span>';
+        statusEl.innerHTML='<span style="color:#a855f7;">⚠️ Swap pool low — MetaMask swaps may fail. Tap Seed Pool.</span>';
       } else {
         statusEl.innerHTML='<span style="color:#7000ff;">✓ Swap pool healthy.</span>';
       }
@@ -8952,16 +8952,16 @@ async function loadAdminPoolStats(){
     const lendEl=document.getElementById('adminLendStats');
     if(lendEl){
       const util=ts>0?((tb/ts)*100).toFixed(1):0;
-      const color=avail<10?'#f87171':avail<100?'#fbbf24':'#7000ff';
+      const color=avail<10?'#a855f7':avail<100?'#a855f7':'#7000ff';
       lendEl.innerHTML=`
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px;">
           <div style="background:rgba(112,0,255,.06);border:1px solid rgba(112,0,255,.18);border-radius:10px;padding:10px;">
             <div style="font-size:.6rem;color:var(--text3);margin-bottom:3px;">TOTAL SUPPLIED</div>
             <div style="font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:700;color:#7000ff;">${ts.toFixed(2)}</div>
           </div>
-          <div style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.18);border-radius:10px;padding:10px;">
+          <div style="background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.18);border-radius:10px;padding:10px;">
             <div style="font-size:.6rem;color:var(--text3);margin-bottom:3px;">TOTAL BORROWED</div>
-            <div style="font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:700;color:#fbbf24;">${tb.toFixed(2)}</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:700;color:#a855f7;">${tb.toFixed(2)}</div>
           </div>
           <div style="background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.18);border-radius:10px;padding:10px;">
             <div style="font-size:.6rem;color:var(--text3);margin-bottom:3px;">AVAILABLE</div>
@@ -8985,7 +8985,7 @@ async function adminWithdrawPool(){
     const u=parseFloat(ethers.formatUnits(uLiq,6));
     const e=parseFloat(ethers.formatUnits(eLiq,6));
     if(u<=0&&e<=0){toast('Pool is already empty','error',3000);btn.disabled=false;btn.textContent='Withdraw All';return;}
-    if(statusEl)statusEl.innerHTML='<span style="color:#f87171;">Withdrawing '+u.toFixed(2)+' USDC + '+e.toFixed(2)+' EURC…</span>';
+    if(statusEl)statusEl.innerHTML='<span style="color:#a855f7;">Withdrawing '+u.toFixed(2)+' USDC + '+e.toFixed(2)+' EURC…</span>';
     const tx=await swapC.withdrawLiquidity(uLiq,eLiq,arcGasOpts());
     await tx.wait(1);
     toast('✓ Withdrew '+u.toFixed(2)+' USDC + '+e.toFixed(2)+' EURC from pool','success',6000);
@@ -9046,11 +9046,11 @@ async function adminGatewayWithdraw(){
       document.getElementById('adminWdAmount').value = '';
     } else {
       toast('Withdraw failed: '+(data.error||'Unknown error').slice(0,100), 'error', 6000);
-      if(statusEl) statusEl.innerHTML = '<span style="color:#f87171;">'+(data.error||'Unknown error').slice(0,150)+'</span>';
+      if(statusEl) statusEl.innerHTML = '<span style="color:#a855f7;">'+(data.error||'Unknown error').slice(0,150)+'</span>';
     }
   }catch(err){
     toast('Withdraw request failed: '+err.message.slice(0,100), 'error', 6000);
-    if(statusEl) statusEl.innerHTML = '<span style="color:#f87171;">Connection error — '+err.message.slice(0,100)+'</span>';
+    if(statusEl) statusEl.innerHTML = '<span style="color:#a855f7;">Connection error — '+err.message.slice(0,100)+'</span>';
   }finally{
     btn.disabled = false;
     btn.textContent = 'Withdraw';
@@ -9136,14 +9136,14 @@ async function adminSeedPool(){
     if(addUsdc) added.push(uInput.toFixed(2)+' USDC');
     if(addEurc) added.push(eInput.toFixed(2)+' EURC');
     toast('✓ Added '+added.join(' + ')+' to pool','success',6000);
-    statusEl.innerHTML='<span style="color:#34d399;">✓ Added '+added.join(' + ')+'</span>';
+    statusEl.innerHTML='<span style="color:#a855f7;">✓ Added '+added.join(' + ')+'</span>';
     // Clear inputs
     if(document.getElementById('adminSeedUSDC')) document.getElementById('adminSeedUSDC').value='';
     if(document.getElementById('adminSeedEURC')) document.getElementById('adminSeedEURC').value='';
     await loadAdminPoolStats();
   }catch(err){
     toast('Failed: '+err.message.slice(0,100),'error',6000);
-    statusEl.innerHTML='<span style="color:#f87171;">'+err.message.slice(0,80)+'</span>';
+    statusEl.innerHTML='<span style="color:#a855f7;">'+err.message.slice(0,80)+'</span>';
   }finally{
     btn.disabled=false; btn.textContent='＋ Add Liquidity';
   }
@@ -10248,7 +10248,7 @@ function agentPageRefresh() {
 
   if (connected) {
     if (status) status.textContent = 'Connected \u00b7 Arc Testnet';
-    if (badge)  { badge.textContent = 'Active'; badge.style.cssText = 'font-size:.72rem;padding:3px 9px;border-radius:100px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:#4ade80;font-weight:600;'; }
+    if (badge)  { badge.textContent = 'Active'; badge.style.cssText = 'font-size:.72rem;padding:3px 9px;border-radius:100px;background:rgba(112,0,255,.12);border:1px solid rgba(112,0,255,.3);color:#4ade80;font-weight:600;'; }
     if (addr)   addr.innerHTML = '<span style="color:var(--text2);font-family:monospace;">Agent Wallet: ' + agentWalletAddr.slice(0,6)+'...'+agentWalletAddr.slice(-4) + '</span><button onclick="navigator.clipboard.writeText(\''+agentWalletAddr+'\').then(()=>{this.textContent=\'✓\';setTimeout(()=>this.textContent=\'Copy\',1500)})" style="padding:2px 8px;border-radius:6px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#7000ff;font-size:.7rem;font-weight:600;cursor:pointer;">Copy</button>';
     const dot = document.getElementById('aiBtnDot');
     const dotD = document.getElementById('aiBtnDesktopDot');
@@ -10808,7 +10808,7 @@ async function agentSearchMarket() {
       }
     }
   } catch(e) {
-    if(list) list.innerHTML = '<span style="color:#ef4444;font-size:.82rem;">Error: ' + e.message + '</span>';
+    if(list) list.innerHTML = '<span style="color:#7000ff;font-size:.82rem;">Error: ' + e.message + '</span>';
   }
 }
 
@@ -10817,9 +10817,9 @@ function agentPayService() {
   if (document.getElementById(id)) { document.getElementById(id).remove(); return; }
   const el = document.createElement('div');
   el.id = id;
-  el.style.cssText = 'background:var(--surface);border:1px solid rgba(34,197,94,.25);border-radius:14px;padding:14px;margin-bottom:12px;';
+  el.style.cssText = 'background:var(--surface);border:1px solid rgba(112,0,255,.25);border-radius:14px;padding:14px;margin-bottom:12px;';
   const NAN_X402 = 'https://nan-production.up.railway.app/api/x402/ngn-rate';
-  el.innerHTML = `<div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:4px;">Pay x402 Service</div><div style="font-size:.72rem;color:var(--text3);margin-bottom:10px;">Pay any x402-compatible API with USDC nanopayments</div><input id="agentPayUrl" placeholder="Service URL (https://...)" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-family:'Inter var','Inter',sans-serif;box-sizing:border-box;margin-bottom:6px;" value="${NAN_X402}"/><div style="font-size:.72rem;color:#22c55e;margin-bottom:8px;padding:6px 10px;background:rgba(34,197,94,.06);border-radius:8px;border:1px solid rgba(34,197,94,.15);">⚡ NAN NGN/USD Rate — $0.001 USDC per call · Arc Testnet</div><div style="display:flex;gap:8px;margin-bottom:10px;"><input id="agentPayAmt" placeholder="Amount" type="number" min="0" step="any" style="flex:1;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-family:'Inter var','Inter',sans-serif;box-sizing:border-box;" value="0.001"/><div style="padding:10px 14px;border-radius:10px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);color:#22c55e;font-size:.82rem;font-weight:700;display:flex;align-items:center;">USDC</div></div><div style="display:flex;gap:8px;"><button onclick="(function(){const url=document.getElementById('agentPayUrl').value.trim();const amt=document.getElementById('agentPayAmt').value;if(!url.startsWith('http')){agentShowResult('Enter a valid URL');return;}document.getElementById('agentPanelPay').remove();agentShowResult('⏳ Paying...');fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'pay-service',address:agentWalletAddr||'0xd83498B62d2ab0650A4Edfc7929c96804aA75F77',url,chain:'ARC-TESTNET',maxAmount:String(amt)})}).then(r=>r.json()).then(d=>{if(d.success&&d.result&&d.result.data){const r=d.result.data;agentShowResult('Paid $'+amt+' USDC | '+r.pair+': '+r.rate+' | Source: '+r.source);}else{agentShowResult(d.success?'✅ Paid!':'❌ '+(d.error||'Payment failed'));}}).catch(e=>agentShowResult('❌ '+e.message));})()" style="flex:1;padding:11px;border-radius:10px;background:#22c55e;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;">Pay Now</button><button onclick="document.getElementById('agentPanelPay').remove()" style="padding:11px 16px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;">Cancel</button></div>`;
+  el.innerHTML = `<div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:4px;">Pay x402 Service</div><div style="font-size:.72rem;color:var(--text3);margin-bottom:10px;">Pay any x402-compatible API with USDC nanopayments</div><input id="agentPayUrl" placeholder="Service URL (https://...)" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-family:'Inter var','Inter',sans-serif;box-sizing:border-box;margin-bottom:6px;" value="${NAN_X402}"/><div style="font-size:.72rem;color:#7000ff;margin-bottom:8px;padding:6px 10px;background:rgba(112,0,255,.06);border-radius:8px;border:1px solid rgba(112,0,255,.15);">⚡ NAN NGN/USD Rate — $0.001 USDC per call · Arc Testnet</div><div style="display:flex;gap:8px;margin-bottom:10px;"><input id="agentPayAmt" placeholder="Amount" type="number" min="0" step="any" style="flex:1;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-family:'Inter var','Inter',sans-serif;box-sizing:border-box;" value="0.001"/><div style="padding:10px 14px;border-radius:10px;background:rgba(112,0,255,.08);border:1px solid rgba(112,0,255,.2);color:#7000ff;font-size:.82rem;font-weight:700;display:flex;align-items:center;">USDC</div></div><div style="display:flex;gap:8px;"><button onclick="(function(){const url=document.getElementById('agentPayUrl').value.trim();const amt=document.getElementById('agentPayAmt').value;if(!url.startsWith('http')){agentShowResult('Enter a valid URL');return;}document.getElementById('agentPanelPay').remove();agentShowResult('⏳ Paying...');fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'pay-service',address:agentWalletAddr||'0xd83498B62d2ab0650A4Edfc7929c96804aA75F77',url,chain:'ARC-TESTNET',maxAmount:String(amt)})}).then(r=>r.json()).then(d=>{if(d.success&&d.result&&d.result.data){const r=d.result.data;agentShowResult('Paid $'+amt+' USDC | '+r.pair+': '+r.rate+' | Source: '+r.source);}else{agentShowResult(d.success?'✅ Paid!':'❌ '+(d.error||'Payment failed'));}}).catch(e=>agentShowResult('❌ '+e.message));})()" style="flex:1;padding:11px;border-radius:10px;background:#7000ff;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;">Pay Now</button><button onclick="document.getElementById('agentPanelPay').remove()" style="padding:11px 16px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;">Cancel</button></div>`;
   const grid = document.querySelector('[onclick="agentFund()"]')?.closest('[style*="grid-template-columns"]');
   if (grid) grid.parentElement.insertBefore(el, grid);
   document.getElementById('agentPayUrl')?.focus();
@@ -10904,20 +10904,20 @@ async function _a2aCheckTrust() {
   const raw = document.getElementById('a2aTrustAddr')?.value;
   const out = document.getElementById('a2aTrustResult');
   const addr = await _a2aResolveAddr(raw);
-  if (!addr) { out.innerHTML = '<div style="color:#ef4444;font-size:.78rem;">Could not resolve address</div>'; return; }
+  if (!addr) { out.innerHTML = '<div style="color:#7000ff;font-size:.78rem;">Could not resolve address</div>'; return; }
   out.innerHTML = '<div style="color:var(--text3);font-size:.78rem;">Checking...</div>';
   try {
     const r = await fetch(AGENT_WALLETS_API, {method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({action:'trust', userAddress:userAddr, agentWalletAddress:agentWalletAddr, counterpartyAddress:addr})});
     const d = await r.json();
-    if (!d.success) { out.innerHTML = `<div style="color:#ef4444;font-size:.78rem;">${d.error||'Failed'}</div>`; return; }
+    if (!d.success) { out.innerHTML = `<div style="color:#7000ff;font-size:.78rem;">${d.error||'Failed'}</div>`; return; }
     out.innerHTML = `<div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;">
       <div style="font-size:.72rem;color:var(--text3);margin-bottom:4px;">Auto-approve cap</div>
       <div style="font-size:1.4rem;font-weight:800;color:#7000ff;margin-bottom:8px;">$${d.autoApproveCap}</div>
       <div style="font-size:.78rem;color:var(--text);">✅ ${d.trust.successCount} successful payment${d.trust.successCount===1?'':'s'} · $${d.trust.totalVolume.toFixed(2)} total volume</div>
       ${d.trust.successCount===0?'<div style="font-size:.72rem;color:var(--text3);margin-top:4px;">No history yet — capped at the new-counterparty limit.</div>':''}
     </div>`;
-  } catch(e) { out.innerHTML = `<div style="color:#ef4444;font-size:.78rem;">${e.message}</div>`; }
+  } catch(e) { out.innerHTML = `<div style="color:#7000ff;font-size:.78rem;">${e.message}</div>`; }
 }
 
 // ── ESCROW ─────────────────────────────────────────────────────────────────
@@ -10958,17 +10958,17 @@ async function _a2aEscrowCreate() {
   const task = document.getElementById('a2aEscTask')?.value;
   const out = document.getElementById('a2aEscCreateResult');
   const to = await _a2aResolveAddr(toRaw);
-  if (!to || !amt) { out.innerHTML = '<div style="color:#ef4444;font-size:.78rem;">Enter a valid recipient and amount</div>'; return; }
+  if (!to || !amt) { out.innerHTML = '<div style="color:#7000ff;font-size:.78rem;">Enter a valid recipient and amount</div>'; return; }
   out.innerHTML = '<div style="color:var(--text3);font-size:.78rem;">Creating...</div>';
   try {
     const r = await fetch(AGENT_WALLETS_API, {method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({action:'escrow-create', userAddress:userAddr, agentWalletAddress:agentWalletAddr, toAgentAddress:to, amount:amt, task})});
     const d = await r.json();
     out.innerHTML = d.success
-      ? `<div style="color:#22c55e;font-size:.78rem;">✅ Escrow created — ${amt} USDC locked, awaiting attestation</div>`
-      : `<div style="color:#ef4444;font-size:.78rem;">${d.error||'Failed'}</div>`;
+      ? `<div style="color:#7000ff;font-size:.78rem;">✅ Escrow created — ${amt} USDC locked, awaiting attestation</div>`
+      : `<div style="color:#7000ff;font-size:.78rem;">${d.error||'Failed'}</div>`;
     if (d.success) { document.getElementById('a2aEscTo').value=''; document.getElementById('a2aEscAmt').value=''; document.getElementById('a2aEscTask').value=''; }
-  } catch(e) { out.innerHTML = `<div style="color:#ef4444;font-size:.78rem;">${e.message}</div>`; }
+  } catch(e) { out.innerHTML = `<div style="color:#7000ff;font-size:.78rem;">${e.message}</div>`; }
 }
 async function _a2aEscrowList(direction) {
   const body = document.getElementById('a2aEscrowBody');
@@ -10986,13 +10986,13 @@ async function _a2aEscrowList(direction) {
         <div style="font-size:.7rem;color:var(--text3);margin-bottom:6px;">${e.task || 'No description'}</div>
         <div style="font-size:.68rem;font-family:monospace;color:var(--text3);margin-bottom:6px;">${direction==='sent'?'To':'From'}: ${(direction==='sent'?e.toWallet:e.fromWallet).slice(0,10)}...</div>
         ${direction==='received' && e.status==='pending' ? `<button onclick="_a2aEscrowAttest('${e.id}')" style="width:100%;padding:7px;border-radius:8px;background:#7000ff;border:none;color:#fff;font-size:.74rem;font-weight:700;cursor:pointer;">Attest Completion</button>` : ''}
-        ${direction==='sent' && e.status==='attested' ? `<button onclick="_a2aEscrowRelease('${e.id}')" style="width:100%;padding:7px;border-radius:8px;background:#22c55e;border:none;color:#fff;font-size:.74rem;font-weight:700;cursor:pointer;">Release Funds</button>` : ''}
+        ${direction==='sent' && e.status==='attested' ? `<button onclick="_a2aEscrowRelease('${e.id}')" style="width:100%;padding:7px;border-radius:8px;background:#7000ff;border:none;color:#fff;font-size:.74rem;font-weight:700;cursor:pointer;">Release Funds</button>` : ''}
         ${direction==='sent' && e.status==='pending' ? `<button onclick="_a2aEscrowRefund('${e.id}')" style="width:100%;padding:7px;border-radius:8px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.74rem;cursor:pointer;">Cancel / Refund</button>` : ''}
       </div>
     `).join('');
-  } catch(e) { body.innerHTML = `<div style="color:#ef4444;font-size:.78rem;">${e.message}</div>`; }
+  } catch(e) { body.innerHTML = `<div style="color:#7000ff;font-size:.78rem;">${e.message}</div>`; }
 }
-function _a2aStatusColor(s) { return {pending:'#eab308',attested:'#7000ff',released:'#22c55e',refunded:'#6b7280'}[s] || '#6b7280'; }
+function _a2aStatusColor(s) { return {pending:'#a855f7',attested:'#7000ff',released:'#7000ff',refunded:'#6b7280'}[s] || '#6b7280'; }
 async function _a2aEscrowAttest(id) {
   await fetch(AGENT_WALLETS_API, {method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({action:'escrow-attest', userAddress:userAddr, escrowId:id})});
@@ -11061,14 +11061,14 @@ async function _a2aRecurringList() {
       <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:6px;opacity:${s.active?1:.5};">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
           <span style="font-size:.85rem;font-weight:700;color:var(--text);">${s.amount} ${s.token} ${s.label?'· '+s.label:''}</span>
-          <span style="font-size:.68rem;color:${s.active?'#22c55e':'#6b7280'};font-weight:700;">${s.active?'ACTIVE':'CANCELLED'}</span>
+          <span style="font-size:.68rem;color:${s.active?'#7000ff':'#6b7280'};font-weight:700;">${s.active?'ACTIVE':'CANCELLED'}</span>
         </div>
         <div style="font-size:.68rem;font-family:monospace;color:var(--text3);margin-bottom:4px;">To: ${s.toWallet.slice(0,10)}... · every ${s.intervalSeconds>=86400?(s.intervalSeconds/86400)+'d':(s.intervalSeconds/3600)+'h'}</div>
         <div style="font-size:.68rem;color:var(--text3);margin-bottom:6px;">${s.runCount} run${s.runCount===1?'':'s'}${s.skipCount?', '+s.skipCount+' skipped':''}${s.condition?' · min-balance condition set':''}</div>
-        ${s.active ? `<button onclick="_a2aRecurringCancel('${s.id}')" style="width:100%;padding:6px;border-radius:8px;background:none;border:1px solid var(--border);color:#ef4444;font-size:.72rem;cursor:pointer;">Cancel</button>` : ''}
+        ${s.active ? `<button onclick="_a2aRecurringCancel('${s.id}')" style="width:100%;padding:6px;border-radius:8px;background:none;border:1px solid var(--border);color:#7000ff;font-size:.72rem;cursor:pointer;">Cancel</button>` : ''}
       </div>
     `).join('');
-  } catch(e) { list.innerHTML = `<div style="color:#ef4444;font-size:.78rem;">${e.message}</div>`; }
+  } catch(e) { list.innerHTML = `<div style="color:#7000ff;font-size:.78rem;">${e.message}</div>`; }
 }
 async function _a2aRecurringCancel(id) {
   await fetch(AGENT_WALLETS_API, {method:'POST',headers:{'Content-Type':'application/json'},
@@ -11114,18 +11114,18 @@ async function _a2aInvoiceCreate() {
   const reason = document.getElementById('a2aInvReason')?.value;
   const out = document.getElementById('a2aInvCreateResult');
   const from = await _a2aResolveAddr(fromRaw);
-  if (!from || !amt) { out.innerHTML = '<div style="color:#ef4444;font-size:.78rem;">Enter a valid payer address and amount</div>'; return; }
+  if (!from || !amt) { out.innerHTML = '<div style="color:#7000ff;font-size:.78rem;">Enter a valid payer address and amount</div>'; return; }
   out.innerHTML = '<div style="color:var(--text3);font-size:.78rem;">Sending...</div>';
   try {
     const r = await fetch(AGENT_WALLETS_API, {method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({action:'invoice-create', userAddress:userAddr, agentWalletAddress:agentWalletAddr, fromAgentAddress:from, amount:amt, reason})});
     const d = await r.json();
-    if (!d.success) { out.innerHTML = `<div style="color:#ef4444;font-size:.78rem;">${d.error||'Failed'}</div>`; return; }
+    if (!d.success) { out.innerHTML = `<div style="color:#7000ff;font-size:.78rem;">${d.error||'Failed'}</div>`; return; }
     out.innerHTML = d.autoEval?.autoHonored
-      ? `<div style="color:#22c55e;font-size:.78rem;">✅ Request sent — within their trust tier, likely to auto-honor</div>`
-      : `<div style="color:#eab308;font-size:.78rem;">⏳ Request sent — pending manual review (${d.autoEval?.reason||'not auto-evaluated'})</div>`;
+      ? `<div style="color:#7000ff;font-size:.78rem;">✅ Request sent — within their trust tier, likely to auto-honor</div>`
+      : `<div style="color:#a855f7;font-size:.78rem;">⏳ Request sent — pending manual review (${d.autoEval?.reason||'not auto-evaluated'})</div>`;
     document.getElementById('a2aInvFrom').value=''; document.getElementById('a2aInvAmt').value=''; document.getElementById('a2aInvReason').value='';
-  } catch(e) { out.innerHTML = `<div style="color:#ef4444;font-size:.78rem;">${e.message}</div>`; }
+  } catch(e) { out.innerHTML = `<div style="color:#7000ff;font-size:.78rem;">${e.message}</div>`; }
 }
 async function _a2aInvoiceList(direction) {
   const body = document.getElementById('a2aInvBody');
@@ -11144,12 +11144,12 @@ async function _a2aInvoiceList(direction) {
         <div style="font-size:.68rem;font-family:monospace;color:var(--text3);margin-bottom:6px;">${direction==='incoming'?'Requested by':'Requested from'}: ${(direction==='incoming'?inv.toWallet:inv.fromWallet).slice(0,10)}...</div>
         ${direction==='incoming' && inv.status==='pending' ? `
           <div style="display:flex;gap:6px;">
-            <button onclick="_a2aInvoiceRespond('${inv.id}',true)" style="flex:1;padding:7px;border-radius:8px;background:#22c55e;border:none;color:#fff;font-size:.74rem;font-weight:700;cursor:pointer;">Honor</button>
-            <button onclick="_a2aInvoiceRespond('${inv.id}',false)" style="flex:1;padding:7px;border-radius:8px;background:none;border:1px solid var(--border);color:#ef4444;font-size:.74rem;cursor:pointer;">Reject</button>
+            <button onclick="_a2aInvoiceRespond('${inv.id}',true)" style="flex:1;padding:7px;border-radius:8px;background:#7000ff;border:none;color:#fff;font-size:.74rem;font-weight:700;cursor:pointer;">Honor</button>
+            <button onclick="_a2aInvoiceRespond('${inv.id}',false)" style="flex:1;padding:7px;border-radius:8px;background:none;border:1px solid var(--border);color:#7000ff;font-size:.74rem;cursor:pointer;">Reject</button>
           </div>` : ''}
       </div>
     `).join('');
-  } catch(e) { body.innerHTML = `<div style="color:#ef4444;font-size:.78rem;">${e.message}</div>`; }
+  } catch(e) { body.innerHTML = `<div style="color:#7000ff;font-size:.78rem;">${e.message}</div>`; }
 }
 async function _a2aInvoiceRespond(id, honor) {
   const r = await fetch(AGENT_WALLETS_API, {method:'POST',headers:{'Content-Type':'application/json'},
@@ -11173,28 +11173,28 @@ async function _a2aNetCheck() {
   const raw = document.getElementById('a2aNetAddr')?.value;
   const out = document.getElementById('a2aNetResult');
   const addr = await _a2aResolveAddr(raw);
-  if (!addr) { out.innerHTML = '<div style="color:#ef4444;font-size:.78rem;">Could not resolve address</div>'; return; }
+  if (!addr) { out.innerHTML = '<div style="color:#7000ff;font-size:.78rem;">Could not resolve address</div>'; return; }
   out.innerHTML = '<div style="color:var(--text3);font-size:.78rem;">Loading...</div>';
   try {
     const r = await fetch(AGENT_WALLETS_API, {method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({action:'net-status', userAddress:userAddr, agentWalletAddress:agentWalletAddr, counterpartyAddress:addr})});
     const d = await r.json();
-    if (!d.success) { out.innerHTML = `<div style="color:#ef4444;font-size:.78rem;">${d.error||'Failed'}</div>`; return; }
+    if (!d.success) { out.innerHTML = `<div style="color:#7000ff;font-size:.78rem;">${d.error||'Failed'}</div>`; return; }
     const net = d.currentNet;
     const iAmPayer = net.payer?.toLowerCase() === agentWalletAddr.toLowerCase();
     out.innerHTML = `
       <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;">
         ${net.amount === 0
-          ? '<div style="font-size:.85rem;color:#22c55e;font-weight:700;">✅ Ledger is balanced — nothing owed either way</div>'
+          ? '<div style="font-size:.85rem;color:#7000ff;font-weight:700;">✅ Ledger is balanced — nothing owed either way</div>'
           : `<div style="font-size:.78rem;color:var(--text3);margin-bottom:4px;">Net owed</div>
-             <div style="font-size:1.3rem;font-weight:800;color:${iAmPayer?'#ef4444':'#22c55e'};">${iAmPayer?'You owe':'They owe you'} $${net.amount.toFixed(2)}</div>`
+             <div style="font-size:1.3rem;font-weight:800;color:${iAmPayer?'#7000ff':'#7000ff'};">${iAmPayer?'You owe':'They owe you'} $${net.amount.toFixed(2)}</div>`
         }
         <div style="font-size:.68rem;color:var(--text3);margin-top:8px;">${d.ledger.entries.length} recorded entr${d.ledger.entries.length===1?'y':'ies'} since last settlement</div>
       </div>
-      ${net.amount > 0 && iAmPayer ? `<button onclick="_a2aNetSettle('${addr}')" style="width:100%;padding:9px;border-radius:10px;background:#22c55e;border:none;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;">Settle Now — Pay $${net.amount.toFixed(2)}</button>` : ''}
+      ${net.amount > 0 && iAmPayer ? `<button onclick="_a2aNetSettle('${addr}')" style="width:100%;padding:9px;border-radius:10px;background:#7000ff;border:none;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;">Settle Now — Pay $${net.amount.toFixed(2)}</button>` : ''}
       ${net.amount > 0 && !iAmPayer ? '<div style="font-size:.72rem;color:var(--text3);text-align:center;">Waiting on the other side to settle</div>' : ''}
     `;
-  } catch(e) { out.innerHTML = `<div style="color:#ef4444;font-size:.78rem;">${e.message}</div>`; }
+  } catch(e) { out.innerHTML = `<div style="color:#7000ff;font-size:.78rem;">${e.message}</div>`; }
 }
 async function _a2aNetSettle(addr) {
   try {
