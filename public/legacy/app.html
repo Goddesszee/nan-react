@@ -113,23 +113,6 @@ body, button, input, textarea, select, div, span, p, h1, h2, h3, h4, h5, h6, a {
 
 html,body{background-color:var(--bg);}
 #app-root{background-color:var(--bg);}
-#app-root{
-  background-image:
-    radial-gradient(ellipse 900px 650px at 88% 6%,  rgba(112,0,255,.16), transparent 62%),
-    radial-gradient(ellipse 700px 550px at 100% 42%, rgba(168,85,247,.13), transparent 65%),
-    radial-gradient(ellipse 650px 600px at 78% 88%,  rgba(112,0,255,.10), transparent 68%),
-    radial-gradient(ellipse 500px 400px at 8% 96%,   rgba(168,85,247,.08), transparent 70%);
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-}
-[data-theme="light"] #app-root{
-  background-image:
-    radial-gradient(ellipse 900px 650px at 88% 6%,  rgba(112,0,255,.07), transparent 62%),
-    radial-gradient(ellipse 700px 550px at 100% 42%, rgba(168,85,247,.06), transparent 65%),
-    radial-gradient(ellipse 650px 600px at 78% 88%,  rgba(112,0,255,.05), transparent 68%),
-    radial-gradient(ellipse 500px 400px at 8% 96%,   rgba(168,85,247,.04), transparent 70%);
-}
 .bottom-nav{background:var(--nav-bg) !important;border-top:1px solid var(--border) !important;}
     /* ── MOBILE DARK MODE & DROPDOWN FIXES ── */
     
@@ -317,6 +300,7 @@ html,body{background-color:var(--bg);}
 </head>
 <body>
 <div id="app-root">
+<div class="nan-tex" style="position:fixed;" aria-hidden="true"><svg><filter id="nanCamoGlobal"><feTurbulence type="fractalNoise" baseFrequency="0.011" numOctaves="5" seed="11"/><feColorMatrix values="0 0 0 0 0.44  0 0 0 0 0  0 0 0 0 1  0 0 0 -1.35 0.72"/><feGaussianBlur stdDeviation="4"/></filter><rect width="100%" height="100%" filter="url(#nanCamoGlobal)"/></svg><div class="nan-tex-fade" style="position:fixed;"></div></div>
 
   <!-- ══ TOP BAR ══ -->
   <div id="globalTopBar">
@@ -579,7 +563,6 @@ html,body{background-color:var(--bg);}
   <!-- ══ AGENT WALLET PAGE ══ -->
 <div class="page" id="page-agent-wallet">
 <div style="background:var(--bg);min-height:calc(100vh - 140px);">
-<div class="nan-tex" aria-hidden="true"><svg><filter id="nanCamo"><feTurbulence type="fractalNoise" baseFrequency="0.011" numOctaves="5" seed="11"/><feColorMatrix id="nanCamoMx" values="0 0 0 0 0.44  0 0 0 0 0  0 0 0 0 1  0 0 0 -1.35 0.72"/><feGaussianBlur stdDeviation="4"/></filter><rect width="100%" height="100%" filter="url(#nanCamo)"/></svg><div class="nan-tex-fade"></div></div>
 
 <div class="nan-status-row" style="display:flex;align-items:center;justify-content:space-between;padding:24px 40px;">
   <div id="agentArcAddr" style="font-family:monospace;font-size:11px;color:var(--text3);display:flex;align-items:center;gap:8px;word-break:break-all;"></div>
