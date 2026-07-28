@@ -5053,3 +5053,58 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
   }
 }
 
+
+/* ══════════════════════════════════════════════════════════
+   NAN AURORA — premium agent wallet view
+   ══════════════════════════════════════════════════════════ */
+#page-agent-wallet > div:first-child{
+  background:
+    radial-gradient(900px 900px at -12% -25%, rgba(112,0,255,.45), transparent 62%),
+    radial-gradient(700px 700px at 112% 15%, rgba(192,38,211,.32), transparent 62%),
+    radial-gradient(820px 820px at 42% 120%, rgba(37,99,235,.28), transparent 64%),
+    #08060f !important;
+}
+[data-theme=light] #page-agent-wallet > div:first-child{
+  background:
+    radial-gradient(900px 900px at -12% -25%, rgba(112,0,255,.15), transparent 62%),
+    radial-gradient(700px 700px at 112% 15%, rgba(192,38,211,.11), transparent 62%),
+    radial-gradient(820px 820px at 42% 120%, rgba(37,99,235,.09), transparent 64%),
+    #fafafa !important;
+}
+
+.nan-aur-wrap{max-width:760px;margin:0 auto;padding:64px 24px 60px;text-align:center;}
+.nan-aur-badge{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:#e9d5ff;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-radius:100px;padding:7px 16px;margin-bottom:26px;}
+.nan-aur-h1{font-size:clamp(30px,5.4vw,54px);font-weight:600;line-height:1.1;letter-spacing:-.03em;margin-bottom:20px;background:linear-gradient(180deg,#ffffff 0%,#b9a5e8 100%);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.nan-aur-sub{font-size:16px;color:rgba(255,255,255,.62);line-height:1.75;max-width:520px;margin:0 auto 32px;}
+.nan-aur-input{width:100%;max-width:360px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:14px 16px;color:#fff;font-size:14px;margin-bottom:12px;box-sizing:border-box;outline:none;font-family:inherit;}
+.nan-aur-input::placeholder{color:rgba(255,255,255,.35);}
+.nan-aur-input:focus{border-color:rgba(168,85,247,.6);}
+.nan-aur-cta{background:linear-gradient(180deg,#8b3dff,#6d00e6);color:#fff;border:none;border-radius:14px;padding:16px 38px;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit;box-shadow:0 12px 40px rgba(112,0,255,.5),inset 0 1px 0 rgba(255,255,255,.25);transition:transform .15s,box-shadow .2s;}
+.nan-aur-cta:hover{transform:translateY(-1px);box-shadow:0 16px 48px rgba(112,0,255,.6),inset 0 1px 0 rgba(255,255,255,.3);}
+.nan-aur-note{font-size:12px;color:rgba(255,255,255,.4);margin-top:16px;}
+.nan-aur-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;text-align:left;margin-top:56px;}
+.nan-aur-card{background:rgba(255,255,255,.09);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.18);border-radius:18px;padding:22px;box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 14px 34px rgba(0,0,0,.4);}
+.nan-aur-tile{width:36px;height:36px;border-radius:11px;margin-bottom:14px;display:flex;align-items:center;justify-content:center;font-size:17px;color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.3);}
+.nan-aur-ct{font-size:15px;color:#fff;margin-bottom:7px;font-weight:500;}
+.nan-aur-cd{font-size:13px;color:rgba(255,255,255,.48);line-height:1.65;}
+
+[data-theme=light] .nan-aur-h1{background:linear-gradient(180deg,#1a1a1a 0%,#5b3ea8 100%);-webkit-background-clip:text;background-clip:text;}
+[data-theme=light] .nan-aur-sub{color:rgba(0,0,0,.6);}
+[data-theme=light] .nan-aur-badge{color:#6d28d9;background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.1);}
+[data-theme=light] .nan-aur-input{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.12);color:#111;}
+[data-theme=light] .nan-aur-input::placeholder{color:rgba(0,0,0,.35);}
+[data-theme=light] .nan-aur-card{background:rgba(255,255,255,.72);border-color:rgba(0,0,0,.08);box-shadow:inset 0 1px 0 #fff,0 14px 34px rgba(0,0,0,.08);}
+[data-theme=light] .nan-aur-ct{color:#111111;}
+[data-theme=light] .nan-aur-cd{color:rgba(0,0,0,.55);}
+[data-theme=light] .nan-aur-note{color:rgba(0,0,0,.45);}
+
+@media(max-width:700px){
+  .nan-aur-grid{grid-template-columns:1fr;margin-top:40px;}
+  .nan-aur-wrap{padding:44px 18px 44px;}
+  .nan-aur-sub{font-size:14px;}
+}
+
+/* nav refinement */
+#topbarNav .tnav-btn{font-size:13px !important;}
+#topbarNav .tnav-btn.active{background:rgba(255,255,255,.11) !important;border:1px solid rgba(255,255,255,.14) !important;box-shadow:inset 0 1px 0 rgba(255,255,255,.16);color:#ffffff !important;border-radius:9px !important;}
+[data-theme=light] #topbarNav .tnav-btn.active{background:rgba(0,0,0,.06) !important;border-color:rgba(0,0,0,.1) !important;color:#111111 !important;box-shadow:none;}
