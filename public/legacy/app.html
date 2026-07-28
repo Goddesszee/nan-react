@@ -1164,29 +1164,44 @@ html,body{background:var(--bg);}
   async function careerShowCompanyProfile(idx, company, jobTitle){
     const el = document.getElementById('companyProfile'+idx);
     if(el.style.display === 'block'){ el.style.display = 'none'; return; }
+    if(!requireAgentWallet()) return;
     el.style.display = 'block';
-    el.textContent = 'Looking up ' + company + '...';
+    el.textContent = 'Paying and looking up ' + company + '...';
     try{
-      const r = await fetch(CAREER_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'company-profile', company, jobTitle})});
-      const d = await r.json();
+      const d = await payAndCall(CAREER_API, {action:'company-profile', company, jobTitle}, '0.02');
       if(!d.success) throw new Error(d.error || 'Lookup failed');
       const p = d.profile || {};
       el.innerHTML = `<b style="color:var(--text);">${company}</b><br/>${p.summary||''}<br/>${p.size?('Size: '+p.size+'<br/>'):''}${p.stage?('Stage: '+p.stage+'<br/>'):''}${p.notableSignal?('Note: '+p.notableSignal):''}<br/><span style="color:#eab308;">AI-researched — cross-check independently.</span>`;
     }catch(err){ el.textContent = '❌ ' + err.message; }
   }
   const CAREER_API = 'https://nan-production.up.railway.app/api/career';
+  function requireAgentWallet(){
+    if (typeof agentWalletAddr === 'undefined' || !agentWalletAddr) {
+      document.getElementById('careerStatus').textContent = 'Connect your Agent wallet first (Wallet ▾ → Agent wallet · connect / x402) — these actions are paid via x402.';
+      return false;
+    }
+    return true;
+  }
+  async function payAndCall(targetUrl, innerBody, maxAmount){
+    const r = await fetch(AGENT_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      action:'pay-service', address:agentWalletAddr, url:targetUrl, method:'POST', body:innerBody, chain:'ARC-TESTNET', maxAmount:String(maxAmount),
+    })});
+    const wrapped = await r.json();
+    if(!wrapped.success) throw new Error(wrapped.error || 'Payment or request failed');
+    return wrapped.result;
+  }
   async function careerGenerateCv(){
+    if(!requireAgentWallet()) return;
     const name = document.getElementById('careerGenName').value.trim();
     const targetRole = document.getElementById('careerGenRole').value.trim();
     if(!name || !targetRole){ document.getElementById('careerStatus').textContent = 'Enter a name and target role.'; return; }
-    document.getElementById('careerStatus').textContent = 'Generating CV...';
+    document.getElementById('careerStatus').textContent = 'Paying and generating CV...';
     try{
-      const r = await fetch(CAREER_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      const d = await payAndCall(CAREER_API, {
         action:'generate-cv', name, targetRole,
         skills: document.getElementById('careerGenSkills').value.trim(),
         experienceSummary: document.getElementById('careerGenExp').value.trim(),
-      })});
-      const d = await r.json();
+      }, '0.03');
       if(!d.success) throw new Error(d.error || 'Generation failed');
       careerSwitchTab('upload');
       document.getElementById('careerCvText').value = d.cvText;
@@ -1194,25 +1209,24 @@ html,body{background:var(--bg);}
     }catch(err){ document.getElementById('careerStatus').textContent = '❌ ' + err.message; }
   }
   async function careerRunSearch(){
+    if(!requireAgentWallet()) return;
     const cvText = document.getElementById('careerCvText').value.trim();
     if(cvText.length < 20){ document.getElementById('careerStatus').textContent = 'Add or generate CV text first.'; return; }
     const btn = document.getElementById('careerSearchBtn'); btn.disabled = true;
-    document.getElementById('careerStatus').textContent = 'Parsing CV...';
+    document.getElementById('careerStatus').textContent = 'Paying and parsing CV...';
     document.getElementById('careerResults').innerHTML = '';
     try{
-      const parseRes = await fetch(CAREER_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'parse-cv', cvText})});
-      const parseData = await parseRes.json();
+      const parseData = await payAndCall(CAREER_API, {action:'parse-cv', cvText}, '0.02');
       if(!parseData.success) throw new Error(parseData.error || 'CV parsing failed');
 
-      document.getElementById('careerStatus').textContent = 'Searching for matching jobs...';
-      const searchRes = await fetch(CAREER_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      document.getElementById('careerStatus').textContent = 'Paying and searching for matching jobs...';
+      const searchData = await payAndCall(CAREER_API, {
         action:'search-jobs',
         profile: parseData.profile,
         location: document.getElementById('careerLocation').value.trim(),
         remoteOnly: document.getElementById('careerRemoteOnly').checked,
         includeWeb3: document.getElementById('careerIncludeWeb3').checked,
-      })});
-      const searchData = await searchRes.json();
+      }, '0.05');
       if(!searchData.success) throw new Error(searchData.error || 'Job search failed');
 
       document.getElementById('careerStatus').textContent = '';
@@ -1270,17 +1284,26 @@ html,body{background:var(--bg);}
   async function supplierRunSearch(){
     const product = document.getElementById('supplierProduct').value.trim();
     if(!product){ document.getElementById('supplierStatus').textContent = 'Enter what you\'re sourcing first.'; return; }
+    if (typeof agentWalletAddr === 'undefined' || !agentWalletAddr) {
+      document.getElementById('supplierStatus').textContent = 'Connect your Agent wallet first (Wallet ▾ → Agent wallet · connect / x402) — this is paid via x402.';
+      return;
+    }
     const btn = document.getElementById('supplierSearchBtn'); btn.disabled = true;
-    document.getElementById('supplierStatus').textContent = 'Searching sourcing platforms...';
+    document.getElementById('supplierStatus').textContent = 'Paying and searching sourcing platforms...';
     document.getElementById('supplierResults').innerHTML = '';
     try{
-      const r = await fetch(SUPPLIER_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-        action:'search-suppliers', product,
-        location: document.getElementById('supplierLocation').value.trim(),
-        budget: document.getElementById('supplierBudget').value.trim(),
-        moqLimit: document.getElementById('supplierMoq').value.trim(),
+      const r = await fetch(AGENT_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+        action:'pay-service', address:agentWalletAddr, url:SUPPLIER_API, method:'POST', chain:'ARC-TESTNET', maxAmount:'0.10',
+        body:{
+          action:'search-suppliers', product,
+          location: document.getElementById('supplierLocation').value.trim(),
+          budget: document.getElementById('supplierBudget').value.trim(),
+          moqLimit: document.getElementById('supplierMoq').value.trim(),
+        },
       })});
-      const d = await r.json();
+      const wrapped = await r.json();
+      if(!wrapped.success) throw new Error(wrapped.error || 'Payment or request failed');
+      const d = wrapped.result;
       if(!d.success) throw new Error(d.error || 'Search failed');
       document.getElementById('supplierStatus').textContent = '';
       const suppliers = d.suppliers || [];
