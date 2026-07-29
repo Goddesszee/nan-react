@@ -4945,7 +4945,7 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
 
   /* ── Desktop: no boxed card on agent wallet page ── */
   html body #page-agent-wallet > div:first-child {
-    background: var(--bg) !important;
+    background: transparent !important;
     border: none !important;
     border-radius: 0 !important;
     overflow: visible !important;
@@ -5041,16 +5041,7 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
 ══════════════════════════════════════════════════════════════ */
 #page-agent-wallet{
   padding:0 !important;
-  background:
-    radial-gradient(900px 900px at -12% -25%, rgba(112,0,255,.30), transparent 62%),
-    radial-gradient(700px 700px at 112% 15%, rgba(192,38,211,.24), transparent 62%),
-    radial-gradient(820px 820px at 42% 120%, rgba(37,99,235,.20), transparent 64%) !important;
-}
-[data-theme=light] #page-agent-wallet{
-  background:
-    radial-gradient(900px 900px at -12% -25%, rgba(112,0,255,.14), transparent 62%),
-    radial-gradient(700px 700px at 112% 15%, rgba(192,38,211,.11), transparent 62%),
-    radial-gradient(820px 820px at 42% 120%, rgba(37,99,235,.09), transparent 64%) !important;
+  background:transparent !important;
 }
 #page-agent-wallet > *{
   max-width:none !important;
@@ -5159,8 +5150,7 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
 /* ══════════════════════════════════════════════════════════
    NAN REFERENCE TREATMENT — agent wallet
    ══════════════════════════════════════════════════════════ */
-#page-agent-wallet > div:first-child{position:relative;background:#0d0d0d !important;}
-html[data-theme=light] #page-agent-wallet > div:first-child{background:#f4f3ef !important;}
+#page-agent-wallet > div:first-child{position:relative;background:transparent !important;}
 
 .nan-status-row{display:none !important;}
 
