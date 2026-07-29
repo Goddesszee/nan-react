@@ -113,7 +113,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
   const D = isDesktop
 
   return (
-    <div style={{ background:bg, color:text, fontFamily:'DM Sans, Inter, sans-serif', minHeight:'100vh', overflowX:'hidden', position:'relative' }}>
+    <div style={{ background:bg, color:text, fontFamily:'DM Sans, Inter, sans-serif', height:'100vh', overflow:'hidden', position:'relative' }}>
       <NanRibbons dark={dark} />
 
       {/* Orbs */}
@@ -121,13 +121,13 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
       <div style={{ position:'fixed', width:350, height:350, borderRadius:'50%', background:`radial-gradient(circle,rgba(168,85,247,${dark?.08:.04}) 0%,transparent 70%)`, bottom:-100, right:-100, filter:'blur(80px)', pointerEvents:'none', zIndex:0 }}/>
 
       {/* ── NAV ── */}
-      <nav style={{ position:'fixed', top:0, left:0, right:0, zIndex:100, padding: D ? '16px 78px' : '12px 18px', display:'flex', alignItems:'center', justifyContent:'space-between', background: dark ? 'rgba(17,17,17,.78)' : 'rgba(250,250,250,.82)', backdropFilter:'blur(24px)', borderBottom:`1px solid ${border}` }}>
+      <nav style={{ position:'fixed', top:0, left:0, right:0, zIndex:100, height:D?76:66, padding: D ? '0 78px' : '0 18px', display:'flex', alignItems:'center', justifyContent:'space-between', background: dark ? 'rgba(17,17,17,.78)' : 'rgba(250,250,250,.82)', backdropFilter:'blur(24px)', borderBottom:`1px solid ${border}` }}>
         <div style={{ display:'flex', alignItems:'center', gap: D ? 8 : 7 }}>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 480" width={D?28:22} height={D?42:33} style={{flexShrink:0}}>
             <path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill={accent}/>
             <path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill={accent}/>
           </svg>
-          <span style={{ fontFamily:'Syne, DM Sans, sans-serif', fontWeight:800, fontSize: D ? '1.18rem' : '1.05rem', letterSpacing:'-.04em', color:text }}>NAN</span>
+          <span style={{ fontFamily:'Syne, DM Sans, sans-serif', fontWeight:800, fontSize: D ? '1.12rem' : '1rem', letterSpacing:'-.04em', color:text }}>NAN</span>
         </div>
 
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
@@ -150,22 +150,22 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
       </nav>
 
       {/* ── DIRECT CONNECT ── */}
-      <section style={{ position:'relative', zIndex:1, minHeight:'100vh', display:'flex', flexDirection:'column', alignItems:D?'flex-start':'center', justifyContent:'center', textAlign:D?'left':'center', padding: D ? '132px 78px 92px' : '104px 20px 64px', maxWidth: D ? 1180 : 'none', margin:'0 auto' }}>
+      <section style={{ position:'relative', zIndex:1, height:'100vh', display:'flex', flexDirection:'column', alignItems:D?'flex-start':'center', justifyContent:'center', textAlign:D?'left':'center', padding: D ? '92px 78px 26px' : '82px 20px 18px', maxWidth: D ? 1180 : 'none', margin:'0 auto' }}>
 
-        <div style={{ fontSize: D ? '.72rem' : '.66rem', fontWeight:900, letterSpacing:'.16em', textTransform:'uppercase', color:accent4, marginBottom:D?18:14 }}>
+        <div style={{ fontSize: D ? '.7rem' : '.64rem', fontWeight:900, letterSpacing:'.16em', textTransform:'uppercase', color:accent4, marginBottom:D?14:12 }}>
           ARC TESTNET + CIRCLE MPC
         </div>
 
-        <h1 style={{ fontFamily:'Syne, DM Sans, sans-serif', fontSize: D ? 'clamp(4.4rem,8vw,7.2rem)' : 'clamp(3rem,16vw,4.8rem)', fontWeight:800, lineHeight:.86, letterSpacing:'-.075em', marginBottom:D?26:20, maxWidth:760 }}>
+        <h1 style={{ fontFamily:'Syne, DM Sans, sans-serif', fontSize: D ? 'clamp(4rem,6.2vw,5.9rem)' : 'clamp(2.8rem,13vw,4rem)', fontWeight:800, lineHeight:.92, letterSpacing:'-.075em', marginBottom:D?18:16, maxWidth:720 }}>
           Connect<br/>your wallet
         </h1>
 
-        <p style={{ color:text2, fontSize:D?'1.08rem':'1rem', lineHeight:1.65, fontWeight:600, maxWidth:620, marginBottom:D?30:24 }}>
+        <p style={{ color:text2, fontSize:D?'1rem':'.94rem', lineHeight:1.5, fontWeight:700, maxWidth:610, marginBottom:D?22:18 }}>
           Send, swap, bridge and earn with USDC and EURC on Arc. Zero gas fees, clean controls, and a wallet experience built to feel fast.
         </p>
 
         {/* ── LOGIN FORM ── */}
-        <div style={{ width:'100%', maxWidth: D ? 610 : 370, display:'flex', flexDirection:'column', gap:12 }}>
+        <div style={{ width:'100%', maxWidth: D ? 610 : 370, display:'flex', flexDirection:'column', gap:10 }}>
 
           {step === 'email' && (
             <>
@@ -175,9 +175,9 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
                   placeholder="Enter your email..."
                   value={email}
                   onChange={e => { setEmail(e.target.value); setError('') }}
-                  style={{ flex:1, background: dark?'rgba(255,255,255,.045)':'rgba(0,0,0,.035)', border:`1px solid ${border2}`, outline:'none', color:text, fontFamily:'DM Sans, Inter, sans-serif', fontWeight:700, fontSize:'.96rem', padding:'15px 16px', borderRadius:8, minWidth:0 }}
+                  style={{ flex:1, background: dark?'rgba(255,255,255,.045)':'rgba(0,0,0,.035)', border:`1px solid ${border2}`, outline:'none', color:text, fontFamily:'DM Sans, Inter, sans-serif', fontWeight:800, fontSize:'.95rem', padding:'14px 16px', borderRadius:8, minWidth:0 }}
                 />
-                <button type="submit" style={{ background:accent, border:'1px solid rgba(255,255,255,.14)', color:'#fff', fontFamily:'DM Sans, Inter, sans-serif', fontWeight:900, fontSize:'.9rem', padding: D ? '15px 24px' : '15px', borderRadius:8, cursor:'pointer', whiteSpace:'nowrap', flexShrink:0, boxShadow:'0 18px 42px rgba(112,0,255,.28)' }}>
+                <button type="submit" style={{ background:accent, border:'1px solid rgba(255,255,255,.14)', color:'#fff', fontFamily:'DM Sans, Inter, sans-serif', fontWeight:900, fontSize:'.9rem', padding: D ? '14px 24px' : '14px', borderRadius:8, cursor:'pointer', whiteSpace:'nowrap', flexShrink:0, boxShadow:'0 18px 42px rgba(112,0,255,.28)' }}>
                   Get Started →
                 </button>
               </form>
@@ -189,12 +189,12 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
                 <span style={{ flex:1, height:1, background:border }}/>
               </div>
 
-              <button onClick={connectWallet} style={{ padding:15, borderRadius:8, background: dark?'rgba(255,255,255,.05)':'rgba(0,0,0,.04)', border:`1px solid ${border}`, color:text, fontFamily:'DM Sans, Inter, sans-serif', fontWeight:900, fontSize:'.9rem', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}>
+              <button onClick={connectWallet} style={{ padding:14, borderRadius:8, background: dark?'rgba(255,255,255,.05)':'rgba(0,0,0,.04)', border:`1px solid ${border}`, color:text, fontFamily:'DM Sans, Inter, sans-serif', fontWeight:900, fontSize:'.9rem', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="1" y="8" width="22" height="14" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v2"/><circle cx="18" cy="15" r="1" fill="currentColor"/></svg>
                 Connect MetaMask / Rabby
               </button>
 
-              <a href="https://faucet.circle.com" target="_blank" rel="noopener noreferrer" style={{ padding:15, borderRadius:8, background:accent, border:'1px solid rgba(255,255,255,.14)', color:'#fff', fontFamily:'DM Sans, Inter, sans-serif', fontWeight:900, fontSize:'.9rem', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8, textDecoration:'none', boxShadow:'0 18px 42px rgba(112,0,255,.28)' }}>
+              <a href="https://faucet.circle.com" target="_blank" rel="noopener noreferrer" style={{ padding:14, borderRadius:8, background:accent, border:'1px solid rgba(255,255,255,.14)', color:'#fff', fontFamily:'DM Sans, Inter, sans-serif', fontWeight:900, fontSize:'.9rem', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8, textDecoration:'none', boxShadow:'0 18px 42px rgba(112,0,255,.28)' }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 2v6m0 0c0-3.31 2.69-6 6-6"/><path d="M5.07 11a7 7 0 1 0 13.86 0"/><path d="M12 8v13"/><path d="M9 18l3 3 3-3"/></svg>
                 Get Free Testnet Tokens
               </a>
@@ -232,6 +232,22 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
           )}
 
         </div>
+
+        {D && (
+          <div style={{ width:'100%', display:'grid', gridTemplateColumns:'repeat(3,minmax(0,1fr))', gap:0, marginTop:28, borderTop:`1px solid ${border}`, borderBottom:`1px solid ${border}`, background:dark?'rgba(12,12,16,.42)':'rgba(255,255,255,.62)' }}>
+            {[
+              ['Send', 'Move USDC and EURC instantly across your wallet flow.'],
+              ['Swap', 'Convert between supported stablecoins with clean controls.'],
+              ['Bridge', 'Route value across connected testnet destinations.'],
+            ].map(([title, desc], i) => (
+              <div key={title} style={{ padding:'18px 22px', borderRight:i < 2 ? `1px solid ${border}` : 'none' }}>
+                <div style={{ width:'100%', height:8, borderRadius:999, background:'rgba(112,0,255,.22)', marginBottom:14 }}/>
+                <div style={{ fontFamily:'DM Sans, Inter, sans-serif', fontWeight:1000, fontSize:'1.05rem', letterSpacing:'-.04em', marginBottom:6 }}>{title}</div>
+                <div style={{ color:text2, fontWeight:700, fontSize:'.86rem', lineHeight:1.45, maxWidth:280 }}>{desc}</div>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
     </div>
