@@ -298,7 +298,7 @@ html,body{background-color:var(--bg);}
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 </head>
 <body>
-<div class="nan-tex" style="position:fixed;" aria-hidden="true"><svg><filter id="nanCamoGlobal"><feTurbulence type="fractalNoise" baseFrequency="0.011" numOctaves="5" seed="11"/><feColorMatrix values="0 0 0 0 0.44  0 0 0 0 0  0 0 0 0 1  0 0 0 -1.35 0.72"/><feGaussianBlur stdDeviation="4"/></filter><rect width="100%" height="100%" filter="url(#nanCamoGlobal)"/></svg><div class="nan-tex-fade" style="position:fixed;"></div></div>
+<div class="nan-tex" style="position:fixed;" aria-hidden="true"><svg width="100%" height="100%" style="width:100%;height:100%;display:block;"><filter id="nanCamoGlobal"><feTurbulence type="fractalNoise" baseFrequency="0.011" numOctaves="5" seed="11"/><feColorMatrix values="0 0 0 0 0.44  0 0 0 0 0  0 0 0 0 1  0 0 0 -1.35 0.72"/><feGaussianBlur stdDeviation="4"/></filter><rect width="100%" height="100%" filter="url(#nanCamoGlobal)"/></svg><div class="nan-tex-fade" style="position:fixed;"></div></div>
 <div id="app-root">
 
   <!-- ══ TOP BAR ══ -->
@@ -3416,7 +3416,7 @@ function nanToggleFaucet(btn){
 </div>
 
 <!-- Trade dropdown backdrop — blanks out the page behind the menu, matches page bg in both themes -->
-<div id="nan-trade-backdrop" onclick="nanCloseDds()" style="position:fixed;left:0;right:0;bottom:0;background:var(--bg);z-index:9999998;display:none;"></div>
+<div id="nan-trade-backdrop" onclick="nanCloseDds()" style="position:fixed;left:0;right:0;bottom:0;background:transparent;z-index:9999998;display:none;"></div>
 
 <!-- Trade dropdown — must be direct child of body to escape overflow:hidden containers -->
 <div id="nan-trade-dd" onclick="event.stopPropagation()" style="position:fixed;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:10px;width:300px;z-index:9999999;display:none;">

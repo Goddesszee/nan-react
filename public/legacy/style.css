@@ -5162,7 +5162,7 @@ html[data-theme=light] #page-agent-wallet > div:first-child{background:#f4f3ef !
 
 .nan-tex{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
 .nan-tex svg{position:absolute;top:0;right:0;width:66%;height:100%;opacity:.62;}
-.nan-tex-fade{position:absolute;top:0;right:0;width:66%;height:100%;background:linear-gradient(90deg,#0d0d0d 0%,transparent 45%);}
+.nan-tex-fade{display:none;}
 html[data-theme=light] .nan-tex svg{opacity:.5;}
 html[data-theme=light] .nan-tex-fade{background:linear-gradient(90deg,#f4f3ef 0%,transparent 45%);}
 
