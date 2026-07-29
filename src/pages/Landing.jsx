@@ -113,7 +113,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
   const D = isDesktop
 
   return (
-    <div style={{ background:bg, color:text, fontFamily:'DM Sans, Inter, sans-serif', height:'100vh', overflow:'hidden', position:'relative' }}>
+    <div style={{ background:bg, color:text, fontFamily:'DM Sans, Inter, sans-serif', minHeight:'100vh', position:'relative' }}>
       <NanRibbons dark={dark} />
 
       {/* Orbs */}
@@ -150,7 +150,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
       </nav>
 
       {/* ── DIRECT CONNECT ── */}
-      <section style={{ position:'relative', zIndex:1, height:'100vh', display:'flex', flexDirection:'column', alignItems:D?'flex-start':'center', justifyContent:'center', textAlign:D?'left':'center', padding: D ? '92px 78px 26px' : '82px 20px 18px', maxWidth: D ? 1180 : 'none', margin:'0 auto' }}>
+      <section style={{ position:'relative', zIndex:1, minHeight:'100vh', display:'flex', flexDirection:'column', alignItems:D?'flex-start':'center', justifyContent:'center', textAlign:D?'left':'center', padding: D ? '92px 78px 26px' : '82px 20px 18px', maxWidth: D ? 1180 : 'none', margin:'0 auto' }}>
 
         <div style={{ fontSize: D ? '.7rem' : '.64rem', fontWeight:900, letterSpacing:'.16em', textTransform:'uppercase', color:accent4, marginBottom:D?14:12 }}>
           ARC TESTNET + CIRCLE MPC
