@@ -3234,6 +3234,91 @@ function startQRScan() {
 
 /* ══ MOBILE SIDE DRAWER ══ */
 
+/* ══ FINAL LANDING BACKGROUND MATCH FOR LEGACY MAIN APP ══ */
+:root,
+html[data-theme="dark"]{
+  --bg:#111111 !important;
+  --topbar-bg:rgba(17,17,17,.85) !important;
+  --nav-bg:rgba(17,17,17,.85) !important;
+}
+
+html[data-theme="light"]{
+  --bg:#fafafa !important;
+  --topbar-bg:rgba(250,250,250,.85) !important;
+  --nav-bg:rgba(250,250,250,.85) !important;
+}
+
+html,
+body,
+#app-root,
+.page,
+.page-land,
+#page-agent-wallet,
+#page-agent-wallet > div:first-child{
+  background:transparent !important;
+}
+
+html,
+body{
+  background-color:var(--bg) !important;
+}
+
+.nan-tex{
+  position:fixed !important;
+  inset:0 !important;
+  z-index:0 !important;
+  display:block !important;
+  overflow:hidden !important;
+  pointer-events:none !important;
+  background:var(--bg) !important;
+}
+
+.nan-tex svg,
+.nan-tex-fade{
+  display:none !important;
+}
+
+.nan-tex::before{
+  content:"";
+  position:absolute;
+  inset:-20%;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(112,0,255,.15) 0%, transparent 32%),
+    radial-gradient(circle at 96% 82%, rgba(168,85,247,.08) 0%, transparent 28%);
+  filter:blur(80px);
+}
+
+.nan-tex::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1360 400' preserveAspectRatio='none'%3E%3Cpath d='M0 345 Q170 315 340 345 T680 345 T1020 345 T1360 345 T1700 345 T2040 345 T2380 345 T2720 345 V400 H0 Z' fill='%237000ff' opacity='.098'/%3E%3Cpath d='M0 361 Q136 325 272 361 T544 361 T816 361 T1088 361 T1360 361 T1632 361 T1904 361 T2176 361 T2448 361 T2720 361 V400 H0 Z' fill='%23a855f7' opacity='.112'/%3E%3Cpath d='M0 377 Q340 348 680 377 T1360 377 T2040 377 T2720 377 V400 H0 Z' fill='%234a0f8f' opacity='.210'/%3E%3Cpath d='M0 120 Q170 102 340 120 T680 120 T1020 120 T1360 120 T1700 120 T2040 120 T2380 120 T2720 120' fill='none' stroke='%23a855f7' stroke-width='1' opacity='.182'/%3E%3C/svg%3E");
+  background-repeat:repeat-x;
+  background-size:1360px 100%;
+  animation:nanLandingFlow 24s linear infinite;
+}
+
+html[data-theme="light"] .nan-tex::before{
+  background:
+    radial-gradient(circle at 10% 0%, rgba(112,0,255,.08) 0%, transparent 32%),
+    radial-gradient(circle at 96% 82%, rgba(168,85,247,.04) 0%, transparent 28%);
+}
+
+html[data-theme="light"] .nan-tex::after{
+  opacity:.5;
+}
+
+#globalTopBar,
+.bottom-nav{
+  background:var(--topbar-bg) !important;
+  backdrop-filter:blur(24px) !important;
+  -webkit-backdrop-filter:blur(24px) !important;
+}
+
+.bottom-nav{
+  background:var(--nav-bg) !important;
+}
+
 </style>
 <script>
 
