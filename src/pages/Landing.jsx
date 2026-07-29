@@ -113,7 +113,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
   const D = isDesktop
 
   return (
-    <div style={{ background:bg, color:text, fontFamily:'Inter,sans-serif', minHeight:'100vh', overflowX:'hidden', position:'relative' }}>
+    <div style={{ background:bg, color:text, fontFamily:'DM Sans, Inter, sans-serif', minHeight:'100vh', overflowX:'hidden', position:'relative' }}>
       <NanRibbons dark={dark} />
 
       {/* Orbs */}
@@ -121,24 +121,24 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
       <div style={{ position:'fixed', width:350, height:350, borderRadius:'50%', background:`radial-gradient(circle,rgba(168,85,247,${dark?.08:.04}) 0%,transparent 70%)`, bottom:-100, right:-100, filter:'blur(80px)', pointerEvents:'none', zIndex:0 }}/>
 
       {/* ── NAV ── */}
-      <nav style={{ position:'fixed', top:0, left:0, right:0, zIndex:100, padding: D ? '12px 48px' : '10px 16px', display:'flex', alignItems:'center', justifyContent:'space-between', background: dark ? 'rgba(17,17,17,.85)' : 'rgba(250,250,250,.85)', backdropFilter:'blur(24px)', borderBottom:`1px solid ${border}` }}>
+      <nav style={{ position:'fixed', top:0, left:0, right:0, zIndex:100, padding: D ? '16px 78px' : '12px 18px', display:'flex', alignItems:'center', justifyContent:'space-between', background: dark ? 'rgba(17,17,17,.78)' : 'rgba(250,250,250,.82)', backdropFilter:'blur(24px)', borderBottom:`1px solid ${border}` }}>
         <div style={{ display:'flex', alignItems:'center', gap: D ? 8 : 7 }}>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 480" width={D?28:22} height={D?42:33} style={{flexShrink:0}}>
             <path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill={accent}/>
             <path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill={accent}/>
           </svg>
-          <span style={{ fontWeight:800, fontSize: D ? '1.25rem' : '1.1rem', letterSpacing:'.02em', color:text }}>NAN</span>
+          <span style={{ fontFamily:'Syne, DM Sans, sans-serif', fontWeight:800, fontSize: D ? '1.18rem' : '1.05rem', letterSpacing:'-.04em', color:text }}>NAN</span>
         </div>
 
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
           {/* Arc badge */}
-          <div style={{ fontSize:'.68rem', fontWeight:500, letterSpacing:'.05em', background:`rgba(168,85,247,.08)`, border:`1px solid rgba(168,85,247,.3)`, color:accent3, borderRadius:100, padding:'4px 10px', display:'flex', alignItems:'center', gap:5 }}>
+          <div style={{ fontSize:'.68rem', fontWeight:800, letterSpacing:'.05em', background:`rgba(168,85,247,.08)`, border:`1px solid rgba(168,85,247,.28)`, color:accent3, borderRadius:10, padding:'7px 12px', display:'flex', alignItems:'center', gap:6 }}>
             <span style={{ width:5, height:5, borderRadius:'50%', background:accent3, display:'inline-block', boxShadow:`0 0 5px ${accent3}` }}/>
             Arc Testnet
           </div>
 
           {/* Theme toggle */}
-          <button onClick={toggleTheme} style={{ background:'none', border:`1px solid ${border}`, borderRadius:9, width:34, height:34, display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', color:text2, flexShrink:0 }}>
+          <button onClick={toggleTheme} style={{ background:dark?'rgba(255,255,255,.03)':'rgba(0,0,0,.03)', border:`1px solid ${border}`, borderRadius:10, width:36, height:36, display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', color:text2, flexShrink:0 }}>
             {dark
               ? <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M18.36 5.64l1.41-1.41"/></svg>
               : <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -150,27 +150,35 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
       </nav>
 
       {/* ── DIRECT CONNECT ── */}
-      <section style={{ position:'relative', zIndex:1, minHeight:'100vh', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center', padding: D ? '130px 48px 80px' : '100px 20px 60px' }}>
+      <section style={{ position:'relative', zIndex:1, minHeight:'100vh', display:'flex', flexDirection:'column', alignItems:D?'flex-start':'center', justifyContent:'center', textAlign:D?'left':'center', padding: D ? '132px 78px 92px' : '104px 20px 64px', maxWidth: D ? 1180 : 'none', margin:'0 auto' }}>
 
-        <h1 style={{ fontSize: D ? '2rem' : '1.5rem', fontWeight:800, lineHeight:1.15, letterSpacing:'-.02em', marginBottom:32 }}>
-          Connect your wallet
+        <div style={{ fontSize: D ? '.72rem' : '.66rem', fontWeight:900, letterSpacing:'.16em', textTransform:'uppercase', color:accent4, marginBottom:D?18:14 }}>
+          ARC TESTNET + CIRCLE MPC
+        </div>
+
+        <h1 style={{ fontFamily:'Syne, DM Sans, sans-serif', fontSize: D ? 'clamp(4.4rem,8vw,7.2rem)' : 'clamp(3rem,16vw,4.8rem)', fontWeight:800, lineHeight:.86, letterSpacing:'-.075em', marginBottom:D?26:20, maxWidth:760 }}>
+          Connect<br/>your wallet
         </h1>
 
+        <p style={{ color:text2, fontSize:D?'1.08rem':'1rem', lineHeight:1.65, fontWeight:600, maxWidth:620, marginBottom:D?30:24 }}>
+          Send, swap, bridge and earn with USDC and EURC on Arc. Zero gas fees, clean controls, and a wallet experience built to feel fast.
+        </p>
+
         {/* ── LOGIN FORM ── */}
-        <div style={{ width:'100%', maxWidth: D ? 440 : 360, display:'flex', flexDirection:'column', gap:10 }}>
+        <div style={{ width:'100%', maxWidth: D ? 610 : 370, display:'flex', flexDirection:'column', gap:12 }}>
 
           {step === 'email' && (
             <>
-              <form onSubmit={sendOTP} style={{ display:'flex', flexDirection: D ? 'row' : 'column', gap: D ? 0 : 10, background: D ? (dark?'rgba(255,255,255,.05)':'rgba(0,0,0,.04)') : 'none', border: D ? `1px solid ${border2}` : 'none', borderRadius: D ? 16 : 0, padding: D ? '5px 5px 5px 18px' : 0, transition:'border-color .2s' }}>
+              <form onSubmit={sendOTP} style={{ display:'flex', flexDirection: D ? 'row' : 'column', gap: D ? 10 : 10, background:'transparent', border:'none', borderRadius:0, padding:0, transition:'border-color .2s' }}>
                 <input
                   type="email"
                   placeholder="Enter your email..."
                   value={email}
                   onChange={e => { setEmail(e.target.value); setError('') }}
-                  style={{ flex:1, background: D ? 'none' : (dark?'rgba(255,255,255,.05)':'rgba(0,0,0,.04)'), border: D ? 'none' : `1px solid ${border2}`, outline:'none', color:text, fontFamily:'Inter,sans-serif', fontSize:'.95rem', padding: D ? '10px 0' : '13px 16px', borderRadius: D ? 0 : 14, minWidth:0 }}
+                  style={{ flex:1, background: dark?'rgba(255,255,255,.045)':'rgba(0,0,0,.035)', border:`1px solid ${border2}`, outline:'none', color:text, fontFamily:'DM Sans, Inter, sans-serif', fontWeight:700, fontSize:'.96rem', padding:'15px 16px', borderRadius:8, minWidth:0 }}
                 />
-                <button type="submit" style={{ background:accent, border:'none', color:'#fff', fontFamily:'Inter,sans-serif', fontWeight:600, fontSize:'.9rem', padding: D ? '10px 22px' : '13px', borderRadius: D ? 12 : 14, cursor:'pointer', whiteSpace:'nowrap', flexShrink:0 }}>
-                  Get Started
+                <button type="submit" style={{ background:accent, border:'1px solid rgba(255,255,255,.14)', color:'#fff', fontFamily:'DM Sans, Inter, sans-serif', fontWeight:900, fontSize:'.9rem', padding: D ? '15px 24px' : '15px', borderRadius:8, cursor:'pointer', whiteSpace:'nowrap', flexShrink:0, boxShadow:'0 18px 42px rgba(112,0,255,.28)' }}>
+                  Get Started →
                 </button>
               </form>
               {error && <div style={{ fontSize:'.78rem', color:'#f87171', textAlign:'center' }}>{error}</div>}
@@ -181,17 +189,17 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
                 <span style={{ flex:1, height:1, background:border }}/>
               </div>
 
-              <button onClick={connectWallet} style={{ padding:13, borderRadius:14, background: dark?'rgba(255,255,255,.04)':'rgba(0,0,0,.04)', border:`1px solid ${border}`, color:text, fontFamily:'Inter,sans-serif', fontWeight:500, fontSize:'.9rem', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}>
+              <button onClick={connectWallet} style={{ padding:15, borderRadius:8, background: dark?'rgba(255,255,255,.05)':'rgba(0,0,0,.04)', border:`1px solid ${border}`, color:text, fontFamily:'DM Sans, Inter, sans-serif', fontWeight:900, fontSize:'.9rem', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="1" y="8" width="22" height="14" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v2"/><circle cx="18" cy="15" r="1" fill="currentColor"/></svg>
                 Connect MetaMask / Rabby
               </button>
 
-              <a href="https://faucet.circle.com" target="_blank" rel="noopener noreferrer" style={{ padding:13, borderRadius:14, background:accent, border:'none', color:'#fff', fontFamily:'Inter,sans-serif', fontWeight:600, fontSize:'.9rem', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8, textDecoration:'none' }}>
+              <a href="https://faucet.circle.com" target="_blank" rel="noopener noreferrer" style={{ padding:15, borderRadius:8, background:accent, border:'1px solid rgba(255,255,255,.14)', color:'#fff', fontFamily:'DM Sans, Inter, sans-serif', fontWeight:900, fontSize:'.9rem', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8, textDecoration:'none', boxShadow:'0 18px 42px rgba(112,0,255,.28)' }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 2v6m0 0c0-3.31 2.69-6 6-6"/><path d="M5.07 11a7 7 0 1 0 13.86 0"/><path d="M12 8v13"/><path d="M9 18l3 3 3-3"/></svg>
                 Get Free Testnet Tokens
               </a>
 
-              <p style={{ fontSize:'.72rem', color:text3, display:'flex', alignItems:'center', justifyContent:'center', gap:5 }}>
+              <p style={{ fontSize:'.72rem', color:text3, display:'flex', alignItems:'center', justifyContent:D?'flex-start':'center', gap:5, fontWeight:700 }}>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                 Non-custodial · No seed phrase · Circle MPC
               </p>
