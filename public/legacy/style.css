@@ -1198,6 +1198,7 @@ a:hover{color:var(--text);}
   #desktopNav{width:240px;}
   .page{left:0 !important;}
   .page > *{max-width:600px !important;}
+  #page-career-agent > *, #page-supplier-agent > *, #page-marketplace > * { max-width: 100% !important; }
   .home-bal-num{font-size:3rem;}
   #toast{left:50% !important;}
 }
@@ -5039,6 +5040,7 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
 ══════════════════════════════════════════════════════════════ */
 #page-agent-wallet{
   padding:0 !important;
+  background:transparent !important;
 }
 #page-agent-wallet > *{
   max-width:none !important;
@@ -5056,18 +5058,10 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
    NAN AURORA — premium agent wallet view
    ══════════════════════════════════════════════════════════ */
 #page-agent-wallet > div:first-child{
-  background:
-    radial-gradient(900px 900px at -12% -25%, rgba(112,0,255,.45), transparent 62%),
-    radial-gradient(700px 700px at 112% 15%, rgba(192,38,211,.32), transparent 62%),
-    radial-gradient(820px 820px at 42% 120%, rgba(37,99,235,.28), transparent 64%),
-    #08060f !important;
+  background: transparent !important;
 }
 [data-theme=light] #page-agent-wallet > div:first-child{
-  background:
-    radial-gradient(900px 900px at -12% -25%, rgba(112,0,255,.15), transparent 62%),
-    radial-gradient(700px 700px at 112% 15%, rgba(192,38,211,.11), transparent 62%),
-    radial-gradient(820px 820px at 42% 120%, rgba(37,99,235,.09), transparent 64%),
-    #fafafa !important;
+  background: transparent !important;
 }
 
 .nan-aur-wrap{max-width:760px;margin:0 auto;padding:64px 24px 60px;text-align:center;}
