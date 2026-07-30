@@ -2022,7 +2022,15 @@ html,body{background-color:var(--bg);}
     el.textContent = 'Loading your tasks...';
     const d = await gigCall('my-tasks', { requesterAddress: wallet });
     if(!d.success){ el.textContent = '❌ ' + d.error; return; }
-    if(!d.tasks.length){ el.innerHTML = '<div style="color:var(--text3);font-size:.85rem;">You haven\'t posted any tasks yet.</div>'; return; }
+    if(!d.tasks.length){
+      el.innerHTML = `<div style="color:var(--text3);font-size:.85rem;">You haven't posted any tasks yet.</div>
+        <div style="margin-top:16px;padding:10px;border:1px dashed var(--border);border-radius:8px;font-size:.72rem;color:var(--text3);word-break:break-all;">
+          Debug: queried with wallet <b>${wallet}</b>.
+          <div style="margin-top:6px;"><button onclick="gigDebugAllTasks()" style="padding:6px 12px;border-radius:6px;font-size:.72rem;background:#7000ff;color:#fff;border:none;">Show ALL tasks in system (debug)</button></div>
+          <div id="gigDebugResults" style="margin-top:8px;"></div>
+        </div>`;
+      return;
+    }
     el.innerHTML = d.tasks.map(t => `
       <div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;">
         <div style="display:flex;justify-content:space-between;align-items:start;">
@@ -2033,6 +2041,16 @@ html,body{background-color:var(--bg);}
         ${t.status === 'open' ? `<button class="btn" onclick="gigToggleSubmissions('${t.id}','${(t.title||'').replace(/'/g,"\\'")}')" style="width:auto;padding:9px 20px;border-radius:10px;font-weight:700;margin-top:10px;font-size:13px;">View submissions</button>` : `<div style="font-size:.78rem;color:var(--text3);margin-top:8px;">Completed — paid submission #${(t.acceptedSubmissionId||'').slice(-6)}</div>`}
         <div id="gigSubsList_${t.id}" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);"></div>
       </div>`).join('');
+  }
+  async function gigDebugAllTasks(){
+    const el = document.getElementById('gigDebugResults');
+    el.textContent = 'Loading all tasks (any requester)...';
+    const d = await gigCall('task-list', {});
+    if(!d.success){ el.textContent = '❌ ' + d.error; return; }
+    if(!d.tasks.length){ el.innerHTML = '<i>No tasks exist in the system at all — nothing has ever been saved.</i>'; return; }
+    el.innerHTML = 'Tasks that exist in the system, with their requesterAddress:<br>' + d.tasks.map(t =>
+      `• "${t.title}" — posted by <b>${t.requesterAddress}</b>`
+    ).join('<br>');
   }
   async function gigToggleSubmissions(taskId, taskTitle){
     const el = document.getElementById('gigSubsList_'+taskId);
