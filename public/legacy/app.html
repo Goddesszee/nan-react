@@ -1910,13 +1910,13 @@ html,body{background-color:var(--bg);}
   function gigMyWalletAddress(){
     return window.userAddr || (typeof circleWalletAddress !== 'undefined' ? circleWalletAddress : null) || null;
   }
-  function gigGenerateReceipt(jobTitle, amount, txRef, otherParty, role){
+  function gigGenerateReceipt(jobTitle, amount, txRef, otherParty, role, currency){
     const now = new Date().toLocaleString();
     const lines = [
       'NAN Gigs — Payment Receipt',
       '─────────────────────────',
       'Job: ' + (jobTitle || 'Untitled task'),
-      'Amount: $' + amount + ' USDC',
+      'Amount: $' + amount + ' ' + (currency || 'USDC'),
       role === 'paid_by_me' ? ('Paid to: ' + otherParty) : ('Paid by: ' + otherParty),
       'Network: Arc Testnet',
       'Reference: ' + (txRef || 'pending'),
@@ -2048,13 +2048,17 @@ html,body{background-color:var(--bg);}
         <div style="font-size:.82rem;color:var(--text);margin-top:4px;">${s.description}</div>
         ${s.fileUrl ? (s.fileUrl.startsWith('http') ? `<a href="${s.fileUrl}" target="_blank" style="font-size:.78rem;color:var(--accent3);">View work &rarr;</a>` : `<img src="${s.fileUrl}" style="max-width:120px;border-radius:8px;margin-top:6px;"/>`) : ''}
         ${s.status === 'pending' ? `
-          <div style="display:flex;gap:8px;align-items:center;margin-top:8px;">
-            <input id="gigFinalAmt_${s.id}" type="number" min="0" step="0.01" value="${s.proposedPrice}" style="width:110px;padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.82rem;font-weight:700;"/>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap;">
+            <input id="gigFinalAmt_${s.id}" type="number" min="0" step="0.01" value="${s.proposedPrice}" style="width:100px;padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.82rem;font-weight:700;"/>
+            <select id="gigCurrency_${s.id}" style="padding:8px 8px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.8rem;font-weight:700;">
+              <option value="USDC">USDC</option>
+              <option value="EURC">EURC</option>
+            </select>
             <button class="btn" onclick="gigAcceptSubmission('${s.id}','${taskId}')" style="width:auto;padding:8px 18px;border-radius:8px;font-weight:700;font-size:12px;">Accept &amp; Pay</button>
           </div>
           <div id="gigAcceptStatus_${s.id}" style="font-size:.75rem;color:var(--text3);margin-top:6px;"></div>` :
-          s.status === 'accepted' ? `<div style="font-size:.75rem;font-weight:700;color:#22c55e;margin-top:8px;">✓ Accepted — paid $${s.finalAmount} USDC</div>
-          <button onclick="gigGenerateReceipt('${(taskTitle||'').replace(/'/g,"\\'")}','${s.finalAmount}','${s.txHash||''}','${s.freelancerAddress}','paid_by_me')" style="width:auto;padding:6px 14px;border-radius:8px;font-weight:700;font-size:11px;margin-top:6px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;">Generate receipt</button>` :
+          s.status === 'accepted' ? `<div style="font-size:.75rem;font-weight:700;color:#22c55e;margin-top:8px;">✓ Accepted — paid $${s.finalAmount} ${s.currency||'USDC'}</div>
+          <button onclick="gigGenerateReceipt('${(taskTitle||'').replace(/'/g,"\\'")}','${s.finalAmount}','${s.txHash||''}','${s.freelancerAddress}','paid_by_me','${s.currency||'USDC'}')" style="width:auto;padding:6px 14px;border-radius:8px;font-weight:700;font-size:11px;margin-top:6px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;">Generate receipt</button>` :
           `<div style="font-size:.75rem;color:var(--text3);margin-top:8px;">Not selected</div>`}
       </div>`).join('');
   }
@@ -2067,10 +2071,11 @@ html,body{background-color:var(--bg);}
     }
     const wallet = gigMyWalletAddress();
     const finalAmount = document.getElementById('gigFinalAmt_'+submissionId).value.trim();
+    const currency = document.getElementById('gigCurrency_'+submissionId).value;
     if(!finalAmount){ statusEl.textContent = 'Enter an amount.'; return; }
-    statusEl.textContent = 'Paying from Agent Wallet...';
+    statusEl.textContent = `Paying ${currency} from Agent Wallet...`;
     const d = await gigCall('submission-accept', {
-      submissionId, requesterAddress: wallet, requesterAgentWalletAddress: agentWalletAddr, finalAmount,
+      submissionId, requesterAddress: wallet, requesterAgentWalletAddress: agentWalletAddr, finalAmount, currency,
     });
     if(!d.success){ statusEl.textContent = '❌ ' + d.error; return; }
     statusEl.textContent = '✓ Paid — tx ' + (d.submission.txHash || 'pending').slice(0,14) + '...';
@@ -2088,8 +2093,8 @@ html,body{background-color:var(--bg);}
       <div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;">
         <div style="font-size:.82rem;color:var(--text);">${s.description}</div>
         <div style="font-size:.78rem;color:var(--text3);margin-top:4px;">Proposed: $${s.proposedPrice}</div>
-        ${s.status === 'accepted' ? `<div style="font-size:.78rem;font-weight:700;color:#22c55e;margin-top:6px;">✓ Accepted — paid $${s.finalAmount} USDC</div>
-          <button onclick="gigGenerateReceipt('${(s.taskTitle||'').replace(/'/g,"\\'")}','${s.finalAmount}','${s.txHash||''}','${s.requesterAddress||''}','paid_to_me')" style="width:auto;padding:6px 14px;border-radius:8px;font-weight:700;font-size:11px;margin-top:6px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;">Generate receipt</button>` :
+        ${s.status === 'accepted' ? `<div style="font-size:.78rem;font-weight:700;color:#22c55e;margin-top:6px;">✓ Accepted — paid $${s.finalAmount} ${s.currency||'USDC'}</div>
+          <button onclick="gigGenerateReceipt('${(s.taskTitle||'').replace(/'/g,"\\'")}','${s.finalAmount}','${s.txHash||''}','${s.requesterAddress||''}','paid_to_me','${s.currency||'USDC'}')" style="width:auto;padding:6px 14px;border-radius:8px;font-weight:700;font-size:11px;margin-top:6px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;">Generate receipt</button>` :
           s.status === 'not_selected' ? `<div style="font-size:.78rem;color:var(--text3);margin-top:6px;">Not selected</div>` :
           `<div style="font-size:.78rem;color:#c084fc;margin-top:6px;">Awaiting review</div>`}
       </div>`).join('');
