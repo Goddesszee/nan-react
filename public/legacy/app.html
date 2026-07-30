@@ -1263,6 +1263,8 @@ html,body{background-color:var(--bg);}
       </div>`).join('');
     const last = valid[valid.length-1];
     const totalMs = valid.reduce((sum,p) => sum + (p.elapsedMs||0), 0);
+    const explorerBase = (typeof ARC_EXP !== 'undefined' && ARC_EXP) ? ARC_EXP : 'https://testnet.arcscan.app';
+    const walletUrl = (typeof agentWalletAddr !== 'undefined' && agentWalletAddr) ? `${explorerBase}/address/${agentWalletAddr}` : null;
     return `
       <div style="border:1px solid rgba(112,0,255,.25);background:rgba(112,0,255,.06);border-radius:12px;padding:12px 14px;margin-top:8px;max-width:400px;">
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
@@ -1273,7 +1275,8 @@ html,body{background-color:var(--bg);}
         ${rows}
         <div style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(112,0,255,.15);">
           <div style="font-size:.7rem;color:var(--text3);">${last.network||'ARC-TESTNET'} &middot; ref ${(last.transaction||'').slice(0,13)}&hellip;</div>
-          <div style="font-size:.68rem;color:var(--text3);margin-top:2px;">Signed off-chain, gas-free — settles on-chain in Circle's next periodic batch.</div>
+          <div style="font-size:.68rem;color:var(--text3);margin-top:2px;">Signed off-chain, gas-free — settles on-chain in Circle's next periodic batch (individual nanopayments don't get their own tx).</div>
+          ${walletUrl ? `<a href="${walletUrl}" target="_blank" style="font-size:.7rem;color:#7000ff;text-decoration:underline;display:inline-block;margin-top:6px;">View agent wallet on Arc Explorer &#8599;</a>` : ''}
         </div>
       </div>`;
   }
