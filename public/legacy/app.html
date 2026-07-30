@@ -1230,6 +1230,15 @@ html,body{background-color:var(--bg);}
       </div>
 
       <div id="careerBrowsePane" style="display:none;">
+        <div style="border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:14px;max-width:640px;">
+          <div style="font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:8px;">Get emailed when a matching job is posted</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <input id="careerWatchKeyword" placeholder="Keyword, e.g. solidity" style="flex:1;min-width:120px;padding:9px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.82rem;"/>
+            <input id="careerWatchEmail" type="email" placeholder="Your email" style="flex:1;min-width:140px;padding:9px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.82rem;"/>
+            <button class="btn" onclick="careerCreateWatch()" style="width:auto;padding:9px 16px;border-radius:8px;font-weight:700;font-size:12px;">Save alert</button>
+          </div>
+          <div id="careerWatchStatus" style="font-size:.75rem;color:var(--text3);margin-top:6px;"></div>
+        </div>
         <div id="careerBrowseResults" style="font-size:.85rem;color:var(--text3);">Loading jobs...</div>
       </div>
 
@@ -1316,6 +1325,18 @@ html,body{background-color:var(--bg);}
       document.getElementById('careerPostStatus').textContent = '✓ Job posted — visible to everyone in Browse jobs now, and will also show as a referred match for candidates whose CVs fit.';
     }catch(err){ document.getElementById('careerPostStatus').textContent = '❌ ' + err.message; }
   }
+  async function careerCreateWatch(){
+    const keyword = document.getElementById('careerWatchKeyword').value.trim();
+    const email = document.getElementById('careerWatchEmail').value.trim();
+    const statusEl = document.getElementById('careerWatchStatus');
+    if(!keyword || !email){ statusEl.textContent = 'Enter both a keyword and your email.'; return; }
+    statusEl.textContent = 'Saving...';
+    const r = await fetch(CAREER_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'job-watch-create', keyword, email})});
+    const d = await r.json();
+    if(!d.success){ statusEl.textContent = '❌ ' + d.error; return; }
+    document.getElementById('careerWatchKeyword').value = document.getElementById('careerWatchEmail').value = '';
+    statusEl.textContent = `✓ You'll be emailed when a job matching "${keyword}" is posted.`;
+  }
   async function careerBrowseJobs(){
     const el = document.getElementById('careerBrowseResults');
     el.textContent = 'Loading jobs...';
@@ -1373,8 +1394,17 @@ html,body{background-color:var(--bg);}
           <div style="font-size:.8rem;color:var(--text2);margin-top:6px;">${j.description||''}</div>
           <div style="font-size:.75rem;color:var(--text3);margin-top:6px;">${j.remoteOnly?'Remote':(j.location||'Location unspecified')}${j.includeWeb3?' &middot; Web3 role':''} &middot; ${j.status}</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
-            <button onclick="careerEditJob('${j.id}')" style="width:auto;padding:8px 16px;border-radius:8px;font-weight:700;font-size:12px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;">Edit</button>
+            <button onclick="careerToggleEditForm('${j.id}')" style="width:auto;padding:8px 16px;border-radius:8px;font-weight:700;font-size:12px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;">Edit</button>
             <button onclick="careerDeleteJob('${j.id}')" style="width:auto;padding:8px 16px;border-radius:8px;font-weight:700;font-size:12px;background:transparent;border:1px solid rgba(226,75,74,.4);color:#e24b4a;cursor:pointer;">Delete</button>
+          </div>
+          <div id="careerEditForm_${j.id}" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
+            <input id="careerEditTitle_${j.id}" value="${(j.title||'').replace(/"/g,'&quot;')}" placeholder="Title" style="width:100%;max-width:400px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+            <input id="careerEditSalary_${j.id}" type="text" inputmode="decimal" value="${j.salary}" placeholder="Salary" style="width:100%;max-width:200px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+            <div style="display:flex;gap:8px;">
+              <button class="btn" onclick="careerSaveJobEdit('${j.id}')" style="width:auto;padding:8px 18px;border-radius:8px;font-weight:700;font-size:13px;">Save</button>
+              <button onclick="careerToggleEditForm('${j.id}')" style="width:auto;padding:8px 18px;border-radius:8px;font-weight:700;font-size:13px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;">Cancel</button>
+            </div>
+            <div id="careerEditStatus_${j.id}" style="font-size:.75rem;color:var(--text3);margin-top:6px;"></div>
           </div>
         </div>`).join('');
     }catch(err){ el.textContent = '❌ ' + err.message; }
@@ -1387,14 +1417,19 @@ html,body{background-color:var(--bg);}
     if(!d.success){ alert('❌ ' + d.error); return; }
     careerMyJobs();
   }
-  async function careerEditJob(jobId){
-    const newTitle = prompt('New title (leave blank to keep current):');
-    const newSalary = prompt('New salary (leave blank to keep current):');
-    if(newTitle === null && newSalary === null) return;
+  function careerToggleEditForm(jobId){
+    const el = document.getElementById('careerEditForm_'+jobId);
+    el.style.display = el.style.display === 'block' ? 'none' : 'block';
+  }
+  async function careerSaveJobEdit(jobId){
+    const statusEl = document.getElementById('careerEditStatus_'+jobId);
+    const newTitle = document.getElementById('careerEditTitle_'+jobId).value.trim();
+    const newSalary = document.getElementById('careerEditSalary_'+jobId).value.trim();
     const wallet = (typeof agentWalletAddr !== 'undefined' ? agentWalletAddr : null);
+    statusEl.textContent = 'Saving...';
     const r = await fetch(CAREER_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'job-edit', jobId, employerAddress: wallet, title: newTitle || undefined, salary: newSalary || undefined})});
     const d = await r.json();
-    if(!d.success){ alert('❌ ' + d.error); return; }
+    if(!d.success){ statusEl.textContent = '❌ ' + d.error; return; }
     careerMyJobs();
   }
   async function nanSnapshotBalance(){
@@ -2192,8 +2227,17 @@ html,body{background-color:var(--bg);}
         ${t.status === 'open' ? `
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
             <button class="btn" onclick="gigToggleSubmissions('${t.id}','${(t.title||'').replace(/'/g,"\\'")}')" style="width:auto;padding:9px 20px;border-radius:10px;font-weight:700;font-size:13px;">View submissions</button>
-            <button onclick="gigEditTask('${t.id}')" style="width:auto;padding:9px 16px;border-radius:10px;font-weight:700;font-size:13px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;">Edit</button>
+            <button onclick="gigToggleEditForm('${t.id}')" style="width:auto;padding:9px 16px;border-radius:10px;font-weight:700;font-size:13px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;">Edit</button>
             <button onclick="gigDeleteTask('${t.id}')" style="width:auto;padding:9px 16px;border-radius:10px;font-weight:700;font-size:13px;background:transparent;border:1px solid rgba(226,75,74,.4);color:#e24b4a;cursor:pointer;">Delete</button>
+          </div>
+          <div id="gigEditForm_${t.id}" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
+            <input id="gigEditTitle_${t.id}" value="${(t.title||'').replace(/"/g,'&quot;')}" placeholder="Title" style="width:100%;max-width:400px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+            <input id="gigEditBudget_${t.id}" type="text" inputmode="decimal" value="${t.budget}" placeholder="Budget" style="width:100%;max-width:200px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+            <div style="display:flex;gap:8px;">
+              <button class="btn" onclick="gigSaveTaskEdit('${t.id}')" style="width:auto;padding:8px 18px;border-radius:8px;font-weight:700;font-size:13px;">Save</button>
+              <button onclick="gigToggleEditForm('${t.id}')" style="width:auto;padding:8px 18px;border-radius:8px;font-weight:700;font-size:13px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;">Cancel</button>
+            </div>
+            <div id="gigEditStatus_${t.id}" style="font-size:.75rem;color:var(--text3);margin-top:6px;"></div>
           </div>` : `<div style="font-size:.78rem;color:var(--text3);margin-top:8px;">Completed — paid submission #${(t.acceptedSubmissionId||'').slice(-6)}</div>`}
         <div id="gigSubsList_${t.id}" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);"></div>
       </div>`).join('');
@@ -2205,13 +2249,18 @@ html,body{background-color:var(--bg);}
     if(!d.success){ alert('❌ ' + d.error); return; }
     gigLoadMyTasks();
   }
-  async function gigEditTask(taskId){
-    const newTitle = prompt('New title (leave blank to keep current):');
-    const newBudget = prompt('New budget in USDC (leave blank to keep current):');
-    if(newTitle === null && newBudget === null) return;
+  function gigToggleEditForm(taskId){
+    const el = document.getElementById('gigEditForm_'+taskId);
+    el.style.display = el.style.display === 'block' ? 'none' : 'block';
+  }
+  async function gigSaveTaskEdit(taskId){
+    const statusEl = document.getElementById('gigEditStatus_'+taskId);
+    const newTitle = document.getElementById('gigEditTitle_'+taskId).value.trim();
+    const newBudget = document.getElementById('gigEditBudget_'+taskId).value.trim();
     const wallet = gigMyWalletAddress();
+    statusEl.textContent = 'Saving...';
     const d = await gigCall('task-edit', { taskId, requesterAddress: wallet, title: newTitle || undefined, budget: newBudget || undefined });
-    if(!d.success){ alert('❌ ' + d.error); return; }
+    if(!d.success){ statusEl.textContent = '❌ ' + d.error; return; }
     gigLoadMyTasks();
   }
   async function gigDebugAllTasks(){
