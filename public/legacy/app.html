@@ -2175,7 +2175,10 @@ html,body{background-color:var(--bg);}
         <button class="btn" onclick="gigToggleSubmitForm('${t.id}')" style="width:auto;padding:9px 20px;border-radius:10px;font-weight:700;margin-top:10px;font-size:13px;">Submit work</button>
         <div id="gigSubmitForm_${t.id}" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
           <textarea id="gigSubDesc_${t.id}" placeholder="Describe your submission" style="width:100%;max-width:640px;min-height:60px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;font-family:inherit;"></textarea>
-          <input id="gigSubLink_${t.id}" placeholder="Link to your work (optional)" style="width:100%;max-width:640px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+          <input type="file" id="gigSubPhotoInput_${t.id}" accept="image/*" style="display:none;" onchange="gigHandleSubPhoto('${t.id}', event)"/>
+          <div onclick="document.getElementById('gigSubPhotoInput_${t.id}').click()" style="width:100%;max-width:640px;border:1px dashed var(--border2);border-radius:12px;padding:14px;text-align:center;cursor:pointer;margin-bottom:8px;color:var(--text3);font-size:.8rem;box-sizing:border-box;">Click to upload a photo of your work (optional)</div>
+          <div id="gigSubPhotoPreview_${t.id}" style="margin-bottom:8px;"></div>
+          <input id="gigSubLink_${t.id}" placeholder="Or paste a link to your work (optional)" style="width:100%;max-width:640px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
           <input id="gigSubPrice_${t.id}" type="text" inputmode="decimal" placeholder="Your price (USDC)" style="width:100%;max-width:200px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
           <div><button class="btn" onclick="gigSubmitWork('${t.id}')" style="width:auto;padding:9px 20px;border-radius:10px;font-weight:700;font-size:13px;">Submit</button></div>
           <div id="gigSubStatus_${t.id}" style="font-size:.78rem;color:var(--text3);margin-top:6px;"></div>
@@ -2186,18 +2189,32 @@ html,body{background-color:var(--bg);}
     const el = document.getElementById('gigSubmitForm_'+taskId);
     el.style.display = el.style.display === 'block' ? 'none' : 'block';
   }
+  let gigSubImages = {};
+  async function gigHandleSubPhoto(taskId, event){
+    const file = event.target.files && event.target.files[0];
+    if(!file) return;
+    try { gigSubImages[taskId] = await mktCompressImage(file); }
+    catch { return; }
+    const prev = document.getElementById('gigSubPhotoPreview_'+taskId);
+    prev.innerHTML = `<div style="position:relative;display:inline-block;"><img src="${gigSubImages[taskId]}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;"/><span onclick="gigRemoveSubPhoto('${taskId}')" style="position:absolute;top:-6px;right:-6px;background:#e24b4a;color:#fff;border-radius:50%;width:18px;height:18px;font-size:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;">&times;</span></div>`;
+  }
+  function gigRemoveSubPhoto(taskId){
+    delete gigSubImages[taskId];
+    document.getElementById('gigSubPhotoPreview_'+taskId).innerHTML = '';
+  }
   async function gigSubmitWork(taskId){
     const wallet = gigMyWalletAddress();
     const statusEl = document.getElementById('gigSubStatus_'+taskId);
     if(!wallet){ statusEl.textContent = 'Connect your wallet first.'; return; }
     const description = document.getElementById('gigSubDesc_'+taskId).value.trim();
-    const fileUrl = document.getElementById('gigSubLink_'+taskId).value.trim();
+    const link = document.getElementById('gigSubLink_'+taskId).value.trim();
+    const fileUrl = gigSubImages[taskId] || link || undefined;
     const proposedPrice = document.getElementById('gigSubPrice_'+taskId).value.trim();
     if(!description || !proposedPrice){ statusEl.textContent = 'Description and your price are required.'; return; }
     statusEl.textContent = 'Submitting...';
     const d = await gigCall('submission-create', {
       taskId, freelancerAddress: wallet, freelancerWalletAddress: wallet,
-      description, proposedPrice, fileUrl: fileUrl || undefined,
+      description, proposedPrice, fileUrl,
     });
     statusEl.textContent = d.success ? '✓ Submitted — the requester will review it.' : '❌ ' + d.error;
   }
