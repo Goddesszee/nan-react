@@ -1130,7 +1130,8 @@ html,body{background-color:var(--bg);}
       #page-career-agent [style*="eab308"] { color: #eab308 !important; }
       #page-career-agent div[style*="font-size:1rem"] { font-weight: 900 !important; font-size: 2.2rem !important; letter-spacing: -0.03em !important; }
       #page-career-agent div[style*="font-size:.82rem"] { font-weight: 600 !important; opacity: 1 !important; }
-      #page-career-agent input, #page-career-agent textarea { font-weight: 700 !important; background: rgba(168,85,247,.08) !important; border: 1px solid rgba(168,85,247,.25) !important; backdrop-filter: blur(4px) !important; }
+      #page-career-agent input:not([type="checkbox"]), #page-career-agent textarea { font-weight: 700 !important; background: rgba(168,85,247,.08) !important; border: 1px solid rgba(168,85,247,.25) !important; backdrop-filter: blur(4px) !important; }
+      #page-career-agent input[type="checkbox"] { all: revert !important; }
       #page-career-agent input:focus, #page-career-agent textarea:focus { border-color: rgba(168,85,247,.6) !important; background: rgba(168,85,247,.12) !important; }
       #page-career-agent .btn { font-weight: 800 !important; font-size: 15px !important; min-height: 48px !important; }
     </style>
@@ -1146,28 +1147,28 @@ html,body{background-color:var(--bg);}
 
         <div id="careerUploadPane">
           <input type="file" id="careerFileInput" accept=".txt" onchange="careerHandleFile(event)" style="display:none;"/>
-          <div onclick="document.getElementById('careerFileInput').click()" style="border:1px dashed var(--border2);border-radius:12px;padding:20px;text-align:center;cursor:pointer;margin-bottom:10px;color:var(--text3);font-size:.82rem;">
+          <div onclick="document.getElementById('careerFileInput').click()" style="width:100%;max-width:400px;border:1px dashed var(--border2);border-radius:12px;padding:20px;text-align:center;cursor:pointer;margin-bottom:10px;color:var(--text3);font-size:.82rem;box-sizing:border-box;">
             Click to upload a .txt CV, or paste your CV text below
           </div>
-          <textarea id="careerCvText" placeholder="Paste your CV text here..." style="width:100%;min-height:140px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--text);font-size:.85rem;box-sizing:border-box;font-family:inherit;"></textarea>
+          <textarea id="careerCvText" placeholder="Paste your CV text here..." style="width:100%;max-width:400px;min-height:140px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--text);font-size:.85rem;box-sizing:border-box;font-family:inherit;"></textarea>
           <div style="font-size:.72rem;color:var(--text3);margin-top:6px;">PDF/DOCX upload isn't wired up yet — paste text or upload .txt for now.</div>
         </div>
 
         <div id="careerGeneratePane" style="display:none;">
-          <input id="careerGenName" placeholder="Full name" style="width:100%;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
-          <input id="careerGenRole" placeholder="Target role (e.g. Frontend Engineer)" style="width:100%;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
-          <input id="careerGenSkills" placeholder="Key skills, comma separated" style="width:100%;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
-          <textarea id="careerGenExp" placeholder="Brief experience summary" style="width:100%;min-height:80px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;font-family:inherit;"></textarea>
-          <button class="btn" onclick="careerGenerateCv()" style="width:100%;height:44px;border-radius:12px;font-weight:700;">Generate CV</button>
+          <input id="careerGenName" placeholder="Full name" style="width:100%;max-width:400px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+          <input id="careerGenRole" placeholder="Target role (e.g. Frontend Engineer)" style="width:100%;max-width:400px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+          <input id="careerGenSkills" placeholder="Key skills, comma separated" style="width:100%;max-width:400px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+          <textarea id="careerGenExp" placeholder="Brief experience summary" style="width:100%;max-width:400px;min-height:80px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;font-family:inherit;"></textarea>
+          <button class="btn" onclick="careerGenerateCv()" style="width:auto;padding:12px 32px;border-radius:12px;font-weight:700;">Generate CV</button>
         </div>
 
         <div style="display:flex;align-items:center;gap:10px;margin:14px 0;flex-wrap:wrap;">
           <label style="font-size:.8rem;color:var(--text2);"><input type="checkbox" id="careerRemoteOnly"/> Remote only</label>
           <label style="font-size:.8rem;color:var(--text2);"><input type="checkbox" id="careerIncludeWeb3" checked/> Prioritize web3 roles</label>
         </div>
-        <input id="careerLocation" placeholder="Preferred location (optional)" style="width:100%;padding:10px 12px;margin-bottom:10px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+        <input id="careerLocation" placeholder="Preferred location (optional)" style="width:100%;max-width:400px;padding:10px 12px;margin-bottom:10px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
 
-        <button class="btn" id="careerSearchBtn" onclick="careerRunSearch()" style="width:100%;height:48px;border-radius:14px;font-weight:700;">Find matching jobs</button>
+        <button class="btn" id="careerSearchBtn" onclick="careerRunSearch()" style="width:auto;padding:14px 40px;border-radius:14px;font-weight:700;">Find matching jobs</button>
         <div id="careerStatus" style="font-size:.8rem;color:var(--text3);margin-top:8px;"></div>
       </div>
 
@@ -1179,9 +1180,9 @@ html,body{background-color:var(--bg);}
   function careerSwitchTab(tab){
     document.getElementById('careerUploadPane').style.display = tab==='upload' ? 'block':'none';
     document.getElementById('careerGeneratePane').style.display = tab==='generate' ? 'block':'none';
-    document.getElementById('careerTabUpload').style.background = tab==='upload' ? '#2c2c2a':'';
+    document.getElementById('careerTabUpload').style.background = tab==='upload' ? '#7000ff':'';
     document.getElementById('careerTabUpload').style.color = tab==='upload' ? '#fff':'';
-    document.getElementById('careerTabGenerate').style.background = tab==='generate' ? '#2c2c2a':'';
+    document.getElementById('careerTabGenerate').style.background = tab==='generate' ? '#7000ff':'';
     document.getElementById('careerTabGenerate').style.color = tab==='generate' ? '#fff':'';
   }
   function careerHandleFile(e){
@@ -1307,7 +1308,8 @@ html,body{background-color:var(--bg);}
       #page-supplier-agent [style*="eab308"] { color: #eab308 !important; }
       #page-supplier-agent div[style*="font-size:1rem"] { font-weight: 900 !important; font-size: 2.2rem !important; letter-spacing: -0.03em !important; }
       #page-supplier-agent div[style*="font-size:.82rem"] { font-weight: 600 !important; opacity: 1 !important; }
-      #page-supplier-agent input, #page-supplier-agent textarea { font-weight: 700 !important; background: rgba(168,85,247,.08) !important; border: 1px solid rgba(168,85,247,.25) !important; backdrop-filter: blur(4px) !important; }
+      #page-supplier-agent input:not([type="checkbox"]), #page-supplier-agent textarea { font-weight: 700 !important; background: rgba(168,85,247,.08) !important; border: 1px solid rgba(168,85,247,.25) !important; backdrop-filter: blur(4px) !important; }
+      #page-supplier-agent input[type="checkbox"] { all: revert !important; }
       #page-supplier-agent input:focus, #page-supplier-agent textarea:focus { border-color: rgba(168,85,247,.6) !important; background: rgba(168,85,247,.12) !important; }
       #page-supplier-agent .btn { font-weight: 800 !important; font-size: 15px !important; min-height: 48px !important; }
     </style>
@@ -1315,14 +1317,14 @@ html,body{background-color:var(--bg);}
       <div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">Global supplier agent</div>
       <div style="font-size:.82rem;color:var(--text2);margin-bottom:16px;">Search for manufacturers and suppliers of anything, anywhere. Results are AI-researched from public web content — verify before ordering.</div>
 
-      <input id="supplierProduct" placeholder="What are you sourcing? e.g. school bags" style="width:100%;padding:11px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
-      <input id="supplierLocation" placeholder="Preferred location, e.g. Guangzhou (optional)" style="width:100%;padding:11px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+      <input id="supplierProduct" placeholder="What are you sourcing? e.g. school bags" style="width:100%;max-width:400px;padding:11px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+      <input id="supplierLocation" placeholder="Preferred location, e.g. Guangzhou (optional)" style="width:100%;max-width:400px;padding:11px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
       <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
-        <input id="supplierBudget" placeholder="Target unit budget (optional)" style="flex:1;min-width:140px;padding:11px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
-        <input id="supplierMoq" placeholder="Max MOQ (optional)" style="flex:1;min-width:140px;padding:11px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+        <input id="supplierBudget" placeholder="Target unit budget (optional)" style="flex:1;min-width:140px;max-width:196px;padding:11px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+        <input id="supplierMoq" placeholder="Max MOQ (optional)" style="flex:1;min-width:140px;max-width:196px;padding:11px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
       </div>
 
-      <button class="btn" id="supplierSearchBtn" onclick="supplierRunSearch()" style="width:100%;height:48px;border-radius:14px;font-weight:700;">Find suppliers</button>
+      <button class="btn" id="supplierSearchBtn" onclick="supplierRunSearch()" style="width:auto;padding:14px 40px;border-radius:14px;font-weight:700;">Find suppliers</button>
       <div id="supplierStatus" style="font-size:.8rem;color:var(--text3);margin-top:8px;"></div>
       <div id="supplierResults" style="margin-top:16px;"></div>
     </div>
@@ -1397,7 +1399,8 @@ html,body{background-color:var(--bg);}
       #page-marketplace [style*="eab308"] { color: #eab308 !important; }
       #page-marketplace div[style*="font-size:1rem"] { font-weight: 900 !important; font-size: 2.2rem !important; letter-spacing: -0.03em !important; }
       #page-marketplace div[style*="font-size:.82rem"] { font-weight: 600 !important; opacity: 1 !important; }
-      #page-marketplace input, #page-marketplace textarea { font-weight: 700 !important; background: rgba(168,85,247,.08) !important; border: 1px solid rgba(168,85,247,.25) !important; backdrop-filter: blur(4px) !important; }
+      #page-marketplace input:not([type="checkbox"]), #page-marketplace textarea { font-weight: 700 !important; background: rgba(168,85,247,.08) !important; border: 1px solid rgba(168,85,247,.25) !important; backdrop-filter: blur(4px) !important; }
+      #page-marketplace input[type="checkbox"] { all: revert !important; }
       #page-marketplace input:focus, #page-marketplace textarea:focus { border-color: rgba(168,85,247,.6) !important; background: rgba(168,85,247,.12) !important; }
       #page-marketplace .btn { font-weight: 800 !important; font-size: 15px !important; min-height: 48px !important; }
     </style>
@@ -1431,7 +1434,7 @@ html,body{background-color:var(--bg);}
         <input type="file" id="mktNewImagesInput" accept="image/*" multiple style="display:none;" onchange="mktHandleNewImages(event)"/>
         <div onclick="document.getElementById('mktNewImagesInput').click()" style="border:1px dashed var(--border2);border-radius:12px;padding:16px;text-align:center;cursor:pointer;margin-bottom:8px;color:var(--text3);font-size:.8rem;">Click to add up to 4 photos</div>
         <div id="mktNewImagesPreview" style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;"></div>
-        <button class="btn" onclick="mktCreateListing()" style="width:100%;height:46px;border-radius:12px;font-weight:700;">List item</button>
+        <button class="btn" onclick="mktCreateListing()" style="width:auto;padding:13px 36px;border-radius:12px;font-weight:700;">List item</button>
         <div id="mktSellStatus" style="font-size:.8rem;color:var(--text3);margin-top:8px;"></div>
       </div>
 
