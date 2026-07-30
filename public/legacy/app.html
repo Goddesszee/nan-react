@@ -2011,7 +2011,7 @@ html,body{background-color:var(--bg);}
       </div>
 
       <div id="gigBrowsePane">
-        <div style="border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:14px;max-width:520px;">
+        <div style="border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:14px;max-width:640px;">
           <div style="font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:8px;">Get emailed when a matching task is posted</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <input id="gigWatchKeyword" placeholder="Keyword, e.g. logo" style="flex:1;min-width:120px;padding:9px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.82rem;"/>
@@ -2024,11 +2024,11 @@ html,body{background-color:var(--bg);}
       </div>
 
       <div id="gigPostPane" style="display:none;">
-        <input id="gigNewTitle" placeholder="What do you need? e.g. Logo design" style="width:100%;max-width:400px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
-        <textarea id="gigNewDesc" placeholder="Describe what you need" style="width:100%;max-width:400px;min-height:80px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;font-family:inherit;"></textarea>
-        <input id="gigNewBudget" type="number" min="0" step="0.01" placeholder="Budget (USDC)" style="width:100%;max-width:400px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+        <input id="gigNewTitle" placeholder="What do you need? e.g. Logo design" style="width:100%;max-width:640px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+        <textarea id="gigNewDesc" placeholder="Describe what you need" style="width:100%;max-width:640px;min-height:80px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;font-family:inherit;"></textarea>
+        <input id="gigNewBudget" type="number" min="0" step="0.01" placeholder="Budget (USDC)" style="width:100%;max-width:640px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
         <label style="font-size:.8rem;color:var(--text2);display:block;margin-bottom:10px;"><input type="checkbox" id="gigNewNegotiable" checked/> Budget is negotiable</label>
-        <input id="gigNewEmail" type="email" placeholder="Email me when someone submits (optional)" style="width:100%;max-width:400px;padding:10px 12px;margin-bottom:10px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+        <input id="gigNewEmail" type="email" placeholder="Email me when someone submits (optional)" style="width:100%;max-width:640px;padding:10px 12px;margin-bottom:10px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
         <button class="btn" onclick="gigCreateTask()" style="width:auto;padding:13px 36px;border-radius:12px;font-weight:700;">Post task</button>
         <div id="gigPostStatus" style="font-size:.8rem;color:var(--text3);margin-top:8px;"></div>
       </div>
@@ -2139,8 +2139,8 @@ html,body{background-color:var(--bg);}
         <div style="font-size:.8rem;color:var(--text2);margin-top:6px;">${t.description||''}</div>
         <button class="btn" onclick="gigToggleSubmitForm('${t.id}')" style="width:auto;padding:9px 20px;border-radius:10px;font-weight:700;margin-top:10px;font-size:13px;">Submit work</button>
         <div id="gigSubmitForm_${t.id}" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
-          <textarea id="gigSubDesc_${t.id}" placeholder="Describe your submission" style="width:100%;max-width:400px;min-height:60px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;font-family:inherit;"></textarea>
-          <input id="gigSubLink_${t.id}" placeholder="Link to your work (optional)" style="width:100%;max-width:400px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+          <textarea id="gigSubDesc_${t.id}" placeholder="Describe your submission" style="width:100%;max-width:640px;min-height:60px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;font-family:inherit;"></textarea>
+          <input id="gigSubLink_${t.id}" placeholder="Link to your work (optional)" style="width:100%;max-width:640px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
           <input id="gigSubPrice_${t.id}" type="number" min="0" step="0.01" placeholder="Your price (USDC)" style="width:100%;max-width:200px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
           <div><button class="btn" onclick="gigSubmitWork('${t.id}')" style="width:auto;padding:9px 20px;border-radius:10px;font-weight:700;font-size:13px;">Submit</button></div>
           <div id="gigSubStatus_${t.id}" style="font-size:.78rem;color:var(--text3);margin-top:6px;"></div>
