@@ -1424,15 +1424,15 @@ html,body{background-color:var(--bg);}
       </div>
 
       <div id="mktSellPane" style="display:none;">
-        <input id="mktNewTitle" placeholder="What are you selling?" style="width:100%;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
-        <textarea id="mktNewDesc" placeholder="Description, condition, etc." style="width:100%;min-height:80px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;font-family:inherit;"></textarea>
+        <input id="mktNewTitle" placeholder="What are you selling?" style="width:100%;max-width:400px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+        <textarea id="mktNewDesc" placeholder="Description, condition, etc." style="width:100%;max-width:400px;min-height:80px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;font-family:inherit;"></textarea>
         <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
-          <input id="mktNewPrice" type="number" min="0" step="0.01" placeholder="Price (USDC)" style="flex:1;min-width:120px;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
-          <input id="mktNewCategory" placeholder="Category (e.g. phones)" style="flex:1;min-width:140px;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+          <input id="mktNewPrice" type="number" min="0" step="0.01" placeholder="Price (USDC)" style="flex:1;min-width:120px;max-width:196px;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+          <input id="mktNewCategory" placeholder="Category (e.g. phones)" style="flex:1;min-width:140px;max-width:196px;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
         </div>
-        <input id="mktNewLocation" placeholder="Location (optional)" style="width:100%;padding:10px 12px;margin-bottom:10px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+        <input id="mktNewLocation" placeholder="Location (optional)" style="width:100%;max-width:400px;padding:10px 12px;margin-bottom:10px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
         <input type="file" id="mktNewImagesInput" accept="image/*" multiple style="display:none;" onchange="mktHandleNewImages(event)"/>
-        <div onclick="document.getElementById('mktNewImagesInput').click()" style="border:1px dashed var(--border2);border-radius:12px;padding:16px;text-align:center;cursor:pointer;margin-bottom:8px;color:var(--text3);font-size:.8rem;">Click to add up to 4 photos</div>
+        <div onclick="document.getElementById('mktNewImagesInput').click()" style="width:100%;max-width:400px;border:1px dashed var(--border2);border-radius:12px;padding:16px;text-align:center;cursor:pointer;margin-bottom:8px;color:var(--text3);font-size:.8rem;box-sizing:border-box;">Click to add up to 4 photos</div>
         <div id="mktNewImagesPreview" style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;"></div>
         <button class="btn" onclick="mktCreateListing()" style="width:auto;padding:13px 36px;border-radius:12px;font-weight:700;">List item</button>
         <div id="mktSellStatus" style="font-size:.8rem;color:var(--text3);margin-top:8px;"></div>
@@ -1466,7 +1466,7 @@ html,body{background-color:var(--bg);}
     ['browse','sell','orders','listings'].forEach(t => {
       document.getElementById('mkt'+t.charAt(0).toUpperCase()+t.slice(1)+'Pane').style.display = (t===tab)?'block':'none';
       const btn = document.getElementById('mktTab'+t.charAt(0).toUpperCase()+t.slice(1));
-      btn.style.background = (t===tab) ? '#2c2c2a' : '';
+      btn.style.background = (t===tab) ? '#7000ff' : '';
       btn.style.color = (t===tab) ? '#fff' : '';
     });
     if (tab === 'browse') mktBrowse();
