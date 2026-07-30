@@ -793,12 +793,12 @@ html,body{background-color:var(--bg);}
 
       <!-- Amount — balance ONLY shown here -->
       <div style="font-size:.65rem;font-weight:700;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;">Amount</div>
-      <div style="background:rgba(255,255,255,.03);border:1.5px solid var(--border);border-radius:16px;padding:16px 16px 12px;margin-bottom:20px;" id="amtWrap"
+      <div style="background:rgba(255,255,255,.03);border:1.5px solid var(--border);border-radius:16px;padding:12px 14px 10px;margin-bottom:16px;" id="amtWrap"
         onfocus="this.style.borderColor='rgba(112,0,255,.5)'" onblur="this.style.borderColor='var(--border)'">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
           <input id="amtInput" type="number" min="0.01" step="0.01" placeholder="0" inputmode="decimal"
             oninput="validateSend()"
-            style="flex:1;background:none;border:none;outline:none;font-size:2.4rem;font-weight:800;color:var(--text);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;width:0;min-width:0;"/>
+            style="flex:1;background:none;border:none;outline:none;font-size:1.6rem;font-weight:800;color:var(--text);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;width:0;min-width:0;"/>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
             <div style="background:rgba(112,0,255,.12);border:1px solid rgba(112,0,255,.25);border-radius:8px;padding:5px 12px;font-size:.82rem;color:#a855f7;font-weight:700;" id="sendTokenLabel">USDC</div>
             <button onclick="setMax()" style="background:none;border:none;font-size:.75rem;color:var(--accent3);cursor:pointer;font-family:'Inter',sans-serif;font-weight:700;padding:0;">MAX</button>
@@ -944,7 +944,7 @@ html,body{background-color:var(--bg);}
       </div>
       <div style="display:flex;align-items:center;gap:10px;">
         <input id="lbDepositAmt" type="number" min="0.000001" step="0.000001" placeholder="0.000000" inputmode="decimal"
-          style="flex:1;background:none;border:none;outline:none;font-family:'Syne','Inter',sans-serif;font-size:1.8rem;font-weight:800;color:var(--text);width:0;letter-spacing:-1px;"/>
+          style="flex:1;background:none;border:none;outline:none;font-family:'Syne','Inter',sans-serif;font-size:1.6rem;font-weight:800;color:var(--text);width:0;letter-spacing:-1px;"/>
         <button onclick="document.getElementById('lbDepositAmt').value=parseFloat(cirbtcBal||0).toFixed(6);lbCalcDeposit();" style="background:none;border:none;font-size:.72rem;font-weight:700;color:#f7931b;cursor:pointer;flex-shrink:0;">MAX</button>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid rgba(255,255,255,.04);margin-top:8px;">
@@ -965,7 +965,7 @@ html,body{background-color:var(--bg);}
       </div>
       <div style="display:flex;align-items:center;gap:10px;">
         <input id="lbWithdrawAmt" type="number" min="0.000001" step="0.000001" placeholder="0.000000" inputmode="decimal"
-          style="flex:1;background:none;border:none;outline:none;font-family:'Syne','Inter',sans-serif;font-size:1.8rem;font-weight:800;color:var(--text);width:0;letter-spacing:-1px;"/>
+          style="flex:1;background:none;border:none;outline:none;font-family:'Syne','Inter',sans-serif;font-size:1.6rem;font-weight:800;color:var(--text);width:0;letter-spacing:-1px;"/>
         <button onclick="document.getElementById('lbWithdrawAmt').value=document.getElementById('lbAvailWithdraw').textContent;void 0;" style="background:none;border:none;font-size:.72rem;font-weight:700;color:#a855f7;cursor:pointer;flex-shrink:0;">MAX</button>
       </div>
       <div style="font-size:.68rem;color:#ffffff;padding-top:8px;border-top:1px solid rgba(255,255,255,.04);margin-top:8px;">Collateral locked by active loan cannot be withdrawn</div>
@@ -982,7 +982,7 @@ html,body{background-color:var(--bg);}
       </div>
       <div style="display:flex;align-items:center;gap:10px;">
         <input id="lbBorrowAmt" type="number" min="0.01" step="0.01" placeholder="0.00" inputmode="decimal"
-          style="flex:1;background:none;border:none;outline:none;font-family:'Syne','Inter',sans-serif;font-size:1.8rem;font-weight:800;color:var(--text);width:0;letter-spacing:-1px;"/>
+          style="flex:1;background:none;border:none;outline:none;font-family:'Syne','Inter',sans-serif;font-size:1.6rem;font-weight:800;color:var(--text);width:0;letter-spacing:-1px;"/>
         <button onclick="document.getElementById('lbBorrowAmt').value=document.getElementById('lbMaxBorrow2').textContent;void 0;" style="background:none;border:none;font-size:.72rem;font-weight:700;color:#a855f7;cursor:pointer;flex-shrink:0;">MAX</button>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid rgba(255,255,255,.04);margin-top:8px;">
@@ -1003,7 +1003,7 @@ html,body{background-color:var(--bg);}
       </div>
       <div style="display:flex;align-items:center;gap:10px;">
         <input id="lbRepayAmt" type="number" min="0.01" step="0.01" placeholder="0.00" inputmode="decimal"
-          style="flex:1;background:none;border:none;outline:none;font-family:'Syne','Inter',sans-serif;font-size:1.8rem;font-weight:800;color:var(--text);width:0;letter-spacing:-1px;"/>
+          style="flex:1;background:none;border:none;outline:none;font-family:'Syne','Inter',sans-serif;font-size:1.6rem;font-weight:800;color:var(--text);width:0;letter-spacing:-1px;"/>
         <button onclick="document.getElementById('lbRepayAmt').value=document.getElementById('lbOwed').textContent;void 0;" style="background:none;border:none;font-size:.72rem;font-weight:700;color:rgba(248,113,113,.8);cursor:pointer;flex-shrink:0;">MAX</button>
       </div>
     </div>
