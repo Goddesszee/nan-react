@@ -1955,12 +1955,11 @@ html,body{background-color:var(--bg);}
     const negotiable = document.getElementById('gigNewNegotiable').checked;
     const notifyEmail = document.getElementById('gigNewEmail').value.trim();
     if(!title || !budget){ document.getElementById('gigPostStatus').textContent = 'Title and budget are required.'; return; }
-    document.getElementById('gigPostStatus').textContent = 'Posting task...';
+    document.getElementById('gigPostStatus').textContent = 'Posting task... (wallet: ' + wallet + ')';
     const d = await gigCall('task-create', { requesterAddress: wallet, title, description, budget, negotiable, notifyEmail: notifyEmail || undefined });
-    if(!d.success){ document.getElementById('gigPostStatus').textContent = '❌ ' + d.error; return; }
+    document.getElementById('gigPostStatus').innerHTML = `<div style="font-size:.72rem;word-break:break-all;padding:8px;border:1px dashed var(--border);border-radius:6px;">Raw server response:<br><pre style="white-space:pre-wrap;margin:4px 0 0;">${JSON.stringify(d, null, 2)}</pre></div>`;
+    if(!d.success) return;
     document.getElementById('gigNewTitle').value = document.getElementById('gigNewDesc').value = document.getElementById('gigNewBudget').value = document.getElementById('gigNewEmail').value = '';
-    document.getElementById('gigPostStatus').textContent = '✓ Task posted.';
-    gigSwitchSubTab('mytasks');
   }
   async function gigCreateWatch(){
     const keyword = document.getElementById('gigWatchKeyword').value.trim();
