@@ -66,6 +66,7 @@ function goPage(name) {
     'career-agent': 'nav-career',
     'supplier-agent': 'nav-supplier',
     marketplace: 'nav-marketplace',
+    gigs: 'nav-gigs',
   };
 
   const pageId = pageMap[name] || ('page-' + name);
