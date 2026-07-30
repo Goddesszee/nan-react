@@ -1335,16 +1335,35 @@ html,body{background-color:var(--bg);}
         </div>`).join('');
     }catch(err){ el.textContent = '❌ ' + err.message; }
   }
+  async function careerDebugAllJobs(){
+    const el = document.getElementById('careerJobDebugResults');
+    el.textContent = 'Loading all jobs (any employer)...';
+    const r = await fetch(CAREER_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'job-list'})});
+    const d = await r.json();
+    if(!d.success){ el.textContent = '❌ ' + d.error; return; }
+    if(!d.jobs.length){ el.innerHTML = '<i>No jobs exist in the system at all — nothing has ever been saved.</i>'; return; }
+    el.innerHTML = 'Jobs that exist in the system, with their employerAddress:<br>' + d.jobs.map(j =>
+      `• "${j.title}" — posted by <b>${j.employerAddress}</b>`
+    ).join('<br>');
+  }
   async function careerMyJobs(){
-    const wallet = window.userAddr || (typeof circleWalletAddress !== 'undefined' ? circleWalletAddress : null) || null;
+    const wallet = (typeof agentWalletAddr !== 'undefined' ? agentWalletAddr : null);
     const el = document.getElementById('careerMyJobsResults');
-    if(!wallet){ el.textContent = 'Connect your wallet to see your posted jobs.'; return; }
+    if(!wallet){ el.textContent = 'Connect your Agent Wallet first (same wallet used to post jobs).'; return; }
     el.textContent = 'Loading your jobs...';
     try{
       const r = await fetch(CAREER_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'my-jobs', employerAddress: wallet})});
       const d = await r.json();
       if(!d.success) throw new Error(d.error || 'Failed to load jobs');
-      if(!d.jobs.length){ el.innerHTML = '<div style="color:var(--text3);font-size:.85rem;">You haven\'t posted any jobs yet.</div>'; return; }
+      if(!d.jobs.length){
+        el.innerHTML = `<div style="color:var(--text3);font-size:.85rem;">You haven't posted any jobs yet.</div>
+          <div style="margin-top:16px;padding:10px;border:1px dashed var(--border);border-radius:8px;font-size:.72rem;color:var(--text3);word-break:break-all;">
+            Debug: queried with employerAddress <b>${wallet}</b>.
+            <div style="margin-top:6px;"><button onclick="careerDebugAllJobs()" style="padding:6px 12px;border-radius:6px;font-size:.72rem;background:#7000FF;color:#fff;border:none;">Show ALL jobs in system (debug)</button></div>
+            <div id="careerJobDebugResults" style="margin-top:8px;"></div>
+          </div>`;
+        return;
+      }
       el.innerHTML = d.jobs.map(j => `
         <div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;">
           <div style="display:flex;justify-content:space-between;align-items:start;">
@@ -1362,7 +1381,7 @@ html,body{background-color:var(--bg);}
   }
   async function careerDeleteJob(jobId){
     if(!confirm('Delete this job posting? This cannot be undone.')) return;
-    const wallet = window.userAddr || (typeof circleWalletAddress !== 'undefined' ? circleWalletAddress : null) || null;
+    const wallet = (typeof agentWalletAddr !== 'undefined' ? agentWalletAddr : null);
     const r = await fetch(CAREER_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'job-delete', jobId, employerAddress: wallet})});
     const d = await r.json();
     if(!d.success){ alert('❌ ' + d.error); return; }
@@ -1372,7 +1391,7 @@ html,body{background-color:var(--bg);}
     const newTitle = prompt('New title (leave blank to keep current):');
     const newSalary = prompt('New salary (leave blank to keep current):');
     if(newTitle === null && newSalary === null) return;
-    const wallet = window.userAddr || (typeof circleWalletAddress !== 'undefined' ? circleWalletAddress : null) || null;
+    const wallet = (typeof agentWalletAddr !== 'undefined' ? agentWalletAddr : null);
     const r = await fetch(CAREER_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'job-edit', jobId, employerAddress: wallet, title: newTitle || undefined, salary: newSalary || undefined})});
     const d = await r.json();
     if(!d.success){ alert('❌ ' + d.error); return; }
