@@ -9823,11 +9823,9 @@ async function sendReceiptEmail({to, subject, body}){
 }
 
 // Auto-start session health check if previously connected
-if(agentWalletEmail && agentWalletAddr){
-  setTimeout(()=>{ startAgentSessionCheck(); checkAgentSession(); }, 5000);
-  // Start background checkers for price alerts and auto-sweep
-  setTimeout(startBackgroundCheckers, 8000);
-}
+setTimeout(()=>{ startAgentSessionCheck(); checkAgentSession(); }, 5000);
+// Start background checkers for price alerts and auto-sweep
+setTimeout(startBackgroundCheckers, 8000);
 
 async function agentRefreshBalance(){
   var balEl = document.getElementById('agentBalDisplay');
