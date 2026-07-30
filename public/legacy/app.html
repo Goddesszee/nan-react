@@ -1506,6 +1506,7 @@ html,body{background-color:var(--bg);}
         <button id="mktTabSell" class="tnav-btn" onclick="mktSwitchTab('sell')">Sell</button>
         <button id="mktTabOrders" class="tnav-btn" onclick="mktSwitchTab('orders')">My orders</button>
         <button id="mktTabListings" class="tnav-btn" onclick="mktSwitchTab('listings')">Offers on my listings</button>
+        <button id="mktTabGigs" class="tnav-btn" onclick="mktSwitchTab('gigs')">Gigs</button>
       </div>
 
       <div id="mktBrowsePane">
@@ -1538,6 +1539,37 @@ html,body{background-color:var(--bg);}
       <div id="mktListingsPane" style="display:none;">
         <div id="mktListingsResults" style="font-size:.85rem;color:var(--text3);">Loading offers...</div>
       </div>
+
+      <div id="mktGigsPane" style="display:none;">
+        <div style="font-size:.78rem;color:var(--text3);margin-bottom:12px;">Post a task with your budget. Freelancers submit work with their own price. You review, can edit the amount, and accepting pays instantly, on-chain, from your Agent Wallet.</div>
+        <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;">
+          <button id="gigSubBrowse" class="tnav-btn" onclick="gigSwitchSubTab('browse')">Browse tasks</button>
+          <button id="gigSubPost" class="tnav-btn" onclick="gigSwitchSubTab('post')">Post a task</button>
+          <button id="gigSubMyTasks" class="tnav-btn" onclick="gigSwitchSubTab('mytasks')">My tasks</button>
+          <button id="gigSubMySubs" class="tnav-btn" onclick="gigSwitchSubTab('mysubs')">My submissions</button>
+        </div>
+
+        <div id="gigBrowsePane">
+          <div id="gigBrowseResults" style="font-size:.85rem;color:var(--text3);">Loading tasks...</div>
+        </div>
+
+        <div id="gigPostPane" style="display:none;">
+          <input id="gigNewTitle" placeholder="What do you need? e.g. Logo design" style="width:100%;max-width:400px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+          <textarea id="gigNewDesc" placeholder="Describe what you need" style="width:100%;max-width:400px;min-height:80px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;font-family:inherit;"></textarea>
+          <input id="gigNewBudget" type="number" min="0" step="0.01" placeholder="Budget (USDC)" style="width:100%;max-width:400px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+          <label style="font-size:.8rem;color:var(--text2);display:block;margin-bottom:10px;"><input type="checkbox" id="gigNewNegotiable" checked/> Budget is negotiable</label>
+          <button class="btn" onclick="gigCreateTask()" style="width:auto;padding:13px 36px;border-radius:12px;font-weight:700;">Post task</button>
+          <div id="gigPostStatus" style="font-size:.8rem;color:var(--text3);margin-top:8px;"></div>
+        </div>
+
+        <div id="gigMyTasksPane" style="display:none;">
+          <div id="gigMyTasksResults" style="font-size:.85rem;color:var(--text3);">Loading your tasks...</div>
+        </div>
+
+        <div id="gigMySubsPane" style="display:none;">
+          <div id="gigMySubsResults" style="font-size:.85rem;color:var(--text3);">Loading your submissions...</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1556,7 +1588,7 @@ html,body{background-color:var(--bg);}
     return true;
   }
   function mktSwitchTab(tab){
-    ['browse','sell','orders','listings'].forEach(t => {
+    ['browse','sell','orders','listings','gigs'].forEach(t => {
       document.getElementById('mkt'+t.charAt(0).toUpperCase()+t.slice(1)+'Pane').style.display = (t===tab)?'block':'none';
       const btn = document.getElementById('mktTab'+t.charAt(0).toUpperCase()+t.slice(1));
       btn.style.background = (t===tab) ? '#7000ff' : '';
@@ -1565,6 +1597,7 @@ html,body{background-color:var(--bg);}
     if (tab === 'browse') mktBrowse();
     if (tab === 'orders') mktLoadOrders();
     if (tab === 'listings') mktLoadListingsOffers();
+    if (tab === 'gigs') gigSwitchSubTab('browse');
   }
   async function mktBrowse(){
     const el = document.getElementById('mktBrowseResults');
@@ -1774,6 +1807,163 @@ html,body{background-color:var(--bg);}
     if(!d.success){ alert('❌ ' + d.error); return; }
     mktLoadListingsOffers();
   }
+
+  // ── Gigs ──────────────────────────────────────────────────────────────────
+  const GIGS_API = 'https://nan-production.up.railway.app/api/gigs';
+  async function gigCall(action, body){
+    const r = await fetch(GIGS_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action, ...body})});
+    return r.json();
+  }
+  function gigMyWalletAddress(){
+    return window.userAddr || (typeof circleWalletAddress !== 'undefined' ? circleWalletAddress : null) || null;
+  }
+  function gigSwitchSubTab(tab){
+    ['browse','post','mytasks','mysubs'].forEach(t => {
+      const paneId = t==='browse'?'gigBrowsePane':t==='post'?'gigPostPane':t==='mytasks'?'gigMyTasksPane':'gigMySubsPane';
+      document.getElementById(paneId).style.display = (t===tab)?'block':'none';
+      const btn = document.getElementById('gigSub'+(t==='browse'?'Browse':t==='post'?'Post':t==='mytasks'?'MyTasks':'MySubs'));
+      btn.style.background = (t===tab) ? '#7000ff' : '';
+      btn.style.color = (t===tab) ? '#fff' : '';
+    });
+    if (tab === 'browse') gigLoadTasks();
+    if (tab === 'mytasks') gigLoadMyTasks();
+    if (tab === 'mysubs') gigLoadMySubmissions();
+  }
+  async function gigCreateTask(){
+    const wallet = gigMyWalletAddress();
+    if(!wallet){ document.getElementById('gigPostStatus').textContent = 'Connect your wallet first.'; return; }
+    const title = document.getElementById('gigNewTitle').value.trim();
+    const description = document.getElementById('gigNewDesc').value.trim();
+    const budget = document.getElementById('gigNewBudget').value.trim();
+    const negotiable = document.getElementById('gigNewNegotiable').checked;
+    if(!title || !budget){ document.getElementById('gigPostStatus').textContent = 'Title and budget are required.'; return; }
+    document.getElementById('gigPostStatus').textContent = 'Posting task...';
+    const d = await gigCall('task-create', { requesterAddress: wallet, title, description, budget, negotiable });
+    if(!d.success){ document.getElementById('gigPostStatus').textContent = '❌ ' + d.error; return; }
+    document.getElementById('gigNewTitle').value = document.getElementById('gigNewDesc').value = document.getElementById('gigNewBudget').value = '';
+    document.getElementById('gigPostStatus').textContent = '✓ Task posted.';
+    gigSwitchSubTab('mytasks');
+  }
+  async function gigLoadTasks(){
+    const el = document.getElementById('gigBrowseResults');
+    el.textContent = 'Loading tasks...';
+    const d = await gigCall('task-list', {});
+    if(!d.success){ el.textContent = '❌ ' + d.error; return; }
+    if(!d.tasks.length){ el.innerHTML = '<div style="color:var(--text3);font-size:.85rem;">No open tasks right now.</div>'; return; }
+    el.innerHTML = d.tasks.map(t => `
+      <div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:start;">
+          <div style="font-weight:700;color:var(--text);">${t.title}</div>
+          <div style="font-weight:700;color:#c084fc;white-space:nowrap;margin-left:8px;">$${t.budget}${t.negotiable ? ' (negotiable)' : ''}</div>
+        </div>
+        <div style="font-size:.8rem;color:var(--text2);margin-top:6px;">${t.description||''}</div>
+        <button class="btn" onclick="gigToggleSubmitForm('${t.id}')" style="width:auto;padding:9px 20px;border-radius:10px;font-weight:700;margin-top:10px;font-size:13px;">Submit work</button>
+        <div id="gigSubmitForm_${t.id}" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
+          <textarea id="gigSubDesc_${t.id}" placeholder="Describe your submission" style="width:100%;max-width:400px;min-height:60px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;font-family:inherit;"></textarea>
+          <input id="gigSubLink_${t.id}" placeholder="Link to your work (optional)" style="width:100%;max-width:400px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+          <input id="gigSubPrice_${t.id}" type="number" min="0" step="0.01" placeholder="Your price (USDC)" style="width:100%;max-width:200px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+          <div><button class="btn" onclick="gigSubmitWork('${t.id}')" style="width:auto;padding:9px 20px;border-radius:10px;font-weight:700;font-size:13px;">Submit</button></div>
+          <div id="gigSubStatus_${t.id}" style="font-size:.78rem;color:var(--text3);margin-top:6px;"></div>
+        </div>
+      </div>`).join('');
+  }
+  function gigToggleSubmitForm(taskId){
+    const el = document.getElementById('gigSubmitForm_'+taskId);
+    el.style.display = el.style.display === 'block' ? 'none' : 'block';
+  }
+  async function gigSubmitWork(taskId){
+    const wallet = gigMyWalletAddress();
+    const statusEl = document.getElementById('gigSubStatus_'+taskId);
+    if(!wallet){ statusEl.textContent = 'Connect your wallet first.'; return; }
+    const description = document.getElementById('gigSubDesc_'+taskId).value.trim();
+    const fileUrl = document.getElementById('gigSubLink_'+taskId).value.trim();
+    const proposedPrice = document.getElementById('gigSubPrice_'+taskId).value.trim();
+    if(!description || !proposedPrice){ statusEl.textContent = 'Description and your price are required.'; return; }
+    statusEl.textContent = 'Submitting...';
+    const d = await gigCall('submission-create', {
+      taskId, freelancerAddress: wallet, freelancerWalletAddress: wallet,
+      description, proposedPrice, fileUrl: fileUrl || undefined,
+    });
+    statusEl.textContent = d.success ? '✓ Submitted — the requester will review it.' : '❌ ' + d.error;
+  }
+  async function gigLoadMyTasks(){
+    const wallet = gigMyWalletAddress();
+    const el = document.getElementById('gigMyTasksResults');
+    if(!wallet){ el.textContent = 'Connect your wallet to see your posted tasks.'; return; }
+    el.textContent = 'Loading your tasks...';
+    const d = await gigCall('my-tasks', { requesterAddress: wallet });
+    if(!d.success){ el.textContent = '❌ ' + d.error; return; }
+    if(!d.tasks.length){ el.innerHTML = '<div style="color:var(--text3);font-size:.85rem;">You haven\'t posted any tasks yet.</div>'; return; }
+    el.innerHTML = d.tasks.map(t => `
+      <div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:start;">
+          <div style="font-weight:700;color:var(--text);">${t.title}</div>
+          <span style="font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:6px;background:rgba(112,0,255,.1);color:#7000ff;white-space:nowrap;margin-left:8px;">${t.status}</span>
+        </div>
+        <div style="font-size:.8rem;color:var(--text2);margin-top:4px;">Budget: $${t.budget}${t.negotiable ? ' (negotiable)' : ''}</div>
+        ${t.status === 'open' ? `<button class="btn" onclick="gigToggleSubmissions('${t.id}')" style="width:auto;padding:9px 20px;border-radius:10px;font-weight:700;margin-top:10px;font-size:13px;">View submissions</button>` : `<div style="font-size:.78rem;color:var(--text3);margin-top:8px;">Completed — paid submission #${(t.acceptedSubmissionId||'').slice(-6)}</div>`}
+        <div id="gigSubsList_${t.id}" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);"></div>
+      </div>`).join('');
+  }
+  async function gigToggleSubmissions(taskId){
+    const el = document.getElementById('gigSubsList_'+taskId);
+    if(el.style.display === 'block'){ el.style.display = 'none'; return; }
+    el.style.display = 'block';
+    el.textContent = 'Loading submissions...';
+    const d = await gigCall('submission-list', { taskId });
+    if(!d.success){ el.textContent = '❌ ' + d.error; return; }
+    if(!d.submissions.length){ el.innerHTML = '<div style="color:var(--text3);font-size:.8rem;">No submissions yet.</div>'; return; }
+    el.innerHTML = d.submissions.map(s => `
+      <div style="border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:8px;">
+        <div style="font-size:.78rem;color:var(--text3);">${s.freelancerAddress.slice(0,10)}...</div>
+        <div style="font-size:.82rem;color:var(--text);margin-top:4px;">${s.description}</div>
+        ${s.fileUrl ? (s.fileUrl.startsWith('http') ? `<a href="${s.fileUrl}" target="_blank" style="font-size:.78rem;color:var(--accent3);">View work &rarr;</a>` : `<img src="${s.fileUrl}" style="max-width:120px;border-radius:8px;margin-top:6px;"/>`) : ''}
+        ${s.status === 'pending' ? `
+          <div style="display:flex;gap:8px;align-items:center;margin-top:8px;">
+            <input id="gigFinalAmt_${s.id}" type="number" min="0" step="0.01" value="${s.proposedPrice}" style="width:110px;padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.82rem;font-weight:700;"/>
+            <button class="btn" onclick="gigAcceptSubmission('${s.id}','${taskId}')" style="width:auto;padding:8px 18px;border-radius:8px;font-weight:700;font-size:12px;">Accept &amp; Pay</button>
+          </div>
+          <div id="gigAcceptStatus_${s.id}" style="font-size:.75rem;color:var(--text3);margin-top:6px;"></div>` :
+          s.status === 'accepted' ? `<div style="font-size:.75rem;font-weight:700;color:#22c55e;margin-top:8px;">✓ Accepted — paid $${s.finalAmount} USDC</div>` :
+          `<div style="font-size:.75rem;color:var(--text3);margin-top:8px;">Not selected</div>`}
+      </div>`).join('');
+  }
+  async function gigAcceptSubmission(submissionId, taskId){
+    const statusEl = document.getElementById('gigAcceptStatus_'+submissionId);
+    if (typeof agentWalletAddr === 'undefined' || !agentWalletAddr) {
+      window._agentWalletReturnTo = 'marketplace';
+      goPage('agent-wallet');
+      return;
+    }
+    const wallet = gigMyWalletAddress();
+    const finalAmount = document.getElementById('gigFinalAmt_'+submissionId).value.trim();
+    if(!finalAmount){ statusEl.textContent = 'Enter an amount.'; return; }
+    statusEl.textContent = 'Paying from Agent Wallet...';
+    const d = await gigCall('submission-accept', {
+      submissionId, requesterAddress: wallet, requesterAgentWalletAddress: agentWalletAddr, finalAmount,
+    });
+    if(!d.success){ statusEl.textContent = '❌ ' + d.error; return; }
+    statusEl.textContent = '✓ Paid — tx ' + (d.submission.txHash || 'pending').slice(0,14) + '...';
+    setTimeout(() => gigLoadMyTasks(), 1200);
+  }
+  async function gigLoadMySubmissions(){
+    const wallet = gigMyWalletAddress();
+    const el = document.getElementById('gigMySubsResults');
+    if(!wallet){ el.textContent = 'Connect your wallet to see your submissions.'; return; }
+    el.textContent = 'Loading your submissions...';
+    const d = await gigCall('my-submissions', { freelancerAddress: wallet });
+    if(!d.success){ el.textContent = '❌ ' + d.error; return; }
+    if(!d.submissions.length){ el.innerHTML = '<div style="color:var(--text3);font-size:.85rem;">You haven\'t submitted work to any tasks yet.</div>'; return; }
+    el.innerHTML = d.submissions.map(s => `
+      <div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;">
+        <div style="font-size:.82rem;color:var(--text);">${s.description}</div>
+        <div style="font-size:.78rem;color:var(--text3);margin-top:4px;">Proposed: $${s.proposedPrice}</div>
+        ${s.status === 'accepted' ? `<div style="font-size:.78rem;font-weight:700;color:#22c55e;margin-top:6px;">✓ Accepted — paid $${s.finalAmount} USDC</div>` :
+          s.status === 'not_selected' ? `<div style="font-size:.78rem;color:var(--text3);margin-top:6px;">Not selected</div>` :
+          `<div style="font-size:.78rem;color:#c084fc;margin-top:6px;">Awaiting review</div>`}
+      </div>`).join('');
+  }
+
   mktBrowse();
   </script>
 
