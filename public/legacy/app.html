@@ -1250,6 +1250,10 @@ html,body{background-color:var(--bg);}
   }
   function nanPaymentReceipt(payments){
     // payments: array of {label, amount, network, transaction, elapsedMs}
+    // Note: amount arrives as a decimal USDC string from the backend (already converted
+    // from Gateway's atomic 6-decimal units). transaction is a Circle Gateway transfer
+    // reference, not an on-chain tx hash — Gateway nanopayments settle on-chain later in
+    // periodic batches, so there's no per-payment chain explorer link at authorization time.
     const valid = payments.filter(p => p && p.amount);
     if(!valid.length) return '';
     const rows = valid.map(p => `
@@ -1259,19 +1263,17 @@ html,body{background-color:var(--bg);}
       </div>`).join('');
     const last = valid[valid.length-1];
     const totalMs = valid.reduce((sum,p) => sum + (p.elapsedMs||0), 0);
-    const explorerBase = (typeof ARC_EXP !== 'undefined' && ARC_EXP) ? ARC_EXP : 'https://testnet.arcscan.app';
-    const txUrl = last.transaction ? `${explorerBase}/tx/${last.transaction}` : null;
     return `
       <div style="border:1px solid rgba(112,0,255,.25);background:rgba(112,0,255,.06);border-radius:12px;padding:12px 14px;margin-top:8px;max-width:400px;">
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
           <span style="color:#22c55e;font-size:.85rem;">&#10003;</span>
-          <span style="font-size:.8rem;font-weight:700;color:var(--text);">Paid autonomously on Arc</span>
-          ${totalMs ? `<span style="margin-left:auto;font-size:.7rem;color:var(--text3);">settled in ${totalMs}ms</span>` : ''}
+          <span style="font-size:.8rem;font-weight:700;color:var(--text);">Paid gas-free via Circle Gateway</span>
+          ${totalMs ? `<span style="margin-left:auto;font-size:.7rem;color:var(--text3);">authorized in ${totalMs}ms</span>` : ''}
         </div>
         ${rows}
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;padding-top:6px;border-top:1px solid rgba(112,0,255,.15);">
-          <span style="font-size:.7rem;color:var(--text3);">${last.network||'ARC-TESTNET'}</span>
-          ${txUrl ? `<a href="${txUrl}" target="_blank" style="font-size:.7rem;color:#7000ff;text-decoration:underline;">tx ${(last.transaction||'').slice(0,10)}&hellip; &#8599;</a>` : ''}
+        <div style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(112,0,255,.15);">
+          <div style="font-size:.7rem;color:var(--text3);">${last.network||'ARC-TESTNET'} &middot; ref ${(last.transaction||'').slice(0,13)}&hellip;</div>
+          <div style="font-size:.68rem;color:var(--text3);margin-top:2px;">Signed off-chain, gas-free — settles on-chain in Circle's next periodic batch.</div>
         </div>
       </div>`;
   }
