@@ -1895,8 +1895,17 @@ html,body{background-color:var(--bg);}
   // ── Gigs ──────────────────────────────────────────────────────────────────
   const GIGS_API = 'https://nan-production.up.railway.app/api/gigs';
   async function gigCall(action, body){
-    const r = await fetch(GIGS_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action, ...body})});
-    return r.json();
+    try {
+      const r = await fetch(GIGS_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action, ...body})});
+      const contentType = r.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        const text = await r.text();
+        return { success: false, error: `Server returned an unexpected response (status ${r.status}) — this usually means the endpoint isn't available yet. Raw response: ${text.slice(0,150)}` };
+      }
+      return await r.json();
+    } catch (err) {
+      return { success: false, error: 'Network or server error: ' + err.message };
+    }
   }
   function gigMyWalletAddress(){
     return window.userAddr || (typeof circleWalletAddress !== 'undefined' ? circleWalletAddress : null) || null;
