@@ -2365,7 +2365,7 @@ html,body{background-color:var(--bg);}
     <div id="swapModeBanner" style="display:none;"></div>
 
     <!-- Sell box -->
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:12px 14px 10px;margin-bottom:3px;">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:10px 12px 8px;margin-bottom:3px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
         <span style="font-size:.9rem;color:var(--text);font-weight:500;">Sell</span>
         <span style="font-size:.8rem;color:var(--text);">Bal: <span id="swapFromBal">0.00</span>
@@ -2380,7 +2380,7 @@ html,body{background-color:var(--bg);}
           <span style="font-size:.75rem;color:var(--text3);" id="swapPairArrow">▾</span>
         </button>
         <input class="swap-input" id="swapFrom" type="number" placeholder="0" oninput="calcSwap()"
-          style="flex:1;text-align:right;font-size:2.2rem;font-weight:700;background:none;border:none;outline:none;color:var(--text);font-family:'Inter',sans-serif;min-width:0;"/>
+          style="flex:1;text-align:right;font-size:1.6rem;font-weight:700;background:none;border:none;outline:none;color:var(--text);font-family:'Inter',sans-serif;min-width:0;"/>
       </div>
       <div style="display:flex;justify-content:flex-end;margin-top:6px;">
         <span style="font-size:.875rem;color:var(--text);">≈ $<span id="swapFromUSD">0.00</span></span>
@@ -2393,7 +2393,7 @@ html,body{background-color:var(--bg);}
     </div>
 
     <!-- Buy box -->
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-top:3px;margin-bottom:16px;">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:12px 12px 10px;margin-top:3px;margin-bottom:10px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
         <span style="font-size:1rem;color:var(--text);font-weight:500;">Buy</span>
         <span style="font-size:.875rem;color:var(--text);">Bal: <span id="swapToBal">0.00</span></span>
@@ -2404,7 +2404,7 @@ html,body{background-color:var(--bg);}
           <span id="toTokenLabel" style="font-size:1.05rem;font-weight:700;color:var(--text);">EURC</span>
         </div>
         <input class="swap-input" id="swapTo" type="number" placeholder="0" readonly
-          style="flex:1;text-align:right;font-size:2.2rem;font-weight:700;background:none;border:none;outline:none;color:var(--accent3);font-family:'Inter',sans-serif;min-width:0;opacity:.9;"/>
+          style="flex:1;text-align:right;font-size:1.6rem;font-weight:700;background:none;border:none;outline:none;color:var(--accent3);font-family:'Inter',sans-serif;min-width:0;opacity:.9;"/>
       </div>
       <div style="display:flex;justify-content:flex-end;margin-top:6px;">
         <span style="font-size:.875rem;color:var(--text);">≈ $<span id="swapToUSD">0.00</span></span>
@@ -2729,7 +2729,7 @@ html,body{background-color:var(--bg);}
       <div id="npanel-withdraw" style="display:none;">
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:3px;">
           <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Amount (₦)</div>
-          <input id="ngnWithdrawAmt" type="number" placeholder="0" oninput="calcNgnWithdraw()" style="width:100%;background:none;border:none;outline:none;font-size:2.2rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
+          <input id="ngnWithdrawAmt" type="number" placeholder="0" oninput="calcNgnWithdraw()" style="width:100%;background:none;border:none;outline:none;font-size:1.6rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
           <div style="font-size:.82rem;color:var(--text3);margin-top:6px;" id="ngnWithdrawUsdc">≈ 0.0000 USDC deducted</div>
         </div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:3px;">
@@ -2758,7 +2758,7 @@ html,body{background-color:var(--bg);}
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
             <div id="ngnFromToken" onclick="flipNgnConvert()" style="background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:8px 14px;font-size:.9rem;font-weight:700;color:var(--text);white-space:nowrap;cursor:pointer;">₦ NGN ▾</div>
-            <input class="swap-input" id="ngnConvertFrom" type="number" placeholder="0" oninput="calcNgnConvert()" style="flex:1;background:none;border:none;outline:none;font-size:2rem;font-weight:700;color:var(--text);text-align:right;font-family:'Inter',sans-serif;"/>
+            <input class="swap-input" id="ngnConvertFrom" type="number" placeholder="0" oninput="calcNgnConvert()" style="flex:1;background:none;border:none;outline:none;font-size:1.6rem;font-weight:700;color:var(--text);text-align:right;font-family:'Inter',sans-serif;"/>
           </div>
         </div>
         <div style="display:flex;justify-content:center;padding:8px 0;">
@@ -2771,7 +2771,7 @@ html,body{background-color:var(--bg);}
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
             <div id="ngnToToken" onclick="toggleNgnToToken()" style="background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:8px 14px;font-size:.9rem;font-weight:700;color:#7000ff;white-space:nowrap;cursor:pointer;"><span class="tok-dot usdc-dot"></span>USDC ▾</div>
-            <input class="swap-input" id="ngnConvertTo" type="number" placeholder="0" readonly style="flex:1;background:none;border:none;outline:none;font-size:2rem;font-weight:700;color:var(--text);text-align:right;font-family:'Inter',sans-serif;opacity:.6;"/>
+            <input class="swap-input" id="ngnConvertTo" type="number" placeholder="0" readonly style="flex:1;background:none;border:none;outline:none;font-size:1.6rem;font-weight:700;color:var(--text);text-align:right;font-family:'Inter',sans-serif;opacity:.6;"/>
           </div>
         </div>
         <div style="display:flex;justify-content:space-between;padding:10px 14px;background:rgba(112,0,255,.05);border:1px solid rgba(112,0,255,.12);border-radius:12px;margin-bottom:12px;">

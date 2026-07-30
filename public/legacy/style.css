@@ -701,7 +701,7 @@ a:hover{color:var(--text);}
 [data-theme="light"] .dnav-section-label{color:#7000ff;}
 [data-theme="light"] .dnav-divider{background:#ffffff;}
 [data-theme="light"] #globalTopBar{background:rgba(17,17,17,0.97);border-bottom-color:#f0f0f0;}
-[data-theme="light"] .swap-input{color:#111111!important;font-size:2.2rem!important;font-weight:700!important;}
+[data-theme="light"] .swap-input{color:#111111!important;font-size:1.6rem!important;font-weight:700!important;}
 [data-theme="light"] .home-asset-row{background:#ffffff;border-color:#f0f0f0;}
 [data-theme="light"] .home-asset-row:hover{background:#ffffff;}
 [data-theme="light"] .home-asset-name{color:#111111;font-weight:600;font-size:1rem;}
