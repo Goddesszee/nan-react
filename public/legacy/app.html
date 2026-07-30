@@ -1814,6 +1814,15 @@ html,body{background-color:var(--bg);}
       </div>
 
       <div id="gigBrowsePane">
+        <div style="border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:14px;max-width:520px;">
+          <div style="font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:8px;">Get emailed when a matching task is posted</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <input id="gigWatchKeyword" placeholder="Keyword, e.g. logo" style="flex:1;min-width:120px;padding:9px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.82rem;"/>
+            <input id="gigWatchEmail" type="email" placeholder="Your email" style="flex:1;min-width:140px;padding:9px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.82rem;"/>
+            <button class="btn" onclick="gigCreateWatch()" style="width:auto;padding:9px 16px;border-radius:8px;font-weight:700;font-size:12px;">Save alert</button>
+          </div>
+          <div id="gigWatchStatus" style="font-size:.75rem;color:var(--text3);margin-top:6px;"></div>
+        </div>
         <div id="gigBrowseResults" style="font-size:.85rem;color:var(--text3);">Loading tasks...</div>
       </div>
 
@@ -1822,6 +1831,7 @@ html,body{background-color:var(--bg);}
         <textarea id="gigNewDesc" placeholder="Describe what you need" style="width:100%;max-width:400px;min-height:80px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;font-family:inherit;"></textarea>
         <input id="gigNewBudget" type="number" min="0" step="0.01" placeholder="Budget (USDC)" style="width:100%;max-width:400px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
         <label style="font-size:.8rem;color:var(--text2);display:block;margin-bottom:10px;"><input type="checkbox" id="gigNewNegotiable" checked/> Budget is negotiable</label>
+        <input id="gigNewEmail" type="email" placeholder="Email me when someone submits (optional)" style="width:100%;max-width:400px;padding:10px 12px;margin-bottom:10px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
         <button class="btn" onclick="gigCreateTask()" style="width:auto;padding:13px 36px;border-radius:12px;font-weight:700;">Post task</button>
         <div id="gigPostStatus" style="font-size:.8rem;color:var(--text3);margin-top:8px;"></div>
       </div>
@@ -1889,13 +1899,25 @@ html,body{background-color:var(--bg);}
     const description = document.getElementById('gigNewDesc').value.trim();
     const budget = document.getElementById('gigNewBudget').value.trim();
     const negotiable = document.getElementById('gigNewNegotiable').checked;
+    const notifyEmail = document.getElementById('gigNewEmail').value.trim();
     if(!title || !budget){ document.getElementById('gigPostStatus').textContent = 'Title and budget are required.'; return; }
     document.getElementById('gigPostStatus').textContent = 'Posting task...';
-    const d = await gigCall('task-create', { requesterAddress: wallet, title, description, budget, negotiable });
+    const d = await gigCall('task-create', { requesterAddress: wallet, title, description, budget, negotiable, notifyEmail: notifyEmail || undefined });
     if(!d.success){ document.getElementById('gigPostStatus').textContent = '❌ ' + d.error; return; }
-    document.getElementById('gigNewTitle').value = document.getElementById('gigNewDesc').value = document.getElementById('gigNewBudget').value = '';
+    document.getElementById('gigNewTitle').value = document.getElementById('gigNewDesc').value = document.getElementById('gigNewBudget').value = document.getElementById('gigNewEmail').value = '';
     document.getElementById('gigPostStatus').textContent = '✓ Task posted.';
     gigSwitchSubTab('mytasks');
+  }
+  async function gigCreateWatch(){
+    const keyword = document.getElementById('gigWatchKeyword').value.trim();
+    const email = document.getElementById('gigWatchEmail').value.trim();
+    const statusEl = document.getElementById('gigWatchStatus');
+    if(!keyword || !email){ statusEl.textContent = 'Enter both a keyword and your email.'; return; }
+    statusEl.textContent = 'Saving...';
+    const d = await gigCall('watch-create', { keyword, email });
+    if(!d.success){ statusEl.textContent = '❌ ' + d.error; return; }
+    document.getElementById('gigWatchKeyword').value = document.getElementById('gigWatchEmail').value = '';
+    statusEl.textContent = `✓ You'll be emailed when a task matching "${keyword}" is posted.`;
   }
   async function gigLoadTasks(){
     const el = document.getElementById('gigBrowseResults');
