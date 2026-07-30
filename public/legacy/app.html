@@ -2183,6 +2183,90 @@ html,body{background-color:var(--bg);}
   vlBrowse();
   </script>
 
+  <!-- ══ ADMIN PAGE (not linked from nav — reach via goPage('admin')) ══ -->
+  <div class="page" id="page-admin">
+    <div style="padding:20px;max-width:600px;">
+      <div style="font-size:1.4rem;font-weight:800;color:var(--text);margin-bottom:4px;">Admin</div>
+      <div style="font-size:.8rem;color:var(--text3);margin-bottom:16px;">Not linked from navigation. Password required for every action below.</div>
+
+      <input id="adminPassword" type="password" placeholder="Admin password" style="width:100%;max-width:320px;padding:10px 12px;margin-bottom:10px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+      <button class="btn" onclick="adminUnlock()" style="width:auto;padding:11px 28px;border-radius:10px;font-weight:700;background:#7000ff;color:#fff;border:none;">Unlock</button>
+
+      <div id="adminPanels" style="display:none;margin-top:20px;">
+        <div style="font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:8px;">Pending verifications</div>
+        <button class="btn" onclick="adminLoadKyc()" style="width:auto;padding:8px 18px;border-radius:8px;font-weight:700;font-size:.8rem;background:#7000ff;color:#fff;border:none;margin-bottom:10px;">Refresh</button>
+        <div id="adminKycResults" style="font-size:.85rem;color:var(--text3);margin-bottom:24px;">Not loaded yet.</div>
+
+        <div style="font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:8px;">Marketplace disputes</div>
+        <button class="btn" onclick="adminLoadDisputes()" style="width:auto;padding:8px 18px;border-radius:8px;font-weight:700;font-size:.8rem;background:#7000ff;color:#fff;border:none;margin-bottom:10px;">Refresh</button>
+        <div id="adminDisputeResults" style="font-size:.85rem;color:var(--text3);">Not loaded yet.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  let _adminSecret = null;
+  function adminUnlock(){
+    const pw = document.getElementById('adminPassword').value;
+    if(!pw){ alert('Enter the admin password.'); return; }
+    _adminSecret = pw;
+    document.getElementById('adminPanels').style.display = 'block';
+    adminLoadKyc();
+    adminLoadDisputes();
+  }
+  async function adminLoadKyc(){
+    const el = document.getElementById('adminKycResults');
+    el.textContent = 'Loading...';
+    const r = await fetch('https://nan-production.up.railway.app/api/kyc', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'admin-list-pending', secret:_adminSecret})});
+    const d = await r.json();
+    if(!d.success){ el.textContent = '❌ ' + d.error; return; }
+    if(!d.records.length){ el.innerHTML = '<div style="color:var(--text3);">No pending verifications.</div>'; return; }
+    el.innerHTML = d.records.map(rec => `
+      <div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;">
+        <div style="font-weight:700;color:var(--text);">${rec.fullName}</div>
+        <div style="font-size:.78rem;color:var(--text3);margin-top:2px;">${rec.walletAddress}</div>
+        <div style="font-size:.8rem;color:var(--text2);margin-top:6px;">ID: ${rec.idDescription}</div>
+        <div style="font-size:.8rem;color:var(--text2);margin-top:2px;">Contact: ${rec.contact}</div>
+        <div style="display:flex;gap:8px;margin-top:10px;">
+          <button class="btn" onclick="adminDecideKyc('${rec.walletAddress}','approve')" style="padding:8px 16px;border-radius:8px;font-size:.8rem;background:#22c55e;color:#fff;border:none;">Approve</button>
+          <button onclick="adminDecideKyc('${rec.walletAddress}','reject')" style="padding:8px 16px;border-radius:8px;font-size:.8rem;background:none;border:1px solid var(--border);color:var(--text3);cursor:pointer;">Reject</button>
+        </div>
+      </div>`).join('');
+  }
+  async function adminDecideKyc(walletAddress, decision){
+    const r = await fetch('https://nan-production.up.railway.app/api/kyc', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'admin-decide', secret:_adminSecret, walletAddress, decision})});
+    const d = await r.json();
+    if(!d.success){ alert('❌ ' + d.error); return; }
+    adminLoadKyc();
+  }
+  async function adminLoadDisputes(){
+    const el = document.getElementById('adminDisputeResults');
+    el.textContent = 'Loading...';
+    const r = await fetch('https://nan-production.up.railway.app/api/marketplace', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'admin-list-disputes', secret:_adminSecret})});
+    const d = await r.json();
+    if(!d.success){ el.textContent = '❌ ' + d.error; return; }
+    if(!d.orders.length){ el.innerHTML = '<div style="color:var(--text3);">No open disputes.</div>'; return; }
+    el.innerHTML = d.orders.map(o => `
+      <div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;">
+        <div style="font-weight:700;color:var(--text);">Order ${o.id} &middot; $${o.amount}</div>
+        <div style="font-size:.78rem;color:var(--text3);margin-top:2px;">Buyer: ${o.buyerAddress}</div>
+        <div style="font-size:.78rem;color:var(--text3);">Seller: ${o.sellerAddress}</div>
+        <div style="font-size:.8rem;color:var(--text2);margin-top:6px;">Reason: ${o.dispute?.reason||'(none given)'}</div>
+        <div style="display:flex;gap:8px;margin-top:10px;">
+          <button class="btn" onclick="adminResolveDispute('${o.id}','release','${o.sellerAddress}','')" style="padding:8px 16px;border-radius:8px;font-size:.8rem;background:#22c55e;color:#fff;border:none;">Release to seller</button>
+          <button onclick="adminResolveDispute('${o.id}','refund','','${o.buyerAddress}')" style="padding:8px 16px;border-radius:8px;font-size:.8rem;background:none;border:1px solid var(--border);color:var(--text3);cursor:pointer;">Refund buyer</button>
+        </div>
+      </div>`).join('');
+  }
+  async function adminResolveDispute(orderId, resolution, sellerWalletAddress, buyerWalletAddress){
+    const r = await fetch('https://nan-production.up.railway.app/api/marketplace', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'admin-resolve', secret:_adminSecret, orderId, resolution, sellerWalletAddress, buyerWalletAddress})});
+    const d = await r.json();
+    if(!d.success){ alert('❌ ' + d.error); return; }
+    alert('Resolved.');
+    adminLoadDisputes();
+  }
+  </script>
+
   <!-- ══ SWAP PAGE ══ -->
   <div class="page" id="page-swap">
     <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;overflow:hidden;padding:14px;">
