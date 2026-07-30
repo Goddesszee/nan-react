@@ -67,6 +67,7 @@ function goPage(name) {
     'supplier-agent': 'nav-supplier',
     marketplace: 'nav-marketplace',
     gigs: 'nav-gigs',
+    verified: 'nav-verified',
   };
 
   const pageId = pageMap[name] || ('page-' + name);
