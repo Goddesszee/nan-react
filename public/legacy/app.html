@@ -1170,6 +1170,7 @@ html,body{background-color:var(--bg);}
 
         <button class="btn" id="careerSearchBtn" onclick="careerRunSearch()" style="width:auto;padding:14px 40px;border-radius:14px;font-weight:700;">Find matching jobs</button>
         <div id="careerStatus" style="font-size:.8rem;color:var(--text3);margin-top:8px;"></div>
+        <div id="careerReceipt"></div>
       </div>
 
       <div id="careerResults" style="margin-top:16px;"></div>
@@ -1221,22 +1222,53 @@ html,body{background-color:var(--bg);}
     if(!wrapped.success) throw new Error(wrapped.error || 'Payment or request failed');
     return wrapped.result;
   }
+  function nanPaymentReceipt(payments){
+    // payments: array of {label, amount, network, transaction, elapsedMs}
+    const valid = payments.filter(p => p && p.amount);
+    if(!valid.length) return '';
+    const rows = valid.map(p => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;">
+        <span style="font-size:.76rem;color:var(--text2);">${p.label}</span>
+        <span style="font-size:.76rem;font-weight:700;color:#7000ff;">$${p.amount} USDC</span>
+      </div>`).join('');
+    const last = valid[valid.length-1];
+    const totalMs = valid.reduce((sum,p) => sum + (p.elapsedMs||0), 0);
+    const explorerBase = (typeof ARC_EXP !== 'undefined' && ARC_EXP) ? ARC_EXP : 'https://testnet.arcscan.app';
+    const txUrl = last.transaction ? `${explorerBase}/tx/${last.transaction}` : null;
+    return `
+      <div style="border:1px solid rgba(112,0,255,.25);background:rgba(112,0,255,.06);border-radius:12px;padding:12px 14px;margin-top:8px;max-width:400px;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+          <span style="color:#22c55e;font-size:.85rem;">&#10003;</span>
+          <span style="font-size:.8rem;font-weight:700;color:var(--text);">Paid autonomously on Arc</span>
+          ${totalMs ? `<span style="margin-left:auto;font-size:.7rem;color:var(--text3);">settled in ${totalMs}ms</span>` : ''}
+        </div>
+        ${rows}
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;padding-top:6px;border-top:1px solid rgba(112,0,255,.15);">
+          <span style="font-size:.7rem;color:var(--text3);">${last.network||'ARC-TESTNET'}</span>
+          ${txUrl ? `<a href="${txUrl}" target="_blank" style="font-size:.7rem;color:#7000ff;text-decoration:underline;">tx ${(last.transaction||'').slice(0,10)}&hellip; &#8599;</a>` : ''}
+        </div>
+      </div>`;
+  }
   async function careerGenerateCv(){
     if(!requireAgentWallet()) return;
     const name = document.getElementById('careerGenName').value.trim();
     const targetRole = document.getElementById('careerGenRole').value.trim();
     if(!name || !targetRole){ document.getElementById('careerStatus').textContent = 'Enter a name and target role.'; return; }
     document.getElementById('careerStatus').textContent = 'Paying and generating CV...';
+    document.getElementById('careerReceipt').innerHTML = '';
+    const t0 = performance.now();
     try{
       const d = await payAndCall(CAREER_API, {
         action:'generate-cv', name, targetRole,
         skills: document.getElementById('careerGenSkills').value.trim(),
         experienceSummary: document.getElementById('careerGenExp').value.trim(),
       }, '0.03');
+      const elapsedMs = Math.round(performance.now() - t0);
       if(!d.success) throw new Error(d.error || 'Generation failed');
       careerSwitchTab('upload');
       document.getElementById('careerCvText').value = d.cvText;
       document.getElementById('careerStatus').textContent = 'CV generated below — review, then search.';
+      if(d.payment) document.getElementById('careerReceipt').innerHTML = nanPaymentReceipt([{label:'Generate CV', ...d.payment, elapsedMs}]);
     }catch(err){ document.getElementById('careerStatus').textContent = '❌ ' + err.message; }
   }
   async function careerRunSearch(){
@@ -1246,11 +1278,15 @@ html,body{background-color:var(--bg);}
     const btn = document.getElementById('careerSearchBtn'); btn.disabled = true;
     document.getElementById('careerStatus').textContent = 'Paying and parsing CV...';
     document.getElementById('careerResults').innerHTML = '';
+    document.getElementById('careerReceipt').innerHTML = '';
     try{
+      const t0 = performance.now();
       const parseData = await payAndCall(CAREER_API, {action:'parse-cv', cvText}, '0.02');
+      const parseMs = Math.round(performance.now() - t0);
       if(!parseData.success) throw new Error(parseData.error || 'CV parsing failed');
 
       document.getElementById('careerStatus').textContent = 'Paying and searching for matching jobs...';
+      const t1 = performance.now();
       const searchData = await payAndCall(CAREER_API, {
         action:'search-jobs',
         profile: parseData.profile,
@@ -1258,11 +1294,14 @@ html,body{background-color:var(--bg);}
         remoteOnly: document.getElementById('careerRemoteOnly').checked,
         includeWeb3: document.getElementById('careerIncludeWeb3').checked,
       }, '0.05');
+      const searchMs = Math.round(performance.now() - t1);
       if(!searchData.success) throw new Error(searchData.error || 'Job search failed');
 
-      document.getElementById('careerStatus').textContent = searchData.payment
-        ? `Paid ${searchData.payment.amount} on ${searchData.payment.network} — tx ${(searchData.payment.transaction||'').slice(0,10)}...`
-        : '';
+      document.getElementById('careerStatus').textContent = '';
+      document.getElementById('careerReceipt').innerHTML = nanPaymentReceipt([
+        {label:'Parse CV', ...parseData.payment, elapsedMs:parseMs},
+        {label:'Search jobs', ...searchData.payment, elapsedMs:searchMs},
+      ]);
       const jobs = searchData.jobs || [];
       if(jobs.length === 0){
         document.getElementById('careerResults').innerHTML = '<div style="color:var(--text3);font-size:.85rem;">No matches came back. Try widening location or skills.</div>';
@@ -1326,6 +1365,7 @@ html,body{background-color:var(--bg);}
 
       <button class="btn" id="supplierSearchBtn" onclick="supplierRunSearch()" style="width:auto;padding:14px 40px;border-radius:14px;font-weight:700;">Find suppliers</button>
       <div id="supplierStatus" style="font-size:.8rem;color:var(--text3);margin-top:8px;"></div>
+      <div id="supplierReceipt"></div>
       <div id="supplierResults" style="margin-top:16px;"></div>
     </div>
   </div>
@@ -1343,6 +1383,8 @@ html,body{background-color:var(--bg);}
     const btn = document.getElementById('supplierSearchBtn'); btn.disabled = true;
     document.getElementById('supplierStatus').textContent = 'Paying and searching sourcing platforms...';
     document.getElementById('supplierResults').innerHTML = '';
+    document.getElementById('supplierReceipt').innerHTML = '';
+    const t0 = performance.now();
     try{
       const r = await fetch(AGENT_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
         action:'pay-service', address:agentWalletAddr, url:SUPPLIER_API, method:'POST', chain:'ARC-TESTNET', maxAmount:'0.10',
@@ -1353,13 +1395,13 @@ html,body{background-color:var(--bg);}
           moqLimit: document.getElementById('supplierMoq').value.trim(),
         },
       })});
+      const elapsedMs = Math.round(performance.now() - t0);
       const wrapped = await r.json();
       if(!wrapped.success) throw new Error(wrapped.error || 'Payment or request failed');
       const d = wrapped.result;
       if(!d.success) throw new Error(d.error || 'Search failed');
-      document.getElementById('supplierStatus').textContent = d.payment
-        ? `Paid ${d.payment.amount} on ${d.payment.network} — tx ${(d.payment.transaction||'').slice(0,10)}...`
-        : '';
+      document.getElementById('supplierStatus').textContent = '';
+      if(d.payment) document.getElementById('supplierReceipt').innerHTML = nanPaymentReceipt([{label:'Search suppliers', ...d.payment, elapsedMs}]);
       const suppliers = d.suppliers || [];
       if(suppliers.length === 0){
         document.getElementById('supplierResults').innerHTML = '<div style="color:var(--text3);font-size:.85rem;">No matches came back. Try a broader product description.</div>';
