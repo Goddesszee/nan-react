@@ -1167,6 +1167,7 @@ html,body{background-color:var(--bg);}
         <button id="careerModeFind" onclick="careerSwitchMode('find')" class="tnav-btn">Find a job</button>
         <button id="careerModePost" onclick="careerSwitchMode('post')" class="tnav-btn">Post a job</button>
         <button id="careerModeBrowse" onclick="careerSwitchMode('browse')" class="tnav-btn">Browse jobs</button>
+        <button id="careerModeMyjobs" onclick="careerSwitchMode('myjobs')" class="tnav-btn">My jobs</button>
       </div>
 
       <div id="careerFindPane">
@@ -1231,18 +1232,23 @@ html,body{background-color:var(--bg);}
       <div id="careerBrowsePane" style="display:none;">
         <div id="careerBrowseResults" style="font-size:.85rem;color:var(--text3);">Loading jobs...</div>
       </div>
+
+      <div id="careerMyjobsPane" style="display:none;">
+        <div id="careerMyJobsResults" style="font-size:.85rem;color:var(--text3);">Loading your jobs...</div>
+      </div>
     </div>
   </div>
 
   <script>
   function careerSwitchMode(mode){
-    ['find','post','browse'].forEach(m => {
+    ['find','post','browse','myjobs'].forEach(m => {
       document.getElementById('career'+m.charAt(0).toUpperCase()+m.slice(1)+'Pane').style.display = (m===mode) ? 'block' : 'none';
       const btn = document.getElementById('careerMode'+m.charAt(0).toUpperCase()+m.slice(1));
       btn.style.background = (m===mode) ? '#7000ff' : '';
       btn.style.color = (m===mode) ? '#fff' : '';
     });
     if (mode === 'browse') careerBrowseJobs();
+    if (mode === 'myjobs') careerMyJobs();
   }
   function careerSwitchTab(tab){
     document.getElementById('careerUploadPane').style.display = tab==='upload' ? 'block':'none';
@@ -1307,7 +1313,7 @@ html,body{background-color:var(--bg);}
       }, '0.05');
       if(!d.success) throw new Error(d.error || 'Posting failed');
       document.getElementById('careerJobTitle').value = document.getElementById('careerJobDesc').value = document.getElementById('careerJobSalary').value = document.getElementById('careerJobLocation').value = document.getElementById('careerJobEmail').value = '';
-      document.getElementById('careerPostStatus').textContent = '✓ Job posted — candidates whose CVs match will see it as a referred listing.';
+      document.getElementById('careerPostStatus').textContent = '✓ Job posted — visible to everyone in Browse jobs now, and will also show as a referred match for candidates whose CVs fit.';
     }catch(err){ document.getElementById('careerPostStatus').textContent = '❌ ' + err.message; }
   }
   async function careerBrowseJobs(){
@@ -1328,6 +1334,49 @@ html,body{background-color:var(--bg);}
           <div style="font-size:.75rem;color:var(--text3);margin-top:6px;">${j.remoteOnly?'Remote':(j.location||'Location unspecified')}${j.includeWeb3?' &middot; Web3 role':''}</div>
         </div>`).join('');
     }catch(err){ el.textContent = '❌ ' + err.message; }
+  }
+  async function careerMyJobs(){
+    const wallet = window.userAddr || (typeof circleWalletAddress !== 'undefined' ? circleWalletAddress : null) || null;
+    const el = document.getElementById('careerMyJobsResults');
+    if(!wallet){ el.textContent = 'Connect your wallet to see your posted jobs.'; return; }
+    el.textContent = 'Loading your jobs...';
+    try{
+      const r = await fetch(CAREER_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'my-jobs', employerAddress: wallet})});
+      const d = await r.json();
+      if(!d.success) throw new Error(d.error || 'Failed to load jobs');
+      if(!d.jobs.length){ el.innerHTML = '<div style="color:var(--text3);font-size:.85rem;">You haven\'t posted any jobs yet.</div>'; return; }
+      el.innerHTML = d.jobs.map(j => `
+        <div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;">
+          <div style="display:flex;justify-content:space-between;align-items:start;">
+            <div style="font-weight:700;color:var(--text);">${j.title}</div>
+            <div style="font-weight:700;color:#c084fc;white-space:nowrap;margin-left:8px;">${j.salary} ${j.currency}</div>
+          </div>
+          <div style="font-size:.8rem;color:var(--text2);margin-top:6px;">${j.description||''}</div>
+          <div style="font-size:.75rem;color:var(--text3);margin-top:6px;">${j.remoteOnly?'Remote':(j.location||'Location unspecified')}${j.includeWeb3?' &middot; Web3 role':''} &middot; ${j.status}</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
+            <button onclick="careerEditJob('${j.id}')" style="width:auto;padding:8px 16px;border-radius:8px;font-weight:700;font-size:12px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;">Edit</button>
+            <button onclick="careerDeleteJob('${j.id}')" style="width:auto;padding:8px 16px;border-radius:8px;font-weight:700;font-size:12px;background:transparent;border:1px solid rgba(226,75,74,.4);color:#e24b4a;cursor:pointer;">Delete</button>
+          </div>
+        </div>`).join('');
+    }catch(err){ el.textContent = '❌ ' + err.message; }
+  }
+  async function careerDeleteJob(jobId){
+    if(!confirm('Delete this job posting? This cannot be undone.')) return;
+    const wallet = window.userAddr || (typeof circleWalletAddress !== 'undefined' ? circleWalletAddress : null) || null;
+    const r = await fetch(CAREER_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'job-delete', jobId, employerAddress: wallet})});
+    const d = await r.json();
+    if(!d.success){ alert('❌ ' + d.error); return; }
+    careerMyJobs();
+  }
+  async function careerEditJob(jobId){
+    const newTitle = prompt('New title (leave blank to keep current):');
+    const newSalary = prompt('New salary (leave blank to keep current):');
+    if(newTitle === null && newSalary === null) return;
+    const wallet = window.userAddr || (typeof circleWalletAddress !== 'undefined' ? circleWalletAddress : null) || null;
+    const r = await fetch(CAREER_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'job-edit', jobId, employerAddress: wallet, title: newTitle || undefined, salary: newSalary || undefined})});
+    const d = await r.json();
+    if(!d.success){ alert('❌ ' + d.error); return; }
+    careerMyJobs();
   }
   async function nanSnapshotBalance(){
     try{
@@ -2121,9 +2170,30 @@ html,body{background-color:var(--bg);}
           <span style="font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:6px;background:rgba(112,0,255,.1);color:#7000ff;white-space:nowrap;margin-left:8px;">${t.status}</span>
         </div>
         <div style="font-size:.8rem;color:var(--text2);margin-top:4px;">Budget: $${t.budget}${t.negotiable ? ' (negotiable)' : ''}</div>
-        ${t.status === 'open' ? `<button class="btn" onclick="gigToggleSubmissions('${t.id}','${(t.title||'').replace(/'/g,"\\'")}')" style="width:auto;padding:9px 20px;border-radius:10px;font-weight:700;margin-top:10px;font-size:13px;">View submissions</button>` : `<div style="font-size:.78rem;color:var(--text3);margin-top:8px;">Completed — paid submission #${(t.acceptedSubmissionId||'').slice(-6)}</div>`}
+        ${t.status === 'open' ? `
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
+            <button class="btn" onclick="gigToggleSubmissions('${t.id}','${(t.title||'').replace(/'/g,"\\'")}')" style="width:auto;padding:9px 20px;border-radius:10px;font-weight:700;font-size:13px;">View submissions</button>
+            <button onclick="gigEditTask('${t.id}')" style="width:auto;padding:9px 16px;border-radius:10px;font-weight:700;font-size:13px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;">Edit</button>
+            <button onclick="gigDeleteTask('${t.id}')" style="width:auto;padding:9px 16px;border-radius:10px;font-weight:700;font-size:13px;background:transparent;border:1px solid rgba(226,75,74,.4);color:#e24b4a;cursor:pointer;">Delete</button>
+          </div>` : `<div style="font-size:.78rem;color:var(--text3);margin-top:8px;">Completed — paid submission #${(t.acceptedSubmissionId||'').slice(-6)}</div>`}
         <div id="gigSubsList_${t.id}" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);"></div>
       </div>`).join('');
+  }
+  async function gigDeleteTask(taskId){
+    if(!confirm('Delete this task? This cannot be undone.')) return;
+    const wallet = gigMyWalletAddress();
+    const d = await gigCall('task-delete', { taskId, requesterAddress: wallet });
+    if(!d.success){ alert('❌ ' + d.error); return; }
+    gigLoadMyTasks();
+  }
+  async function gigEditTask(taskId){
+    const newTitle = prompt('New title (leave blank to keep current):');
+    const newBudget = prompt('New budget in USDC (leave blank to keep current):');
+    if(newTitle === null && newBudget === null) return;
+    const wallet = gigMyWalletAddress();
+    const d = await gigCall('task-edit', { taskId, requesterAddress: wallet, title: newTitle || undefined, budget: newBudget || undefined });
+    if(!d.success){ alert('❌ ' + d.error); return; }
+    gigLoadMyTasks();
   }
   async function gigDebugAllTasks(){
     const el = document.getElementById('gigDebugResults');
