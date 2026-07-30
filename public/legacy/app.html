@@ -1672,7 +1672,7 @@ html,body{background-color:var(--bg);}
           <input id="mktNewTitle" placeholder="What are you selling?" style="width:100%;max-width:400px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
           <textarea id="mktNewDesc" placeholder="Description, condition, etc." style="width:100%;max-width:400px;min-height:80px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;font-family:inherit;"></textarea>
           <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
-            <input id="mktNewPrice" type="number" min="0" step="0.01" placeholder="Price (USDC)" style="flex:1;min-width:120px;max-width:196px;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+            <input id="mktNewPrice" type="text" inputmode="decimal" placeholder="Price (USDC)" style="flex:1;min-width:120px;max-width:196px;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
             <input id="mktNewCategory" placeholder="Category (e.g. phones, houses, suppliers)" style="flex:1;min-width:140px;max-width:196px;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
           </div>
           <input id="mktNewLocation" placeholder="Location (optional)" style="width:100%;max-width:400px;padding:10px 12px;margin-bottom:10px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
@@ -2026,7 +2026,7 @@ html,body{background-color:var(--bg);}
       <div id="gigPostPane" style="display:none;">
         <input id="gigNewTitle" placeholder="What do you need? e.g. Logo design" style="width:100%;max-width:640px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
         <textarea id="gigNewDesc" placeholder="Describe what you need" style="width:100%;max-width:640px;min-height:80px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;font-family:inherit;"></textarea>
-        <input id="gigNewBudget" type="number" min="0" step="0.01" placeholder="Budget (USDC)" style="width:100%;max-width:640px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+        <input id="gigNewBudget" type="text" inputmode="decimal" placeholder="Budget (USDC)" style="width:100%;max-width:640px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
         <label style="font-size:.8rem;color:var(--text2);display:block;margin-bottom:10px;"><input type="checkbox" id="gigNewNegotiable" checked/> Budget is negotiable</label>
         <input id="gigNewEmail" type="email" placeholder="Email me when someone submits (optional)" style="width:100%;max-width:640px;padding:10px 12px;margin-bottom:10px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
         <button class="btn" onclick="gigCreateTask()" style="width:auto;padding:13px 36px;border-radius:12px;font-weight:700;">Post task</button>
@@ -2141,7 +2141,7 @@ html,body{background-color:var(--bg);}
         <div id="gigSubmitForm_${t.id}" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
           <textarea id="gigSubDesc_${t.id}" placeholder="Describe your submission" style="width:100%;max-width:640px;min-height:60px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;font-family:inherit;"></textarea>
           <input id="gigSubLink_${t.id}" placeholder="Link to your work (optional)" style="width:100%;max-width:640px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
-          <input id="gigSubPrice_${t.id}" type="number" min="0" step="0.01" placeholder="Your price (USDC)" style="width:100%;max-width:200px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+          <input id="gigSubPrice_${t.id}" type="text" inputmode="decimal" placeholder="Your price (USDC)" style="width:100%;max-width:200px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
           <div><button class="btn" onclick="gigSubmitWork('${t.id}')" style="width:auto;padding:9px 20px;border-radius:10px;font-weight:700;font-size:13px;">Submit</button></div>
           <div id="gigSubStatus_${t.id}" style="font-size:.78rem;color:var(--text3);margin-top:6px;"></div>
         </div>
@@ -2239,7 +2239,7 @@ html,body{background-color:var(--bg);}
         ${s.fileUrl ? (s.fileUrl.startsWith('http') ? `<a href="${s.fileUrl}" target="_blank" style="font-size:.78rem;color:var(--accent3);">View work &rarr;</a>` : `<img src="${s.fileUrl}" style="max-width:120px;border-radius:8px;margin-top:6px;"/>`) : ''}
         ${s.status === 'pending' ? `
           <div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap;">
-            <input id="gigFinalAmt_${s.id}" type="number" min="0" step="0.01" value="${s.proposedPrice}" style="width:100px;padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.82rem;font-weight:700;"/>
+            <input id="gigFinalAmt_${s.id}" type="text" inputmode="decimal" value="${s.proposedPrice}" style="width:100px;padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.82rem;font-weight:700;"/>
             <select id="gigCurrency_${s.id}" style="padding:8px 8px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.8rem;font-weight:700;">
               <option value="USDC">USDC</option>
               <option value="EURC">EURC</option>
