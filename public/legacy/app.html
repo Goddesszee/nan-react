@@ -1455,7 +1455,7 @@ html,body{background-color:var(--bg);}
     return r.json();
   }
   function mktRequireWallet(){
-    if (typeof circleWalletAddress === 'undefined' || !circleWalletAddress) {
+    if (!window.userAddr && !(typeof circleWalletAddress !== 'undefined' && circleWalletAddress)) {
       window._agentWalletReturnTo = 'marketplace';
       goPage('agent-wallet');
       return false;
