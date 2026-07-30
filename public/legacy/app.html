@@ -1575,7 +1575,7 @@ html,body{background-color:var(--bg);}
     return r.json();
   }
   async function mktLoadSellGate(){
-    const wallet = window.userAddr || (typeof circleWalletAddress !== 'undefined' ? circleWalletAddress : null) || null;
+    const wallet = (typeof circleWalletAddress !== 'undefined' ? circleWalletAddress : null) || window.userAddr || null;
     const gateEl = document.getElementById('mktSellGate');
     const formEl = document.getElementById('mktSellForm');
     if(!wallet){ gateEl.textContent = 'Connect your wallet first.'; formEl.style.display = 'none'; return; }
@@ -1605,7 +1605,7 @@ html,body{background-color:var(--bg);}
       <div id="vlKycStatus" style="font-size:.8rem;color:var(--text3);margin-top:8px;"></div>`;
   }
   async function vlSubmitVerification(){
-    const wallet = window.userAddr || (typeof circleWalletAddress !== 'undefined' ? circleWalletAddress : null) || null;
+    const wallet = (typeof circleWalletAddress !== 'undefined' ? circleWalletAddress : null) || window.userAddr || null;
     const fullName = document.getElementById('vlKycName').value.trim();
     const idDescription = document.getElementById('vlKycId').value.trim();
     const contact = document.getElementById('vlKycContact').value.trim();
@@ -1908,7 +1908,7 @@ html,body{background-color:var(--bg);}
     }
   }
   function gigMyWalletAddress(){
-    return window.userAddr || (typeof circleWalletAddress !== 'undefined' ? circleWalletAddress : null) || null;
+    return (typeof circleWalletAddress !== 'undefined' ? circleWalletAddress : null) || window.userAddr || null;
   }
   function gigGenerateReceipt(jobTitle, amount, txRef, otherParty, role, currency){
     const now = new Date().toLocaleString();
