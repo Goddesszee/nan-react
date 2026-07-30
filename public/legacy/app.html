@@ -1212,7 +1212,7 @@ html,body{background-color:var(--bg);}
         <input id="careerJobTitle" placeholder="Job title" style="width:100%;max-width:400px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
         <textarea id="careerJobDesc" placeholder="Job description" style="width:100%;max-width:400px;min-height:100px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;font-family:inherit;"></textarea>
         <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
-          <input id="careerJobSalary" type="number" min="0" step="0.01" placeholder="Salary" style="flex:1;min-width:120px;max-width:196px;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+          <input id="careerJobSalary" type="text" inputmode="decimal" placeholder="Salary" style="flex:1;min-width:120px;max-width:196px;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
           <select id="careerJobCurrency" style="flex:1;min-width:120px;max-width:196px;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-weight:700;">
             <option value="USDC">USDC</option>
             <option value="EURC">EURC</option>
@@ -1298,7 +1298,7 @@ html,body{background-color:var(--bg);}
     const remoteOnly = document.getElementById('careerJobRemote').checked;
     const includeWeb3 = document.getElementById('careerJobWeb3').checked;
     const employerEmail = document.getElementById('careerJobEmail').value.trim();
-    if(!title || !salary){ document.getElementById('careerPostStatus').textContent = 'Title and salary are required.'; return; }
+    if(!title || !salary){ document.getElementById('careerPostStatus').textContent = `Title and salary are required. (title="${title}", salary="${salary}")`; return; }
     document.getElementById('careerPostStatus').textContent = 'Paying and posting job...';
     try{
       const d = await payAndCall(CAREER_API, {
