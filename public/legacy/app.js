@@ -10311,6 +10311,7 @@ function agentPageRefresh() {
     if(dotD) dotD.style.display='inline-block';
     var balEl = document.getElementById('agentBalDisplay');
     if(balEl) balEl.textContent = agentWalletBalance || '—';
+    if(typeof nanUpdateAgentHoldings === 'function') nanUpdateAgentHoldings();
   } else {
     if (status) status.textContent = 'Not connected';
     if (badge)  { badge.textContent = 'Offline'; badge.style.cssText = 'font-size:.72rem;padding:3px 9px;border-radius:100px;background:rgba(107,114,128,.1);border:1px solid var(--border);color:var(--text3);font-weight:600;'; }
@@ -11311,3 +11312,91 @@ async function agentDisconnect() {
   if(agentWalletAddr) setTimeout(fetchAgentBalance, 2000);
 })();
 
+
+// ══ Persistent left sidebar ══
+function nanToggleSidebar(){
+  document.body.classList.toggle('nan-sidebar-collapsed');
+}
+function nanSidebarOpenProfile(){
+  const pill = document.getElementById('nanProfilePill');
+  if(pill && typeof nanToggleProfileMenu === 'function'){
+    nanToggleProfileMenu({ stopPropagation(){}, target: pill });
+  }
+}
+
+// ══ Agent Wallet dashboard (Deposit dropdown, balance eye-toggle, real holdings) ══
+function nanToggleAgentBalVisibility(){
+  const el = document.getElementById('agentBalDisplay');
+  const btn = document.getElementById('agentBalEyeBtn');
+  if(!el || !btn) return;
+  if(el.dataset.hidden === '1'){
+    el.textContent = el.dataset.realText || agentWalletBalance || '—';
+    el.dataset.hidden = '0';
+  } else {
+    el.dataset.realText = el.textContent;
+    el.textContent = '••••••';
+    el.dataset.hidden = '1';
+  }
+}
+
+function nanToggleAgentDepositDropdown(e){
+  if(e) e.stopPropagation();
+  const dd = document.getElementById('agentDepositDropdown');
+  if(!dd) return;
+  const opening = dd.style.display === 'none';
+  dd.style.display = opening ? 'block' : 'none';
+  if(opening){
+    const addrText = document.getElementById('agentDepositAddrText');
+    if(addrText && agentWalletAddr){
+      addrText.textContent = agentWalletAddr.slice(0,10) + '...' + agentWalletAddr.slice(-8);
+    }
+    setTimeout(() => {
+      document.addEventListener('click', function nanCloseDepositDD(ev){
+        if(!dd.contains(ev.target) && ev.target.id !== 'agentDepositBtn'){
+          dd.style.display = 'none';
+          document.removeEventListener('click', nanCloseDepositDD);
+        }
+      });
+    }, 10);
+  }
+}
+
+function nanCopyAgentDepositAddr(){
+  if(!agentWalletAddr) return;
+  navigator.clipboard.writeText(agentWalletAddr).then(() => {
+    const btn = document.getElementById('agentDepositCopyBtn');
+    if(btn){ btn.textContent = '✓'; setTimeout(() => { btn.textContent = 'Copy'; }, 1500); }
+  });
+}
+
+// Parses the real agent-wallet balance string (e.g. "USDC: 71.99 · EURC: 12.34")
+// — NOT the main wallet's usdcBal/eurcBal globals, which are a different wallet entirely.
+function nanUpdateAgentHoldings(){
+  const usdcArc = document.getElementById('agentHoldUsdcArc');
+  const eurcArc = document.getElementById('agentHoldEurcArc');
+  const usdcText = document.getElementById('agentHoldUsdcText');
+  const eurcText = document.getElementById('agentHoldEurcText');
+  const totalEl = document.getElementById('agentHoldTotal');
+  if(!usdcArc || !eurcArc) return;
+
+  const raw = agentWalletBalance || '';
+  const usdcMatch = raw.match(/USDC:\s*([\d.]+)/i);
+  const eurcMatch = raw.match(/EURC:\s*([\d.]+)/i);
+  const usdc = usdcMatch ? parseFloat(usdcMatch[1]) : 0;
+  const eurc = eurcMatch ? parseFloat(eurcMatch[1]) : 0;
+  const total = usdc + eurc;
+
+  const circumference = 2 * Math.PI * 70;
+  const usdcPct = total > 0 ? (usdc/total) : 0;
+  const eurcPct = total > 0 ? (eurc/total) : 0;
+  const usdcDash = usdcPct * circumference;
+  const eurcDash = eurcPct * circumference;
+
+  usdcArc.setAttribute('stroke-dasharray', usdcDash + ' ' + circumference);
+  eurcArc.setAttribute('stroke-dasharray', eurcDash + ' ' + circumference);
+  eurcArc.setAttribute('stroke-dashoffset', String(-usdcDash));
+
+  if(usdcText) usdcText.textContent = usdc.toFixed(2) + ' · ' + (usdcPct*100).toFixed(1) + '%';
+  if(eurcText) eurcText.textContent = eurc.toFixed(2) + ' · ' + (eurcPct*100).toFixed(1) + '%';
+  if(totalEl) totalEl.textContent = '$' + total.toFixed(2);
+}
