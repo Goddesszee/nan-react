@@ -95,10 +95,9 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
   // ── Loading screen ────────────────────────────────────────────
   if (step === 'loading') return (
     <div style={{ minHeight:'100vh', background:bg, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:16, fontFamily:'Inter,sans-serif' }}>
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 480" width="32" height="48" style={{flexShrink:0}}>
-        <path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill={accent}/>
-        <path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill={accent}/>
-      </svg>
+      <div style={{ background:'#7000ff', borderRadius:8, padding:'6px 12px' }}>
+        <span style={{ fontWeight:700, fontSize:'17px', color:'#fff', fontFamily:'Inter, sans-serif' }}>NAN</span>
+      </div>
       <div style={{ color:text, fontSize:'1rem', fontWeight:600 }}>{loadMsg}</div>
       <div style={{ display:'flex', gap:6 }}>
         {['#7000ff','#9333ea','#c084fc'].map((c,i) => (
@@ -123,11 +122,9 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
       {/* ── NAV ── */}
       <nav style={{ position:'fixed', top:0, left:0, right:0, zIndex:100, padding: D ? '12px 48px' : '10px 16px', display:'flex', alignItems:'center', justifyContent:'space-between', background: dark ? 'rgba(17,17,17,.85)' : 'rgba(250,250,250,.85)', backdropFilter:'blur(24px)', borderBottom:`1px solid ${border}` }}>
         <div style={{ display:'flex', alignItems:'center', gap: D ? 8 : 7 }}>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 480" width={D?28:22} height={D?42:33} style={{flexShrink:0}}>
-            <path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill={accent}/>
-            <path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill={accent}/>
-          </svg>
-          <span style={{ fontWeight:800, fontSize: D ? '1.25rem' : '1.1rem', letterSpacing:'.02em', color:text }}>NAN</span>
+          <div style={{ background:'#7000ff', borderRadius:8, padding: D ? '6px 12px' : '5px 10px' }}>
+            <span style={{ fontWeight:700, fontSize: D ? '17px' : '15px', color:'#fff', fontFamily:'Inter, sans-serif' }}>NAN</span>
+          </div>
         </div>
 
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>

@@ -310,13 +310,9 @@ html,body{background-color:var(--bg);}
     </button>
     <!-- New flat NAN mark + wordmark — mobile only, left side -->
     <div id="mobileBrandLogo" style="display:none;cursor:pointer;" onclick="handleSecretTap()">
-      <div class="mb-badge">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 480" width="22" height="33">
-          <path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill="#7000ff"/>
-          <path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill="#7000ff"/>
-        </svg>
+      <div style="background:#7000ff;border-radius:8px;padding:6px 12px;">
+        <span style="font-weight:700;font-size:17px;color:#fff;font-family:'Inter',sans-serif;">NAN</span>
       </div>
-      <span class="mb-word">NΛN</span>
     </div>
     <!-- Mobile network pill (right side) -->
     <div id="mobileNetPill" style="display:none;">
@@ -324,14 +320,9 @@ html,body{background-color:var(--bg);}
     </div>
     <div class="brand">
       <div class="brand-logo" id="secretTapZone" onclick="handleSecretTap()" style="display:flex;align-items:center;gap:1px;cursor:pointer;">
-        <!-- Flat NAN mark -->
-        <span class="logo-dark">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 480" width="46" height="68"><path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill="#7000ff"/><path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill="#7000ff"/></svg>
-        </span>
-        <!-- Flat NAN mark -->
-        <span class="logo-light">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 480" width="46" height="68"><path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill="#7000ff"/><path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill="#7000ff"/></svg>
-        </span>
+        <div style="background:#7000ff;border-radius:8px;padding:6px 12px;">
+          <span style="font-weight:700;font-size:17px;color:#fff;font-family:'Inter',sans-serif;">NAN</span>
+        </div>
       </div>
       
     </div>

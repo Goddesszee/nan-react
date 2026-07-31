@@ -72,10 +72,9 @@ export default function App() {
     return (
       <div style={{minHeight:'100vh',background:'#000',display:'flex',flexDirection:'column',
         alignItems:'center',justifyContent:'center',gap:16,fontFamily:'Inter,sans-serif'}}>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 480" width="32" height="48">
-          <path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill="#7000ff"/>
-          <path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill="#7000ff"/>
-        </svg>
+        <div style={{background:'#7000ff',borderRadius:8,padding:'6px 12px'}}>
+          <span style={{fontWeight:700,fontSize:'17px',color:'#fff',fontFamily:'Inter, sans-serif'}}>NAN</span>
+        </div>
         <div style={{color:'#fff',fontSize:'1rem',fontWeight:600}}>{status}</div>
         <div style={{display:'flex',gap:6}}>
           <div style={{width:6,height:6,borderRadius:'50%',background:'#7000ff',animation:'pulse 1s ease-in-out infinite'}}/>
