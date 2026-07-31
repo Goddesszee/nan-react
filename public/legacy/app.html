@@ -2440,54 +2440,56 @@ html,body{background-color:var(--bg);}
       <button onclick="refreshGatewayBalance()" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;color:var(--text2);font-size:.75rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">↻ Refresh</button>
     </div>
 
-    <!-- ── Gateway balance strip ── -->
-    <div style="margin:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:13px 14px;display:flex;align-items:center;gap:12px;">
-      <div style="width:36px;height:36px;border-radius:10px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
-      </div>
-      <div style="flex:1;min-width:0;">
-        <div style="font-size:.6rem;font-weight:700;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px;">Gateway Balance</div>
-        <div id="gatewayTotal" style="font-size:1.4rem;font-weight:800;color:var(--text);letter-spacing:-.03em;line-height:1;">—</div>
-      </div>
+    <!-- ── Gateway balance strip (compact) ── -->
+    <div style="margin:10px 16px 0;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:9px 12px;display:flex;align-items:center;gap:10px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+      <div style="font-size:.68rem;font-weight:700;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;">Gateway</div>
+      <div id="gatewayTotal" style="font-size:.9rem;font-weight:800;color:var(--text);letter-spacing:-.02em;margin-left:auto;">—</div>
     </div>
 
     <!-- ── Per-chain balances ── -->
-    <div id="gatewayChains" style="display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 14px;">
+    <div id="gatewayChains" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px 16px 4px;">
       <div style="font-size:.7rem;color:var(--text3);padding:4px;">Loading…</div>
     </div>
 
-    <div style="height:1px;background:var(--surface);margin:0 16px 14px;"></div>
+    <!-- ── From/To card (amount merged into From tier) ── -->
+    <div style="margin:8px 16px 12px;border:1px solid var(--border);border-radius:14px;padding:4px;background:var(--card);">
 
-    <!-- ── Route ── -->
-    <div style="margin:0 16px 12px;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:14px;overflow:visible;">
-
-      <!-- From -->
-      <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border);">
-        <div style="width:30px;height:30px;border-radius:8px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path fill="rgba(255,255,255,.85)" d="M3.5 21c.146-4.407.893-8.519 2.142-11.717C7.223 5.231 9.513 3 12.088 3s4.865 2.231 6.447 6.283c.822 2.107 1.427 4.61 1.786 7.334.048.366.087.737.087.737s.21 1.317.256 3.604h-.024c-.313-.256-4-3.153-10.112-2.314.093-1.035.22-2.04.383-3.005l.027-.146a24.5 24.5 0 016.104.57q-.007-.056-.017-.115c-.33-2.06-.819-3.945-1.448-5.556-1.029-2.635-2.371-4.271-3.502-4.271-1.132 0-2.474 1.636-3.503 4.271q-.375.958-.679 2.034a30 30 0 00-.718 3.213A40 40 0 006.662 21H3.5z"/></svg>
+      <!-- From tier -->
+      <div style="background:var(--surface);border-radius:11px 11px 4px 4px;padding:12px 14px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:.65rem;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">
+          <span>From</span>
+          <span id="bridgeAvailBal2" style="text-transform:none;letter-spacing:normal;font-weight:600;"></span>
         </div>
-        <div style="flex:1;">
-          <div style="font-size:.6rem;font-weight:700;color:#ffffff;letter-spacing:.12em;text-transform:uppercase;margin-bottom:2px;">From</div>
-          <div style="font-size:.9rem;font-weight:700;color:var(--text);">Arc Testnet</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+          <div style="display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:100px;padding:5px 12px 5px 5px;flex-shrink:0;">
+            <div style="width:20px;height:20px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path fill="rgba(255,255,255,.85)" d="M3.5 21c.146-4.407.893-8.519 2.142-11.717C7.223 5.231 9.513 3 12.088 3s4.865 2.231 6.447 6.283c.822 2.107 1.427 4.61 1.786 7.334.048.366.087.737.087.737s.21 1.317.256 3.604h-.024c-.313-.256-4-3.153-10.112-2.314.093-1.035.22-2.04.383-3.005l.027-.146a24.5 24.5 0 016.104.57q-.007-.056-.017-.115c-.33-2.06-.819-3.945-1.448-5.556-1.029-2.635-2.371-4.271-3.502-4.271-1.132 0-2.474 1.636-3.503 4.271q-.375.958-.679 2.034a30 30 0 00-.718 3.213A40 40 0 006.662 21H3.5z"/></svg>
+            </div>
+            <span style="font-size:12px;font-weight:700;color:var(--text);">Arc</span>
+          </div>
+          <input id="bridgeAmt" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="0"
+            style="flex:1;text-align:right;background:none;border:none;outline:none;font-size:1.4rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;min-width:0;"/>
+          <button onclick="setBridgeMax()" style="background:none;border:none;font-size:.72rem;font-weight:700;color:var(--accent3);cursor:pointer;font-family:'Inter',sans-serif;flex-shrink:0;">MAX</button>
         </div>
-        <div style="font-size:.65rem;font-weight:700;background:var(--surface);border:1px solid var(--border);color:var(--text3);border-radius:5px;padding:2px 7px;">Fixed</div>
+        <span id="bridgeNgnEst" style="display:none;"></span>
       </div>
 
       <!-- Arrow -->
-      <div style="display:flex;align-items:center;justify-content:center;padding:8px 0;border-bottom:1px solid var(--border);">
-        <div style="width:26px;height:26px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;">
+      <div style="text-align:center;padding:2px 0;">
+        <span style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--surface);border:1px solid var(--border);">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
-        </div>
+        </span>
       </div>
 
-      <!-- To -->
-      <div style="padding:12px 14px;">
-        <div style="font-size:.6rem;font-weight:700;color:#ffffff;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;">To</div>
+      <!-- To tier -->
+      <div style="background:var(--surface);border-radius:4px 4px 11px 11px;padding:12px 14px;">
+        <div style="font-size:.65rem;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">To</div>
         <input type="hidden" id="bridgeDestChain" value="ETH-SEPOLIA"/>
         <div class="chain-dropdown" id="bridgeChain-wrap">
           <input type="hidden" id="bridgeChain-val" value="ETH-SEPOLIA"/>
-          <button type="button" class="chain-dropdown-btn" onclick="toggleChainDropdown('bridgeChain')" style="width:100%;border-radius:10px;padding:10px 12px;background:var(--surface);border:1px solid var(--border);">
-            <span id="bridgeChain-display" style="display:flex;align-items:center;gap:8px;"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" style="flex-shrink:0"><path fill="#8FFCF3" d="M12 3v6.651l5.625 2.516z"/><path fill="#CABCF8" d="m12 3-5.625 9.166L12 9.653z"/><path fill="#CBA7F5" d="M12 16.478V21l5.625-7.784z"/><path fill="#74A0F3" d="M12 21v-4.522l-5.625-3.262z"/><path fill="#CBA7F5" d="m12 15.43 5.625-3.263L12 9.652z"/><path fill="#74A0F3" d="M6.375 12.167 12 15.43V9.652z"/><path fill="#202699" fill-rule="evenodd" d="m12 15.43-5.625-3.263L12 3l5.624 9.166zm-5.252-3.528 5.161-8.41v6.114zm-.077.229 5.238-2.327v5.364zm5.418-2.327v5.364l5.234-3.037zm0-.198 5.161 2.296-5.161-8.41z" clip-rule="evenodd"/><path fill="#202699" fill-rule="evenodd" d="m12 16.406-5.625-3.195L12 21l5.624-7.79zm-4.995-2.633 4.904 2.79v4.005zm5.084 2.79v4.005l4.905-6.795z" clip-rule="evenodd"/></svg><span>Ethereum Sepolia</span></span>
+          <button type="button" class="chain-dropdown-btn" onclick="toggleChainDropdown('bridgeChain')" style="width:100%;border-radius:10px;padding:9px 11px;background:var(--card);border:1px solid var(--border);">
+            <span id="bridgeChain-display" style="display:flex;align-items:center;gap:8px;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" style="flex-shrink:0"><path fill="#8FFCF3" d="M12 3v6.651l5.625 2.516z"/><path fill="#CABCF8" d="m12 3-5.625 9.166L12 9.653z"/><path fill="#CBA7F5" d="M12 16.478V21l5.625-7.784z"/><path fill="#74A0F3" d="M12 21v-4.522l-5.625-3.262z"/><path fill="#CBA7F5" d="m12 15.43 5.625-3.263L12 9.652z"/><path fill="#74A0F3" d="M6.375 12.167 12 15.43V9.652z"/><path fill="#202699" fill-rule="evenodd" d="m12 15.43-5.625-3.263L12 3l5.624 9.166zm-5.252-3.528 5.161-8.41v6.114zm-.077.229 5.238-2.327v5.364zm5.418-2.327v5.364l5.234-3.037zm0-.198 5.161 2.296-5.161-8.41z" clip-rule="evenodd"/><path fill="#202699" fill-rule="evenodd" d="m12 16.406-5.625-3.195L12 21l5.624-7.79zm-4.995-2.633 4.904 2.79v4.005zm5.084 2.79v4.005l4.905-6.795z" clip-rule="evenodd"/></svg><span style="font-size:13px;font-weight:700;">Ethereum Sepolia</span></span>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
           <div class="chain-dropdown-list" id="bridgeChain-list"><div class="chain-dropdown-item selected" data-value="ETH-SEPOLIA" onclick="setBridgeChainVal('ETH-SEPOLIA');setChainDropdown('bridgeChain','ETH-SEPOLIA',this)"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" style="flex-shrink:0"><path fill="#8FFCF3" d="M12 3v6.651l5.625 2.516z"/><path fill="#CABCF8" d="m12 3-5.625 9.166L12 9.653z"/><path fill="#CBA7F5" d="M12 16.478V21l5.625-7.784z"/><path fill="#74A0F3" d="M12 21v-4.522l-5.625-3.262z"/><path fill="#CBA7F5" d="m12 15.43 5.625-3.263L12 9.652z"/><path fill="#74A0F3" d="M6.375 12.167 12 15.43V9.652z"/><path fill="#202699" fill-rule="evenodd" d="m12 15.43-5.625-3.263L12 3l5.624 9.166zm-5.252-3.528 5.161-8.41v6.114zm-.077.229 5.238-2.327v5.364zm5.418-2.327v5.364l5.234-3.037zm0-.198 5.161 2.296-5.161-8.41z" clip-rule="evenodd"/><path fill="#202699" fill-rule="evenodd" d="m12 16.406-5.625-3.195L12 21l5.624-7.79zm-4.995-2.633 4.904 2.79v4.005zm5.084 2.79v4.005l4.905-6.795z" clip-rule="evenodd"/></svg><span>Ethereum Sepolia</span></div>
@@ -2497,40 +2499,25 @@ html,body{background-color:var(--bg);}
 <div class="chain-dropdown-item" data-value="AVAX-FUJI" onclick="setBridgeChainVal('AVAX-FUJI');setChainDropdown('bridgeChain','AVAX-FUJI',this)"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" style="flex-shrink:0"><path fill="#E84142" d="M7.515 19.874H4.492c-.637 0-.952 0-1.142-.118A.75.75 0 0 1 3 19.16c-.011-.224.146-.495.461-1.04l7.47-12.982c.32-.551.484-.827.687-.928a.76.76 0 0 1 .697 0c.202.101.36.377.675.928l1.542 2.643.005.012c.253.374.454.781.596 1.209.085.337.085.703 0 1.046a5 5 0 0 1-.596 1.22l-3.926 6.84-.011.023c-.201.408-.46.788-.766 1.125a2.36 2.36 0 0 1-.927.534c-.32.084-.675.084-1.39.084m7.645 0h4.33c.648 0 .968 0 1.16-.123a.75.75 0 0 0 .347-.596c.012-.22-.14-.478-.443-.991l-.034-.055-2.171-3.657-.023-.044c-.304-.507-.461-.765-.658-.866a.75.75 0 0 0-.692 0c-.202.1-.36.371-.675.91l-2.172 3.662v.012c-.32.538-.477.81-.466 1.029a.76.76 0 0 0 .348.601c.187.118.507.118 1.149.118"/></svg><span>Avalanche Fuji</span></div></div>
         </div>
       </div>
+    </div>
 
-      <!-- Send to different address toggle -->
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-top:1px solid var(--border);">
-        <div style="font-size:.85rem;color:var(--text);font-weight:500;">Different address?</div>
+    <!-- Send to different address toggle -->
+    <div style="margin:0 16px 12px;border:1px solid var(--border);border-radius:12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 13px;">
+        <div style="font-size:.82rem;color:var(--text);font-weight:500;">Different address?</div>
         <label style="position:relative;width:38px;height:20px;cursor:pointer;flex-shrink:0;">
           <input type="checkbox" id="bridgeAddrToggle" onchange="toggleBridgeAddr()" style="opacity:0;width:0;height:0;position:absolute;"/>
           <span id="bridgeAddrTrack" style="position:absolute;inset:0;background:var(--surface);border:1px solid var(--border);border-radius:100px;transition:.2s;"></span>
           <span id="bridgeAddrKnob" style="position:absolute;top:3px;left:3px;width:12px;height:12px;border-radius:50%;background:#fff;transition:.2s;"></span>
         </label>
       </div>
-      <div id="bridgeAddrWrap" style="display:none;padding:0 14px 12px;position:relative;">
+      <div id="bridgeAddrWrap" style="display:none;padding:0 13px 12px;position:relative;">
         <input id="bridgeDestAddr" type="text" placeholder="0x… destination address"
           onfocus="if(!this.value&&userAddr)this.value=userAddr;" onclick="if(!this.value&&userAddr)this.value=userAddr;"
-          style="width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:11px;padding:11px 52px 11px 13px;color:var(--text);font-family:'Inter',sans-serif;font-size:15px;outline:none;"/>
+          style="width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:11px;padding:10px 52px 10px 13px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;outline:none;box-sizing:border-box;"/>
         <button onclick="navigator.clipboard.readText().then(t=>{document.getElementById('bridgeDestAddr').value=t}).catch(()=>document.getElementById('bridgeDestAddr').focus())"
-          style="position:absolute;right:22px;top:50%;transform:translateY(-50%);background:var(--surface);border:1px solid var(--border);border-radius:7px;color:var(--accent3);font-size:.8rem;font-weight:600;padding:4px 8px;cursor:pointer;font-family:'Inter',sans-serif;">Paste</button>
-        <div style="font-size:.7rem;color:var(--text2);margin-top:5px;">⚠ Wrong address = lost funds</div>
-      </div>
-    </div>
-
-    <!-- ── Amount ── -->
-    <div id="bridgeRightCol" style="margin:0 16px 12px;">
-      <div style="background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:14px;padding:13px 14px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-          <div style="font-size:.6rem;font-weight:700;color:#ffffff;letter-spacing:.12em;text-transform:uppercase;">Amount</div>
-          <div style="font-size:.7rem;color:var(--text3);font-weight:600;" id="bridgeAvailBal2"></div>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:11px;padding:11px 13px;">
-          <div style="background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:4px 9px;font-size:.8rem;font-weight:700;color:var(--text2);flex-shrink:0;">USDC</div>
-          <input id="bridgeAmt" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="0.00"
-            style="flex:1;background:none;border:none;outline:none;font-size:1.3rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;width:100%;min-width:0;"/>
-          <button onclick="setBridgeMax()" style="background:none;border:none;font-size:.75rem;font-weight:700;color:var(--accent3);cursor:pointer;font-family:'Inter',sans-serif;flex-shrink:0;">MAX</button>
-        </div>
-        <span id="bridgeNgnEst" style="display:none;"></span>
+          style="position:absolute;right:21px;top:9px;background:var(--surface);border:1px solid var(--border);border-radius:7px;color:var(--accent3);font-size:.78rem;font-weight:600;padding:4px 8px;cursor:pointer;font-family:'Inter',sans-serif;">Paste</button>
+        <div style="font-size:.68rem;color:var(--text2);margin-top:5px;">⚠ Wrong address = lost funds</div>
       </div>
     </div>
 
