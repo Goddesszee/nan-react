@@ -1,7 +1,13 @@
-export function NanLogo({ height = 32 }) {
+export function NanLogo({ height = 44 }) {
   return (
-    <div style={{background:'#7000ff', borderRadius:8, padding:'6px 12px', display:'inline-flex', alignItems:'center'}}>
-      <span style={{fontWeight:700, fontSize:height * 0.53, color:'#fff', fontFamily:'Inter, sans-serif'}}>NAN</span>
+    <div style={{display:'inline-flex', alignItems:'center', gap:9}}>
+      <div style={{width:height, height:height, borderRadius:'50%', background:'#7000ff', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0}}>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 480" width={height*0.41} height={height*0.59}>
+          <path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill="#fff"/>
+          <path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill="#fff"/>
+        </svg>
+      </div>
+      <span style={{fontWeight:700, fontSize:height*0.45, color:'var(--text, #f0f0f0)', fontFamily:'Inter, sans-serif'}}>NAN</span>
     </div>
   )
 }
