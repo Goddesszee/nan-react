@@ -5,7 +5,7 @@
   --bg:#1a1a1a;--surface:#212121;--card:#242424;--card2:#2e2e2e;
   --border:rgba(255,255,255,.10);--border2:rgba(255,255,255,.16);
   --accent:#7000ff;--accent2:#7000ff;--accent3:#7000ff;--accent4:#a855f7;
-  --text:#efe7ff;--text2:#787878;--text3:#4a4a4a;
+  --text:#f0f0f0;--text2:#b0b0b0;--text3:#9a9a9a;
   --danger:#a855f7;--success:#7000ff;
   --radius:12px;--radius-sm:8px;
   --topbar-bg:#1a1a1a;--nav-bg:#1a1a1a;
@@ -3844,9 +3844,9 @@ input[style*="background: none"] {
     --bg: #111111;
     --surface: #111111;
     --card: #111111;
-    --text: #ffffff;
-    --text2: rgba(0,0,0,.55);
-    --text3: rgba(0,0,0,.68);
+    --text: #f0f0f0;
+    --text2: #b0b0b0;
+    --text3: #9a9a9a;
     --border: rgba(255,255,255,.07);
   }
 }
@@ -4092,8 +4092,8 @@ img[loading="lazy"] { background: var(--surface); min-height: 1px; }
 [data-theme="dark"],
 :root:not([data-theme="light"]) {
   --text:   #f0f0f0  !important;   /* 18.4:1 on dark bg ✅ */
-  --text2:  rgba(0,0,0,.55)  !important;   /* 8.2:1 ✅ (was rgba(0,0,0,.55) 7.7:1 — small uplift) */
-  --text3:  rgba(0,0,0,.55)  !important;   /* 4.6:1 ✅ (was rgba(0,0,0,.72) 2.7:1 — was FAILING) */
+  --text2:  #b0b0b0  !important;   /* ~9:1 ✅ (was rgba(0,0,0,.55) — black-on-dark, nearly invisible, wrongly copy-pasted from light mode) */
+  --text3:  #9a9a9a  !important;   /* ~6.5:1 ✅ (was rgba(0,0,0,.55) — same bug) */
   --border: rgba(255,255,255,.10) !important;
   --border2:rgba(255,255,255,.18) !important;
 }
@@ -4344,9 +4344,9 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
     --surface: #000000 !important;
     --bg: #000000 !important;
     --border: rgba(168,85,247,.15) !important;
-    --text: #efe7ff !important;
-    --text2: #787878 !important;
-    --text3: #4a4a4a !important;
+    --text: #f0f0f0 !important;
+    --text2: #b0b0b0 !important;
+    --text3: #9a9a9a !important;
   }
   /* Remove all blur — kills lag on mobile */
   *, *::before, *::after {
