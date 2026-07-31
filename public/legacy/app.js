@@ -771,6 +771,8 @@ function nanToggleProfileMenu(e){
     const avatarEl=document.getElementById('nanProfileAvatar');
     if(addrEl) addrEl.textContent = addr ? short(addr) : 'Not connected';
     if(avatarEl) avatarEl.textContent = addr ? addr.slice(2,3).toUpperCase() : '?';
+    nanUpdateProfileLabel();
+    nanUpdateProfileWalletRows();
     menu.style.display='block';
   }
 }
@@ -791,6 +793,42 @@ function nanWalletDisconnect(){
   nanCloseAll();
   if(typeof disconnect==='function')disconnect();
 }
+function nanProfileCopyAddress(){
+  const el=document.getElementById('nanProfileCopyAddr');
+  const addr=(typeof userAddr!=='undefined'&&userAddr)?userAddr:null;
+  if(!addr){ if(typeof toast==='function') toast('No wallet connected','error',3000); return; }
+  navigator.clipboard.writeText(addr).then(()=>{
+    if(el){ el.textContent='✓ Copied!'; setTimeout(()=>{ el.textContent='Copy Address'; },1500); }
+  });
+}
+function nanHasArcName(){
+  return typeof arcNames!=='undefined' && typeof userAddr!=='undefined' && !!userAddr
+    && arcNames.some(n=>n.owner===userAddr);
+}
+function nanUpdateProfileLabel(){
+  const labelEl=document.getElementById('nanProfileLabel');
+  const pill=document.getElementById('nanProfilePill');
+  if(!labelEl||!pill) return;
+  const connected=typeof userAddr!=='undefined'&&!!userAddr;
+  const showClaim=connected&&!nanHasArcName();
+  labelEl.textContent=showClaim?'Claim your .arc name':'Profile';
+  if(showClaim){
+    pill.style.background='#7000ff';pill.style.border='none';
+    labelEl.style.color='#fff';labelEl.style.fontWeight='700';
+  }else{
+    pill.style.background='var(--surface)';pill.style.border='1px solid var(--border)';
+    labelEl.style.color='var(--text)';labelEl.style.fontWeight='600';
+  }
+}
+function nanUpdateProfileWalletRows(){
+  const disconnectRow=document.getElementById('nanProfileDisconnect');
+  const connectRow=document.getElementById('nanProfileConnect');
+  if(!disconnectRow||!connectRow) return;
+  const connected=typeof userAddr!=='undefined'&&!!userAddr;
+  disconnectRow.style.display=connected?'block':'none';
+  connectRow.style.display=connected?'none':'block';
+}
+document.addEventListener('DOMContentLoaded', ()=>{ nanUpdateProfileLabel(); nanUpdateProfileWalletRows(); });
 document.addEventListener('click',nanCloseAll);
 // Sync notif badge into settings menu
 setInterval(()=>{
@@ -1277,6 +1315,7 @@ async function onConnected(isEmail=false, isDev=false){
   document.getElementById('walAddr').title=userAddr;
   document.getElementById('recvAddr').textContent=userAddr;
   document.getElementById('walInit').textContent=userAddr.slice(2,4).toUpperCase();
+  nanUpdateProfileLabel();nanUpdateProfileWalletRows();
 
   // Show wallet source — detect which wallet is connected
   const srcBadge=document.getElementById('walletSourceBadge');
@@ -7580,6 +7619,7 @@ async function refreshArcNames(){
     }
     saveArcNames();
     renderMyArcNames();renderArcDirectory();
+    nanUpdateProfileLabel();
   }catch(e){console.log('Arc name fetch error:',e.message);}
 }
 function renderMyArcNames(){
