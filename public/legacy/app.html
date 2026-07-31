@@ -894,26 +894,26 @@ html,body{background-color:var(--bg);}
   <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;">
 
   <!-- Header -->
-  <div style="padding:14px 16px 12px;border-bottom:1px solid rgba(112,0,255,.08);display:flex;align-items:center;justify-content:space-between;">
+  <div style="padding:14px 16px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
     <div style="font-size:1.1rem;font-weight:700;color:var(--text);font-family:'Syne','Inter',sans-serif;letter-spacing:-.02em;">Lend &amp; Borrow</div>
     <div style="font-size:.68rem;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(247,147,27,.1);border:1px solid rgba(247,147,27,.25);color:#f7931b;">cirBTC · Beta</div>
   </div>
 
   <!-- Pool stats strip -->
   <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:14px 16px 12px;">
-    <div style="background:rgba(255,255,255,.02);border:1px solid rgba(112,0,255,.1);border-radius:12px;padding:11px 12px;text-align:center;">
+    <div style="background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:12px;padding:11px 12px;text-align:center;">
       <div style="font-size:.58rem;font-weight:700;color:#ffffff;letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px;">Collateral</div>
       <div id="lbCollateralBal" style="font-family:'Syne','Inter',sans-serif;font-size:.9rem;font-weight:800;color:#f7931b;letter-spacing:-.03em;">0.000000</div>
       <div style="font-size:.6rem;color:#ffffff;margin-top:2px;">cirBTC</div>
     </div>
-    <div style="background:rgba(255,255,255,.02);border:1px solid rgba(112,0,255,.1);border-radius:12px;padding:11px 12px;text-align:center;">
+    <div style="background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:12px;padding:11px 12px;text-align:center;">
       <div style="font-size:.58rem;font-weight:700;color:#ffffff;letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px;">Borrowed</div>
       <div id="lbLoanAmt" style="font-family:'Syne','Inter',sans-serif;font-size:.9rem;font-weight:800;color:rgba(248,113,113,.85);letter-spacing:-.03em;">0.00</div>
       <div style="font-size:.6rem;color:#ffffff;margin-top:2px;">USDC</div>
     </div>
-    <div style="background:rgba(255,255,255,.02);border:1px solid rgba(112,0,255,.1);border-radius:12px;padding:11px 12px;text-align:center;">
+    <div style="background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:12px;padding:11px 12px;text-align:center;">
       <div style="font-size:.58rem;font-weight:700;color:#ffffff;letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px;">Max Borrow</div>
-      <div id="lbMaxBorrow" style="font-family:'Syne','Inter',sans-serif;font-size:.9rem;font-weight:800;color:rgba(168,85,247,.9);letter-spacing:-.03em;">0.00</div>
+      <div id="lbMaxBorrow" style="font-family:'Syne','Inter',sans-serif;font-size:.9rem;font-weight:800;color:var(--text3);letter-spacing:-.03em;">0.00</div>
       <div style="font-size:.6rem;color:#ffffff;margin-top:2px;">USDC (50% LTV)</div>
     </div>
   </div>
@@ -925,7 +925,7 @@ html,body{background-color:var(--bg);}
   </div>
 
   <!-- Tabs -->
-  <div class="send-tabs" style="background:rgba(255,255,255,.03);border:1px solid rgba(168,85,247,.14);border-radius:13px;padding:4px;gap:3px;margin:0 16px 12px;">
+  <div class="send-tabs" style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:13px;padding:4px;gap:3px;margin:0 16px 12px;">
     <button class="stab active" id="lbTab-deposit" onclick="setLBTab('deposit',this)">Deposit</button>
     <button class="stab" id="lbTab-withdraw" onclick="setLBTab('withdraw',this)">Withdraw</button>
     <button class="stab" id="lbTab-borrow" onclick="setLBTab('borrow',this)">Borrow</button>
@@ -949,7 +949,7 @@ html,body{background-color:var(--bg);}
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid rgba(255,255,255,.04);margin-top:8px;">
         <span style="font-size:.68rem;color:#ffffff;">Borrow capacity unlocked</span>
-        <span id="lbDepositCapacity" style="font-family:'DM Mono','Roboto Mono',monospace;font-size:.68rem;color:rgba(168,85,247,.8);font-weight:600;">≈ 0.00 USDC</span>
+        <span id="lbDepositCapacity" style="font-family:'DM Mono','Roboto Mono',monospace;font-size:.68rem;color:var(--text3);font-weight:600;">≈ 0.00 USDC</span>
       </div>
     </div>
     <button class="btn" onclick="doLBDeposit()" style="width:100%;padding:14px;background:#f7931b;border:none;border-radius:13px;color:#fff;font-family:'Syne','Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(247,147,27,.35);">Deposit cirBTC →</button>
@@ -958,15 +958,15 @@ html,body{background-color:var(--bg);}
 
   <!-- WITHDRAW cirBTC panel -->
   <div class="stake-panel" id="lb-withdraw" style="padding:0 16px 16px;">
-    <div style="background:rgba(0,0,0,.3);border:1.5px solid rgba(112,0,255,.2);border-radius:13px;padding:14px;margin-bottom:8px;">
+    <div style="background:rgba(0,0,0,.3);border:1.5px solid var(--border);border-radius:13px;padding:14px;margin-bottom:8px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;">
         <span style="font-size:.58rem;font-weight:700;color:#ffffff;letter-spacing:.12em;text-transform:uppercase;">Withdraw cirBTC</span>
-        <span style="font-size:.68rem;color:rgba(168,85,247,.6);font-weight:600;">Available: <span id="lbAvailWithdraw">0.000000</span></span>
+        <span style="font-size:.68rem;color:var(--text3);font-weight:600;">Available: <span id="lbAvailWithdraw">0.000000</span></span>
       </div>
       <div style="display:flex;align-items:center;gap:10px;">
         <input id="lbWithdrawAmt" type="number" min="0.000001" step="0.000001" placeholder="0.000000" inputmode="decimal"
           style="flex:1;background:none;border:none;outline:none;font-family:'Syne','Inter',sans-serif;font-size:1.6rem;font-weight:800;color:var(--text);width:0;letter-spacing:-1px;"/>
-        <button onclick="document.getElementById('lbWithdrawAmt').value=document.getElementById('lbAvailWithdraw').textContent;void 0;" style="background:none;border:none;font-size:.72rem;font-weight:700;color:#a855f7;cursor:pointer;flex-shrink:0;">MAX</button>
+        <button onclick="document.getElementById('lbWithdrawAmt').value=document.getElementById('lbAvailWithdraw').textContent;void 0;" style="background:none;border:none;font-size:.72rem;font-weight:700;color:var(--text2);cursor:pointer;flex-shrink:0;">MAX</button>
       </div>
       <div style="font-size:.68rem;color:#ffffff;padding-top:8px;border-top:1px solid rgba(255,255,255,.04);margin-top:8px;">Collateral locked by active loan cannot be withdrawn</div>
     </div>
@@ -975,28 +975,28 @@ html,body{background-color:var(--bg);}
 
   <!-- BORROW USDC panel -->
   <div class="stake-panel" id="lb-borrow" style="padding:0 16px 16px;">
-    <div style="background:rgba(0,0,0,.3);border:1.5px solid rgba(168,85,247,.2);border-radius:13px;padding:14px;margin-bottom:8px;">
+    <div style="background:rgba(0,0,0,.3);border:1.5px solid var(--border);border-radius:13px;padding:14px;margin-bottom:8px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;">
         <span style="font-size:.58rem;font-weight:700;color:#ffffff;letter-spacing:.12em;text-transform:uppercase;">USDC Amount</span>
-        <span style="font-size:.68rem;color:rgba(168,85,247,.6);font-weight:600;">Max: <span id="lbMaxBorrow2">0.00</span> USDC</span>
+        <span style="font-size:.68rem;color:var(--text3);font-weight:600;">Max: <span id="lbMaxBorrow2">0.00</span> USDC</span>
       </div>
       <div style="display:flex;align-items:center;gap:10px;">
         <input id="lbBorrowAmt" type="number" min="0.01" step="0.01" placeholder="0.00" inputmode="decimal"
           style="flex:1;background:none;border:none;outline:none;font-family:'Syne','Inter',sans-serif;font-size:1.6rem;font-weight:800;color:var(--text);width:0;letter-spacing:-1px;"/>
-        <button onclick="document.getElementById('lbBorrowAmt').value=document.getElementById('lbMaxBorrow2').textContent;void 0;" style="background:none;border:none;font-size:.72rem;font-weight:700;color:#a855f7;cursor:pointer;flex-shrink:0;">MAX</button>
+        <button onclick="document.getElementById('lbBorrowAmt').value=document.getElementById('lbMaxBorrow2').textContent;void 0;" style="background:none;border:none;font-size:.72rem;font-weight:700;color:var(--text2);cursor:pointer;flex-shrink:0;">MAX</button>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid rgba(255,255,255,.04);margin-top:8px;">
         <span style="font-size:.68rem;color:#ffffff;">Interest rate</span>
-        <span style="font-family:'DM Mono','Roboto Mono',monospace;font-size:.68rem;color:rgba(168,85,247,.8);font-weight:600;">0% (interest-free)</span>
+        <span style="font-family:'DM Mono','Roboto Mono',monospace;font-size:.68rem;color:var(--text3);font-weight:600;">0% (interest-free)</span>
       </div>
     </div>
-    <button class="btn" onclick="doLBBorrow()" style="width:100%;padding:14px;background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3);border-radius:13px;color:#a855f7;font-family:'Syne','Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;">Borrow USDC →</button>
+    <button class="btn" onclick="doLBBorrow()" style="width:100%;padding:14px;background:var(--surface);border:1px solid var(--border);border-radius:13px;color:var(--text2);font-family:'Syne','Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;">Borrow USDC →</button>
     <div style="font-size:.68rem;color:#ffffff;text-align:center;margin-top:8px;">Repay to unlock your cirBTC collateral</div>
   </div>
 
   <!-- REPAY USDC panel -->
   <div class="stake-panel" id="lb-repay" style="padding:0 16px 16px;">
-    <div style="background:rgba(0,0,0,.3);border:1.5px solid rgba(112,0,255,.2);border-radius:13px;padding:14px;margin-bottom:8px;">
+    <div style="background:rgba(0,0,0,.3);border:1.5px solid var(--border);border-radius:13px;padding:14px;margin-bottom:8px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;">
         <span style="font-size:.58rem;font-weight:700;color:#ffffff;letter-spacing:.12em;text-transform:uppercase;">Repay USDC</span>
         <span style="font-size:.68rem;color:rgba(248,113,113,.6);font-weight:600;">Owed: <span id="lbOwed">0.00</span> USDC</span>
@@ -1007,7 +1007,7 @@ html,body{background-color:var(--bg);}
         <button onclick="document.getElementById('lbRepayAmt').value=document.getElementById('lbOwed').textContent;void 0;" style="background:none;border:none;font-size:.72rem;font-weight:700;color:rgba(248,113,113,.8);cursor:pointer;flex-shrink:0;">MAX</button>
       </div>
     </div>
-    <button class="btn" onclick="doLBRepay()" style="width:100%;padding:14px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);border-radius:13px;color:rgba(248,113,113,.9);font-family:'Syne','Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;">Repay Loan</button>
+    <button class="btn" onclick="doLBRepay()" style="width:100%;padding:14px;background:var(--surface);border:1px solid var(--border);border-radius:13px;color:rgba(248,113,113,.9);font-family:'Syne','Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;">Repay Loan</button>
   </div>
 
   <!-- Status message -->
@@ -1023,15 +1023,15 @@ html,body{background-color:var(--bg);}
     <div style="font-size:1.125rem;font-weight:700;color:var(--text);letter-spacing:-.02em;margin-bottom:16px;">More</div>
 
     <!-- Profile card -->
-    <div style="background:var(--card);border:1px solid rgba(112,0,255,.2);border-radius:18px;padding:16px;margin-bottom:16px;display:flex;align-items:center;gap:14px;">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px;margin-bottom:16px;display:flex;align-items:center;gap:14px;">
       <div style="width:46px;height:46px;border-radius:50%;background:#7000ff;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:800;color:#f0f0f0;flex-shrink:0;" id="moreAvatar">?</div>
       <div style="flex:1;min-width:0;">
         <div style="font-size:1rem;font-weight:700;color:var(--text);" id="moreName">—</div>
         <div style="font-size:1rem;color:var(--text);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" id="moreAddr">Connect wallet</div>
       </div>
       <div style="text-align:right;flex-shrink:0;">
-        <div id="moreArcName" style="display:none;font-size:1rem;color:var(--accent3);background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);border-radius:100px;padding:4px 10px;margin-bottom:6px;"></div>
-        <button onclick="disconnect()" style="display:block;font-size:1rem;color:#a855f7;background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;text-align:right;">Disconnect</button>
+        <div id="moreArcName" style="display:none;font-size:1rem;color:var(--accent3);background:var(--surface);border:1px solid var(--border);border-radius:100px;padding:4px 10px;margin-bottom:6px;"></div>
+        <button onclick="disconnect()" style="display:block;font-size:1rem;color:var(--text2);background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;text-align:right;">Disconnect</button>
       </div>
     </div>
 
@@ -1040,23 +1040,23 @@ html,body{background-color:var(--bg);}
     <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:14px;">
 
       <div onclick="goPage('send');setTimeout(()=>setSendTab('send'),100)" style="display:flex;align-items:center;gap:14px;padding:13px 15px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;" onmouseover="this.style.background='rgba(109,40,217,.08)'" onmouseout="this.style.background='transparent'">
-          <div style="width:36px;height:36px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7000ff" stroke-width="2" stroke-linecap="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></div>
+          <div style="width:36px;height:36px;border-radius:11px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7000ff" stroke-width="2" stroke-linecap="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></div>
           <div style="flex:1;"><div style="font-size:.9rem;font-weight:600;color:var(--text);">Send</div><div style="font-size:.75rem;color:var(--text3);">Transfer USDC or EURC</div></div>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
         <div onclick="goPage('send');setTimeout(()=>setSendTab('receive'),100)" style="display:flex;align-items:center;gap:14px;padding:13px 15px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;" onmouseover="this.style.background='rgba(109,40,217,.08)'" onmouseout="this.style.background='transparent'">
-          <div style="width:36px;height:36px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7000ff" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg></div>
+          <div style="width:36px;height:36px;border-radius:11px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7000ff" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg></div>
           <div style="flex:1;"><div style="font-size:.9rem;font-weight:600;color:var(--text);">Receive</div><div style="font-size:.75rem;color:var(--text3);">Get your wallet address / QR</div></div>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
         <div onclick="goPage('multichain')" style="display:flex;align-items:center;gap:14px;padding:13px 15px;cursor:pointer;border-radius:12px;border:1px solid var(--border);margin-bottom:8px;background:var(--surface);" onmouseover="this.style.background='rgba(109,40,217,.08)'" onmouseout="this.style.background='var(--surface)'">
-          <div style="width:38px;height:38px;border-radius:10px;background:rgba(109,40,217,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6d28d9" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+          <div style="width:38px;height:38px;border-radius:10px;background:var(--surface);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6d28d9" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
           <div style="flex:1;"><div style="font-size:.9rem;font-weight:600;color:var(--text);">Multichain Balance</div><div style="font-size:.75rem;color:var(--text3);">USDC across all networks</div></div>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
-        <div onclick="goPage('history')" style="display:flex;align-items:center;gap:14px;padding:13px 15px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;" onmouseover="this.style.background='rgba(109,40,217,.08)'" onmouseout="this.style.background='transparent'"><div style="width:36px;height:36px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7000ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div style="flex:1;"><div style="font-size:1rem;font-weight:600;color:var(--text);">History</div><div style="font-size:1rem;color:var(--text);margin-top:2px;">View your transaction activity</div></div><span style="color:var(--text);font-size:1rem;">�</span></div>
+        <div onclick="goPage('history')" style="display:flex;align-items:center;gap:14px;padding:13px 15px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;" onmouseover="this.style.background='rgba(109,40,217,.08)'" onmouseout="this.style.background='transparent'"><div style="width:36px;height:36px;border-radius:11px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7000ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div style="flex:1;"><div style="font-size:1rem;font-weight:600;color:var(--text);">History</div><div style="font-size:1rem;color:var(--text);margin-top:2px;">View your transaction activity</div></div><span style="color:var(--text);font-size:1rem;">�</span></div>
         <div onclick="goPage('bulk')" style="display:flex;align-items:center;gap:14px;padding:13px 15px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;" onmouseover="this.style.background='rgba(109,40,217,.08)'" onmouseout="this.style.background='transparent'">
-        <div style="width:36px;height:36px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <div style="width:36px;height:36px;border-radius:11px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
         </div>
         <div style="flex:1;">
@@ -1067,7 +1067,7 @@ html,body{background-color:var(--bg);}
       </div>
 
       <div onclick="goPage('arcname')" style="display:flex;align-items:center;gap:14px;padding:13px 15px;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='rgba(109,40,217,.08)'" onmouseout="this.style.background='transparent'">
-        <div style="width:36px;height:36px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <div style="width:36px;height:36px;border-radius:11px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
         </div>
         <div style="flex:1;">
@@ -1078,11 +1078,11 @@ html,body{background-color:var(--bg);}
       </div>
 
       <div onclick="goPage('agent-wallet')" style="display:flex;align-items:center;gap:14px;padding:13px 15px;cursor:pointer;transition:background .15s;border-top:1px solid var(--border);" onmouseover="this.style.background='rgba(112,0,255,.08)'" onmouseout="this.style.background='transparent'">
-        <div style="width:36px;height:36px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <div style="width:36px;height:36px;border-radius:11px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7000ff" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><circle cx="12" cy="14" r="2"/></svg>
         </div>
         <div style="flex:1;">
-          <div style="font-size:1rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;">Agent Wallet <span style="font-size:.72rem;background:rgba(112,0,255,.15);border:1px solid rgba(112,0,255,.3);color:#c084fc;border-radius:100px;padding:2px 7px;font-weight:700;">NEW</span></div>
+          <div style="font-size:1rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;">Agent Wallet <span style="font-size:.72rem;background:var(--surface);border:1px solid var(--border);color:#c084fc;border-radius:100px;padding:2px 7px;font-weight:700;">NEW</span></div>
           <div style="font-size:.85rem;color:var(--text3);margin-top:2px;">Circle Agent Stack</div>
         </div>
         <span style="color:var(--text);font-size:1rem;">›</span>
@@ -1095,19 +1095,19 @@ html,body{background-color:var(--bg);}
     <div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:14px;">
 
       <div id="nanAiMoreBtn" style="display:flex;align-items:center;gap:14px;padding:13px 15px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;" onmouseover="this.style.background='rgba(109,40,217,.08)'" onmouseout="this.style.background='transparent'">
-        <div style="width:36px;height:36px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <div style="width:36px;height:36px;border-radius:11px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
         </div>
         <div style="flex:1;">
           <div style="font-size:1rem;font-weight:600;color:var(--text);">NAN AI</div>
           <div style="font-size:1rem;color:var(--text);margin-top:2px;">Ask anything about your wallet</div>
         </div>
-        <span style="font-size:.875rem;background:rgba(112,0,255,.15);border:1px solid rgba(112,0,255,.3);color:var(--accent3);border-radius:100px;padding:2px 7px;font-weight:700;margin-right:6px;">AI</span>
+        <span style="font-size:.875rem;background:var(--surface);border:1px solid var(--border);color:var(--accent3);border-radius:100px;padding:2px 7px;font-weight:700;margin-right:6px;">AI</span>
         <span style="color:var(--text);font-size:1rem;">›</span>
       </div>
 
       <div onclick="goPage('history')" style="display:flex;align-items:center;gap:14px;padding:13px 15px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;" onmouseover="this.style.background='rgba(109,40,217,.08)'" onmouseout="this.style.background='transparent'">
-        <div style="width:36px;height:36px;border-radius:11px;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <div style="width:36px;height:36px;border-radius:11px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7000ff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         </div>
         <div style="flex:1;">
@@ -2432,21 +2432,21 @@ html,body{background-color:var(--bg);}
     <span id="bridgeAvailBal" style="display:none;"></span>
 
     <!-- ── Page header ── -->
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 16px 14px;border-bottom:1px solid rgba(112,0,255,.08);">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 16px 14px;border-bottom:1px solid var(--border);">
       <div>
         <div style="font-size:1.1rem;font-weight:700;color:var(--text);letter-spacing:-.02em;">Bridge</div>
-        <div style="font-size:.7rem;color:rgba(168,85,247,.55);font-weight:600;margin-top:2px;letter-spacing:.04em;">CCTP V2 · Circle</div>
+        <div style="font-size:.7rem;color:var(--text3);font-weight:600;margin-top:2px;letter-spacing:.04em;">CCTP V2 · Circle</div>
       </div>
-      <button onclick="refreshGatewayBalance()" style="background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);border-radius:8px;padding:6px 12px;color:#a855f7;font-size:.75rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">↻ Refresh</button>
+      <button onclick="refreshGatewayBalance()" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;color:var(--text2);font-size:.75rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">↻ Refresh</button>
     </div>
 
     <!-- ── Gateway balance strip ── -->
-    <div style="margin:12px 16px;background:rgba(112,0,255,.06);border:1px solid rgba(112,0,255,.18);border-radius:14px;padding:13px 14px;display:flex;align-items:center;gap:12px;">
-      <div style="width:36px;height:36px;border-radius:10px;background:rgba(112,0,255,.12);border:1px solid rgba(112,0,255,.22);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+    <div style="margin:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:13px 14px;display:flex;align-items:center;gap:12px;">
+      <div style="width:36px;height:36px;border-radius:10px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
       </div>
       <div style="flex:1;min-width:0;">
-        <div style="font-size:.6rem;font-weight:700;color:rgba(168,85,247,.55);letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px;">Gateway Balance</div>
+        <div style="font-size:.6rem;font-weight:700;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:3px;">Gateway Balance</div>
         <div id="gatewayTotal" style="font-size:1.4rem;font-weight:800;color:var(--text);letter-spacing:-.03em;line-height:1;">—</div>
       </div>
     </div>
@@ -2456,27 +2456,27 @@ html,body{background-color:var(--bg);}
       <div style="font-size:.7rem;color:var(--text3);padding:4px;">Loading…</div>
     </div>
 
-    <div style="height:1px;background:rgba(112,0,255,.08);margin:0 16px 14px;"></div>
+    <div style="height:1px;background:var(--surface);margin:0 16px 14px;"></div>
 
     <!-- ── Route ── -->
-    <div style="margin:0 16px 12px;background:rgba(255,255,255,.02);border:1px solid rgba(112,0,255,.12);border-radius:14px;overflow:visible;">
+    <div style="margin:0 16px 12px;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:14px;overflow:visible;">
 
       <!-- From -->
-      <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid rgba(112,0,255,.08);">
-        <div style="width:30px;height:30px;border-radius:8px;background:rgba(109,40,217,.15);border:1px solid rgba(112,0,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+      <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border);">
+        <div style="width:30px;height:30px;border-radius:8px;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path fill="rgba(255,255,255,.85)" d="M3.5 21c.146-4.407.893-8.519 2.142-11.717C7.223 5.231 9.513 3 12.088 3s4.865 2.231 6.447 6.283c.822 2.107 1.427 4.61 1.786 7.334.048.366.087.737.087.737s.21 1.317.256 3.604h-.024c-.313-.256-4-3.153-10.112-2.314.093-1.035.22-2.04.383-3.005l.027-.146a24.5 24.5 0 016.104.57q-.007-.056-.017-.115c-.33-2.06-.819-3.945-1.448-5.556-1.029-2.635-2.371-4.271-3.502-4.271-1.132 0-2.474 1.636-3.503 4.271q-.375.958-.679 2.034a30 30 0 00-.718 3.213A40 40 0 006.662 21H3.5z"/></svg>
         </div>
         <div style="flex:1;">
           <div style="font-size:.6rem;font-weight:700;color:#ffffff;letter-spacing:.12em;text-transform:uppercase;margin-bottom:2px;">From</div>
           <div style="font-size:.9rem;font-weight:700;color:var(--text);">Arc Testnet</div>
         </div>
-        <div style="font-size:.65rem;font-weight:700;background:rgba(112,0,255,.08);border:1px solid rgba(112,0,255,.15);color:rgba(168,85,247,.6);border-radius:5px;padding:2px 7px;">Fixed</div>
+        <div style="font-size:.65rem;font-weight:700;background:var(--surface);border:1px solid var(--border);color:var(--text3);border-radius:5px;padding:2px 7px;">Fixed</div>
       </div>
 
       <!-- Arrow -->
-      <div style="display:flex;align-items:center;justify-content:center;padding:8px 0;border-bottom:1px solid rgba(112,0,255,.08);">
-        <div style="width:26px;height:26px;border-radius:50%;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.22);display:flex;align-items:center;justify-content:center;">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+      <div style="display:flex;align-items:center;justify-content:center;padding:8px 0;border-bottom:1px solid var(--border);">
+        <div style="width:26px;height:26px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
         </div>
       </div>
 
@@ -2486,7 +2486,7 @@ html,body{background-color:var(--bg);}
         <input type="hidden" id="bridgeDestChain" value="ETH-SEPOLIA"/>
         <div class="chain-dropdown" id="bridgeChain-wrap">
           <input type="hidden" id="bridgeChain-val" value="ETH-SEPOLIA"/>
-          <button type="button" class="chain-dropdown-btn" onclick="toggleChainDropdown('bridgeChain')" style="width:100%;border-radius:10px;padding:10px 12px;background:rgba(112,0,255,.06);border:1px solid rgba(112,0,255,.18);">
+          <button type="button" class="chain-dropdown-btn" onclick="toggleChainDropdown('bridgeChain')" style="width:100%;border-radius:10px;padding:10px 12px;background:var(--surface);border:1px solid var(--border);">
             <span id="bridgeChain-display" style="display:flex;align-items:center;gap:8px;"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" style="flex-shrink:0"><path fill="#8FFCF3" d="M12 3v6.651l5.625 2.516z"/><path fill="#CABCF8" d="m12 3-5.625 9.166L12 9.653z"/><path fill="#CBA7F5" d="M12 16.478V21l5.625-7.784z"/><path fill="#74A0F3" d="M12 21v-4.522l-5.625-3.262z"/><path fill="#CBA7F5" d="m12 15.43 5.625-3.263L12 9.652z"/><path fill="#74A0F3" d="M6.375 12.167 12 15.43V9.652z"/><path fill="#202699" fill-rule="evenodd" d="m12 15.43-5.625-3.263L12 3l5.624 9.166zm-5.252-3.528 5.161-8.41v6.114zm-.077.229 5.238-2.327v5.364zm5.418-2.327v5.364l5.234-3.037zm0-.198 5.161 2.296-5.161-8.41z" clip-rule="evenodd"/><path fill="#202699" fill-rule="evenodd" d="m12 16.406-5.625-3.195L12 21l5.624-7.79zm-4.995-2.633 4.904 2.79v4.005zm5.084 2.79v4.005l4.905-6.795z" clip-rule="evenodd"/></svg><span>Ethereum Sepolia</span></span>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
@@ -2499,7 +2499,7 @@ html,body{background-color:var(--bg);}
       </div>
 
       <!-- Send to different address toggle -->
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-top:1px solid rgba(112,0,255,.08);">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-top:1px solid var(--border);">
         <div style="font-size:.85rem;color:var(--text);font-weight:500;">Different address?</div>
         <label style="position:relative;width:38px;height:20px;cursor:pointer;flex-shrink:0;">
           <input type="checkbox" id="bridgeAddrToggle" onchange="toggleBridgeAddr()" style="opacity:0;width:0;height:0;position:absolute;"/>
@@ -2512,20 +2512,20 @@ html,body{background-color:var(--bg);}
           onfocus="if(!this.value&&userAddr)this.value=userAddr;" onclick="if(!this.value&&userAddr)this.value=userAddr;"
           style="width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:11px;padding:11px 52px 11px 13px;color:var(--text);font-family:'Inter',sans-serif;font-size:15px;outline:none;"/>
         <button onclick="navigator.clipboard.readText().then(t=>{document.getElementById('bridgeDestAddr').value=t}).catch(()=>document.getElementById('bridgeDestAddr').focus())"
-          style="position:absolute;right:22px;top:50%;transform:translateY(-50%);background:rgba(112,0,255,.15);border:1px solid rgba(112,0,255,.2);border-radius:7px;color:var(--accent3);font-size:.8rem;font-weight:600;padding:4px 8px;cursor:pointer;font-family:'Inter',sans-serif;">Paste</button>
-        <div style="font-size:.7rem;color:#a855f7;margin-top:5px;">⚠ Wrong address = lost funds</div>
+          style="position:absolute;right:22px;top:50%;transform:translateY(-50%);background:var(--surface);border:1px solid var(--border);border-radius:7px;color:var(--accent3);font-size:.8rem;font-weight:600;padding:4px 8px;cursor:pointer;font-family:'Inter',sans-serif;">Paste</button>
+        <div style="font-size:.7rem;color:var(--text2);margin-top:5px;">⚠ Wrong address = lost funds</div>
       </div>
     </div>
 
     <!-- ── Amount ── -->
     <div id="bridgeRightCol" style="margin:0 16px 12px;">
-      <div style="background:rgba(255,255,255,.02);border:1px solid rgba(112,0,255,.12);border-radius:14px;padding:13px 14px;">
+      <div style="background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:14px;padding:13px 14px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
           <div style="font-size:.6rem;font-weight:700;color:#ffffff;letter-spacing:.12em;text-transform:uppercase;">Amount</div>
-          <div style="font-size:.7rem;color:rgba(168,85,247,.6);font-weight:600;" id="bridgeAvailBal2"></div>
+          <div style="font-size:.7rem;color:var(--text3);font-weight:600;" id="bridgeAvailBal2"></div>
         </div>
-        <div style="display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.25);border:1px solid rgba(112,0,255,.18);border-radius:11px;padding:11px 13px;">
-          <div style="background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);border-radius:7px;padding:4px 9px;font-size:.8rem;font-weight:700;color:#a855f7;flex-shrink:0;">USDC</div>
+        <div style="display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:11px;padding:11px 13px;">
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:4px 9px;font-size:.8rem;font-weight:700;color:var(--text2);flex-shrink:0;">USDC</div>
           <input id="bridgeAmt" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="0.00"
             style="flex:1;background:none;border:none;outline:none;font-size:1.3rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;width:100%;min-width:0;"/>
           <button onclick="setBridgeMax()" style="background:none;border:none;font-size:.75rem;font-weight:700;color:var(--accent3);cursor:pointer;font-family:'Inter',sans-serif;flex-shrink:0;">MAX</button>
@@ -2535,18 +2535,18 @@ html,body{background-color:var(--bg);}
     </div>
 
     <!-- ── Summary ── -->
-    <div id="bridgeSummary" style="display:none;margin:0 16px 12px;background:rgba(112,0,255,.08);border:1px solid rgba(112,0,255,.2);border-radius:12px;padding:12px 14px;">
+    <div id="bridgeSummary" style="display:none;margin:0 16px 12px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;">
       <div style="display:flex;justify-content:space-between;font-size:.85rem;padding:3px 0;"><span style="color:var(--text3);">Network</span><span style="color:var(--text);font-weight:600;" id="bridgeSumChain">—</span></div>
       <div style="display:flex;justify-content:space-between;font-size:.85rem;padding:3px 0;"><span style="color:var(--text3);">Recipient</span><span style="color:var(--text);font-weight:600;" id="bridgeSumAddr">Your wallet</span></div>
-      <div style="height:1px;background:rgba(112,0,255,.15);margin:7px 0;"></div>
+      <div style="height:1px;background:var(--surface);margin:7px 0;"></div>
       <div style="display:flex;justify-content:space-between;font-size:.85rem;padding:3px 0;"><span style="color:var(--text3);">Amount</span><span style="color:var(--text);font-weight:600;" id="bridgeSumAmt">—</span></div>
-      <div style="display:flex;justify-content:space-between;font-size:.85rem;padding:3px 0;"><span style="color:var(--text3);">Fee</span><span style="color:rgba(168,85,247,.85);font-weight:600;">Free</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:.85rem;padding:3px 0;"><span style="color:var(--text3);">Fee</span><span style="color:var(--text3);font-weight:600;">Free</span></div>
       <div style="display:flex;justify-content:space-between;font-size:.85rem;padding:3px 0;"><span style="color:var(--text3);">ETA</span><span style="color:var(--text);">~20 min</span></div>
     </div>
 
     <!-- ── Deposit to Gateway ── -->
     <div id="gatewayDepositSection" style="display:none;margin:0 16px 12px;">
-      <div style="background:rgba(112,0,255,.04);border:1px solid rgba(112,0,255,.12);border-radius:14px;padding:13px 14px;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:13px 14px;">
         <div style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:8px;">Deposit to Gateway</div>
         <div style="display:flex;gap:8px;">
           <input id="gatewayDepositAmt" type="number" inputmode="decimal" min="1" step="1" placeholder="Min 1 USDC"
@@ -2579,7 +2579,7 @@ html,body{background-color:var(--bg);}
   <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
 
   <!-- ── Header ── -->
-  <div style="padding:0 0 13px;border-bottom:1px solid rgba(112,0,255,.08);margin-bottom:0;">
+  <div style="padding:0 0 13px;border-bottom:1px solid var(--border);margin-bottom:0;">
     <div style="font-family:'Syne','Inter',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text);letter-spacing:-.02em;">.arc Name</div>
     <div style="font-size:.68rem;color:#ffffff;margin-top:2px;">Your on-chain identity &middot; send by name</div>
   </div>
@@ -2588,18 +2588,18 @@ html,body{background-color:var(--bg);}
   <div style="padding:13px 0 10px;">
     <div style="display:flex;gap:7px;">
       <input id="arcNameSearch" type="text" placeholder="yourname.arc" oninput="checkArcName()"
-        style="flex:1;background:rgba(0,0,0,.3);border:1.5px solid rgba(112,0,255,.2);border-radius:11px;padding:11px 13px;color:var(--text);font-family:'DM Mono','Roboto Mono',monospace;font-size:14px;outline:none;min-width:0;box-sizing:border-box;"/>
+        style="flex:1;background:rgba(0,0,0,.3);border:1.5px solid var(--border);border-radius:11px;padding:11px 13px;color:var(--text);font-family:'DM Mono','Roboto Mono',monospace;font-size:14px;outline:none;min-width:0;box-sizing:border-box;"/>
       <button onclick="checkArcName()"
-        style="background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.25);border-radius:11px;color:#a855f7;font-size:.78rem;font-weight:700;padding:0 14px;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;flex-shrink:0;">Check</button>
+        style="background:var(--surface);border:1px solid var(--border);border-radius:11px;color:var(--text2);font-size:.78rem;font-weight:700;padding:0 14px;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;flex-shrink:0;">Check</button>
     </div>
     <div id="arcNameResult" style="display:none;margin-top:8px;padding:9px 12px;border-radius:10px;font-size:.82rem;font-family:'DM Sans',sans-serif;"></div>
   </div>
 
-  <div style="height:1px;background:rgba(112,0,255,.08);margin:0 0 12px;"></div>
+  <div style="height:1px;background:var(--surface);margin:0 0 12px;"></div>
 
   <!-- ── Your Names ── -->
   <div style="font-size:.58rem;font-weight:700;color:#ffffff;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px;">Your Names</div>
-  <div id="myNamesCard" style="background:rgba(255,255,255,.02);border:1px solid rgba(112,0,255,.1);border-top:2px solid #7000ff;border-radius:13px;overflow:hidden;margin-bottom:12px;">
+  <div id="myNamesCard" style="background:rgba(255,255,255,.02);border:1px solid var(--border);border-top:2px solid #7000ff;border-radius:13px;overflow:hidden;margin-bottom:12px;">
     <div id="myArcNamesList" style="padding:4px 0;">
       <div style="padding:22px 16px;text-align:center;">
         <div style="font-size:1.2rem;opacity:.2;margin-bottom:6px;">◎</div>
@@ -2608,23 +2608,23 @@ html,body{background-color:var(--bg);}
     </div>
   </div>
 
-  <div style="height:1px;background:rgba(112,0,255,.08);margin:0 0 12px;"></div>
+  <div style="height:1px;background:var(--surface);margin:0 0 12px;"></div>
 
   <!-- ── Register ── -->
   <div style="font-size:.58rem;font-weight:700;color:#ffffff;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px;">Register</div>
-  <div style="background:rgba(255,255,255,.02);border:1px solid rgba(112,0,255,.1);border-radius:13px;padding:13px 14px;margin-bottom:12px;">
+  <div style="background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:13px;padding:13px 14px;margin-bottom:12px;">
     <!-- Name input + .arc suffix -->
     <div style="display:flex;align-items:center;gap:0;margin-bottom:10px;">
       <input id="arcNameInput" type="text" placeholder="yourname"
-        style="flex:1;padding:11px 13px;background:rgba(0,0,0,.3);border:1.5px solid rgba(112,0,255,.2);border-radius:11px 0 0 11px;border-right:none;color:var(--text);font-family:'DM Mono','Roboto Mono',monospace;font-size:14px;outline:none;min-width:0;"/>
-      <div style="background:rgba(112,0,255,.1);border:1.5px solid rgba(112,0,255,.2);border-left:none;border-radius:0 11px 11px 0;padding:11px 12px;font-size:.85rem;font-weight:700;color:#a855f7;white-space:nowrap;">.arc</div>
+        style="flex:1;padding:11px 13px;background:rgba(0,0,0,.3);border:1.5px solid var(--border);border-radius:11px 0 0 11px;border-right:none;color:var(--text);font-family:'DM Mono','Roboto Mono',monospace;font-size:14px;outline:none;min-width:0;"/>
+      <div style="background:var(--surface);border:1.5px solid var(--border);border-left:none;border-radius:0 11px 11px 0;padding:11px 12px;font-size:.85rem;font-weight:700;color:var(--text2);white-space:nowrap;">.arc</div>
     </div>
     <!-- Duration grid -->
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:10px;">
       <div class="price-opt active" onclick="setArcNameDuration(1,2,this)"
-        style="padding:10px 8px;border-radius:10px;background:rgba(112,0,255,.12);border:1.5px solid rgba(112,0,255,.35);text-align:center;cursor:pointer;">
+        style="padding:10px 8px;border-radius:10px;background:var(--surface);border:1.5px solid var(--border);text-align:center;cursor:pointer;">
         <div style="font-size:.78rem;font-weight:700;color:#fff;">1 year</div>
-        <div style="font-size:.65rem;font-weight:600;color:rgba(168,85,247,.8);margin-top:2px;">2 USDC</div>
+        <div style="font-size:.65rem;font-weight:600;color:var(--text3);margin-top:2px;">2 USDC</div>
       </div>
       <div class="price-opt" onclick="setArcNameDuration(2,3,this)"
         style="padding:10px 8px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);text-align:center;cursor:pointer;">
@@ -2638,23 +2638,23 @@ html,body{background-color:var(--bg);}
       </div>
     </div>
     <!-- Fees -->
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid rgba(112,0,255,.08);">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid var(--border);">
       <span style="font-size:.72rem;color:#ffffff;">Registration fee</span>
-      <span id="arcNameFeeDisplay" style="font-family:'DM Mono','Roboto Mono',monospace;font-size:.75rem;font-weight:700;color:rgba(168,85,247,.85);">2 USDC</span>
+      <span id="arcNameFeeDisplay" style="font-family:'DM Mono','Roboto Mono',monospace;font-size:.75rem;font-weight:700;color:var(--text3);">2 USDC</span>
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0 10px;">
       <span style="font-size:.72rem;color:#ffffff;">Network fee</span>
-      <span style="font-family:'DM Mono','Roboto Mono',monospace;font-size:.75rem;font-weight:700;color:rgba(168,85,247,.85);">~0.009 USDC</span>
+      <span style="font-family:'DM Mono','Roboto Mono',monospace;font-size:.75rem;font-weight:700;color:var(--text3);">~0.009 USDC</span>
     </div>
     <button onclick="registerArcName()"
       style="width:100%;padding:13px;background:#7000ff;border:none;border-radius:12px;color:#fff;font-family:'Syne','Inter',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(112,0,255,.4);">Register .arc Name &rarr;</button>
   </div>
 
-  <div style="height:1px;background:rgba(112,0,255,.08);margin:0 0 12px;"></div>
+  <div style="height:1px;background:var(--surface);margin:0 0 12px;"></div>
 
   <!-- ── Directory ── -->
   <div style="font-size:.58rem;font-weight:700;color:#ffffff;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px;">Directory</div>
-  <div id="arcNameDirectory" style="background:rgba(255,255,255,.02);border:1px solid rgba(112,0,255,.08);border-radius:13px;overflow:hidden;margin-bottom:4px;">
+  <div id="arcNameDirectory" style="background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:13px;overflow:hidden;margin-bottom:4px;">
     <div style="padding:22px 16px;text-align:center;">
       <div style="font-size:1.2rem;opacity:.2;margin-bottom:6px;">◎</div>
       <div style="font-size:.75rem;color:#ffffff;">Be the first to register</div>
@@ -2686,7 +2686,7 @@ html,body{background-color:var(--bg);}
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px;margin-bottom:3px;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
             <div style="font-size:.95rem;font-weight:700;color:var(--text);">Virtual Account</div>
-            <div style="display:flex;align-items:center;gap:5px;font-size:.78rem;color:#a855f7;"><span style="width:6px;height:6px;border-radius:50%;background:#a855f7;display:inline-block;animation:pulse 2s infinite;"></span>Active</div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:.78rem;color:var(--text2);"><span style="width:6px;height:6px;border-radius:50%;background:#a855f7;display:inline-block;animation:pulse 2s infinite;"></span>Active</div>
           </div>
           <div style="display:flex;flex-direction:column;gap:6px;">
             <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border-radius:10px;">
@@ -2696,8 +2696,8 @@ html,body{background-color:var(--bg);}
             <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border-radius:10px;">
               <span style="font-size:.85rem;color:var(--text3);">Account Number</span>
               <div style="display:flex;align-items:center;gap:8px;">
-                <span style="font-size:.9rem;font-weight:700;color:#7000ff;" id="ngnVirtualAcct">9901234567</span>
-                <button onclick="navigator.clipboard.writeText(document.getElementById('ngnVirtualAcct').textContent);toast('Account number copied!','success',2000)" style="background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.25);border-radius:6px;color:#7000ff;font-size:.75rem;padding:3px 8px;cursor:pointer;">Copy</button>
+                <span style="font-size:.9rem;font-weight:700;color:var(--text);" id="ngnVirtualAcct">9901234567</span>
+                <button onclick="navigator.clipboard.writeText(document.getElementById('ngnVirtualAcct').textContent);toast('Account number copied!','success',2000)" style="background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:.75rem;padding:3px 8px;cursor:pointer;">Copy</button>
               </div>
             </div>
             <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border-radius:10px;">
@@ -2710,15 +2710,15 @@ html,body{background-color:var(--bg);}
           <div style="font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:12px;">How to deposit</div>
           <div style="display:flex;flex-direction:column;gap:10px;">
             <div style="display:flex;align-items:center;gap:12px;">
-              <div style="width:24px;height:24px;border-radius:50%;background:rgba(112,0,255,.12);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#7000ff;flex-shrink:0;">1</div>
+              <div style="width:24px;height:24px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:var(--text);flex-shrink:0;">1</div>
               <span style="font-size:.85rem;color:var(--text3);">Transfer NGN to the Providus account above from any Nigerian bank</span>
             </div>
             <div style="display:flex;align-items:center;gap:12px;">
-              <div style="width:24px;height:24px;border-radius:50%;background:rgba(112,0,255,.12);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#7000ff;flex-shrink:0;">2</div>
+              <div style="width:24px;height:24px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:var(--text);flex-shrink:0;">2</div>
               <span style="font-size:.85rem;color:var(--text3);">Your NGN balance updates automatically within 30 seconds</span>
             </div>
             <div style="display:flex;align-items:center;gap:12px;">
-              <div style="width:24px;height:24px;border-radius:50%;background:rgba(112,0,255,.12);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#7000ff;flex-shrink:0;">3</div>
+              <div style="width:24px;height:24px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:var(--text);flex-shrink:0;">3</div>
               <span style="font-size:.85rem;color:var(--text3);">Convert to USDC instantly on the Convert tab</span>
             </div>
           </div>
@@ -2737,13 +2737,13 @@ html,body{background-color:var(--bg);}
           <input type="hidden" id="ngnBankName" value=""/>
           <button type="button" id="bankPickerBtn" onclick="openBankPicker()" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:100px;color:var(--text);font-family:'Inter',sans-serif;font-size:1rem;font-weight:600;padding:10px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;box-sizing:border-box;">
             <span id="bankPickerLabel" style="color:var(--text3);">Select bank</span>
-            <span style="color:#7000ff;">▾</span>
+            <span style="color:var(--text);">▾</span>
           </button>
         </div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:18px;">
           <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Account Number</div>
           <input id="ngnAcctNum" type="text" inputmode="numeric" maxlength="10" placeholder="0123456789" oninput="verifyNgnAcct()" style="width:100%;background:none;border:none;outline:none;font-size:1.4rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
-          <div id="ngnAcctNameBar" style="display:none;margin-top:8px;font-size:.85rem;color:#a855f7;"><span id="ngnAcctNameTxt"></span></div>
+          <div id="ngnAcctNameBar" style="display:none;margin-top:8px;font-size:.85rem;color:var(--text2);"><span id="ngnAcctNameTxt"></span></div>
           <div style="font-size:.8rem;color:var(--text3);margin-top:6px;">Fee: ₦100 flat</div>
         </div>
         <button id="ngnWithdrawBtn" onclick="doNgnWithdraw()" style="width:100%;background:#7000ff;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Withdraw to Bank</button>
@@ -2762,7 +2762,7 @@ html,body{background-color:var(--bg);}
           </div>
         </div>
         <div style="display:flex;justify-content:center;padding:8px 0;">
-          <button onclick="flipNgnConvert()" style="width:34px;height:34px;border-radius:10px;background:var(--bg);border:1px solid var(--border);color:#7000ff;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">⇅</button>
+          <button onclick="flipNgnConvert()" style="width:34px;height:34px;border-radius:10px;background:var(--bg);border:1px solid var(--border);color:var(--text);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">⇅</button>
         </div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px 18px 14px;margin-bottom:14px;">
           <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
@@ -2770,11 +2770,11 @@ html,body{background-color:var(--bg);}
             <span style="font-size:.9rem;color:var(--text3);" id="ngnToBalLabel">Bal: 0.00 USDC</span>
           </div>
           <div style="display:flex;align-items:center;gap:10px;">
-            <div id="ngnToToken" onclick="toggleNgnToToken()" style="background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:8px 14px;font-size:.9rem;font-weight:700;color:#7000ff;white-space:nowrap;cursor:pointer;"><span class="tok-dot usdc-dot"></span>USDC ▾</div>
+            <div id="ngnToToken" onclick="toggleNgnToToken()" style="background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:8px 14px;font-size:.9rem;font-weight:700;color:var(--text);white-space:nowrap;cursor:pointer;"><span class="tok-dot usdc-dot"></span>USDC ▾</div>
             <input class="swap-input" id="ngnConvertTo" type="number" placeholder="0" readonly style="flex:1;background:none;border:none;outline:none;font-size:1.6rem;font-weight:700;color:var(--text);text-align:right;font-family:'Inter',sans-serif;opacity:.6;"/>
           </div>
         </div>
-        <div style="display:flex;justify-content:space-between;padding:10px 14px;background:rgba(112,0,255,.05);border:1px solid rgba(112,0,255,.12);border-radius:12px;margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:12px;">
           <span style="font-size:.85rem;color:var(--text3);" id="ngnRateDisplay">₦1,620 = 1 USDC</span>
           <span style="font-size:.85rem;color:var(--text3);">Fee: 0.5%</span>
         </div>
@@ -2789,11 +2789,11 @@ html,body{background-color:var(--bg);}
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;">
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px;">
           <div style="font-size:.78rem;color:var(--text3);margin-bottom:4px;">NGN / USDC</div>
-          <div style="font-size:1rem;font-weight:700;color:#7000ff;">₦1,620</div>
+          <div style="font-size:1rem;font-weight:700;color:var(--text);">₦1,620</div>
         </div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px;">
           <div style="font-size:.78rem;color:var(--text3);margin-bottom:4px;">NGN / EURC</div>
-          <div style="font-size:1rem;font-weight:700;color:#7000ff;">₦1,765</div>
+          <div style="font-size:1rem;font-weight:700;color:var(--text);">₦1,765</div>
         </div>
       </div>
     </div>
