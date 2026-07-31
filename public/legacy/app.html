@@ -295,6 +295,17 @@ html,body{background-color:var(--bg);}
 .chain-dropdown-item.selected{background:rgba(112,0,255,.12);}
 </style>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<style id="nanHeroCriticalFix">
+/* Hero headline fix, inlined directly in app.html on purpose — style.css appears to be
+   stuck behind stale edge/CDN caching that ignores the ?v= query-string cache-buster,
+   even after confirmed successful deploys. This file has never had that problem, so the
+   fix lives here instead until the style.css caching issue is resolved separately. */
+#nanRealHeroH1{font-size:2.3rem!important;font-weight:800!important;line-height:1.15!important;letter-spacing:-.03em!important;background:none!important;-webkit-background-clip:border-box!important;background-clip:border-box!important;margin-bottom:14px!important;}
+#nanRealHeroAccent{font-size:inherit!important;font-weight:inherit!important;line-height:inherit!important;letter-spacing:inherit!important;color:#a855f7!important;background:none!important;-webkit-background-clip:border-box!important;background-clip:border-box!important;text-decoration:none!important;display:inline!important;}
+@media(max-width:600px){
+  #nanRealHeroH1{font-size:1.8rem!important;}
+}
+</style>
 </head>
 <body>
   <!-- Relay-style floating theme toggle, bottom-left, wired to existing toggleTheme() -->
