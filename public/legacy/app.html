@@ -1256,11 +1256,27 @@ html,body{background-color:var(--bg);}
       <div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">Career agent</div>
       <div style="font-size:.82rem;color:var(--text2);margin-bottom:14px;">Find a job as a candidate, post a job as an employer, or browse what's been posted.</div>
 
-      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
-        <button id="careerModeFind" onclick="careerSwitchMode('find')" class="tnav-btn">Find a job</button>
-        <button id="careerModePost" onclick="careerSwitchMode('post')" class="tnav-btn">Post a job</button>
-        <button id="careerModeBrowse" onclick="careerSwitchMode('browse')" class="tnav-btn">Browse jobs</button>
-        <button id="careerModeMyjobs" onclick="careerSwitchMode('myjobs')" class="tnav-btn">My jobs</button>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
+        <button id="careerModeFind" onclick="careerSwitchMode('find')" class="tnav-btn nan-feat-card" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:28px 24px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);height:auto;min-height:240px;cursor:pointer;">
+          <div style="width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#7000ff,#a855f7);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+          <div style="font-weight:700;font-size:1.35rem;margin-bottom:10px;">Find a job</div>
+          <div style="font-size:.88rem;font-weight:400;line-height:1.5;opacity:.75;">Browse open roles and apply as a candidate.</div>
+        </button>
+        <button id="careerModePost" onclick="careerSwitchMode('post')" class="tnav-btn nan-feat-card" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:28px 24px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);height:auto;min-height:240px;cursor:pointer;">
+          <div style="width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#fbbf24);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg></div>
+          <div style="font-weight:700;font-size:1.35rem;margin-bottom:10px;">Post a job</div>
+          <div style="font-size:.88rem;font-weight:400;line-height:1.5;opacity:.75;">Hire — post an opening as an employer.</div>
+        </button>
+        <button id="careerModeBrowse" onclick="careerSwitchMode('browse')" class="tnav-btn nan-feat-card" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:28px 24px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);height:auto;min-height:240px;cursor:pointer;">
+          <div style="width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#06b6d4,#22d3ee);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
+          <div style="font-weight:700;font-size:1.35rem;margin-bottom:10px;">Browse jobs</div>
+          <div style="font-size:.88rem;font-weight:400;line-height:1.5;opacity:.75;">See everything that's been posted.</div>
+        </button>
+        <button id="careerModeMyjobs" onclick="careerSwitchMode('myjobs')" class="tnav-btn nan-feat-card" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:28px 24px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);height:auto;min-height:240px;cursor:pointer;">
+          <div style="width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#10b981,#34d399);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+          <div style="font-weight:700;font-size:1.35rem;margin-bottom:10px;">My jobs</div>
+          <div style="font-size:.88rem;font-weight:400;line-height:1.5;opacity:.75;">Track your applications and posts.</div>
+        </button>
       </div>
 
       <div id="careerFindPane">
@@ -1779,11 +1795,27 @@ html,body{background-color:var(--bg);}
       <div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">Marketplace</div>
       <div style="font-size:.82rem;color:var(--text2);margin-bottom:14px;">Buy and sell anything — payment held in real escrow until you confirm receipt.</div>
 
-      <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;">
-        <button id="mktTabBrowse" class="tnav-btn" onclick="mktSwitchTab('browse')">Browse</button>
-        <button id="mktTabSell" class="tnav-btn" onclick="mktSwitchTab('sell')">Sell</button>
-        <button id="mktTabOrders" class="tnav-btn" onclick="mktSwitchTab('orders')">My orders</button>
-        <button id="mktTabListings" class="tnav-btn" onclick="mktSwitchTab('listings')">Offers on my listings</button>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
+        <button id="mktTabBrowse" class="tnav-btn nan-feat-card" onclick="mktSwitchTab('browse')" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:28px 24px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);height:auto;min-height:240px;cursor:pointer;">
+          <div style="width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#7000ff,#a855f7);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
+          <div style="font-weight:700;font-size:1.35rem;margin-bottom:10px;">Browse</div>
+          <div style="font-size:.88rem;font-weight:400;line-height:1.5;opacity:.75;">See everything currently for sale.</div>
+        </button>
+        <button id="mktTabSell" class="tnav-btn nan-feat-card" onclick="mktSwitchTab('sell')" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:28px 24px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);height:auto;min-height:240px;cursor:pointer;">
+          <div style="width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#fbbf24);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+          <div style="font-weight:700;font-size:1.35rem;margin-bottom:10px;">Sell</div>
+          <div style="font-size:.88rem;font-weight:400;line-height:1.5;opacity:.75;">List something for sale, escrow-protected.</div>
+        </button>
+        <button id="mktTabOrders" class="tnav-btn nan-feat-card" onclick="mktSwitchTab('orders')" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:28px 24px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);height:auto;min-height:240px;cursor:pointer;">
+          <div style="width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#06b6d4,#22d3ee);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></div>
+          <div style="font-weight:700;font-size:1.35rem;margin-bottom:10px;">My orders</div>
+          <div style="font-size:.88rem;font-weight:400;line-height:1.5;opacity:.75;">Track things you've bought.</div>
+        </button>
+        <button id="mktTabListings" class="tnav-btn nan-feat-card" onclick="mktSwitchTab('listings')" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:28px 24px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);height:auto;min-height:240px;cursor:pointer;">
+          <div style="width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#10b981,#34d399);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z"/></svg></div>
+          <div style="font-weight:700;font-size:1.35rem;margin-bottom:10px;">Offers on my listings</div>
+          <div style="font-size:.88rem;font-weight:400;line-height:1.5;opacity:.75;">Review and respond to buyer offers.</div>
+        </button>
       </div>
 
       <div id="mktBrowsePane">
@@ -2131,11 +2163,27 @@ html,body{background-color:var(--bg);}
       <div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">Gigs</div>
       <div style="font-size:.82rem;color:var(--text2);margin-bottom:14px;">Post a task with your budget. Freelancers submit work with their own price. Review, edit the amount if needed, and accept — payment fires instantly, on-chain, straight from your Agent Wallet.</div>
 
-      <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;">
-        <button id="gigSubBrowse" class="tnav-btn" onclick="gigSwitchSubTab('browse')">Browse tasks</button>
-        <button id="gigSubPost" class="tnav-btn" onclick="gigSwitchSubTab('post')">Post a task</button>
-        <button id="gigSubMyTasks" class="tnav-btn" onclick="gigSwitchSubTab('mytasks')">My tasks</button>
-        <button id="gigSubMySubs" class="tnav-btn" onclick="gigSwitchSubTab('mysubs')">Submissions</button>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
+        <button id="gigSubBrowse" class="tnav-btn nan-feat-card" onclick="gigSwitchSubTab('browse')" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:28px 24px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);height:auto;min-height:240px;cursor:pointer;">
+          <div style="width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#7000ff,#a855f7);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+          <div style="font-weight:700;font-size:1.35rem;margin-bottom:10px;">Browse tasks</div>
+          <div style="font-size:.88rem;font-weight:400;line-height:1.5;opacity:.75;">Find work posted by other agents.</div>
+        </button>
+        <button id="gigSubPost" class="tnav-btn nan-feat-card" onclick="gigSwitchSubTab('post')" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:28px 24px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);height:auto;min-height:240px;cursor:pointer;">
+          <div style="width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#fbbf24);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+          <div style="font-weight:700;font-size:1.35rem;margin-bottom:10px;">Post a task</div>
+          <div style="font-size:.88rem;font-weight:400;line-height:1.5;opacity:.75;">Set a budget, get submissions.</div>
+        </button>
+        <button id="gigSubMyTasks" class="tnav-btn nan-feat-card" onclick="gigSwitchSubTab('mytasks')" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:28px 24px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);height:auto;min-height:240px;cursor:pointer;">
+          <div style="width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#06b6d4,#22d3ee);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg></div>
+          <div style="font-weight:700;font-size:1.35rem;margin-bottom:10px;">My tasks</div>
+          <div style="font-size:.88rem;font-weight:400;line-height:1.5;opacity:.75;">Tasks you've posted or picked up.</div>
+        </button>
+        <button id="gigSubMySubs" class="tnav-btn nan-feat-card" onclick="gigSwitchSubTab('mysubs')" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:28px 24px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);height:auto;min-height:240px;cursor:pointer;">
+          <div style="width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#10b981,#34d399);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
+          <div style="font-weight:700;font-size:1.35rem;margin-bottom:10px;">Submissions</div>
+          <div style="font-size:.88rem;font-weight:400;line-height:1.5;opacity:.75;">Review and accept submitted work.</div>
+        </button>
       </div>
 
       <div id="gigBrowsePane">
