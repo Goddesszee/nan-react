@@ -2453,7 +2453,7 @@ html,body{background-color:var(--bg);}
     </div>
 
     <!-- ── From/To card (amount merged into From tier) ── -->
-    <div style="margin:8px 16px 12px;border:1px solid var(--border);border-radius:14px;padding:4px;background:var(--card);">
+    <div style="margin:8px 16px 12px;border:1px solid var(--border);border-radius:14px;padding:4px;background:none;">
 
       <!-- From tier -->
       <div style="border-radius:11px 11px 4px 4px;padding:12px 14px;">
@@ -2483,7 +2483,7 @@ html,body{background-color:var(--bg);}
       </div>
 
       <!-- To tier -->
-      <div style="background:var(--surface);border-radius:4px 4px 11px 11px;padding:12px 14px;">
+      <div style="border-radius:4px 4px 11px 11px;padding:12px 14px;">
         <div style="font-size:.65rem;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">To</div>
         <input type="hidden" id="bridgeDestChain" value="ETH-SEPOLIA"/>
         <div class="chain-dropdown" id="bridgeChain-wrap">
@@ -2537,7 +2537,7 @@ html,body{background-color:var(--bg);}
         <div style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:8px;">Deposit to Gateway</div>
         <div style="display:flex;gap:8px;">
           <input id="gatewayDepositAmt" type="number" inputmode="decimal" min="1" step="1" placeholder="Min 1 USDC"
-            style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:15px;outline:none;"/>
+            style="flex:1;background:none;border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:15px;outline:none;"/>
           <button onclick="depositToGateway()" style="background:#7000ff;border:none;border-radius:10px;color:#fff;font-size:.85rem;font-weight:700;padding:10px 14px;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;box-shadow:0 4px 14px rgba(112,0,255,.35);">Deposit →</button>
         </div>
       </div>
