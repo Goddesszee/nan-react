@@ -74,12 +74,12 @@ export default function App() {
         alignItems:'center',justifyContent:'center',gap:16,fontFamily:'Inter,sans-serif'}}>
         <div style={{display:'flex',alignItems:'center',gap:9}}>
           <div style={{width:44,height:44,borderRadius:'50%',background:'#7000ff',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 480" width={18} height={26}>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 480" width={19} height={27}>
               <path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill="#fff"/>
               <path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill="#fff"/>
             </svg>
           </div>
-          <span style={{fontWeight:700,fontSize:'20px',color:'#fff',fontFamily:'Inter, sans-serif'}}>NAN</span>
+          <span style={{fontWeight:700,fontSize:'20px',color:'#fff',fontFamily:'Inter, sans-serif',lineHeight:'44px'}}>NAN</span>
         </div>
         <div style={{color:'#fff',fontSize:'1rem',fontWeight:600}}>{status}</div>
         <div style={{display:'flex',gap:6}}>
