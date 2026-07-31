@@ -5433,3 +5433,71 @@ html[data-theme=light] .nan-hero-globe{
   .nan-hero-features.nan-aur-grid .nan-aur-card{border-right:none !important;border-bottom:1px solid var(--border,rgba(255,255,255,.1)) !important;}
   .nan-hero-features.nan-aur-grid .nan-aur-card:last-child{border-bottom:none !important;}
 }
+
+/* ══════════════════════════════════════════════════════════
+   PERSISTENT LEFT SIDEBAR — Home/Send/Swap/Bridge/Payroll/Naira/History
+   Uses the site's existing theme CSS vars so it auto-follows light/dark,
+   no custom JS re-theming needed.
+   ══════════════════════════════════════════════════════════ */
+#nanSidebar{
+  position:fixed;top:0;left:0;bottom:0;width:220px;z-index:99998;
+  display:flex;flex-direction:column;padding:20px 14px;box-sizing:border-box;
+  background:var(--card);border-right:1px solid var(--border);
+  transition:width .2s;overflow:hidden;
+}
+#nanSidebarCollapseBtn{
+  position:absolute;top:16px;right:-14px;width:28px;height:28px;border-radius:50%;
+  background:var(--surface);border:1px solid var(--border);color:var(--text);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:transform .2s;z-index:1;
+}
+.nan-sb-brand{display:flex;align-items:center;gap:8px;padding:0 6px 24px;}
+.nan-sb-logo{width:28px;height:28px;border-radius:50%;background:#7000ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.nan-sb-brand-label{font-weight:800;font-size:1rem;color:var(--text);}
+.nan-sb-items{flex:1;display:flex;flex-direction:column;gap:4px;overflow-y:auto;}
+.nan-sb-item-row{
+  display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:11px;
+  cursor:pointer;font-size:.87rem;font-weight:600;color:var(--text2);
+  transition:background .15s,color .15s;
+}
+.nan-sb-item-row:hover{background:rgba(112,0,255,.08);color:var(--text);}
+.nan-sb-item-row svg{flex-shrink:0;}
+.nan-sb-naira-icon{width:17px;text-align:center;font-weight:700;flex-shrink:0;color:inherit;}
+.nan-sb-theme-row{display:flex;align-items:center;gap:6px;padding:10px 6px;border-top:1px solid var(--border);margin-top:8px;}
+.nan-sb-theme-row button{width:32px;height:32px;border-radius:9px;border:none;background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;}
+.nan-sb-wallet-btn{
+  margin-top:10px;background:#7000ff;border:none;color:#fff;font-weight:700;font-size:.85rem;
+  padding:12px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+}
+
+/* Collapsed state */
+body.nan-sidebar-collapsed #nanSidebar{width:72px;}
+body.nan-sidebar-collapsed #nanSidebarCollapseBtn{transform:rotate(180deg);}
+body.nan-sidebar-collapsed .nan-sb-label{display:none;}
+body.nan-sidebar-collapsed .nan-sb-item-row{justify-content:center;}
+body.nan-sidebar-collapsed .nan-sb-wallet-btn{padding:12px 0;}
+
+/* Shift page content to make room for the sidebar (ID-level rule needed for
+   #page-agent-wallet specifically, since it has its own `padding:0 !important`
+   that would otherwise beat a plain .page class rule) */
+.page,#globalTopBar,#agentLoginSection{padding-left:220px !important;box-sizing:border-box !important;transition:padding-left .2s;}
+#page-agent-wallet{padding-left:220px !important;}
+body.nan-sidebar-collapsed .page,
+body.nan-sidebar-collapsed #globalTopBar,
+body.nan-sidebar-collapsed #agentLoginSection{padding-left:72px !important;}
+body.nan-sidebar-collapsed #page-agent-wallet{padding-left:72px !important;}
+
+/* Fixes the CSS-grid blowout/cutoff bug on the feature-card tab rows (Career/Marketplace/Gigs)
+   now that the page is narrower due to the sidebar taking up space */
+.nan-feat-card{min-width:0 !important;}
+
+@media(max-width:900px){
+  #nanSidebar{display:none;}
+  .page,#globalTopBar,#agentLoginSection,#page-agent-wallet{padding-left:0 !important;}
+}
+
+/* Old floating theme toggle + old top-nav Wallet dropdown are both redundant now
+   that the sidebar has its own theme toggle and covers everything the Wallet
+   dropdown used to (Send/Swap/Bridge/Payroll/Naira/History) */
+#nanFloatThemeToggle{display:none !important;}
+#tnav-trade-btn{display:none !important;}
