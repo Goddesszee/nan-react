@@ -5389,17 +5389,20 @@ html[data-theme=light] .nan-hero-left .nan-aur-h1{color:var(--text,#111) !import
 .nan-hero-docs-btn:hover{border-color:rgba(168,85,247,.5);}
 html[data-theme=light] .nan-hero-docs-btn{border-color:rgba(0,0,0,.18);}
 
-.nan-hero-globe-wrap{position:relative !important;height:300px !important;max-height:300px !important;display:flex !important;align-items:center !important;justify-content:center !important;overflow:hidden !important;}
+.nan-hero-globe-wrap{position:relative !important;height:340px !important;max-height:340px !important;display:flex !important;align-items:center !important;justify-content:center !important;overflow:visible !important;}
 .nan-hero-globe{
-  width:280px !important;height:280px !important;min-width:280px !important;min-height:280px !important;max-width:280px !important;max-height:280px !important;
-  flex-shrink:0 !important;border-radius:50% !important;position:relative !important;overflow:hidden !important;
+  width:340px !important;height:340px !important;min-width:340px !important;min-height:340px !important;max-width:340px !important;max-height:340px !important;
+  flex-shrink:0 !important;border-radius:50% !important;position:absolute !important;right:-40px !important;top:50% !important;transform:translateY(-50%) !important;overflow:hidden !important;
   background:radial-gradient(circle at 32% 28%,#3a2266 0%,#1a1030 45%,#0b0b14 75%) !important;
-  box-shadow:0 0 70px rgba(112,0,255,.28) inset,0 0 50px rgba(112,0,255,.18),0 12px 40px rgba(112,0,255,.15) !important;
+  box-shadow:0 0 90px rgba(112,0,255,.3) inset,0 0 60px rgba(112,0,255,.2),0 12px 40px rgba(112,0,255,.15) !important;
   border:1px solid rgba(168,85,247,.28) !important;
 }
 .nan-hero-globe-svg{position:absolute !important;inset:0 !important;width:100% !important;height:100% !important;display:block !important;}
 .nan-hero-grid-line ellipse{fill:none !important;stroke:rgba(255,255,255,.07) !important;stroke-width:1 !important;}
-.nan-hero-trail line{stroke:rgba(168,85,247,.4) !important;stroke-width:1 !important;}
+.nan-hero-trail line{stroke:rgba(168,85,247,.3) !important;stroke-width:1 !important;}
+
+/* Keep the bigger globe from bleeding into the nav above or the feature strip below */
+#agentLoginSection{overflow:hidden !important;}
 
 /* Light theme: the globe stays a dark "night sky" sphere on purpose (it's meant to read as
    Earth from space), but gets a softer surrounding glow so it doesn't look like a hole on white */
