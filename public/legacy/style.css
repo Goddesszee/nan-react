@@ -5363,7 +5363,20 @@ html .nan-aur-grid{
 /* ══ Agent wallet hero v2 — two-column layout with globe visual, light/dark aware ══ */
 .nan-hero-cols{display:grid !important;grid-template-columns:1.15fr 1fr !important;gap:32px !important;align-items:center !important;margin-bottom:8px !important;}
 .nan-hero-left{min-width:0 !important;}
-.nan-hero-accent{color:#a855f7 !important;font-size:inherit !important;font-weight:inherit !important;line-height:inherit !important;letter-spacing:inherit !important;font-family:inherit !important;text-decoration:none !important;background:none !important;border:none !important;display:inline !important;}
+.nan-hero-left .nan-aur-h1{
+  font-size:2.3rem !important;font-weight:800 !important;line-height:1.15 !important;letter-spacing:-.03em !important;
+  background:none !important;-webkit-background-clip:border-box !important;background-clip:border-box !important;
+  color:var(--text,#fff) !important;margin-bottom:14px !important;
+}
+html[data-theme=light] .nan-hero-left .nan-aur-h1{color:var(--text,#111) !important;}
+.nan-hero-left .nan-aur-h1 .nan-hero-accent{
+  font-size:inherit !important;font-weight:inherit !important;line-height:inherit !important;letter-spacing:inherit !important;
+  color:#a855f7 !important;background:none !important;-webkit-background-clip:border-box !important;background-clip:border-box !important;
+  text-decoration:none !important;display:inline !important;
+}
+@media(max-width:600px){
+  .nan-hero-left .nan-aur-h1{font-size:1.8rem !important;}
+}
 .nan-hero-btnrow{display:flex !important;gap:12px !important;flex-wrap:wrap !important;align-items:center !important;margin:4px 0 0 !important;}
 
 .nan-hero-globe-wrap{position:relative !important;height:300px !important;max-height:300px !important;display:flex !important;align-items:center !important;justify-content:center !important;overflow:hidden !important;}
@@ -5396,14 +5409,14 @@ html[data-theme=light] .nan-hero-globe{
 /* Escape the legacy .nan-aur-card specificity conflicts entirely for the hero feature strip —
    using the extra wrapper class here beats every older rule regardless of !important/order */
 .nan-hero-features.nan-aur-grid{display:grid !important;grid-template-columns:repeat(3,1fr) !important;gap:0 !important;}
-.nan-hero-features .nan-aur-card{background:none !important;border:none !important;border-right:1px solid var(--border,rgba(255,255,255,.1)) !important;border-radius:0 !important;box-shadow:none !important;padding:8px 22px !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;}
-.nan-hero-features .nan-aur-card:last-child{border-right:none !important;}
-.nan-hero-features .nan-aur-tile{background:none !important;box-shadow:none !important;width:auto !important;height:auto !important;justify-content:flex-start !important;color:#a855f7 !important;margin-bottom:10px !important;}
-.nan-hero-features .nan-aur-tile svg{width:18px !important;height:18px !important;}
-.nan-hero-features .nan-aur-ct{color:var(--text,#fff) !important;font-size:.9rem !important;font-weight:700 !important;margin-bottom:4px !important;}
-.nan-hero-features .nan-aur-cd{color:var(--text3,#888) !important;font-size:.8rem !important;line-height:1.55 !important;}
+.nan-hero-features.nan-aur-grid .nan-aur-card{background:none !important;border:none !important;border-right:1px solid var(--border,rgba(255,255,255,.1)) !important;border-radius:0 !important;box-shadow:none !important;padding:8px 22px !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;}
+.nan-hero-features.nan-aur-grid .nan-aur-card:last-child{border-right:none !important;}
+.nan-hero-features.nan-aur-grid .nan-aur-tile{background:none !important;box-shadow:none !important;width:auto !important;height:auto !important;justify-content:flex-start !important;color:#a855f7 !important;margin-bottom:10px !important;}
+.nan-hero-features.nan-aur-grid .nan-aur-tile svg{width:18px !important;height:18px !important;}
+.nan-hero-features.nan-aur-grid .nan-aur-ct{color:var(--text,#fff) !important;font-size:.9rem !important;font-weight:700 !important;margin-bottom:4px !important;}
+.nan-hero-features.nan-aur-grid .nan-aur-cd{color:var(--text3,#888) !important;font-size:.8rem !important;line-height:1.55 !important;}
 @media(max-width:767px){
   .nan-hero-features.nan-aur-grid{grid-template-columns:1fr !important;}
-  .nan-hero-features .nan-aur-card{border-right:none !important;border-bottom:1px solid var(--border,rgba(255,255,255,.1)) !important;}
-  .nan-hero-features .nan-aur-card:last-child{border-bottom:none !important;}
+  .nan-hero-features.nan-aur-grid .nan-aur-card{border-right:none !important;border-bottom:1px solid var(--border,rgba(255,255,255,.1)) !important;}
+  .nan-hero-features.nan-aur-grid .nan-aur-card:last-child{border-bottom:none !important;}
 }
