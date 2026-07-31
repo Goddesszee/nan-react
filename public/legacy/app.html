@@ -2441,7 +2441,7 @@ html,body{background-color:var(--bg);}
     </div>
 
     <!-- ── Gateway balance strip (compact) ── -->
-    <div style="margin:10px 16px 0;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:9px 12px;display:flex;align-items:center;gap:10px;">
+    <div style="margin:10px 16px 0;padding:9px 0;display:flex;align-items:center;gap:10px;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
       <div style="font-size:.68rem;font-weight:700;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;">Gateway</div>
       <div id="gatewayTotal" style="font-size:.9rem;font-weight:800;color:var(--text);letter-spacing:-.02em;margin-left:auto;">—</div>
@@ -2456,7 +2456,7 @@ html,body{background-color:var(--bg);}
     <div style="margin:8px 16px 12px;border:1px solid var(--border);border-radius:14px;padding:4px;background:var(--card);">
 
       <!-- From tier -->
-      <div style="background:var(--surface);border-radius:11px 11px 4px 4px;padding:12px 14px;">
+      <div style="border-radius:11px 11px 4px 4px;padding:12px 14px;">
         <div style="display:flex;justify-content:space-between;align-items:center;font-size:.65rem;font-weight:700;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">
           <span>From</span>
           <span id="bridgeAvailBal2" style="text-transform:none;letter-spacing:normal;font-weight:600;"></span>
@@ -2533,7 +2533,7 @@ html,body{background-color:var(--bg);}
 
     <!-- ── Deposit to Gateway ── -->
     <div id="gatewayDepositSection" style="display:none;margin:0 16px 12px;">
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:13px 14px;">
+      <div style="padding:13px 0;">
         <div style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:8px;">Deposit to Gateway</div>
         <div style="display:flex;gap:8px;">
           <input id="gatewayDepositAmt" type="number" inputmode="decimal" min="1" step="1" placeholder="Min 1 USDC"
