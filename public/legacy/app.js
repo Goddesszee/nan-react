@@ -754,8 +754,25 @@ function nanToggleSettings(e){
 function nanCloseAll(){
   const w=document.getElementById('nanWalletDropMenu');
   const s=document.getElementById('nanSettingsMenu');
+  const p=document.getElementById('nanProfileMenu');
   if(w)w.style.display='none';
   if(s)s.style.display='none';
+  if(p)p.style.display='none';
+}
+function nanToggleProfileMenu(e){
+  if(e){ e.stopPropagation(); }
+  const menu=document.getElementById('nanProfileMenu');
+  if(!menu) return;
+  const isOpen=menu.style.display!=='none';
+  nanCloseAll();
+  if(!isOpen){
+    const addr=(typeof userAddr!=='undefined'&&userAddr)?userAddr:(typeof circleWalletAddress!=='undefined'?circleWalletAddress:null);
+    const addrEl=document.getElementById('nanProfileMenuAddr');
+    const avatarEl=document.getElementById('nanProfileAvatar');
+    if(addrEl) addrEl.textContent = addr ? short(addr) : 'Not connected';
+    if(avatarEl) avatarEl.textContent = addr ? addr.slice(2,3).toUpperCase() : '?';
+    menu.style.display='block';
+  }
 }
 function nanCloseSettings(){
   const s=document.getElementById('nanSettingsMenu');

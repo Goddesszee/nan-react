@@ -357,7 +357,24 @@ html,body{background-color:var(--bg);}
     <div style="display:flex;align-items:center;gap:6px;">
       <span id="devBadge" class="dev-badge" style="display:none;"></span>
       <!-- Net pill: shows "Arc Testnet" on desktop, "Arc" on mobile via CSS -->
-      <div class="net-pill" id="netPill"><span class="net-pill-full"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:4px;display:inline-block;flex-shrink:0;border-radius:3px;background:#0d1b2e;padding:1px;"><path fill="url(#arc_logo)" d="M3.5 20.999c.146-4.407.893-8.519 2.142-11.717C7.223 5.231 9.513 3 12.088 3s4.865 2.231 6.447 6.283c.822 2.107 1.427 4.61 1.786 7.334q.048.366.087.737.015.024.013.041s.21 1.317.256 3.604h-.024c-.313-.256-4-3.153-10.112-2.314.093-1.035.22-2.04.383-3.005l.027-.146a24.5 24.5 0 0 1 6.104.57q-.007-.056-.017-.115c-.33-2.06-.819-3.945-1.448-5.556-1.029-2.635-2.371-4.271-3.502-4.271-1.132 0-2.474 1.636-3.503 4.271q-.375.958-.679 2.034a30 30 0 0 0-.718 3.213A40 40 0 0 0 6.662 21H3.5z"/><defs><linearGradient id="arc_logo" x1="12" x2="12" y1="3" y2="21" gradientUnits="userSpaceOnUse"><stop stop-color="#d0d8e8"/><stop offset="1" stop-color="#7a8faa"/></linearGradient></defs></svg>Testnet</span><span class="net-pill-short" style="display:none;">Arc</span></div>
+      <div class="net-pill" id="netPill" style="display:none;"><span class="net-pill-full"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:4px;display:inline-block;flex-shrink:0;border-radius:3px;background:#0d1b2e;padding:1px;"><path fill="url(#arc_logo)" d="M3.5 20.999c.146-4.407.893-8.519 2.142-11.717C7.223 5.231 9.513 3 12.088 3s4.865 2.231 6.447 6.283c.822 2.107 1.427 4.61 1.786 7.334q.048.366.087.737.015.024.013.041s.21 1.317.256 3.604h-.024c-.313-.256-4-3.153-10.112-2.314.093-1.035.22-2.04.383-3.005l.027-.146a24.5 24.5 0 0 1 6.104.57q-.007-.056-.017-.115c-.33-2.06-.819-3.945-1.448-5.556-1.029-2.635-2.371-4.271-3.502-4.271-1.132 0-2.474 1.636-3.503 4.271q-.375.958-.679 2.034a30 30 0 0 0-.718 3.213A40 40 0 0 0 6.662 21H3.5z"/><defs><linearGradient id="arc_logo" x1="12" x2="12" y1="3" y2="21" gradientUnits="userSpaceOnUse"><stop stop-color="#d0d8e8"/><stop offset="1" stop-color="#7a8faa"/></linearGradient></defs></svg>Testnet</span><span class="net-pill-short" style="display:none;">Arc</span></div>
+      <!-- Relay-style theme toggle (sun/moon), wired to the existing toggleTheme() -->
+      <div onclick="toggleTheme()" style="display:flex;align-items:center;gap:6px;padding:6px;border-radius:100px;border:1px solid var(--border);background:var(--surface);cursor:pointer;flex-shrink:0;">
+        <span style="width:22px;height:22px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:12px;">☀️</span>
+        <span style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;">🌙</span>
+      </div>
+      <!-- Profile pill: avatar, notification dot, dropdown (address, Claim .arc name, Notifications, Settings) -->
+      <div id="nanProfilePill" onclick="nanToggleProfileMenu(event)" style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 10px 4px 4px;border-radius:100px;border:1px solid var(--border);background:var(--surface);position:relative;flex-shrink:0;">
+        <div style="width:28px;height:28px;border-radius:50%;background:#7000ff;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px;flex-shrink:0;" id="nanProfileAvatar">?</div>
+        <span style="font-size:13px;font-weight:600;color:var(--text);">Profile</span>
+        <span id="nanProfileNotifDot" style="display:none;position:absolute;top:-2px;right:-2px;width:9px;height:9px;border-radius:50%;background:#e24b4a;border:2px solid var(--card);"></span>
+        <div id="nanProfileMenu" style="display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:6px;min-width:220px;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.25);">
+          <div id="nanProfileMenuAddr" style="padding:9px 12px;font-size:.8rem;color:var(--text2);border-bottom:1px solid var(--border);margin-bottom:4px;">Not connected</div>
+          <div onclick="event.stopPropagation();goPage('arcname');nanToggleProfileMenu()" style="padding:9px 12px;font-size:.85rem;cursor:pointer;border-radius:8px;" onmouseover="this.style.background='rgba(112,0,255,.1)'" onmouseout="this.style.background='none'">Claim your .arc name</div>
+          <div onclick="event.stopPropagation();toggleNotifPanel(event);nanToggleProfileMenu()" style="padding:9px 12px;font-size:.85rem;cursor:pointer;border-radius:8px;" onmouseover="this.style.background='rgba(112,0,255,.1)'" onmouseout="this.style.background='none'">Notifications</div>
+          <div onclick="event.stopPropagation();nanToggleSettings(event);nanToggleProfileMenu()" style="padding:9px 12px;font-size:.85rem;cursor:pointer;border-radius:8px;" onmouseover="this.style.background='rgba(112,0,255,.1)'" onmouseout="this.style.background='none'">Settings</div>
+        </div>
+      </div>
       <!-- Faucet: text pill on desktop, icon button on mobile -->
       <button id="nan-history-btn" onclick="goPage('history')" title="History" class="nan-hidden-btn" style="display:none;background:transparent;border:1px solid var(--border);border-radius:100px;width:34px;height:34px;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);flex-shrink:0;transition:all .2s;" onmouseover="this.style.borderColor='rgba(168,85,247,.4)';this.style.color='#a855f7'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text2)'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></button>
       <button id="navFaucetBtn" onclick="claimFaucet(this)" style="display:none;" class="tb-faucet" title="Get free USDC tokens">
@@ -380,7 +397,7 @@ html,body{background-color:var(--bg);}
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
       </button>
       <!-- ── Wallet dropdown ── -->
-      <div id="nanWalletDropWrap" style="position:relative;display:inline-flex;flex-shrink:0;">
+      <div id="nanWalletDropWrap" style="position:relative;display:none;flex-shrink:0;">
         <button id="nanWalletDropBtn" onclick="nanToggleWalletDrop(event)"
           style="cursor:pointer;">
           <span id="nanWalletDot">◆</span>
@@ -421,7 +438,7 @@ html,body{background-color:var(--bg);}
       <!-- ── Settings gear dropdown ── -->
       <div id="nanSettingsWrap" style="position:relative;display:inline-flex;flex-shrink:0;">
         <button id="nanSettingsBtn" onclick="nanToggleSettings(event)" title="Settings"
-          style="display:flex;align-items:center;justify-content:center;width:34px;height:34px;
+          style="display:none;align-items:center;justify-content:center;width:34px;height:34px;
           background:transparent;border:1px solid var(--border);border-radius:100px;
           cursor:pointer;color:var(--text2);transition:.2s;flex-shrink:0;"
           onmouseover="this.style.borderColor='rgba(168,85,247,.4)';this.style.color='#a855f7'"
@@ -634,16 +651,16 @@ html,body{background-color:var(--bg);}
       <span style="font-size:12px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;">Spending policy</span>
       <span style="font-size:11px;color:var(--text3);">Per-call caps, enforced on every payment</span>
     </div>
-    <div style="border:1px solid rgba(112,0,255,.2);background:rgba(112,0,255,.05);border-radius:12px;padding:4px 14px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(112,0,255,.12);">
+    <div style="border:1px solid var(--border);background:none;border-radius:12px;padding:4px 14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
         <span style="font-size:13px;color:var(--text);">Career agent &middot; parse CV</span>
         <span style="font-size:13px;font-weight:700;color:#7000ff;">$0.02 cap</span>
       </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(112,0,255,.12);">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
         <span style="font-size:13px;color:var(--text);">Career agent &middot; generate CV</span>
         <span style="font-size:13px;font-weight:700;color:#7000ff;">$0.03 cap</span>
       </div>
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(112,0,255,.12);">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
         <span style="font-size:13px;color:var(--text);">Career agent &middot; search jobs</span>
         <span style="font-size:13px;font-weight:700;color:#7000ff;">$0.05 cap</span>
       </div>
@@ -667,7 +684,7 @@ html,body{background-color:var(--bg);}
 
   <div style="padding:20px 24px;">
     <div onclick="nanAgentChatShortcut('Discover other agent services I can pay, and show me Agent Pay plus options')" style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:0.5px solid var(--border);cursor:pointer;transition:background .15s;border-radius:8px;" onmouseover="this.style.background='rgba(112,0,255,.08)'" onmouseout="this.style.background='transparent'">
-      <div style="width:40px;height:40px;border-radius:11px;background:rgba(112,0,255,.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+      <div style="width:40px;height:40px;border-radius:11px;background:none;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#c9b8ff" stroke-width="2" stroke-linecap="round"><circle cx="7" cy="12" r="3"/><circle cx="17" cy="12" r="3"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
       </div>
       <div style="flex:1;">
@@ -726,7 +743,7 @@ html,body{background-color:var(--bg);}
       <span class="spinner" style="border-top-color:var(--accent3);"></span>
       <span id="txPollingMsg">Confirming transaction…</span>
     </div>
-    <div id="emptyBalHint" style="display:none;margin-bottom:10px;padding:14px 16px;background:rgba(112,0,255,.08);border:1px solid rgba(112,0,255,.2);border-radius:16px;align-items:center;justify-content:space-between;gap:10px;">
+    <div id="emptyBalHint" style="display:none;margin-bottom:10px;padding:14px 16px;background:none;border:1px solid var(--border);border-radius:16px;align-items:center;justify-content:space-between;gap:10px;">
       <div>
         <div style="font-size:1rem;font-weight:700;color:#f0f0f0;margin-bottom:3px;">Welcome to NAN 👋</div>
         <div style="font-size:.875rem;color:var(--text3);">Get free USDC to get started</div>
@@ -763,7 +780,7 @@ html,body{background-color:var(--bg);}
           style="width:100%;background:rgba(255,255,255,.04);border:1.5px solid var(--border);border-radius:14px;padding:14px 60px 14px 14px;color:var(--text);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:16px;outline:none;transition:border-color .15s;"
           onfocus="this.style.borderColor='rgba(112,0,255,.5)'" onblur="this.style.borderColor='var(--border)'"/>
         <button onclick="navigator.clipboard.readText().then(t=>{document.getElementById('recipInput').value=t;onRecipInput()}).catch(()=>document.getElementById('recipInput').focus())"
-          style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:rgba(112,0,255,.15);border:1px solid rgba(112,0,255,.2);border-radius:8px;color:var(--accent3);font-size:.75rem;font-weight:700;padding:5px 9px;cursor:pointer;font-family:'Inter',sans-serif;">Paste</button>
+          style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:1px solid var(--border);border-radius:8px;color:var(--accent3);font-size:.75rem;font-weight:700;padding:5px 9px;cursor:pointer;font-family:'Inter',sans-serif;">Paste</button>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding:0 2px;">
         <div style="font-size:.72rem;color:var(--text3);">Try <span style="color:#a855f7;cursor:pointer;" onclick="document.getElementById('recipInput').value='yourname.arc';onRecipInput()">yourname.arc</span></div>
@@ -775,7 +792,7 @@ html,body{background-color:var(--bg);}
       <div style="font-size:.65rem;font-weight:700;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;">Token</div>
       <div style="display:flex;gap:6px;margin-bottom:18px;">
         <button id="topt-usdc" onclick="setSendTokenDirect('USDC',this)"
-          style="flex:1;padding:10px;border-radius:12px;border:1.5px solid rgba(112,0,255,.5);background:rgba(112,0,255,.08);color:var(--text);font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s;">
+          style="flex:1;padding:10px;border-radius:12px;border:1.5px solid var(--border);background:none;color:var(--text);font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s;">
           <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALUAAAC1CAYAAAAZU76pAAAkA0lEQVR42uycA7DsSBSGe23bnHRmbdu2UHw2u7O2bds2S8+YdNa2bUtn51uUnpmezPmqTvHe9I9z7whGmQT2v3Om9Ih8oXRAniQ+3zxxxUHW55WBSxpEsVjELKAuRCEMnuiUSIViTe6wLRPJQzIwEJAXuiUSIViTe6wLRPJQzIwEJAXuiUSIViTe6wLRPJQzIwEJAXuiUSIViTe6wLRPJQzIwEJAXuiUSIViTe6wLRPJQzIwEJAXuiUSIViTe6wLRPJQzIwEJAXuiUSIViTe6wLRPJQzIwEJAXuiUSIViTe6wLRPJQzIwEJAXuiUSIViTe6wLRPJQzIwEJAXuiUSIViTe6wLRPJQzIwEJAXuiUSIViTe6wLRPJQzIwEJAXui" width="16" height="16" style="border-radius:50%;flex-shrink:0;"/> USDC
         </button>
         <button id="topt-eurc" onclick="setSendTokenDirect('EURC',this)"
@@ -793,7 +810,7 @@ html,body{background-color:var(--bg);}
             oninput="validateSend()"
             style="flex:1;background:none;border:none;outline:none;font-size:1.6rem;font-weight:800;color:var(--text);font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;width:0;min-width:0;"/>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
-            <div style="background:rgba(112,0,255,.12);border:1px solid rgba(112,0,255,.25);border-radius:8px;padding:5px 12px;font-size:.82rem;color:#a855f7;font-weight:700;" id="sendTokenLabel">USDC</div>
+            <div style="background:none;border:1px solid var(--border);border-radius:8px;padding:5px 12px;font-size:.82rem;color:#a855f7;font-weight:700;" id="sendTokenLabel">USDC</div>
             <button onclick="setMax()" style="background:none;border:none;font-size:.75rem;color:var(--accent3);cursor:pointer;font-family:'Inter',sans-serif;font-weight:700;padding:0;">MAX</button>
           </div>
         </div>
@@ -812,7 +829,7 @@ html,body{background-color:var(--bg);}
 
     <!-- ══ RECEIVE TAB ══ -->
     <div id="tab-recv" style="display:none;flex-direction:column;align-items:center;">
-      <div style="display:flex;align-items:center;gap:6px;background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:100px;padding:5px 14px;margin-bottom:16px;width:fit-content;">
+      <div style="display:flex;align-items:center;gap:6px;background:none;border:1px solid var(--border);border-radius:100px;padding:5px 14px;margin-bottom:16px;width:fit-content;">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--success);display:inline-block;"></span>
         <span style="font-size:.78rem;color:var(--accent3);font-weight:600;">Arc Testnet · USDC &amp; EURC</span>
       </div>
@@ -825,7 +842,7 @@ html,body{background-color:var(--bg);}
         <button class="btn" onclick="copyAddr()" style="padding:13px;font-size:.875rem;display:flex;align-items:center;justify-content:center;gap:7px;">📋 Copy</button>
         <button class="btn btn-outline" onclick="shareAddr()" style="padding:13px;font-size:.875rem;display:flex;align-items:center;justify-content:center;gap:7px;">↗ Share</button>
       </div>
-      <div style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(112,0,255,.06);border:1px solid rgba(112,0,255,.18);border-radius:14px;padding:12px 14px;margin-bottom:12px;">
+      <div style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;background:none;border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin-bottom:12px;">
         <div>
           <div style="font-size:.72rem;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;">.arc Identity</div>
           <div id="recvArcName" style="font-size:.95rem;font-weight:700;color:#a855f7;">Not registered yet</div>
@@ -833,7 +850,7 @@ html,body{background-color:var(--bg);}
         </div>
         <button onclick="goPage('arcname')" style="background:#7000ff;border:none;border-radius:9px;color:#fff;font-family:'Inter',sans-serif;font-size:.78rem;font-weight:700;padding:8px 12px;cursor:pointer;white-space:nowrap;">Get →</button>
       </div>
-      <div style="display:flex;align-items:flex-start;gap:8px;padding:11px 14px;background:rgba(112,0,255,.05);border:1px solid rgba(112,0,255,.15);border-radius:12px;width:100%;">
+      <div style="display:flex;align-items:flex-start;gap:8px;padding:11px 14px;background:none;border:1px solid var(--border);border-radius:12px;width:100%;">
         <span style="font-size:1rem;flex-shrink:0;">💡</span>
         <span style="font-size:.78rem;color:var(--text2);line-height:1.5;">Only send <strong>USDC or EURC</strong> on <strong>Arc Testnet</strong> to this address.</span>
       </div>
@@ -874,7 +891,7 @@ html,body{background-color:var(--bg);}
       <div class="success-hash" id="successHash"></div>
       <div class="success-actions">
         <button class="btn btn-outline" onclick="openExplorer()">View ↗</button>
-        <button class="btn btn-outline" onclick="showReceipt()" style="background:rgba(112,0,255,.12);border-color:rgba(112,0,255,.4);color:#a855f7;">🧾 Receipt</button>
+        <button class="btn btn-outline" onclick="showReceipt()" style="background:none;border-color:var(--border);color:#a855f7;">🧾 Receipt</button>
         <button class="btn" onclick="resetSend()">Send again</button>
       </div>
     </div>
