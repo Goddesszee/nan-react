@@ -2,7 +2,7 @@
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes scaleIn{from{opacity:0;transform:scale(.88) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
 :root{
-  --bg:#1a1a1a;--surface:#212121;--card:#242424;--card2:#2e2e2e;
+  --bg:#0a0a0a;--surface:#141414;--card:#161616;--card2:#1c1c1c;
   --border:rgba(255,255,255,.10);--border2:rgba(255,255,255,.16);
   --accent:#7000ff;--accent2:#7000ff;--accent3:#7000ff;--accent4:#a855f7;
   --text:#f0f0f0;--text2:#b0b0b0;--text3:#9a9a9a;
@@ -3841,9 +3841,9 @@ input[style*="background: none"] {
 /* ── 3. Prefers-color-scheme — auto dark/light ─────────────────── */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #111111;
-    --surface: #111111;
-    --card: #111111;
+    --bg: #0a0a0a;
+    --surface: #141414;
+    --card: #161616;
     --text: #f0f0f0;
     --text2: #b0b0b0;
     --text3: #9a9a9a;
@@ -3855,10 +3855,10 @@ input[style*="background: none"] {
    does not use !important, so it can't bleed into [data-theme="light"] or
    the mobile pure-black override. */
 :root:not([data-theme="light"]) {
-  --bg: #1a1a1a;
-  --surface: #212121;
-  --card: #242424;
-  --card2: #2e2e2e;
+  --bg: #0a0a0a;
+  --surface: #141414;
+  --card: #161616;
+  --card2: #1c1c1c;
   --border: rgba(255,255,255,.10);
   --border2: rgba(255,255,255,.16);
   --topbar-bg: #1a1a1a;
@@ -4341,9 +4341,9 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
   :root {
     --card: transparent !important;
     --card2: transparent !important;
-    --surface: #000000 !important;
-    --bg: #000000 !important;
-    --border: rgba(168,85,247,.15) !important;
+    --surface: #141414 !important;
+    --bg: #0a0a0a !important;
+    --border: rgba(255,255,255,.10) !important;
     --text: #f0f0f0 !important;
     --text2: #b0b0b0 !important;
     --text3: #9a9a9a !important;
@@ -5203,7 +5203,7 @@ html[data-theme=light] .nan-aur-cd{color:#000000 !important;}
 ══════════════════════════════════════════════════════════════ */
 :root,
 html[data-theme="dark"]{
-  --bg:#111111 !important;
+  --bg:#0a0a0a !important;
   --topbar-bg:rgba(17,17,17,.85) !important;
   --nav-bg:rgba(17,17,17,.85) !important;
 }
