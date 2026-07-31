@@ -2664,7 +2664,7 @@ html,body{background-color:var(--bg);}
       <!-- Tab switcher -->
       <div style="display:flex;gap:4px;background:var(--surface);border-radius:14px;padding:4px;margin-bottom:14px;">
         <button class="stab active" id="ntab-deposit" onclick="setNairaTab('deposit')" style="flex:1;padding:10px;border-radius:11px;border:none;font-size:.85rem;font-weight:700;cursor:pointer;">↓ Deposit</button>
-        <button class="stab" id="ntab-withdraw" onclick="setNairaTab('withdraw')" style="flex:1;padding:10px;border-radius:11px;border:none;font-size:.85rem;font-weight:700;cursor:pointer;">🏦 Withdraw</button>
+        <button class="stab" id="ntab-withdraw" onclick="setNairaTab('withdraw')" style="flex:1;padding:10px;border-radius:11px;border:none;font-size:.85rem;font-weight:700;cursor:pointer;color:#a855f7;">🏦 Withdraw</button>
         <button class="stab" id="ntab-convert" onclick="setNairaTab('convert')" style="flex:1;padding:10px;border-radius:11px;border:none;font-size:.85rem;font-weight:700;cursor:pointer;">⇄ Convert</button>
       </div>
 
@@ -2675,19 +2675,19 @@ html,body{background-color:var(--bg);}
             <div style="font-size:.95rem;font-weight:700;color:var(--text);">Virtual Account</div>
             <div style="display:flex;align-items:center;gap:5px;font-size:.78rem;color:var(--text2);"><span style="width:6px;height:6px;border-radius:50%;background:#a855f7;display:inline-block;animation:pulse 2s infinite;"></span>Active</div>
           </div>
-          <div style="display:flex;flex-direction:column;gap:6px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border-radius:10px;">
+          <div style="display:flex;flex-direction:column;">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 2px;border-bottom:1px solid var(--border);">
               <span style="font-size:.85rem;color:var(--text3);">Bank</span>
               <span style="font-size:.9rem;font-weight:700;color:var(--text);">Providus Bank</span>
             </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border-radius:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 2px;border-bottom:1px solid var(--border);">
               <span style="font-size:.85rem;color:var(--text3);">Account Number</span>
               <div style="display:flex;align-items:center;gap:8px;">
                 <span style="font-size:.9rem;font-weight:700;color:var(--text);" id="ngnVirtualAcct">9901234567</span>
                 <button onclick="navigator.clipboard.writeText(document.getElementById('ngnVirtualAcct').textContent);toast('Account number copied!','success',2000)" style="background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:.75rem;padding:3px 8px;cursor:pointer;">Copy</button>
               </div>
             </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--bg);border-radius:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 2px;">
               <span style="font-size:.85rem;color:var(--text3);">Account Name</span>
               <span style="font-size:.9rem;font-weight:700;color:var(--text);">NAN / YOUR NAME</span>
             </div>

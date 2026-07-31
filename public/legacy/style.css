@@ -5,7 +5,7 @@
   --bg:#0a0a0a;--surface:#141414;--card:#161616;--card2:#1c1c1c;
   --border:rgba(255,255,255,.10);--border2:rgba(255,255,255,.16);
   --accent:#7000ff;--accent2:#7000ff;--accent3:#7000ff;--accent4:#a855f7;
-  --text:#f0f0f0;--text2:#b0b0b0;--text3:#9a9a9a;
+  --text:#f0f0f0;--text2:#d0d0d0;--text3:#c5c5c5;
   --danger:#a855f7;--success:#7000ff;
   --radius:12px;--radius-sm:8px;
   --topbar-bg:#1a1a1a;--nav-bg:#1a1a1a;
@@ -3384,7 +3384,7 @@ a:hover{color:var(--text);}
 /* Core fix: surface containers get a lighter bg in dark mode
    so they stand out against the #1a1a1a card background */
 :root {
-  --surface-raised: #222222;  /* slightly lighter than --surface for contrast */
+  --surface-raised: #1c1c1c;  /* slightly lighter than --surface for contrast */
   --input-bg: #222222;        /* input fields in dark mode */
   --border-strong: rgba(255,255,255,.12); /* stronger border for dark mode containers */
 }
@@ -3845,8 +3845,8 @@ input[style*="background: none"] {
     --surface: #141414;
     --card: #161616;
     --text: #f0f0f0;
-    --text2: #b0b0b0;
-    --text3: #9a9a9a;
+    --text2: #d0d0d0;
+    --text3: #c5c5c5;
     --border: rgba(255,255,255,.07);
   }
 }
@@ -4092,8 +4092,8 @@ img[loading="lazy"] { background: var(--surface); min-height: 1px; }
 [data-theme="dark"],
 :root:not([data-theme="light"]) {
   --text:   #f0f0f0  !important;   /* 18.4:1 on dark bg ✅ */
-  --text2:  #b0b0b0  !important;   /* ~9:1 ✅ (was rgba(0,0,0,.55) — black-on-dark, nearly invisible, wrongly copy-pasted from light mode) */
-  --text3:  #9a9a9a  !important;   /* ~6.5:1 ✅ (was rgba(0,0,0,.55) — same bug) */
+  --text2:  #d0d0d0  !important;   /* brightened further per confirmed testing */
+  --text3:  #c5c5c5  !important;   /* brightened further per confirmed testing */
   --border: rgba(255,255,255,.10) !important;
   --border2:rgba(255,255,255,.18) !important;
 }
@@ -4345,8 +4345,8 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
     --bg: #0a0a0a !important;
     --border: rgba(255,255,255,.10) !important;
     --text: #f0f0f0 !important;
-    --text2: #b0b0b0 !important;
-    --text3: #9a9a9a !important;
+    --text2: #d0d0d0 !important;
+    --text3: #c5c5c5 !important;
   }
   /* Remove all blur — kills lag on mobile */
   *, *::before, *::after {
