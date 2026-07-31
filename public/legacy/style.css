@@ -5361,32 +5361,49 @@ html .nan-aur-grid{
 }
 
 /* ══ Agent wallet hero v2 — two-column layout with globe visual, light/dark aware ══ */
-.nan-hero-cols{display:grid;grid-template-columns:1.15fr 1fr;gap:32px;align-items:center;margin-bottom:8px;}
-.nan-hero-left{min-width:0;}
-.nan-hero-accent{color:#a855f7;}
-.nan-hero-btnrow{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:4px 0 0;}
+.nan-hero-cols{display:grid !important;grid-template-columns:1.15fr 1fr !important;gap:32px !important;align-items:center !important;margin-bottom:8px !important;}
+.nan-hero-left{min-width:0 !important;}
+.nan-hero-accent{color:#a855f7 !important;font-size:inherit !important;font-weight:inherit !important;line-height:inherit !important;letter-spacing:inherit !important;font-family:inherit !important;text-decoration:none !important;background:none !important;border:none !important;display:inline !important;}
+.nan-hero-btnrow{display:flex !important;gap:12px !important;flex-wrap:wrap !important;align-items:center !important;margin:4px 0 0 !important;}
 
-.nan-hero-globe-wrap{position:relative;height:300px;display:flex;align-items:center;justify-content:center;}
+.nan-hero-globe-wrap{position:relative !important;height:300px !important;max-height:300px !important;display:flex !important;align-items:center !important;justify-content:center !important;overflow:hidden !important;}
 .nan-hero-globe{
-  width:280px;height:280px;border-radius:50%;position:relative;overflow:hidden;
-  background:radial-gradient(circle at 32% 28%,#3a2266 0%,#1a1030 45%,#0b0b14 75%);
-  box-shadow:0 0 70px rgba(112,0,255,.28) inset,0 0 50px rgba(112,0,255,.18),0 12px 40px rgba(112,0,255,.15);
-  border:1px solid rgba(168,85,247,.28);
+  width:280px !important;height:280px !important;min-width:280px !important;min-height:280px !important;max-width:280px !important;max-height:280px !important;
+  flex-shrink:0 !important;border-radius:50% !important;position:relative !important;overflow:hidden !important;
+  background:radial-gradient(circle at 32% 28%,#3a2266 0%,#1a1030 45%,#0b0b14 75%) !important;
+  box-shadow:0 0 70px rgba(112,0,255,.28) inset,0 0 50px rgba(112,0,255,.18),0 12px 40px rgba(112,0,255,.15) !important;
+  border:1px solid rgba(168,85,247,.28) !important;
 }
-.nan-hero-globe-svg{position:absolute;inset:0;width:100%;height:100%;}
-.nan-hero-grid-line ellipse{fill:none;stroke:rgba(255,255,255,.07);stroke-width:1;}
-.nan-hero-trail line{stroke:rgba(168,85,247,.4);stroke-width:1;}
+.nan-hero-globe-svg{position:absolute !important;inset:0 !important;width:100% !important;height:100% !important;display:block !important;}
+.nan-hero-grid-line ellipse{fill:none !important;stroke:rgba(255,255,255,.07) !important;stroke-width:1 !important;}
+.nan-hero-trail line{stroke:rgba(168,85,247,.4) !important;stroke-width:1 !important;}
 
 /* Light theme: the globe stays a dark "night sky" sphere on purpose (it's meant to read as
    Earth from space), but gets a softer surrounding glow so it doesn't look like a hole on white */
 html[data-theme=light] .nan-hero-globe{
-  box-shadow:0 0 60px rgba(112,0,255,.22) inset,0 0 40px rgba(112,0,255,.14),0 14px 34px rgba(112,0,255,.18);
-  border-color:rgba(112,0,255,.22);
+  box-shadow:0 0 60px rgba(112,0,255,.22) inset,0 0 40px rgba(112,0,255,.14),0 14px 34px rgba(112,0,255,.18) !important;
+  border-color:rgba(112,0,255,.22) !important;
 }
 
-.nan-hero-tagline{text-align:center;margin-top:28px;font-size:.85rem;color:var(--text3,#888);}
+.nan-hero-tagline{text-align:center !important;margin-top:28px !important;font-size:.85rem !important;color:var(--text3,#888) !important;}
+.nan-hero-tagline .nan-hero-accent{font-weight:700 !important;}
 
 @media(max-width:900px){
-  .nan-hero-cols{grid-template-columns:1fr;}
-  .nan-hero-globe-wrap{display:none;}
+  .nan-hero-cols{grid-template-columns:1fr !important;}
+  .nan-hero-globe-wrap{display:none !important;}
+}
+
+/* Escape the legacy .nan-aur-card specificity conflicts entirely for the hero feature strip —
+   using the extra wrapper class here beats every older rule regardless of !important/order */
+.nan-hero-features.nan-aur-grid{display:grid !important;grid-template-columns:repeat(3,1fr) !important;gap:0 !important;}
+.nan-hero-features .nan-aur-card{background:none !important;border:none !important;border-right:1px solid var(--border,rgba(255,255,255,.1)) !important;border-radius:0 !important;box-shadow:none !important;padding:8px 22px !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;}
+.nan-hero-features .nan-aur-card:last-child{border-right:none !important;}
+.nan-hero-features .nan-aur-tile{background:none !important;box-shadow:none !important;width:auto !important;height:auto !important;justify-content:flex-start !important;color:#a855f7 !important;margin-bottom:10px !important;}
+.nan-hero-features .nan-aur-tile svg{width:18px !important;height:18px !important;}
+.nan-hero-features .nan-aur-ct{color:var(--text,#fff) !important;font-size:.9rem !important;font-weight:700 !important;margin-bottom:4px !important;}
+.nan-hero-features .nan-aur-cd{color:var(--text3,#888) !important;font-size:.8rem !important;line-height:1.55 !important;}
+@media(max-width:767px){
+  .nan-hero-features.nan-aur-grid{grid-template-columns:1fr !important;}
+  .nan-hero-features .nan-aur-card{border-right:none !important;border-bottom:1px solid var(--border,rgba(255,255,255,.1)) !important;}
+  .nan-hero-features .nan-aur-card:last-child{border-bottom:none !important;}
 }
