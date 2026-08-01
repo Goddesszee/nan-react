@@ -8,6 +8,12 @@ function goBack(){
   else goPage('home');
 }
 function goPage(name) {
+  // Agent Wallet's own connect hero now only lives behind the top-nav pill's
+  // dropdown — don't show it as an in-app page when disconnected, redirect
+  // to Swap instead.
+  if (name === 'agent-wallet' && !(typeof agentWalletAddr !== 'undefined' && agentWalletAddr)) {
+    name = 'swap';
+  }
   window._prevPage = window._currentPage || 'home';
   window._currentPage = name;
   // Check userAddr OR Dynamic localStorage fallback
