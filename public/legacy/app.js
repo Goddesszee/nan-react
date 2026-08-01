@@ -1293,7 +1293,7 @@ async function onConnected(isEmail=false, isDev=false){
     p.style.display='none';
   });
   document.getElementById('bottomNav').classList.add('show');
-  showPage('swap');
+  showPage('agent-wallet');
   updateTopBar(true);
   if(typeof updateDesktopNav === 'function') updateDesktopNav();
   // Mobile UI enhancements
