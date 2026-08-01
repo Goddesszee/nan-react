@@ -1863,10 +1863,93 @@ html,body{background-color:var(--bg);}
       <div id="supplierStatus" style="font-size:.8rem;color:var(--text3);margin-top:8px;"></div>
       <div id="supplierReceipt"></div>
       <div id="supplierResults" style="margin-top:16px;"></div>
+
+      <div style="margin-top:40px;padding-top:28px;border-top:1px solid var(--border);">
+        <div id="realEstateIntro">
+          <div style="font-size:1rem;font-weight:700;color:#7000ff;margin-bottom:4px;">Real Estate Marketplace</div>
+          <div style="font-size:.82rem;color:var(--text2);margin-bottom:16px;">Find verified rental and sale properties in Nigeria, or list your own — no more rental scams.</div>
+          <button class="btn" id="realEstateOpenBtn" onclick="realEstateOpenPanel()" style="width:auto;padding:14px 40px;border-radius:14px;font-weight:700;">Explore Real Estate</button>
+        </div>
+
+        <div id="realEstatePanel" style="display:none;">
+          <div onclick="realEstateClosePanel()" style="cursor:pointer;color:#7000ff;font-weight:700;font-size:.85rem;margin-bottom:18px;display:flex;align-items:center;gap:6px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7000ff" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+            Back to Research agent
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px;max-width:600px;">
+            <button id="reTabBrowse" onclick="realEstateSwitchTab('browse')" class="tnav-btn nan-feat-card" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:22px 20px;border-radius:16px;border:1px solid var(--border);background:var(--card);color:var(--text);height:auto;min-height:150px;cursor:pointer;box-sizing:border-box;">
+              <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#7000ff,#a855f7);display:flex;align-items:center;justify-content:center;margin-bottom:14px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1V10"/></svg></div>
+              <div style="font-weight:700;font-size:1rem;margin-bottom:4px;">Browse Properties</div>
+              <div style="font-size:.78rem;opacity:.75;">Search verified rentals and sales.</div>
+            </button>
+            <button id="reTabList" onclick="realEstateSwitchTab('list')" class="tnav-btn nan-feat-card" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:22px 20px;border-radius:16px;border:1px solid var(--border);background:var(--card);color:var(--text);height:auto;min-height:150px;cursor:pointer;box-sizing:border-box;">
+              <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#f59e0b,#fbbf24);display:flex;align-items:center;justify-content:center;margin-bottom:14px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+              <div style="font-weight:700;font-size:1rem;margin-bottom:4px;">List a Property</div>
+              <div style="font-size:.78rem;opacity:.75;">Verified landlords list for rent or sale.</div>
+            </button>
+            <button id="reTabSaved" onclick="realEstateSwitchTab('saved')" class="tnav-btn nan-feat-card" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:22px 20px;border-radius:16px;border:1px solid var(--border);background:var(--card);color:var(--text);height:auto;min-height:150px;cursor:pointer;box-sizing:border-box;">
+              <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#06b6d4,#22d3ee);display:flex;align-items:center;justify-content:center;margin-bottom:14px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z"/></svg></div>
+              <div style="font-weight:700;font-size:1rem;margin-bottom:4px;">Saved Properties</div>
+              <div style="font-size:.78rem;opacity:.75;">Properties you've bookmarked.</div>
+            </button>
+            <button id="reTabInquiries" onclick="realEstateSwitchTab('inquiries')" class="tnav-btn nan-feat-card" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:22px 20px;border-radius:16px;border:1px solid var(--border);background:var(--card);color:var(--text);height:auto;min-height:150px;cursor:pointer;box-sizing:border-box;">
+              <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#10b981,#34d399);display:flex;align-items:center;justify-content:center;margin-bottom:14px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+              <div style="font-weight:700;font-size:1rem;margin-bottom:4px;">My Inquiries</div>
+              <div style="font-size:.78rem;opacity:.75;">Messages with landlords and agents.</div>
+            </button>
+          </div>
+
+          <div id="reBrowsePane" style="display:none;">
+            <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
+              <input id="reCity" placeholder="City, e.g. Lekki, Lagos" style="flex:1;min-width:160px;padding:11px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+              <input id="reBudget" placeholder="Budget, e.g. ₦3,000,000/yr" style="flex:1;min-width:160px;padding:11px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+              <input id="reType" placeholder="Type, e.g. Apartment" style="flex:1;min-width:160px;padding:11px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+            </div>
+            <button class="btn" onclick="realEstateSearch()" style="width:auto;padding:12px 32px;border-radius:12px;font-weight:700;margin-bottom:16px;">Search Properties</button>
+            <div id="reBrowseResults" style="text-align:center;padding:36px 20px;background:var(--card);border:1px solid var(--border);border-radius:16px;">
+              <div style="font-size:.9rem;color:var(--text);font-weight:600;margin-bottom:4px;">No verified listings yet.</div>
+              <div style="font-size:.8rem;color:var(--text3);">Nan's real estate marketplace is launching soon — check back shortly.</div>
+            </div>
+          </div>
+          <div id="reListPane" style="display:none;text-align:center;padding:36px 20px;background:var(--card);border:1px solid var(--border);border-radius:16px;">
+            <div style="font-size:.9rem;color:var(--text);font-weight:600;margin-bottom:4px;">Property listing is launching soon.</div>
+            <div style="font-size:.8rem;color:var(--text3);">Landlord verification and listing tools are on the way.</div>
+          </div>
+          <div id="reSavedPane" style="display:none;text-align:center;padding:36px 20px;background:var(--card);border:1px solid var(--border);border-radius:16px;">
+            <div style="font-size:.9rem;color:var(--text);font-weight:600;">No saved properties yet.</div>
+          </div>
+          <div id="reInquiriesPane" style="display:none;text-align:center;padding:36px 20px;background:var(--card);border:1px solid var(--border);border-radius:16px;">
+            <div style="font-size:.9rem;color:var(--text);font-weight:600;">No inquiries yet.</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
   <script>
+  function realEstateOpenPanel(){
+    document.getElementById('realEstateIntro').style.display = 'none';
+    document.getElementById('realEstatePanel').style.display = 'block';
+    realEstateSwitchTab('browse');
+  }
+  function realEstateClosePanel(){
+    document.getElementById('realEstateIntro').style.display = 'block';
+    document.getElementById('realEstatePanel').style.display = 'none';
+  }
+  function realEstateSwitchTab(tab){
+    ['browse','list','saved','inquiries'].forEach(function(t){
+      var pane = document.getElementById('re' + t.charAt(0).toUpperCase() + t.slice(1) + 'Pane');
+      if (pane) pane.style.display = (t === tab) ? 'block' : 'none';
+      var btn = document.getElementById('reTab' + t.charAt(0).toUpperCase() + t.slice(1));
+      if (btn) {
+        btn.style.background = (t === tab) ? '#7000ff' : 'var(--card)';
+        btn.style.color = (t === tab) ? '#fff' : 'var(--text)';
+      }
+    });
+  }
+  function realEstateSearch(){
+    if (typeof toast === 'function') toast('Real estate search is launching soon', 'info', 2500);
+  }
   const SUPPLIER_API = 'https://nan-production.up.railway.app/api/supplier';
   async function supplierRunSearch(){
     const product = document.getElementById('supplierProduct').value.trim();
