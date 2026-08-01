@@ -1060,7 +1060,6 @@ html,body{background-color:var(--bg);}
     <!-- ══ SEND PAGE ══ -->
   <div class="page" id="page-send">
 
-    <div class="page-title" style="padding:0 4px;">Send</div>
     <!-- Status banners (kept for JS — outside card so they show above it) -->
     <div id="onboardChecklist" style="display:none;"></div>
     <div class="rpc-error" id="rpcError" style="display:none;">⚠ Could not fetch balances. <a href="#" onclick="refreshBalances();return false;" style="margin-left:6px;">Retry</a></div>
@@ -2656,7 +2655,6 @@ html,body{background-color:var(--bg);}
 
   <!-- ══ SWAP PAGE ══ -->
   <div class="page" id="page-swap">
-    <div class="page-title" style="padding:0 4px;">Swap</div>
     <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;overflow:hidden;padding:14px;max-width:460px !important;">
     <div id="swapModeBanner" style="display:none;"></div>
 
@@ -2730,7 +2728,7 @@ html,body{background-color:var(--bg);}
     <!-- ── Page header ── -->
     <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 16px 14px;border-bottom:1px solid var(--border);">
       <div>
-        <div style="font-size:1.1rem;font-weight:700;color:#7000ff;letter-spacing:-.02em;">Bridge</div>
+        <div style="font-size:1.1rem;font-weight:700;color:var(--text);letter-spacing:-.02em;">Bridge</div>
         <div style="font-size:.7rem;color:var(--text3);font-weight:600;margin-top:2px;letter-spacing:.04em;">CCTP V2 · Circle</div>
       </div>
       <button onclick="refreshGatewayBalance()" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;color:var(--text2);font-size:.75rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">↻ Refresh</button>
@@ -2947,7 +2945,6 @@ html,body{background-color:var(--bg);}
   </div><!-- end card -->
 </div> ══ -->
   <div class="page" id="page-naira">
-    <div class="page-title" style="padding:0 4px;">Naira</div>
     <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;max-width:460px !important;">
       <button class="back-btn" onclick="goBack()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg> Back</button>
 
