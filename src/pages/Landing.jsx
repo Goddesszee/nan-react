@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTheme } from '../hooks/useTheme'
-import { NanRibbons } from '../components/NanRibbons'
 
 const API = 'https://nan-production.up.railway.app'
 
@@ -8,16 +7,9 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
   const { theme, toggleTheme } = useTheme()
   const dark = theme !== 'light'
 
-  // responsive
-  const [isDesktop, setIsDesktop] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 768)
-  useEffect(() => {
-    const check = () => setIsDesktop(window.innerWidth >= 768)
-    window.addEventListener('resize', check)
-    return () => window.removeEventListener('resize', check)
-  }, [])
-
   // OTP login state
   const [step, setStep] = useState('email') // email | otp | loading
+  const [showConnect, setShowConnect] = useState(false)
   const [email, setEmail] = useState('')
   const [otp, setOtp] = useState('')
   const [error, setError] = useState('')
@@ -26,7 +18,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
   const tokenRef = useRef(null)
   const expiryRef = useRef(null)
 
-  // live stats
+  // live stats (fetched for potential future use, e.g. an activity strip)
   const [liveStats, setLiveStats] = useState({ wallets: null, txns: null })
   useEffect(() => {
     fetch(`${API}/api/analytics`)
@@ -35,18 +27,18 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
       .catch(() => {})
   }, [])
 
-  // colors — exact match to app
-  const bg      = dark ? '#111111' : '#fafafa'
-  const surface = dark ? '#1a1a1a' : '#f4f4f4'
-  const card    = dark ? '#1a1a1a' : '#ffffff'
-  const border  = dark ? 'rgba(255,255,255,.07)' : '#e4e4e4'
-  const border2 = dark ? 'rgba(255,255,255,.12)' : '#cccccc'
-  const text    = dark ? '#ffffff' : '#1a1a1a'
-  const text2   = dark ? '#a0a0a0' : '#555555'
-  const text3   = dark ? '#555555' : '#999999'
-  const accent  = '#7000ff'
-  const accent3 = '#a855f7'
-  const accent4 = '#c084fc'
+  // colors — match the app exactly, both themes
+  const bg       = dark ? '#111111' : '#fafafa'
+  const card     = dark ? '#1a1a1a' : '#ffffff'
+  const border   = dark ? 'rgba(255,255,255,.07)' : '#e4e4e4'
+  const border2  = dark ? 'rgba(255,255,255,.12)' : '#cccccc'
+  const text     = dark ? '#ffffff' : '#1a1a1a'
+  const text2    = dark ? '#a0a0a0' : '#555555'
+  const text3    = dark ? '#555555' : '#999999'
+  const inputBg  = dark ? 'rgba(255,255,255,.05)' : 'rgba(0,0,0,.04)'
+  const inputBg2 = dark ? 'rgba(255,255,255,.04)' : 'rgba(0,0,0,.04)'
+  const accent   = '#7000ff'
+  const accentL  = '#a855f7'
 
   // ── OTP send ──────────────────────────────────────────────────
   async function sendOTP(e) {
@@ -64,7 +56,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
       expiryRef.current = d.expiresAt
       setInfo(`Code sent to ${email}`)
       setStep('otp')
-    } catch { setError('Network error — please retry'); setStep('email') }
+    } catch { setError('Network error. Please retry'); setStep('email') }
   }
 
   // ── OTP verify ────────────────────────────────────────────────
@@ -114,99 +106,95 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
     </div>
   )
 
-  // ── Responsive helpers ────────────────────────────────────────
-  const D = isDesktop
-
   return (
-    <div style={{ background:bg, color:text, fontFamily:'Inter,sans-serif', minHeight:'100vh', overflowX:'hidden', position:'relative' }}>
-      <NanRibbons dark={dark} />
-
-      {/* Orbs */}
-      <div style={{ position:'fixed', width:500, height:500, borderRadius:'50%', background:`radial-gradient(circle,rgba(112,0,255,${dark?.15:.08}) 0%,transparent 70%)`, top:-200, left:-150, filter:'blur(80px)', pointerEvents:'none', zIndex:0 }}/>
-      <div style={{ position:'fixed', width:350, height:350, borderRadius:'50%', background:`radial-gradient(circle,rgba(168,85,247,${dark?.08:.04}) 0%,transparent 70%)`, bottom:-100, right:-100, filter:'blur(80px)', pointerEvents:'none', zIndex:0 }}/>
+    <div style={{ background:bg, color:text, fontFamily:'Inter,sans-serif', minHeight:'100vh', overflowX:'hidden' }}>
 
       {/* ── NAV ── */}
-      <nav style={{ position:'fixed', top:0, left:0, right:0, zIndex:100, padding: D ? '12px 48px' : '10px 16px', display:'flex', alignItems:'center', justifyContent:'space-between', background: dark ? 'rgba(17,17,17,.85)' : 'rgba(250,250,250,.85)', backdropFilter:'blur(24px)', borderBottom:`1px solid ${border}` }}>
-        <div style={{ display:'flex', alignItems:'center', gap: D ? 9 : 8 }}>
-          <div style={{ width: D ? 44 : 36, height: D ? 44 : 36, borderRadius:'50%', background:'#7000ff', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 480" width={D?19:16} height={D?27:22}>
-              <path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill="#fff"/>
-              <path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill="#fff"/>
-            </svg>
-          </div>
-          <span style={{ fontWeight:700, fontSize: D ? '20px' : '17px', color:text, fontFamily:'Inter, sans-serif', lineHeight: D ? '44px' : '36px' }}>NAN</span>
-        </div>
-
+      <nav style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'26px 48px', maxWidth:1400, margin:'0 auto', borderBottom:`1px solid ${border}` }}>
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-          {/* Arc badge */}
-          <div style={{ fontSize:'.68rem', fontWeight:500, letterSpacing:'.05em', background:`rgba(168,85,247,.08)`, border:`1px solid rgba(168,85,247,.3)`, color:accent3, borderRadius:100, padding:'4px 10px', display:'flex', alignItems:'center', gap:5 }}>
-            <span style={{ width:5, height:5, borderRadius:'50%', background:accent3, display:'inline-block', boxShadow:`0 0 5px ${accent3}` }}/>
-            Arc Testnet
+          <div style={{ width:30, height:30, borderRadius:'50%', background:accent, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+            <svg viewBox="0 0 324 480" width="12" height="18"><path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill="#fff"/><path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill="#fff"/></svg>
           </div>
-
-          {/* Theme toggle */}
-          <button onClick={toggleTheme} style={{ background:'none', border:`1px solid ${border}`, borderRadius:9, width:34, height:34, display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', color:text2, flexShrink:0 }}>
-            {dark
-              ? <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M18.36 5.64l1.41-1.41"/></svg>
-              : <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-            }
-          </button>
-
-
+          <span style={{ fontWeight:700, fontSize:'1.1rem', letterSpacing:'-.01em' }}>NAN</span>
         </div>
+        <button onClick={toggleTheme} style={{ width:34, height:34, borderRadius:'50%', border:`1px solid ${border2}`, background:inputBg2, display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', color:text2 }}>
+          {dark
+            ? <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M18.36 5.64l1.41-1.41"/></svg>
+            : <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          }
+        </button>
       </nav>
 
-      {/* ── DIRECT CONNECT ── */}
-      <section style={{ position:'relative', zIndex:1, minHeight:'100vh', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center', padding: D ? '130px 48px 80px' : '100px 20px 60px' }}>
+      {/* ── HERO ── */}
+      <section style={{ minHeight:'calc(100vh - 90px)', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center', padding:'60px 24px' }}>
 
-        <h1 style={{ fontSize: D ? '2rem' : '1.5rem', fontWeight:800, lineHeight:1.15, letterSpacing:'-.02em', marginBottom:32 }}>
-          Connect your wallet
+        <div style={{ display:'inline-flex', alignItems:'center', gap:9, fontSize:'.72rem', fontWeight:600, letterSpacing:'.12em', textTransform:'uppercase', color:accentL, background:'rgba(112,0,255,.1)', border:'1px solid rgba(112,0,255,.28)', padding:'8px 18px', borderRadius:100, marginBottom:46 }}>
+          <span style={{ width:6, height:6, borderRadius:'50%', background:accentL, animation:'pulseDot 1.6s ease-in-out infinite' }}/>
+          Live on Arc Testnet
+        </div>
+
+        <h1 style={{ fontFamily:'Space Grotesk,sans-serif', fontSize:'clamp(2.6rem,8vw,5.6rem)', fontWeight:800, lineHeight:1.02, letterSpacing:'-.035em', margin:'0 0 30px' }}>
+          Weave. Connect.<br/><span style={{ color:accentL }}>Build.</span>
         </h1>
 
-        {/* ── LOGIN FORM ── */}
-        <div style={{ width:'100%', maxWidth: D ? 440 : 360, display:'flex', flexDirection:'column', gap:10 }}>
+        <p style={{ fontSize:'clamp(1rem,1.7vw,1.2rem)', color:text2, lineHeight:1.6, maxWidth:560, margin:'0 0 56px' }}>
+          The payment infrastructure for autonomous agents. Nanopayments, spending limits, and identity, in one wallet.
+        </p>
 
-          {step === 'email' && (
+        <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:16, width:'100%', maxWidth:400 }}>
+
+          {!showConnect && step === 'email' && (
             <>
-              <form onSubmit={sendOTP} style={{ display:'flex', flexDirection: D ? 'row' : 'column', gap: D ? 0 : 10, background: D ? (dark?'rgba(255,255,255,.05)':'rgba(0,0,0,.04)') : 'none', border: D ? `1px solid ${border2}` : 'none', borderRadius: D ? 16 : 0, padding: D ? '5px 5px 5px 18px' : 0, transition:'border-color .2s' }}>
+              <button onClick={() => setShowConnect(true)} style={{ width:'100%', background:accent, border:'none', color:'#fff', fontWeight:700, fontSize:'1.05rem', padding:19, borderRadius:100, cursor:'pointer', fontFamily:'Inter,sans-serif', boxShadow:'0 8px 30px rgba(112,0,255,.35)' }}>
+                Get Started
+              </button>
+              <a href="https://faucet.circle.com" target="_blank" rel="noopener noreferrer" style={{ fontSize:'.85rem', color:text3, cursor:'pointer', textDecoration:'none' }}>
+                Need testnet tokens? Get some free.
+              </a>
+            </>
+          )}
+
+          {showConnect && step === 'email' && (
+            <div style={{ width:'100%', display:'flex', flexDirection:'column', gap:12, textAlign:'left' }}>
+              <form onSubmit={sendOTP} style={{ display:'flex', background:inputBg, border:`1px solid ${border2}`, borderRadius:16, padding:'5px 5px 5px 18px' }}>
                 <input
                   type="email"
                   placeholder="Enter your email..."
                   value={email}
                   onChange={e => { setEmail(e.target.value); setError('') }}
-                  style={{ flex:1, background: D ? 'none' : (dark?'rgba(255,255,255,.05)':'rgba(0,0,0,.04)'), border: D ? 'none' : `1px solid ${border2}`, outline:'none', color:text, fontFamily:'Inter,sans-serif', fontSize:'.95rem', padding: D ? '10px 0' : '13px 16px', borderRadius: D ? 0 : 14, minWidth:0 }}
+                  autoFocus
+                  style={{ flex:1, background:'none', border:'none', outline:'none', color:text, fontFamily:'Inter,sans-serif', fontSize:'.95rem', padding:'11px 0', minWidth:0 }}
                 />
-                <button type="submit" style={{ background:accent, border:'none', color:'#fff', fontFamily:'Inter,sans-serif', fontWeight:600, fontSize:'.9rem', padding: D ? '10px 22px' : '13px', borderRadius: D ? 12 : 14, cursor:'pointer', whiteSpace:'nowrap', flexShrink:0 }}>
-                  Get Started
+                <button type="submit" style={{ background:accent, border:'none', color:'#fff', fontWeight:600, fontSize:'.85rem', padding:'11px 20px', borderRadius:12, cursor:'pointer', whiteSpace:'nowrap' }}>
+                  Continue
                 </button>
               </form>
               {error && <div style={{ fontSize:'.78rem', color:'#f87171', textAlign:'center' }}>{error}</div>}
 
               <div style={{ display:'flex', alignItems:'center', gap:12 }}>
                 <span style={{ flex:1, height:1, background:border }}/>
-                <span style={{ fontSize:'.78rem', color:text3 }}>or</span>
+                <span style={{ fontSize:'.75rem', color:text3 }}>or</span>
                 <span style={{ flex:1, height:1, background:border }}/>
               </div>
 
-              <button onClick={connectWallet} style={{ padding:13, borderRadius:14, background: dark?'rgba(255,255,255,.04)':'rgba(0,0,0,.04)', border:`1px solid ${border}`, color:text, fontFamily:'Inter,sans-serif', fontWeight:500, fontSize:'.9rem', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}>
+              <button onClick={connectWallet} style={{ padding:13, borderRadius:14, background:inputBg2, border:`1px solid ${border}`, color:text, fontFamily:'Inter,sans-serif', fontWeight:500, fontSize:'.87rem', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8 }}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="1" y="8" width="22" height="14" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v2"/><circle cx="18" cy="15" r="1" fill="currentColor"/></svg>
                 Connect MetaMask / Rabby
               </button>
 
-              <a href="https://faucet.circle.com" target="_blank" rel="noopener noreferrer" style={{ padding:13, borderRadius:14, background:accent, border:'none', color:'#fff', fontFamily:'Inter,sans-serif', fontWeight:600, fontSize:'.9rem', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', gap:8, textDecoration:'none' }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 2v6m0 0c0-3.31 2.69-6 6-6"/><path d="M5.07 11a7 7 0 1 0 13.86 0"/><path d="M12 8v13"/><path d="M9 18l3 3 3-3"/></svg>
-                Get Free Testnet Tokens
-              </a>
-
-              <p style={{ fontSize:'.72rem', color:text3, display:'flex', alignItems:'center', justifyContent:'center', gap:5 }}>
+              <p style={{ fontSize:'.72rem', color:text3, display:'flex', alignItems:'center', justifyContent:'center', gap:5, margin:'2px 0 0' }}>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                Non-custodial · No seed phrase · Circle MPC
+                Non-custodial. No seed phrase. Circle MPC.
               </p>
-            </>
+
+              <button onClick={() => setShowConnect(false)} style={{ background:'none', border:'none', color:text3, fontSize:'.8rem', cursor:'pointer', fontFamily:'Inter,sans-serif', margin:'2px auto 0' }}>
+                ← Back
+              </button>
+            </div>
           )}
 
           {step === 'otp' && (
-            <>
+            <div style={{ width:'100%', display:'flex', flexDirection:'column', gap:10 }}>
               <div style={{ fontSize:'.85rem', color:text2, textAlign:'center', marginBottom:4 }}>{info}</div>
               <form onSubmit={verifyOTP} style={{ display:'flex', flexDirection:'column', gap:10 }}>
                 <input
@@ -217,7 +205,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
                   value={otp}
                   onChange={e => { setOtp(e.target.value.replace(/\D/g,'')); setError('') }}
                   autoFocus
-                  style={{ width:'100%', padding:'14px 16px', borderRadius:14, border:`1px solid ${border2}`, background: dark?'rgba(255,255,255,.05)':'rgba(0,0,0,.04)', color:text, fontFamily:'Inter,monospace', fontSize:'1.6rem', letterSpacing:'10px', outline:'none', textAlign:'center' }}
+                  style={{ width:'100%', padding:'14px 16px', borderRadius:14, border:`1px solid ${border2}`, background:inputBg, color:text, fontFamily:'Inter,monospace', fontSize:'1.6rem', letterSpacing:'10px', outline:'none', textAlign:'center' }}
                 />
                 {error && <div style={{ fontSize:'.78rem', color:'#f87171', textAlign:'center' }}>{error}</div>}
                 <button type="submit" style={{ padding:13, borderRadius:14, background:accent, border:'none', color:'#fff', fontFamily:'Inter,sans-serif', fontWeight:600, fontSize:'.95rem', cursor:'pointer' }}>
@@ -227,49 +215,13 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
               <button onClick={() => { setStep('email'); setOtp(''); setError('') }} style={{ background:'none', border:'none', color:text3, fontSize:'.82rem', cursor:'pointer', fontFamily:'Inter,sans-serif' }}>
                 Back — use different email
               </button>
-            </>
+            </div>
           )}
 
         </div>
       </section>
 
+      <style>{`@keyframes pulseDot{0%,100%{opacity:.4}50%{opacity:1}}`}</style>
     </div>
   )
 }
-
-/* ── Layout helpers ── */
-function Sec({children, D, border, bg, tight}) {
-  return (
-    <section style={{ position:'relative', zIndex:1, padding: tight ? (D?'0 48px 80px':'0 20px 56px') : (D?'80px 48px':'56px 20px'), maxWidth: D ? 1100 : 680, margin:'0 auto', width:'100%' }}>
-      {children}
-    </section>
-  )
-}
-function Tag({children, color}) {
-  return <div style={{ fontSize:'.68rem', fontWeight:500, letterSpacing:'.12em', textTransform:'uppercase', color, marginBottom:10 }}>{children}</div>
-}
-function H2({children, text, D, tight}) {
-  return <h2 style={{ fontWeight:700, fontSize: D ? 'clamp(1.7rem,3vw,2.3rem)' : 'clamp(1.4rem,5vw,1.9rem)', lineHeight:1.12, letterSpacing:'-.025em', marginBottom: tight ? 24 : 40, color:text }}>{children}</h2>
-}
-
-/* ── SVG Icons ── */
-const ic = (path) => <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#7000ff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{path}</svg>
-const ArrowUp  = () => ic(<><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></>)
-const SwapIco  = () => ic(<><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></>)
-const BridgeIco= () => ic(<><rect x="2" y="3" width="6" height="6" rx="1"/><rect x="16" y="3" width="6" height="6" rx="1"/><rect x="9" y="15" width="6" height="6" rx="1"/><path d="M5 9v3h14V9"/><path d="M12 12v3"/></>)
-const EarnIco  = () => ic(<><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></>)
-const BotIco   = () => ic(<><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/></>)
-const TargetIco= () => ic(<><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></>)
-const ClockIco = () => ic(<><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>)
-const UsersIco = () => ic(<><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></>)
-const LinkIco  = () => ic(<><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></>)
-const TagIco   = () => ic(<><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></>)
-const LayersIco= () => ic(<><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></>)
-const GlobeIco = () => ic(<><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></>)
-const NairaIco = () => ic(<><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/><line x1="8" y1="12" x2="16" y2="12"/></>)
-const AjoIco   = () => ic(<><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><circle cx="19" cy="3" r="2"/></>)
-const BillIco  = () => ic(<><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></>)
-const ZapIco   = () => ic(<><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></>)
-
-
-
