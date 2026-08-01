@@ -17,6 +17,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
   const [loadMsg, setLoadMsg] = useState('')
   const tokenRef = useRef(null)
   const expiryRef = useRef(null)
+  const emailInputRef = useRef(null)
 
   // live stats (fetched for potential future use, e.g. an activity strip)
   const [liveStats, setLiveStats] = useState({ wallets: null, txns: null })
@@ -41,6 +42,15 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
   const accentL  = '#a855f7'
 
   // ── OTP send ──────────────────────────────────────────────────
+  // ── Open the connect panel and scroll straight to the email input ─
+  function openConnect() {
+    setShowConnect(true)
+    setTimeout(() => {
+      emailInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      emailInputRef.current?.focus()
+    }, 60)
+  }
+
   async function sendOTP(e) {
     e.preventDefault()
     if (!email.includes('@')) { setError('Enter a valid email'); return }
@@ -117,27 +127,32 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
           </div>
           <span style={{ fontWeight:700, fontSize:'1.1rem', letterSpacing:'-.01em' }}>NAN</span>
         </div>
-        <button onClick={toggleTheme} style={{ width:34, height:34, borderRadius:'50%', border:`1px solid ${border2}`, background:inputBg2, display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', color:text2 }}>
-          {dark
-            ? <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M18.36 5.64l1.41-1.41"/></svg>
-            : <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-          }
-        </button>
+        <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+          <button onClick={openConnect} style={{ background:accent, border:'none', color:'#fff', fontWeight:700, fontSize:'.85rem', padding:'10px 20px', borderRadius:100, cursor:'pointer', fontFamily:'Inter,sans-serif' }}>
+            Connect Wallet
+          </button>
+          <button onClick={toggleTheme} style={{ width:34, height:34, borderRadius:'50%', border:`1px solid ${border2}`, background:inputBg2, display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', color:text2 }}>
+            {dark
+              ? <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M18.36 5.64l1.41-1.41"/></svg>
+              : <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            }
+          </button>
+        </div>
       </nav>
 
       {/* ── HERO ── */}
-      <section style={{ minHeight:'calc(100vh - 90px)', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center', padding:'60px 24px' }}>
+      <section style={{ minHeight:'auto', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center', padding:'48px 24px 60px' }}>
 
-        <div style={{ display:'inline-flex', alignItems:'center', gap:9, fontSize:'.72rem', fontWeight:600, letterSpacing:'.12em', textTransform:'uppercase', color:accentL, background:'rgba(112,0,255,.1)', border:'1px solid rgba(112,0,255,.28)', padding:'8px 18px', borderRadius:100, marginBottom:46 }}>
+        <div style={{ display:'inline-flex', alignItems:'center', gap:9, fontSize:'.72rem', fontWeight:600, letterSpacing:'.12em', textTransform:'uppercase', color:accentL, background:'rgba(112,0,255,.1)', border:'1px solid rgba(112,0,255,.28)', padding:'8px 18px', borderRadius:100, marginBottom:28 }}>
           <span style={{ width:6, height:6, borderRadius:'50%', background:accentL, animation:'pulseDot 1.6s ease-in-out infinite' }}/>
           Live on Arc Testnet
         </div>
 
-        <h1 style={{ fontFamily:'Space Grotesk,sans-serif', fontSize:'clamp(2.6rem,8vw,5.6rem)', fontWeight:800, lineHeight:1.02, letterSpacing:'-.035em', margin:'0 0 30px' }}>
+        <h1 style={{ fontFamily:'Space Grotesk,sans-serif', fontSize:'clamp(2.6rem,8vw,5.6rem)', fontWeight:800, lineHeight:1.02, letterSpacing:'-.035em', margin:'0 0 18px' }}>
           Weave. Connect.<br/><span style={{ color:accentL }}>Build.</span>
         </h1>
 
-        <p style={{ fontSize:'clamp(1rem,1.7vw,1.2rem)', color:text2, lineHeight:1.6, maxWidth:560, margin:'0 0 56px' }}>
+        <p style={{ fontSize:'clamp(1rem,1.7vw,1.2rem)', color:text2, lineHeight:1.6, maxWidth:560, margin:'0 0 32px' }}>
           The payment infrastructure for autonomous agents. Nanopayments, spending limits, and identity, in one wallet.
         </p>
 
@@ -145,7 +160,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
 
           {!showConnect && step === 'email' && (
             <>
-              <button onClick={() => setShowConnect(true)} style={{ width:'100%', background:accent, border:'none', color:'#fff', fontWeight:700, fontSize:'1.05rem', padding:19, borderRadius:100, cursor:'pointer', fontFamily:'Inter,sans-serif', boxShadow:'0 8px 30px rgba(112,0,255,.35)' }}>
+              <button onClick={openConnect} style={{ width:'100%', background:accent, border:'none', color:'#fff', fontWeight:700, fontSize:'1.05rem', padding:19, borderRadius:100, cursor:'pointer', fontFamily:'Inter,sans-serif', boxShadow:'0 8px 30px rgba(112,0,255,.35)' }}>
                 Get Started
               </button>
               <a href="https://faucet.circle.com" target="_blank" rel="noopener noreferrer" style={{ fontSize:'.85rem', color:text3, cursor:'pointer', textDecoration:'none' }}>
@@ -158,6 +173,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
             <div style={{ width:'100%', display:'flex', flexDirection:'column', gap:12, textAlign:'left' }}>
               <form onSubmit={sendOTP} style={{ display:'flex', background:inputBg, border:`1px solid ${border2}`, borderRadius:16, padding:'5px 5px 5px 18px' }}>
                 <input
+                  ref={emailInputRef}
                   type="email"
                   placeholder="Enter your email..."
                   value={email}
