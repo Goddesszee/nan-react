@@ -7914,7 +7914,7 @@ window.addEventListener('load',()=>{
     localStorage.removeItem('nan_dynamic_token');
   }
 
-  if (_dynAddr && _dynToken === 'dynamic_authenticated' && !_ct && ((_dynCircleWalletId && _dynCircleAddr) || _dynEmail)) {
+  if (_dynAddr && _dynToken === 'dynamic_authenticated' && !_ct) {
     // Hide landing immediately
     if (_land) { _land.style.display = 'none'; _land.classList.remove('active'); }
 
@@ -7960,6 +7960,17 @@ window.addEventListener('load',()=>{
         if (loader) loader.remove();
         toast('Wallet error: '+e.message, 'error');
       });
+    } else {
+      // Plain external wallet (MetaMask/Rabby) connected via the React landing
+      // page — no Circle wallet, no email. Reuses the same setup routine the
+      // in-app wallet picker uses, so provider/signer/network get set up
+      // properly instead of just trusting the cached address.
+      var _walletProvider = window.ethereum || (window.evmproviders && Object.values(window.evmproviders)[0]);
+      if (_walletProvider) {
+        _doConnect(_walletProvider, 'wallet');
+      } else {
+        toast('Wallet not found — please reconnect', 'error');
+      }
     }
 
     // Skip the rest of the init flow
