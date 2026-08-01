@@ -1864,7 +1864,7 @@ html,body{background-color:var(--bg);}
       <div id="supplierReceipt"></div>
       <div id="supplierResults" style="margin-top:16px;"></div>
 
-      <div style="margin-top:40px;padding-top:28px;border-top:1px solid var(--border);">
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
         <div id="realEstateIntro">
           <div style="font-size:1rem;font-weight:700;color:#7000ff;margin-bottom:4px;">Real Estate Marketplace</div>
           <div style="font-size:.82rem;color:var(--text2);margin-bottom:16px;">Find verified rental and sale properties in Nigeria, or list your own — no more rental scams.</div>
@@ -1905,11 +1905,52 @@ html,body{background-color:var(--bg);}
               <input id="reBudget" placeholder="Budget, e.g. ₦3,000,000/yr" style="flex:1;min-width:160px;padding:11px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
               <input id="reType" placeholder="Type, e.g. Apartment" style="flex:1;min-width:160px;padding:11px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
             </div>
-            <button class="btn" onclick="realEstateSearch()" style="width:auto;padding:12px 32px;border-radius:12px;font-weight:700;margin-bottom:16px;">Search Properties</button>
-            <div id="reBrowseResults" style="text-align:center;padding:36px 20px;background:var(--card);border:1px solid var(--border);border-radius:16px;">
-              <div style="font-size:.9rem;color:var(--text);font-weight:600;margin-bottom:4px;">No verified listings yet.</div>
-              <div style="font-size:.8rem;color:var(--text3);">Nan's real estate marketplace is launching soon — check back shortly.</div>
+            <button class="btn" onclick="realEstateSearch()" style="width:auto;padding:12px 32px;border-radius:12px;font-weight:700;margin-bottom:20px;">Search Properties</button>
+            <div id="reBrowseResults" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+              <div class="tnav-btn" style="background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;text-align:left;box-sizing:border-box;">
+                <div style="height:140px;position:relative;background:linear-gradient(135deg,rgba(112,0,255,.14),rgba(168,85,247,.06));display:flex;align-items:center;justify-content:center;">
+                  <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#7000ff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"><path d="M3 12l9-9 9 9"/><path d="M5 10v10a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1V10"/></svg>
+                  <div style="position:absolute;top:10px;left:10px;background:#fff;border-radius:100px;padding:4px 10px 4px 7px;display:flex;align-items:center;gap:4px;font-size:.68rem;font-weight:700;color:#7000ff;box-shadow:0 2px 8px rgba(0,0,0,.12);"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>Verified</div>
+                </div>
+                <div style="padding:16px;">
+                  <div style="font-weight:800;font-size:1.05rem;color:#7000ff;margin-bottom:2px;">₦3.5M <span style="font-size:.7rem;font-weight:500;color:var(--text3);">/yr</span></div>
+                  <div style="font-size:.78rem;color:var(--text2);margin-bottom:10px;">Yaba, Lagos</div>
+                  <div style="display:flex;gap:12px;font-size:.72rem;color:var(--text3);padding-top:10px;border-top:1px solid var(--border);margin-bottom:12px;">
+                    <span>🛏 2 Beds</span><span>🛁 2 Baths</span><span>Apartment</span>
+                  </div>
+                  <button onclick="realEstateSearch()" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid #7000ff;background:none;color:#7000ff;font-weight:700;font-size:.8rem;cursor:pointer;">View Details</button>
+                </div>
+              </div>
+              <div class="tnav-btn" style="background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;text-align:left;box-sizing:border-box;">
+                <div style="height:140px;position:relative;background:linear-gradient(135deg,rgba(112,0,255,.14),rgba(168,85,247,.06));display:flex;align-items:center;justify-content:center;">
+                  <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#7000ff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"><path d="M3 12l9-9 9 9"/><path d="M5 10v10a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1V10"/></svg>
+                  <div style="position:absolute;top:10px;left:10px;background:#fff;border-radius:100px;padding:4px 10px 4px 7px;display:flex;align-items:center;gap:4px;font-size:.68rem;font-weight:700;color:#7000ff;box-shadow:0 2px 8px rgba(0,0,0,.12);"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>Verified</div>
+                </div>
+                <div style="padding:16px;">
+                  <div style="font-weight:800;font-size:1.05rem;color:#7000ff;margin-bottom:2px;">₦120M</div>
+                  <div style="font-size:.78rem;color:var(--text2);margin-bottom:10px;">Maitama, Abuja</div>
+                  <div style="display:flex;gap:12px;font-size:.72rem;color:var(--text3);padding-top:10px;border-top:1px solid var(--border);margin-bottom:12px;">
+                    <span>🛏 5 Beds</span><span>🛁 5 Baths</span><span>Duplex</span>
+                  </div>
+                  <button onclick="realEstateSearch()" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid #7000ff;background:none;color:#7000ff;font-weight:700;font-size:.8rem;cursor:pointer;">View Details</button>
+                </div>
+              </div>
+              <div class="tnav-btn" style="background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;text-align:left;box-sizing:border-box;">
+                <div style="height:140px;position:relative;background:linear-gradient(135deg,rgba(112,0,255,.14),rgba(168,85,247,.06));display:flex;align-items:center;justify-content:center;">
+                  <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#7000ff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"><path d="M3 12l9-9 9 9"/><path d="M5 10v10a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1V10"/></svg>
+                  <div style="position:absolute;top:10px;left:10px;background:#fff;border-radius:100px;padding:4px 10px 4px 7px;display:flex;align-items:center;gap:4px;font-size:.68rem;font-weight:700;color:#7000ff;box-shadow:0 2px 8px rgba(0,0,0,.12);"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>Verified</div>
+                </div>
+                <div style="padding:16px;">
+                  <div style="font-weight:800;font-size:1.05rem;color:#7000ff;margin-bottom:2px;">₦2.1M <span style="font-size:.7rem;font-weight:500;color:var(--text3);">/yr</span></div>
+                  <div style="font-size:.78rem;color:var(--text2);margin-bottom:10px;">GRA, Port Harcourt</div>
+                  <div style="display:flex;gap:12px;font-size:.72rem;color:var(--text3);padding-top:10px;border-top:1px solid var(--border);margin-bottom:12px;">
+                    <span>🛏 3 Beds</span><span>🛁 2 Baths</span><span>Bungalow</span>
+                  </div>
+                  <button onclick="realEstateSearch()" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid #7000ff;background:none;color:#7000ff;font-weight:700;font-size:.8rem;cursor:pointer;">View Details</button>
+                </div>
+              </div>
             </div>
+            <div style="text-align:center;font-size:.72rem;color:var(--text3);margin-top:14px;">Sample listings — live properties launching soon.</div>
           </div>
           <div id="reListPane" style="display:none;text-align:center;padding:36px 20px;background:var(--card);border:1px solid var(--border);border-radius:16px;">
             <div style="font-size:.9rem;color:var(--text);font-weight:600;margin-bottom:4px;">Property listing is launching soon.</div>
