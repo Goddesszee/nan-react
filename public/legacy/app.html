@@ -3189,9 +3189,15 @@ html,body{background-color:var(--bg);}
     <!-- Header -->
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
       <div style="font-size:1.125rem;font-weight:700;color:#7000ff;letter-spacing:-.02em;">Activity</div>
-      <button class="clear-hist-btn" onclick="clearHistory()">Clear all</button>
+      <button class="clear-hist-btn" id="histClearBtn" onclick="clearHistory()">Clear all</button>
     </div>
 
+    <div style="display:flex;gap:8px;margin-bottom:16px;">
+      <button id="histTabMine" onclick="histSwitchTab('mine')" class="tnav-btn" style="flex:1;">My Activity</button>
+      <button id="histTabLive" onclick="histSwitchTab('live')" class="tnav-btn" style="flex:1;">Live Feed</button>
+    </div>
+
+    <div id="histMinePane">
     <!-- Stats -->
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:16px;">
       <div class="hist-stat">
@@ -3215,7 +3221,25 @@ html,body{background-color:var(--bg);}
         <div style="font-size:.875rem;color:var(--text);line-height:1.6;">No transactions yet.<br/>Send or swap to get started.</div>
       </div>
     </div>
+    </div><!-- end histMinePane -->
 
+    <div id="histLivePane" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:6px;font-size:.78rem;color:var(--text3);">
+          <span style="width:7px;height:7px;border-radius:50%;background:#4ade80;display:inline-block;animation:pulse 1.6s ease-in-out infinite;"></span>
+          Live · <span id="liveFeedTotal">0</span> events tracked
+        </div>
+        <button onclick="liveFeedFetch()" style="background:none;border:none;color:#7000ff;font-size:.78rem;font-weight:700;cursor:pointer;">↻ Refresh</button>
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;">
+        <button class="liveFeedFilterBtn" data-type="all" onclick="liveFeedSetFilter('all')" style="flex-shrink:0;padding:7px 14px;border-radius:100px;border:1px solid var(--border);background:#7000ff;color:#fff;font-size:.78rem;font-weight:700;cursor:pointer;">All</button>
+        <button class="liveFeedFilterBtn" data-type="swap" onclick="liveFeedSetFilter('swap')" style="flex-shrink:0;padding:7px 14px;border-radius:100px;border:1px solid var(--border);background:none;color:var(--text2);font-size:.78rem;font-weight:700;cursor:pointer;">Swaps</button>
+        <button class="liveFeedFilterBtn" data-type="arcname" onclick="liveFeedSetFilter('arcname')" style="flex-shrink:0;padding:7px 14px;border-radius:100px;border:1px solid var(--border);background:none;color:var(--text2);font-size:.78rem;font-weight:700;cursor:pointer;">Arc Names</button>
+      </div>
+      <div id="liveFeedList">
+        <div style="text-align:center;padding:30px 20px;font-size:.85rem;color:var(--text3);">Loading live activity…</div>
+      </div>
+    </div><!-- end histLivePane -->
     </div><!-- end history unified card -->
   </div>
 
