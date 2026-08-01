@@ -1885,9 +1885,8 @@ html,body{background-color:var(--bg);}
       </div>
 
       <div id="researchRealEstatePane" style="display:none;">
-        <div onclick="researchShowChooser()" style="cursor:pointer;color:#7000ff;font-weight:700;font-size:.85rem;margin-bottom:18px;display:flex;align-items:center;gap:6px;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7000ff" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
-          Back to Research agent
+        <div onclick="researchShowChooser()" style="cursor:pointer;width:36px;height:36px;border-radius:50%;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin-bottom:18px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7000ff" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </div>
         <iframe id="realEstateFrame" style="width:100%;height:1400px;border:none;border-radius:16px;display:block;"></iframe>
       </div>
@@ -1903,8 +1902,8 @@ html,body{background-color:var(--bg);}
     var wrapper = document.querySelector('#page-supplier-agent > div[style*="padding:20px"]');
     var titleEl = wrapper ? wrapper.children[0] : null;
     var descEl = wrapper ? wrapper.children[1] : null;
-    if (titleEl) titleEl.textContent = 'Research agent';
-    if (descEl) descEl.textContent = 'AI-powered research and a verified real estate marketplace, in one place.';
+    if (titleEl) { titleEl.textContent = 'Research agent'; titleEl.style.display = ''; }
+    if (descEl) { descEl.textContent = 'AI-powered research and a verified real estate marketplace, in one place.'; descEl.style.display = ''; }
   }
   function researchOpenPane(which){
     document.getElementById('researchChooserPane').style.display = 'none';
@@ -1915,13 +1914,13 @@ html,body{background-color:var(--bg);}
     var descEl = wrapper ? wrapper.children[1] : null;
     if (wrapper) { wrapper.style.paddingTop = '0'; wrapper.style.paddingBottom = '0'; }
     if (which === 'realestate') {
-      if (titleEl) { titleEl.textContent = 'Real Estate Marketplace'; titleEl.style.setProperty('color', '#7000ff', 'important'); titleEl.style.setProperty('font-weight', '900', 'important'); }
-      if (descEl) descEl.textContent = 'Find verified rental and sale properties in Nigeria, or list your own.';
+      if (titleEl) titleEl.style.display = 'none';
+      if (descEl) descEl.style.display = 'none';
       var frame = document.getElementById('realEstateFrame');
       frame.srcdoc = REAL_ESTATE_HTML;
-    } else if (titleEl) {
-      titleEl.textContent = 'Research agent';
-      if (descEl) descEl.textContent = 'AI-powered research and a verified real estate marketplace, in one place.';
+    } else {
+      if (titleEl) { titleEl.textContent = 'Research agent'; titleEl.style.display = ''; }
+      if (descEl) { descEl.textContent = 'AI-powered research and a verified real estate marketplace, in one place.'; descEl.style.display = ''; }
     }
   }
     const SUPPLIER_API = 'https://nan-production.up.railway.app/api/supplier';
