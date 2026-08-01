@@ -174,24 +174,6 @@ window.addEventListener('load', function() {
   };
 });
 
-// ── On connected — wrap after app.js loads ──
-window.addEventListener('load', function() {
-  const _origOnConnected = window.onConnected;
-  if (typeof _origOnConnected === 'function') {
-    window.onConnected = async function (isEmail, isDev) {
-      await _origOnConnected(isEmail, isDev);
-      document.querySelectorAll('.page:not(.page-land)').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-      const homePage = document.getElementById('page-home');
-      if (homePage) homePage.classList.add('active');
-      const homeNav = document.getElementById('nav-home');
-      if (homeNav) homeNav.classList.add('active');
-      updateHomeScreen();
-      updateDesktopNav();
-    };
-  }
-});
-
 // ── Desktop nav visibility ──
 function updateDesktopNav() {
   const isDesktop = window.innerWidth >= 769;
