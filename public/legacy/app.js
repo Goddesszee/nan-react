@@ -11283,6 +11283,8 @@ async function agentDisconnect() {
   agentWalletAddr = null;
   localStorage.removeItem('nan_agent_addr');
   agentPageRefresh();
+  if (typeof nanUpdateProfileLabel === 'function') nanUpdateProfileLabel();
+  if (window._currentPage === 'agent-wallet' && typeof goPage === 'function') goPage('swap');
   if(typeof showToast==='function') showToast('Agent Wallet disconnected', 'info', 3000);
 }
 
