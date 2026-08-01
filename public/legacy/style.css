@@ -5501,3 +5501,7 @@ body.nan-sidebar-collapsed #page-agent-wallet{padding-left:72px !important;}
    dropdown used to (Send/Swap/Bridge/Payroll/Naira/History) */
 #nanFloatThemeToggle{display:none !important;}
 #tnav-trade-btn{display:none !important;}
+
+/* ── Page titles: unify to NAN purple across all features ── */
+.page-title{color:#7000ff !important;}
+[data-theme="light"] .page-title{color:#7000ff !important;}
