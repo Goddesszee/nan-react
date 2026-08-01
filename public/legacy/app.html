@@ -3775,14 +3775,16 @@ function _navCenterAndShow(el, closeBtnId){
   el.style.display = 'block';
 }
 
-// ── Pill label: solid purple always, text switches for the arc-name nudge ──
+// ── Pill label: solid purple always. Shows claimed arc name once you have one ──
 function nanUpdateProfileLabel(){
   var labelEl = document.getElementById('nanProfileLabel');
   var pill = document.getElementById('nanProfilePill');
   if (!labelEl || !pill) return;
   var connected = typeof userAddr !== 'undefined' && !!userAddr;
-  var showClaim = connected && typeof nanHasArcName === 'function' && !nanHasArcName();
-  labelEl.textContent = showClaim ? 'Claim your .arc name' : 'Agent Wallet';
+  var mine = connected && typeof arcNames !== 'undefined'
+    ? arcNames.find(function(n){ return n.owner === userAddr; })
+    : null;
+  labelEl.textContent = mine ? (mine.name + '.arc') : 'Agent Wallet';
   pill.style.background = '#7000ff';
   pill.style.border = 'none';
   labelEl.style.color = '#fff';
@@ -3833,12 +3835,17 @@ function _navRenderWalletMenu(){
   if (connected) {
     var addr = agentWalletAddr;
     var short = addr.slice(0,6) + '...' + addr.slice(-4);
+    var hasName = typeof arcNames !== 'undefined' && arcNames.some(function(n){ return n.owner === userAddr; });
+    var claimNudge = hasName ? '' :
+      '<button onclick="event.stopPropagation();closeCenteredMenus();document.getElementById(\'navWalletMenu\').style.display=\'none\';navShowWelcomeModal();" style="width:100%;text-align:left;background:rgba(112,0,255,.08);border:1px solid rgba(112,0,255,.25);color:#7000ff;padding:9px 10px;border-radius:8px;font-size:.78rem;font-weight:700;cursor:pointer;margin-bottom:10px;">✦ Claim your .arc name</button>';
     navMenu.innerHTML =
+      claimNudge +
       '<div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Agent Wallet</div>' +
       '<div style="font-family:monospace;font-size:.78rem;color:var(--text2);margin-bottom:10px;">' + short + '</div>' +
       '<button id="navAgentCopyBtn" onclick="event.stopPropagation();navAgentWalletCopy();" style="display:flex;align-items:center;gap:8px;width:100%;padding:9px 10px;background:none;border:none;border-radius:8px;cursor:pointer;font-size:.82rem;color:var(--text1);" onmouseover="this.style.background=\'rgba(112,0,255,.1)\'" onmouseout="this.style.background=\'none\'">Copy Address</button>' +
       '<div style="height:1px;background:var(--border);margin:4px 0;"></div>' +
-      '<button onclick="event.stopPropagation();navMenuAgentDisconnect();" style="display:flex;align-items:center;gap:8px;width:100%;padding:9px 10px;background:none;border:none;border-radius:8px;cursor:pointer;font-size:.82rem;color:#a855f7;" onmouseover="this.style.background=\'rgba(248,113,113,.1)\'" onmouseout="this.style.background=\'none\'">Disconnect</button>';
+      '<button onclick="event.stopPropagation();navMenuAgentDisconnect();" style="display:flex;align-items:center;gap:8px;width:100%;padding:9px 10px;background:none;border:none;border-radius:8px;cursor:pointer;font-size:.82rem;color:#a855f7;" onmouseover="this.style.background=\'rgba(248,113,113,.1)\'" onmouseout="this.style.background=\'none\'">Disconnect</button>' +
+      '<button onclick="event.stopPropagation();navMenuSwitchAccount();" style="display:flex;align-items:center;gap:8px;width:100%;padding:9px 10px;background:none;border:none;border-radius:8px;cursor:pointer;font-size:.78rem;color:var(--text2);" onmouseover="this.style.background=\'rgba(112,0,255,.1)\'" onmouseout="this.style.background=\'none\'">Log in as a different user</button>';
     return;
   }
   var hasMainWallet = typeof userAddr !== 'undefined' && !!userAddr;
@@ -3864,6 +3871,12 @@ function _navRenderWalletMenu(){
     '<button onclick="event.stopPropagation();navMenuAgentConnect();" style="width:100%;background:#7000ff;border:none;color:#fff;padding:8px;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;margin-bottom:8px;">Send Code</button>' +
     '<div style="text-align:center;font-size:.68rem;color:var(--text3);margin-bottom:8px;">or</div>' +
     '<button onclick="event.stopPropagation();navMenuConnectExisting();" style="width:100%;background:none;border:1px solid var(--border);color:var(--text);padding:8px;border-radius:8px;font-size:.8rem;font-weight:600;cursor:pointer;">Connect wallet</button>';
+}
+function navMenuSwitchAccount(){
+  closeCenteredMenus();
+  var navMenu = _navGetWalletMenu();
+  navMenu.style.display = 'none';
+  if (typeof disconnect === 'function') disconnect(); // full logout, lands back on the landing page to sign in fresh
 }
 function navToggleAgentWalletMenu(e, pillEl){
   if (e) e.stopPropagation();
@@ -3942,6 +3955,135 @@ async function navMenuConnectExisting(){
   navMenu.style.display = 'none';
   if (typeof showWalletPicker === 'function') showWalletPicker();
 }
+
+// ── Welcome modal: every new user gets a free first .arc name ──────────────
+// Fee is enforced on-chain by the registry contract itself (register() pulls
+// the approved USDC allowance from msg.sender — there's no sponsored/third-
+// party registration function), so "free" here means we fund the wallet via
+// the testnet faucet first, then run the normal paid flow against that
+// balance. Shown once per address, right after login, unless already
+// claimed or dismissed.
+function _navBuildWelcomeModal(){
+  if (document.getElementById('navWelcomeModal')) return;
+  var overlay = document.createElement('div');
+  overlay.id = 'navWelcomeModal';
+  overlay.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:999997;align-items:center;justify-content:center;';
+  overlay.innerHTML =
+    '<div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;width:340px;max-width:90vw;box-shadow:0 24px 60px rgba(0,0,0,.5);">' +
+      '<div style="font-size:1.3rem;font-weight:800;color:var(--text);margin-bottom:6px;">Welcome to NAN 👋</div>' +
+      '<div style="font-size:.82rem;color:var(--text3);margin-bottom:18px;">Claim your free .arc name — it\'s your identity on Arc, and it\'s on us.</div>' +
+      '<div style="position:relative;margin-bottom:8px;">' +
+        '<input id="navWelcomeNameInput" type="text" placeholder="yourname" style="width:100%;box-sizing:border-box;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px 50px 11px 12px;font-size:.9rem;color:var(--text);outline:none;"/>' +
+        '<span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:.85rem;color:var(--text3);">.arc</span>' +
+      '</div>' +
+      '<div id="navWelcomeStatus" style="font-size:.72rem;color:var(--text3);min-height:16px;margin-bottom:14px;"></div>' +
+      '<button id="navWelcomeClaimBtn" onclick="navWelcomeClaim();" style="width:100%;background:#7000ff;border:none;color:#fff;padding:11px;border-radius:10px;font-size:.85rem;font-weight:700;cursor:pointer;margin-bottom:10px;">Claim it — free</button>' +
+      '<div onclick="navWelcomeDismiss();" style="text-align:center;font-size:.75rem;color:var(--text3);cursor:pointer;">Maybe later</div>' +
+    '</div>';
+  document.body.appendChild(overlay);
+}
+function navShowWelcomeModal(){
+  _navBuildWelcomeModal();
+  var m = document.getElementById('navWelcomeModal');
+  if (m) m.style.display = 'flex';
+}
+function navWelcomeDismiss(){
+  var m = document.getElementById('navWelcomeModal');
+  if (m) m.style.display = 'none';
+  if (userAddr) localStorage.setItem('nan_welcome_dismissed_' + userAddr, '1');
+}
+async function navWelcomeClaim(){
+  var nameInput = document.getElementById('navWelcomeNameInput');
+  var statusEl = document.getElementById('navWelcomeStatus');
+  var btn = document.getElementById('navWelcomeClaimBtn');
+  var name = (nameInput.value || '').trim().toLowerCase().replace('.arc', '');
+  if (!name || name.length < 2) { statusEl.textContent = 'Enter a valid name (min 2 chars)'; statusEl.style.color = '#f87171'; return; }
+  if (!/^[a-z0-9-]+$/.test(name)) { statusEl.textContent = 'Only letters, numbers and hyphens allowed'; statusEl.style.color = '#f87171'; return; }
+  if (!userAddr) { statusEl.textContent = 'Connect a wallet first'; statusEl.style.color = '#f87171'; return; }
+
+  btn.disabled = true;
+  var needed = arcNameFeeUsdc + 0.01;
+
+  if (parseFloat(usdcBal) < needed) {
+    statusEl.style.color = 'var(--text3)';
+    statusEl.textContent = 'Funding your wallet…';
+    try {
+      await fetch('https://nan-production.up.railway.app/api/faucet', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ address: userAddr }) });
+    } catch(e) {}
+    var waited = 0, funded = false;
+    while (waited < 40000) {
+      await new Promise(function(r){ setTimeout(r, 5000); });
+      waited += 5000;
+      await refreshBalances().catch(function(){});
+      statusEl.textContent = 'Funding your wallet… (' + Math.round(waited/1000) + 's)';
+      if (parseFloat(usdcBal) >= needed) { funded = true; break; }
+    }
+    if (!funded) {
+      statusEl.textContent = 'Faucet is slow right now — tap Claim again in a moment.';
+      statusEl.style.color = '#f87171';
+      btn.disabled = false;
+      return;
+    }
+  }
+
+  statusEl.textContent = 'Registering ' + name + '.arc on Arc…';
+  statusEl.style.color = 'var(--text3)';
+  try {
+    if (isCircleWallet && circleWalletId) {
+      const appR = await fetch('https://nan-production.up.railway.app/api/circle-wallets', { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'contractCall', walletId: circleWalletId, contractAddress: USDC_ADDR, functionSignature:'approve(address,uint256)', params:[NAME_REGISTRY,'115792089237316195423570985008687907853269984665640564039457584007913129639935'] })});
+      const appD = await appR.json();
+      if (!appD.success) throw new Error(appD.error || 'Approve failed');
+      await new Promise(function(r){ setTimeout(r, 2000); });
+      const regR = await fetch('https://nan-production.up.railway.app/api/circle-wallets', { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'contractCall', walletId: circleWalletId, contractAddress: NAME_REGISTRY, functionSignature:'register(string,uint8)', params:[name, arcNameDurationYears] })});
+      const regD = await regR.json();
+      if (!regD.success) throw new Error(regD.error || 'Registration failed');
+      addTx({ hash: regD.txHash || regD.transactionId, to: NAME_REGISTRY, toRaw: 'Registered ' + name + '.arc (welcome, free)', amount: '0', type:'out', token:'USDC', ts: Date.now(), confirmed: !!regD.txHash, source:'arcname' });
+    } else if (signer) {
+      const usdcContract = new ethers.Contract(USDC_ADDR, ERC20_ABI, signer);
+      const nameContract = new ethers.Contract(NAME_REGISTRY, NAME_ABI, signer);
+      const fee = ethers.parseUnits(arcNameFeeUsdc.toString(), 6);
+      const allowance = await usdcContract.allowance(userAddr, NAME_REGISTRY);
+      if (allowance < fee) {
+        const approveTx = await usdcContract.approve(NAME_REGISTRY, ethers.parseUnits(arcNameFeeUsdc.toFixed(6), 6), arcGasOpts());
+        await approveTx.wait(0);
+      }
+      const tx = await nameContract.register(name, arcNameDurationYears, arcGasOpts());
+      await tx.wait(0);
+      addTx({ hash: tx.hash, to: NAME_REGISTRY, toRaw: 'Registered ' + name + '.arc (welcome, free)', amount:'0', type:'out', token:'USDC', ts: Date.now(), confirmed:true, source:'arcname' });
+    } else {
+      throw new Error('No wallet connected');
+    }
+
+    await refreshBalances(); await refreshArcNames();
+    statusEl.textContent = '✓ ' + name + '.arc is yours!';
+    statusEl.style.color = '#7000ff';
+    localStorage.setItem('nan_welcome_shown_' + userAddr, '1');
+    nanUpdateProfileLabel();
+    setTimeout(function(){ document.getElementById('navWelcomeModal').style.display = 'none'; }, 1500);
+  } catch (err) {
+    var msg = (err && (err.reason || err.message)) || 'Registration failed';
+    if (msg.includes('taken') || msg.includes('already registered')) statusEl.textContent = name + '.arc is already taken — try another';
+    else statusEl.textContent = 'Failed — ' + msg.slice(0, 70);
+    statusEl.style.color = '#f87171';
+  }
+  btn.disabled = false;
+}
+
+// Auto-show the welcome modal right after login, for new users without an arc name
+(function(){
+  var _origOnConnected = window.onConnected;
+  window.onConnected = async function(isEmail, isDev){
+    await _origOnConnected(isEmail, isDev);
+    var hasName = typeof arcNames !== 'undefined' && arcNames.some(function(n){ return n.owner === userAddr; });
+    var dismissed = userAddr && localStorage.getItem('nan_welcome_dismissed_' + userAddr);
+    var alreadyShown = userAddr && localStorage.getItem('nan_welcome_shown_' + userAddr);
+    if (!hasName && !dismissed && !alreadyShown) {
+      setTimeout(function(){ navShowWelcomeModal(); }, 600);
+    }
+  };
+})();
 </script>
 
 <!-- ══ BANK PICKER MODAL ══ -->
