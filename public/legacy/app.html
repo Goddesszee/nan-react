@@ -3785,6 +3785,13 @@ function nanUpdateProfileLabel(){
   pill.style.border = 'none';
   labelEl.style.color = '#fff';
   labelEl.style.fontWeight = '700';
+  nanUpdateSidebarWalletLabel();
+}
+function nanUpdateSidebarWalletLabel(){
+  var lbl = document.querySelector('#nanSidebar .nan-sb-wallet-btn .nan-sb-label');
+  if (!lbl) return;
+  var agentConnected = typeof agentWalletAddr !== 'undefined' && !!agentWalletAddr;
+  lbl.textContent = agentConnected ? (agentWalletAddr.slice(0,6) + '...' + agentWalletAddr.slice(-4)) : 'Wallet';
 }
 document.addEventListener('DOMContentLoaded', nanUpdateProfileLabel);
 
@@ -3896,14 +3903,20 @@ function navAgentWalletCopy(){
     if (btn) { btn.textContent = '✓ Copied'; setTimeout(function(){ btn.textContent = 'Copy Address'; }, 1500); }
   });
 }
-function navMenuAgentConnect(){
+async function navMenuAgentConnect(){
   var val = (document.getElementById('navAgentEmailInput') || {}).value || '';
   var heroInput = document.getElementById('agentEmailInput');
   if (heroInput) heroInput.value = val.trim();
   closeCenteredMenus();
   var navMenu = _navGetWalletMenu();
   navMenu.style.display = 'none';
-  if (typeof agentLoginInit === 'function') agentLoginInit();
+  if (typeof agentLoginInit === 'function') {
+    await agentLoginInit();
+    if (typeof agentWalletAddr !== 'undefined' && agentWalletAddr) {
+      nanUpdateProfileLabel();
+      goPage('agent-wallet');
+    }
+  }
 }
 function navMenuAgentDisconnect(){
   closeCenteredMenus();
