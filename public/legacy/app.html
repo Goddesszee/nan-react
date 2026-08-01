@@ -314,14 +314,30 @@ html,body{background-color:var(--bg);}
   <button id="nanSidebarCollapseBtn" onclick="nanToggleSidebar()" title="Collapse">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
   </button>
-  <div class="nan-sb-brand">
+  <div class="nan-sb-brand" id="nanSidebarBrand" onclick="navOpenProfileMenu(event,this)" style="cursor:pointer;">
     <div class="nan-sb-logo"><svg viewBox="0 0 324 480" width="13" height="20"><path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill="#fff"/><path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill="#fff"/></svg></div>
-    <span class="nan-sb-label nan-sb-brand-label">NAN</span>
+    <span class="nan-sb-label nan-sb-brand-label">Profile</span>
   </div>
   <div class="nan-sb-items">
     <div class="nan-sb-item-row" onclick="goPage('agent-wallet')">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       <span class="nan-sb-label">Home</span>
+    </div>
+    <div class="nan-sb-item-row" id="sb-career" onclick="goPage('career-agent')">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+      <span class="nan-sb-label">Career agent</span>
+    </div>
+    <div class="nan-sb-item-row" id="sb-research" onclick="goPage('supplier-agent')">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 9h1M9 13h1M14 9h1M14 13h1"/></svg>
+      <span class="nan-sb-label">Research agent</span>
+    </div>
+    <div class="nan-sb-item-row" id="sb-marketplace" onclick="goPage('marketplace')">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9M3 9v10a1 1 0 001 1h16a1 1 0 001-1V9M3 9h18M9 13a2 2 0 11-4 0M19 13a2 2 0 11-4 0"/></svg>
+      <span class="nan-sb-label">Marketplace</span>
+    </div>
+    <div class="nan-sb-item-row" id="sb-gigs" onclick="goPage('gigs')">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12l3 3 6-6"/><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 9h18"/></svg>
+      <span class="nan-sb-label">Gigs</span>
     </div>
     <div class="nan-sb-item-row" onclick="goPage('send');setTimeout(()=>setSendTab('send'),100)">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
@@ -396,23 +412,23 @@ html,body{background-color:var(--bg);}
     <!-- Desktop: nav links -->
     <div id="topbarPageInfo" style="display:none;align-items:center;gap:2px;">
     <div id="topbarNav" style="display:none;align-items:center;gap:2px;">
-      <button onclick="goPage('career-agent')" id="tnav-career" class="tnav-btn" style="display:flex;align-items:center;gap:4px;">
+      <button onclick="goPage('career-agent')" id="tnav-career" class="tnav-btn" style="display:none;align-items:center;gap:4px;">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
         Career agent
       </button>
-      <button onclick="goPage('supplier-agent')" id="tnav-supplier" class="tnav-btn" style="display:flex;align-items:center;gap:4px;">
+      <button onclick="goPage('supplier-agent')" id="tnav-supplier" class="tnav-btn" style="display:none;align-items:center;gap:4px;">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 9h1M9 13h1M14 9h1M14 13h1"/></svg>
         Research agent
       </button>
-      <button onclick="goPage('marketplace')" id="tnav-marketplace" class="tnav-btn" style="display:flex;align-items:center;gap:4px;">
+      <button onclick="goPage('marketplace')" id="tnav-marketplace" class="tnav-btn" style="display:none;align-items:center;gap:4px;">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l1.5-5h15L21 9M3 9v10a1 1 0 001 1h16a1 1 0 001-1V9M3 9h18M9 13a2 2 0 11-4 0M19 13a2 2 0 11-4 0"/></svg>
         Marketplace
       </button>
-      <button onclick="goPage('gigs')" id="tnav-gigs" class="tnav-btn" style="display:flex;align-items:center;gap:4px;">
+      <button onclick="goPage('gigs')" id="tnav-gigs" class="tnav-btn" style="display:none;align-items:center;gap:4px;">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12l3 3 6-6"/><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 9h18"/></svg>
         Gigs
       </button>
-      <button id="tnav-trade-btn" class="tnav-btn" onclick="event.stopPropagation();nanToggleDd('trade',this)">Wallet <span class="nan-caret" style="font-size:10px;margin-left:3px;display:inline-block;transition:transform .2s;">&#9660;</span></button>
+      <button id="tnav-trade-btn" class="tnav-btn" style="display:none;" onclick="event.stopPropagation();nanToggleDd('trade',this)">Wallet <span class="nan-caret" style="font-size:10px;margin-left:3px;display:inline-block;transition:transform .2s;">&#9660;</span></button>
       
       <button id="tnav-ai" onclick="toggleAgent()" style="display:none;align-items:center;gap:5px;background:rgba(109,40,217,.15);border:1px solid rgba(109,40,217,.3);border-radius:100px;padding:6px 12px;font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;color:#c084fc;cursor:pointer;white-space:nowrap;">✦ NAN AI</button>
     </div>
@@ -424,7 +440,7 @@ html,body{background-color:var(--bg);}
       <!-- Net pill: shows "Arc Testnet" on desktop, "Arc" on mobile via CSS -->
       <div class="net-pill" id="netPill" style="display:none;"><span class="net-pill-full"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:4px;display:inline-block;flex-shrink:0;border-radius:3px;background:#0d1b2e;padding:1px;"><path fill="url(#arc_logo)" d="M3.5 20.999c.146-4.407.893-8.519 2.142-11.717C7.223 5.231 9.513 3 12.088 3s4.865 2.231 6.447 6.283c.822 2.107 1.427 4.61 1.786 7.334q.048.366.087.737.015.024.013.041s.21 1.317.256 3.604h-.024c-.313-.256-4-3.153-10.112-2.314.093-1.035.22-2.04.383-3.005l.027-.146a24.5 24.5 0 0 1 6.104.57q-.007-.056-.017-.115c-.33-2.06-.819-3.945-1.448-5.556-1.029-2.635-2.371-4.271-3.502-4.271-1.132 0-2.474 1.636-3.503 4.271q-.375.958-.679 2.034a30 30 0 0 0-.718 3.213A40 40 0 0 0 6.662 21H3.5z"/><defs><linearGradient id="arc_logo" x1="12" x2="12" y1="3" y2="21" gradientUnits="userSpaceOnUse"><stop stop-color="#d0d8e8"/><stop offset="1" stop-color="#7a8faa"/></linearGradient></defs></svg>Testnet</span><span class="net-pill-short" style="display:none;">Arc</span></div>
       <!-- Profile pill: avatar, notification dot, dropdown (address, Claim .arc name, Notifications, BVN, Credit Scoring, Copy Address, Disconnect/Connect) -->
-      <div id="nanProfilePill" onclick="nanToggleProfileMenu(event)" style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 10px 4px 4px;border-radius:100px;border:1px solid var(--border);background:var(--surface);position:relative;flex-shrink:0;">
+      <div id="nanProfilePill" onclick="navToggleAgentWalletMenu(event,this)" style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 10px 4px 4px;border-radius:100px;border:1px solid var(--border);background:var(--surface);position:relative;flex-shrink:0;">
         <div style="width:28px;height:28px;border-radius:50%;background:#7000ff;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px;flex-shrink:0;" id="nanProfileAvatar">?</div>
         <span id="nanProfileLabel" style="font-size:13px;font-weight:600;color:var(--text);">Profile</span>
         <span id="nanProfileNotifDot" style="display:none;position:absolute;top:-2px;right:-2px;width:9px;height:9px;border-radius:50%;background:#e24b4a;border:2px solid var(--card);"></span>
@@ -3704,6 +3720,134 @@ document.addEventListener('DOMContentLoaded',function(){
 </script>
 <script src="/legacy/app.js?v=1785259600"></script>
 <script src="/legacy/ui.js?v=1785259600"></script>
+<script>
+/* ══ Nav restructure: sidebar product links, split Profile / Agent Wallet menus ══
+   Career agent / Research agent / Marketplace / Gigs moved from top nav to the
+   left sidebar. Top nav now has a single Agent Wallet pill (its own connect/copy/
+   disconnect dropdown, keyed to agentWalletAddr — the Circle-managed agent wallet,
+   NOT the main browser wallet). The NAN sidebar logo (now labeled "Profile") opens
+   the original settings menu (Claim .arc name, Notifications, BVN, Credit Scoring,
+   Copy Address, Disconnect). */
+
+// Pill label: "Agent Wallet" normally, "Claim your .arc name" only when relevant
+function nanUpdateProfileLabel(){
+  var labelEl = document.getElementById('nanProfileLabel');
+  var pill = document.getElementById('nanProfilePill');
+  if (!labelEl || !pill) return;
+  var connected = typeof userAddr !== 'undefined' && !!userAddr;
+  var showClaim = connected && typeof nanHasArcName === 'function' && !nanHasArcName();
+  if (showClaim) {
+    labelEl.textContent = 'Claim your .arc name';
+    pill.style.background = '#7000ff'; pill.style.border = 'none';
+    labelEl.style.color = '#fff'; labelEl.style.fontWeight = '700';
+  } else {
+    labelEl.textContent = 'Agent Wallet';
+    pill.style.background = 'var(--surface)'; pill.style.border = '1px solid var(--border)';
+    labelEl.style.color = 'var(--text)'; labelEl.style.fontWeight = '600';
+  }
+}
+document.addEventListener('DOMContentLoaded', nanUpdateProfileLabel);
+
+// NAN logo (sidebar) -> opens the original settings/profile menu, repositioned under the logo
+function navOpenProfileMenu(e, brandEl){
+  if (e) e.stopPropagation();
+  var navMenu = document.getElementById('navWalletMenu');
+  if (navMenu) navMenu.style.display = 'none';
+  nanToggleProfileMenu({ stopPropagation:function(){} });
+  var menu = document.getElementById('nanProfileMenu');
+  if (menu && menu.style.display === 'block') {
+    document.body.appendChild(menu);
+    var r = brandEl.getBoundingClientRect();
+    menu.style.position = 'fixed';
+    menu.style.top = (r.bottom + 8) + 'px';
+    menu.style.left = r.left + 'px';
+    menu.style.right = 'auto';
+  }
+}
+
+// Agent Wallet pill -> lean dropdown for the agent wallet specifically
+var _navWalletMenuEl = null;
+function _navGetWalletMenu(){
+  if (_navWalletMenuEl) return _navWalletMenuEl;
+  var el = document.createElement('div');
+  el.id = 'navWalletMenu';
+  el.style.cssText = 'display:none;position:fixed;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;min-width:230px;z-index:999999;box-shadow:0 8px 24px rgba(0,0,0,.3);';
+  document.body.appendChild(el);
+  document.addEventListener('click', function(e){
+    var pill = document.getElementById('nanProfilePill');
+    if (!el.contains(e.target) && pill && !pill.contains(e.target)) el.style.display = 'none';
+  });
+  _navWalletMenuEl = el;
+  return el;
+}
+function _navRenderWalletMenu(){
+  var navMenu = _navGetWalletMenu();
+  var connected = typeof agentWalletAddr !== 'undefined' && !!agentWalletAddr;
+  if (connected) {
+    var addr = agentWalletAddr;
+    var short = addr.slice(0,6) + '...' + addr.slice(-4);
+    navMenu.innerHTML =
+      '<div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Agent Wallet</div>' +
+      '<div style="font-family:monospace;font-size:.78rem;color:var(--text2);margin-bottom:10px;">' + short + '</div>' +
+      '<button id="navAgentCopyBtn" onclick="event.stopPropagation();navAgentWalletCopy();" style="display:flex;align-items:center;gap:8px;width:100%;padding:9px 10px;background:none;border:none;border-radius:8px;cursor:pointer;font-size:.82rem;color:var(--text1);" onmouseover="this.style.background=\'rgba(112,0,255,.1)\'" onmouseout="this.style.background=\'none\'">Copy Address</button>' +
+      '<div style="height:1px;background:var(--border);margin:4px 0;"></div>' +
+      '<button onclick="event.stopPropagation();navMenuAgentDisconnect();" style="display:flex;align-items:center;gap:8px;width:100%;padding:9px 10px;background:none;border:none;border-radius:8px;cursor:pointer;font-size:.82rem;color:#a855f7;" onmouseover="this.style.background=\'rgba(248,113,113,.1)\'" onmouseout="this.style.background=\'none\'">Disconnect</button>';
+  } else {
+    var hasMainWallet = typeof userAddr !== 'undefined' && !!userAddr;
+    if (hasMainWallet) {
+      navMenu.innerHTML =
+        '<div style="font-size:.72rem;color:var(--text3);margin-bottom:10px;">Set up your Agent Wallet — linked to your connected wallet, takes a few seconds.</div>' +
+        '<button onclick="event.stopPropagation();navMenuAgentConnect();" style="width:100%;background:#7000ff;border:none;color:#fff;padding:9px;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;">Connect Agent Wallet</button>';
+    } else {
+      navMenu.innerHTML =
+        '<div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">New here? Sign in with email</div>' +
+        '<input id="navAgentEmailInput" type="email" placeholder="Email address" style="width:100%;box-sizing:border-box;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:.8rem;color:var(--text);outline:none;margin-bottom:6px;" onkeydown="if(event.key===\'Enter\'){event.stopPropagation();navMenuAgentConnect();}"/>' +
+        '<button onclick="event.stopPropagation();navMenuAgentConnect();" style="width:100%;background:#7000ff;border:none;color:#fff;padding:8px;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;margin-bottom:8px;">Send Code</button>' +
+        '<div style="text-align:center;font-size:.68rem;color:var(--text3);margin-bottom:8px;">or</div>' +
+        '<button onclick="event.stopPropagation();navMenuConnectExisting();" style="width:100%;background:none;border:1px solid var(--border);color:var(--text);padding:8px;border-radius:8px;font-size:.8rem;font-weight:600;cursor:pointer;">Connect existing wallet</button>';
+    }
+  }
+}
+function navToggleAgentWalletMenu(e, pillEl){
+  if (e) e.stopPropagation();
+  var settingsMenu = document.getElementById('nanProfileMenu');
+  if (settingsMenu) settingsMenu.style.display = 'none';
+  var navMenu = _navGetWalletMenu();
+  var isOpen = navMenu.style.display === 'block';
+  if (isOpen) { navMenu.style.display = 'none'; return; }
+  _navRenderWalletMenu();
+  var r = pillEl.getBoundingClientRect();
+  navMenu.style.top = (r.bottom + 8) + 'px';
+  navMenu.style.left = 'auto';
+  navMenu.style.right = (window.innerWidth - r.right) + 'px';
+  navMenu.style.display = 'block';
+}
+function navAgentWalletCopy(){
+  if (typeof agentWalletAddr === 'undefined' || !agentWalletAddr) return;
+  navigator.clipboard.writeText(agentWalletAddr).then(function(){
+    var btn = document.getElementById('navAgentCopyBtn');
+    if (btn) { btn.textContent = '✓ Copied'; setTimeout(function(){ btn.textContent = 'Copy Address'; }, 1500); }
+  });
+}
+function navMenuAgentConnect(){
+  var val = (document.getElementById('navAgentEmailInput') || {}).value || '';
+  var heroInput = document.getElementById('agentEmailInput');
+  if (heroInput) heroInput.value = val.trim();
+  var navMenu = _navGetWalletMenu();
+  navMenu.style.display = 'none';
+  if (typeof agentLoginInit === 'function') agentLoginInit();
+}
+function navMenuAgentDisconnect(){
+  var navMenu = _navGetWalletMenu();
+  navMenu.style.display = 'none';
+  if (typeof agentDisconnect === 'function') agentDisconnect();
+}
+function navMenuConnectExisting(){
+  var navMenu = _navGetWalletMenu();
+  navMenu.style.display = 'none';
+  if (typeof showWalletPicker === 'function') showWalletPicker();
+}
+</script>
 
 <!-- ══ BANK PICKER MODAL ══ -->
 <div id="bankPickerOverlay" onclick="closeBankPicker()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:99990;backdrop-filter:blur(4px);"></div>
