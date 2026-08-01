@@ -12,10 +12,13 @@ if (_params.get('__nan_disconnected') === '1') {
 }
 
 // If already have a session — redirect immediately, no React needed
+// (unless ?home=1 is present — that's the sidebar "Home" link asking to see
+// the landing page on purpose, even while logged in)
+const _forceLanding = _params.get('home') === '1'
 const _token = localStorage.getItem('nan_dynamic_token')
 const _addr  = localStorage.getItem('nan_dynamic_address')
 const _cId   = localStorage.getItem('circleWalletId')
-if (_token && _addr) {
+if (_token && _addr && !_forceLanding) {
   window.location.replace('/legacy/app.html')
 }
 
