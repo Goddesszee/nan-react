@@ -4182,6 +4182,92 @@ async function _recordTxOnChain(tx){
     }
   }catch(e){console.log('On-chain history error:',e.message);}
 }
+// ── Live Activity Feed — everyone's Swaps + Arc Name claims, from the backend indexer ──
+var _liveFeedFilter = 'all';
+var _liveFeedTimer = null;
+function histSwitchTab(tab){
+  var mine = document.getElementById('histMinePane');
+  var live = document.getElementById('histLivePane');
+  var tabMine = document.getElementById('histTabMine');
+  var tabLive = document.getElementById('histTabLive');
+  var clearBtn = document.getElementById('histClearBtn');
+  if (tab === 'mine') {
+    mine.style.display = 'block'; live.style.display = 'none';
+    tabMine.style.background = '#7000ff'; tabMine.style.color = '#fff';
+    tabLive.style.background = ''; tabLive.style.color = '';
+    if (clearBtn) clearBtn.style.display = '';
+    if (_liveFeedTimer) { clearInterval(_liveFeedTimer); _liveFeedTimer = null; }
+  } else {
+    mine.style.display = 'none'; live.style.display = 'block';
+    tabLive.style.background = '#7000ff'; tabLive.style.color = '#fff';
+    tabMine.style.background = ''; tabMine.style.color = '';
+    if (clearBtn) clearBtn.style.display = 'none';
+    liveFeedFetch();
+    if (_liveFeedTimer) clearInterval(_liveFeedTimer);
+    _liveFeedTimer = setInterval(liveFeedFetch, 15000);
+  }
+}
+function liveFeedSetFilter(type){
+  _liveFeedFilter = type;
+  document.querySelectorAll('.liveFeedFilterBtn').forEach(function(b){
+    var active = b.getAttribute('data-type') === type;
+    b.style.background = active ? '#7000ff' : 'none';
+    b.style.color = active ? '#fff' : 'var(--text2)';
+  });
+  liveFeedFetch();
+}
+async function liveFeedFetch(){
+  var listEl = document.getElementById('liveFeedList');
+  var totalEl = document.getElementById('liveFeedTotal');
+  if (!listEl) return;
+  try {
+    var url = API_BASE + '/api/activity-feed?type=' + _liveFeedFilter + '&limit=30';
+    var r = await fetch(url);
+    var d = await r.json();
+    if (totalEl) totalEl.textContent = (d.total || 0).toLocaleString();
+    if (!d.items || !d.items.length) {
+      listEl.innerHTML = '<div style="text-align:center;padding:30px 20px;font-size:.85rem;color:var(--text3);">No activity yet for this filter.</div>';
+      return;
+    }
+    listEl.innerHTML = d.items.map(liveFeedRenderItem).join('');
+  } catch (e) {
+    listEl.innerHTML = '<div style="text-align:center;padding:30px 20px;font-size:.85rem;color:var(--text3);">Could not load live feed — try refreshing.</div>';
+  }
+}
+function liveFeedTimeAgo(ts){
+  var diff = Math.max(0, Date.now() - ts);
+  var m = Math.floor(diff / 60000);
+  if (m < 1) return 'just now';
+  if (m < 60) return m + 'm ago';
+  var h = Math.floor(m / 60);
+  if (h < 24) return h + 'h ago';
+  return Math.floor(h / 24) + 'd ago';
+}
+function liveFeedShort(addr){
+  return addr ? addr.slice(0,6) + '...' + addr.slice(-4) : '—';
+}
+function liveFeedRenderItem(ev){
+  var icon, label, sub;
+  if (ev.type === 'swap') {
+    icon = '<div style="width:36px;height:36px;border-radius:10px;background:rgba(112,0,255,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem;">🔄</div>';
+    label = ev.legIn.amount.toFixed(2) + ' ' + ev.legIn.token + ' <span style="color:var(--text3);">→</span> ' + ev.legOut.amount.toFixed(2) + ' ' + ev.legOut.token;
+    sub = 'Swap';
+  } else if (ev.type === 'arcname') {
+    icon = '<div style="width:36px;height:36px;border-radius:10px;background:rgba(240,185,89,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem;">✦</div>';
+    label = 'Claimed ' + ev.name;
+    sub = 'Arc Name';
+  } else {
+    icon = '<div style="width:36px;height:36px;border-radius:10px;background:var(--surface);display:flex;align-items:center;justify-content:center;flex-shrink:0;"></div>';
+    label = ev.type; sub = '';
+  }
+  return '<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);">' +
+    icon +
+    '<div style="flex:1;min-width:0;">' +
+      '<div style="font-size:.85rem;font-weight:700;color:var(--text);">' + label + '</div>' +
+      '<div style="font-size:.7rem;color:var(--text3);margin-top:2px;">' + sub + ' · ' + liveFeedShort(ev.actor) + ' · ' + liveFeedTimeAgo(ev.timestamp) + '</div>' +
+    '</div>' +
+  '</div>';
+}
 function clearHistory(){
   if(!txHistory.length){toast('Nothing to clear','info',2000);return;}
   if(!confirm('Clear all history?'))return;
