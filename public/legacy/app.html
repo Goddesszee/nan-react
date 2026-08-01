@@ -917,6 +917,7 @@ html,body{background-color:var(--bg);}
 </div>
 
 <div id="agentConnectedSection" style="display:none;">
+  <div id="agentPageTitle" style="font-family:'Space Grotesk',sans-serif;font-size:1.9rem;font-weight:800;color:#7000ff;letter-spacing:-.02em;padding:24px 24px 0;">Agent Wallet</div>
   <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap;padding:28px 24px;">
     <div>
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
@@ -1059,6 +1060,7 @@ html,body{background-color:var(--bg);}
     <!-- ══ SEND PAGE ══ -->
   <div class="page" id="page-send">
 
+    <div class="page-title" style="padding:0 4px;">Send</div>
     <!-- Status banners (kept for JS — outside card so they show above it) -->
     <div id="onboardChecklist" style="display:none;"></div>
     <div class="rpc-error" id="rpcError" style="display:none;">⚠ Could not fetch balances. <a href="#" onclick="refreshBalances();return false;" style="margin-left:6px;">Retry</a></div>
@@ -1364,7 +1366,7 @@ html,body{background-color:var(--bg);}
       #page-career-agent .btn { font-weight: 800 !important; font-size: 15px !important; min-height: 48px !important; }
     </style>
     <div style="padding:20px;width:100%;box-sizing:border-box;">
-      <div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">Career agent</div>
+      <div style="font-size:1rem;font-weight:700;color:#7000ff;margin-bottom:4px;">Career agent</div>
       <div style="font-size:.82rem;color:var(--text2);margin-bottom:14px;">Find a job as a candidate, post a job as an employer, or browse what's been posted.</div>
 
       <div id="careerLandingView">
@@ -1848,7 +1850,7 @@ html,body{background-color:var(--bg);}
       #page-supplier-agent .btn { font-weight: 800 !important; font-size: 15px !important; min-height: 48px !important; }
     </style>
     <div style="padding:20px;width:100%;box-sizing:border-box;">
-      <div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">Research agent</div>
+      <div style="font-size:1rem;font-weight:700;color:#7000ff;margin-bottom:4px;">Research agent</div>
       <div style="font-size:.82rem;color:var(--text2);margin-bottom:16px;">AI-powered research — find manufacturers, suppliers, and sourcing options for anything, anywhere. Results are AI-researched from public web content — verify before ordering.</div>
 
       <input id="supplierProduct" placeholder="What are you sourcing? e.g. school bags" style="width:100%;max-width:400px;padding:11px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
@@ -1944,7 +1946,7 @@ html,body{background-color:var(--bg);}
       #page-marketplace .btn { font-weight: 800 !important; font-size: 15px !important; min-height: 48px !important; }
     </style>
     <div style="padding:20px;width:100%;box-sizing:border-box;">
-      <div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">Marketplace</div>
+      <div style="font-size:1rem;font-weight:700;color:#7000ff;margin-bottom:4px;">Marketplace</div>
       <div style="font-size:.82rem;color:var(--text2);margin-bottom:14px;">Buy and sell anything — payment held in real escrow until you confirm receipt.</div>
 
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
@@ -2312,7 +2314,7 @@ html,body{background-color:var(--bg);}
       #page-gigs .btn { font-weight: 800 !important; font-size: 15px !important; min-height: 48px !important; }
     </style>
     <div style="padding:20px;width:100%;box-sizing:border-box;">
-      <div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">Gigs</div>
+      <div style="font-size:1rem;font-weight:700;color:#7000ff;margin-bottom:4px;">Gigs</div>
       <div style="font-size:.82rem;color:var(--text2);margin-bottom:14px;">Post a task with your budget. Freelancers submit work with their own price. Review, edit the amount if needed, and accept — payment fires instantly, on-chain, straight from your Agent Wallet.</div>
 
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
@@ -2654,6 +2656,7 @@ html,body{background-color:var(--bg);}
 
   <!-- ══ SWAP PAGE ══ -->
   <div class="page" id="page-swap">
+    <div class="page-title" style="padding:0 4px;">Swap</div>
     <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;overflow:hidden;padding:14px;max-width:460px !important;">
     <div id="swapModeBanner" style="display:none;"></div>
 
@@ -2727,7 +2730,7 @@ html,body{background-color:var(--bg);}
     <!-- ── Page header ── -->
     <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 16px 14px;border-bottom:1px solid var(--border);">
       <div>
-        <div style="font-size:1.1rem;font-weight:700;color:var(--text);letter-spacing:-.02em;">Bridge</div>
+        <div style="font-size:1.1rem;font-weight:700;color:#7000ff;letter-spacing:-.02em;">Bridge</div>
         <div style="font-size:.7rem;color:var(--text3);font-weight:600;margin-top:2px;letter-spacing:.04em;">CCTP V2 · Circle</div>
       </div>
       <button onclick="refreshGatewayBalance()" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;color:var(--text2);font-size:.75rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">↻ Refresh</button>
@@ -2944,6 +2947,7 @@ html,body{background-color:var(--bg);}
   </div><!-- end card -->
 </div> ══ -->
   <div class="page" id="page-naira">
+    <div class="page-title" style="padding:0 4px;">Naira</div>
     <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;max-width:460px !important;">
       <button class="back-btn" onclick="goBack()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg> Back</button>
 
@@ -3187,7 +3191,7 @@ html,body{background-color:var(--bg);}
     <button class="back-btn" onclick="goBack()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg> Back</button>
     <!-- Header -->
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-      <div style="font-size:1.125rem;font-weight:700;color:var(--text);letter-spacing:-.02em;">Activity</div>
+      <div style="font-size:1.125rem;font-weight:700;color:#7000ff;letter-spacing:-.02em;">Activity</div>
       <button class="clear-hist-btn" onclick="clearHistory()">Clear all</button>
     </div>
 
