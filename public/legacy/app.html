@@ -440,17 +440,15 @@ html,body{background-color:var(--bg);}
       <!-- Net pill: shows "Arc Testnet" on desktop, "Arc" on mobile via CSS -->
       <div class="net-pill" id="netPill" style="display:none;"><span class="net-pill-full"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:4px;display:inline-block;flex-shrink:0;border-radius:3px;background:#0d1b2e;padding:1px;"><path fill="url(#arc_logo)" d="M3.5 20.999c.146-4.407.893-8.519 2.142-11.717C7.223 5.231 9.513 3 12.088 3s4.865 2.231 6.447 6.283c.822 2.107 1.427 4.61 1.786 7.334q.048.366.087.737.015.024.013.041s.21 1.317.256 3.604h-.024c-.313-.256-4-3.153-10.112-2.314.093-1.035.22-2.04.383-3.005l.027-.146a24.5 24.5 0 0 1 6.104.57q-.007-.056-.017-.115c-.33-2.06-.819-3.945-1.448-5.556-1.029-2.635-2.371-4.271-3.502-4.271-1.132 0-2.474 1.636-3.503 4.271q-.375.958-.679 2.034a30 30 0 0 0-.718 3.213A40 40 0 0 0 6.662 21H3.5z"/><defs><linearGradient id="arc_logo" x1="12" x2="12" y1="3" y2="21" gradientUnits="userSpaceOnUse"><stop stop-color="#d0d8e8"/><stop offset="1" stop-color="#7a8faa"/></linearGradient></defs></svg>Testnet</span><span class="net-pill-short" style="display:none;">Arc</span></div>
       <!-- Profile pill: avatar, notification dot, dropdown (address, Claim .arc name, Notifications, BVN, Credit Scoring, Copy Address, Disconnect/Connect) -->
-      <div id="nanProfilePill" onclick="navToggleAgentWalletMenu(event,this)" style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 10px 4px 4px;border-radius:100px;border:1px solid var(--border);background:var(--surface);position:relative;flex-shrink:0;">
-        <div style="width:28px;height:28px;border-radius:50%;background:#7000ff;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px;flex-shrink:0;" id="nanProfileAvatar">?</div>
-        <span id="nanProfileLabel" style="font-size:13px;font-weight:600;color:var(--text);">Profile</span>
+      <div id="nanProfilePill" onclick="navToggleAgentWalletMenu(event,this)" style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 10px 4px 4px;border-radius:100px;border:none;background:#7000ff;position:relative;flex-shrink:0;">
+        <div style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px;flex-shrink:0;" id="nanProfileAvatar">?</div>
+        <span id="nanProfileLabel" style="font-size:13px;font-weight:700;color:#fff;">Agent Wallet</span>
         <span id="nanProfileNotifDot" style="display:none;position:absolute;top:-2px;right:-2px;width:9px;height:9px;border-radius:50%;background:#e24b4a;border:2px solid var(--card);"></span>
         <div id="nanProfileMenu" style="display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:6px;min-width:220px;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.25);">
           <div onclick="event.stopPropagation();goPage('arcname');nanToggleProfileMenu()" style="padding:9px 12px;font-size:.85rem;cursor:pointer;border-radius:8px;" onmouseover="this.style.background='rgba(112,0,255,.1)'" onmouseout="this.style.background='none'">Claim your .arc name</div>
           <div onclick="event.stopPropagation();toggleNotifPanel(event);nanToggleProfileMenu()" style="padding:9px 12px;font-size:.85rem;cursor:pointer;border-radius:8px;" onmouseover="this.style.background='rgba(112,0,255,.1)'" onmouseout="this.style.background='none'">Notifications</div>
           <div onclick="event.stopPropagation();comingSoon('BVN Verification');nanToggleProfileMenu()" style="padding:9px 12px;font-size:.85rem;cursor:pointer;border-radius:8px;" onmouseover="this.style.background='rgba(112,0,255,.1)'" onmouseout="this.style.background='none'">BVN Verification</div>
           <div onclick="event.stopPropagation();doCredit();nanToggleProfileMenu()" style="padding:9px 12px;font-size:.85rem;cursor:pointer;border-radius:8px;" onmouseover="this.style.background='rgba(112,0,255,.1)'" onmouseout="this.style.background='none'">Credit Scoring</div>
-          <div id="nanProfileCopyAddr" onclick="event.stopPropagation();nanProfileCopyAddress()" style="padding:9px 12px;font-size:.85rem;cursor:pointer;border-radius:8px;" onmouseover="this.style.background='rgba(112,0,255,.1)'" onmouseout="this.style.background='none'">Copy Address</div>
-          <div id="nanProfileDisconnect" onclick="event.stopPropagation();nanWalletDisconnect()" style="display:none;padding:9px 12px;font-size:.85rem;cursor:pointer;border-radius:8px;color:#a855f7;" onmouseover="this.style.background='rgba(112,0,255,.1)'" onmouseout="this.style.background='none'">Disconnect</div>
           <div id="nanProfileConnect" onclick="event.stopPropagation();nanCloseAll();showWalletPicker()" style="display:none;padding:9px 12px;font-size:.85rem;cursor:pointer;border-radius:8px;" onmouseover="this.style.background='rgba(112,0,255,.1)'" onmouseout="this.style.background='none'">Connect Wallet</div>
         </div>
       </div>
@@ -3722,49 +3720,93 @@ document.addEventListener('DOMContentLoaded',function(){
 <script>
 /* ══ Nav restructure: sidebar product links, split Profile / Agent Wallet menus ══
    Career agent / Research agent / Marketplace / Gigs moved from top nav to the
-   left sidebar. Top nav now has a single Agent Wallet pill (its own connect/copy/
-   disconnect dropdown, keyed to agentWalletAddr — the Circle-managed agent wallet,
-   NOT the main browser wallet). The NAN sidebar logo (now labeled "Profile") opens
-   the original settings menu (Claim .arc name, Notifications, BVN, Credit Scoring,
-   Copy Address, Disconnect). */
+   left sidebar. Top nav has a single solid-purple Agent Wallet pill (its own
+   connect/copy/disconnect dropdown, keyed to agentWalletAddr — the Circle-managed
+   agent wallet, NOT the main browser wallet). The NAN sidebar logo ("Profile")
+   opens the settings menu (Claim .arc name, Notifications, BVN, Credit Scoring)
+   as a centered modal. The sidebar "Wallet" button opens the SAME wallet-actions
+   content as the top pill (Agent Wallet address/copy/disconnect, or main-wallet
+   connect/reconnect), also as a centered modal — both use a shared dark backdrop
+   so they always land in the same visible spot regardless of where they were
+   triggered from. */
 
-// Pill label: "Agent Wallet" normally, "Claim your .arc name" only when relevant
+// ── Shared centered-modal backdrop ──────────────────────────────────────────
+var _navBackdropEl = null;
+function _navGetBackdrop(){
+  if (_navBackdropEl) return _navBackdropEl;
+  var bd = document.createElement('div');
+  bd.id = 'navProfileBackdrop';
+  bd.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999998;';
+  bd.onclick = closeCenteredMenus;
+  document.body.appendChild(bd);
+  _navBackdropEl = bd;
+  return bd;
+}
+function closeCenteredMenus(){
+  var pm = document.getElementById('nanProfileMenu');
+  var wm = document.getElementById('navWalletMenu');
+  var bd = _navGetBackdrop();
+  if (pm) pm.style.display = 'none';
+  if (wm) wm.style.display = 'none';
+  bd.style.display = 'none';
+}
+function _navCenterAndShow(el, closeBtnId){
+  el.style.position = 'fixed';
+  el.style.top = '50%';
+  el.style.left = '50%';
+  el.style.right = 'auto';
+  el.style.transform = 'translate(-50%, -50%)';
+  el.style.zIndex = '999999';
+  el.style.minWidth = '260px';
+  el.style.boxShadow = '0 24px 60px rgba(0,0,0,.5)';
+  if (!document.getElementById(closeBtnId)) {
+    var closeBtn = document.createElement('button');
+    closeBtn.id = closeBtnId;
+    closeBtn.textContent = '×';
+    closeBtn.style.cssText = 'position:absolute;top:8px;right:10px;background:none;border:none;font-size:1.3rem;line-height:1;color:var(--text3);cursor:pointer;padding:4px;';
+    closeBtn.onclick = function(ev){ ev.stopPropagation(); closeCenteredMenus(); };
+    el.insertBefore(closeBtn, el.firstChild);
+  }
+  _navGetBackdrop().style.display = 'block';
+  el.style.display = 'block';
+}
+
+// ── Pill label: solid purple always, text switches for the arc-name nudge ──
 function nanUpdateProfileLabel(){
   var labelEl = document.getElementById('nanProfileLabel');
   var pill = document.getElementById('nanProfilePill');
   if (!labelEl || !pill) return;
   var connected = typeof userAddr !== 'undefined' && !!userAddr;
   var showClaim = connected && typeof nanHasArcName === 'function' && !nanHasArcName();
-  if (showClaim) {
-    labelEl.textContent = 'Claim your .arc name';
-    pill.style.background = '#7000ff'; pill.style.border = 'none';
-    labelEl.style.color = '#fff'; labelEl.style.fontWeight = '700';
-  } else {
-    labelEl.textContent = 'Agent Wallet';
-    pill.style.background = 'var(--surface)'; pill.style.border = '1px solid var(--border)';
-    labelEl.style.color = 'var(--text)'; labelEl.style.fontWeight = '600';
-  }
+  labelEl.textContent = showClaim ? 'Claim your .arc name' : 'Agent Wallet';
+  pill.style.background = '#7000ff';
+  pill.style.border = 'none';
+  labelEl.style.color = '#fff';
+  labelEl.style.fontWeight = '700';
 }
 document.addEventListener('DOMContentLoaded', nanUpdateProfileLabel);
 
-// NAN logo (sidebar) -> opens the original settings/profile menu, repositioned under the logo
-function navOpenProfileMenu(e, brandEl){
+// ── NAN logo (sidebar) -> Profile/settings menu, centered modal ────────────
+function navOpenProfileMenu(e){
   if (e) e.stopPropagation();
-  var navMenu = document.getElementById('navWalletMenu');
-  if (navMenu) navMenu.style.display = 'none';
-  nanToggleProfileMenu({ stopPropagation:function(){} });
+  closeCenteredMenus();
   var menu = document.getElementById('nanProfileMenu');
-  if (menu && menu.style.display === 'block') {
-    document.body.appendChild(menu);
-    var r = brandEl.getBoundingClientRect();
-    menu.style.position = 'fixed';
-    menu.style.top = (r.bottom + 8) + 'px';
-    menu.style.left = r.left + 'px';
-    menu.style.right = 'auto';
-  }
+  if (!menu) return;
+  nanToggleProfileMenu({ stopPropagation:function(){} });
+  menu.style.display = 'block';
+  document.body.appendChild(menu);
+  _navCenterAndShow(menu, 'navProfileMenuClose');
 }
 
-// Agent Wallet pill -> lean dropdown for the agent wallet specifically
+// ── Sidebar "Wallet" button -> wallet-actions content, centered modal ──────
+function nanSidebarOpenProfile(){
+  closeCenteredMenus();
+  var navMenu = _navGetWalletMenu();
+  _navRenderWalletMenu();
+  _navCenterAndShow(navMenu, 'navWalletMenuClose');
+}
+
+// ── Agent Wallet top-nav pill -> lean anchored dropdown (unchanged position) ─
 var _navWalletMenuEl = null;
 function _navGetWalletMenu(){
   if (_navWalletMenuEl) return _navWalletMenuEl;
@@ -3774,6 +3816,8 @@ function _navGetWalletMenu(){
   document.body.appendChild(el);
   document.addEventListener('click', function(e){
     var pill = document.getElementById('nanProfilePill');
+    var bd = document.getElementById('navProfileBackdrop');
+    if (bd && bd.style.display === 'block') return; // modal mode handles its own closing
     if (!el.contains(e.target) && pill && !pill.contains(e.target)) el.style.display = 'none';
   });
   _navWalletMenuEl = el;
@@ -3791,34 +3835,45 @@ function _navRenderWalletMenu(){
       '<button id="navAgentCopyBtn" onclick="event.stopPropagation();navAgentWalletCopy();" style="display:flex;align-items:center;gap:8px;width:100%;padding:9px 10px;background:none;border:none;border-radius:8px;cursor:pointer;font-size:.82rem;color:var(--text1);" onmouseover="this.style.background=\'rgba(112,0,255,.1)\'" onmouseout="this.style.background=\'none\'">Copy Address</button>' +
       '<div style="height:1px;background:var(--border);margin:4px 0;"></div>' +
       '<button onclick="event.stopPropagation();navMenuAgentDisconnect();" style="display:flex;align-items:center;gap:8px;width:100%;padding:9px 10px;background:none;border:none;border-radius:8px;cursor:pointer;font-size:.82rem;color:#a855f7;" onmouseover="this.style.background=\'rgba(248,113,113,.1)\'" onmouseout="this.style.background=\'none\'">Disconnect</button>';
-  } else {
-    var hasMainWallet = typeof userAddr !== 'undefined' && !!userAddr;
-    if (hasMainWallet) {
-      navMenu.innerHTML =
-        '<div style="font-size:.72rem;color:var(--text3);margin-bottom:10px;">Set up your Agent Wallet — linked to your connected wallet, takes a few seconds.</div>' +
-        '<button onclick="event.stopPropagation();navMenuAgentConnect();" style="width:100%;background:#7000ff;border:none;color:#fff;padding:9px;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;">Connect Agent Wallet</button>';
-    } else {
-      navMenu.innerHTML =
-        '<div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">New here? Sign in with email</div>' +
-        '<input id="navAgentEmailInput" type="email" placeholder="Email address" style="width:100%;box-sizing:border-box;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:.8rem;color:var(--text);outline:none;margin-bottom:6px;" onkeydown="if(event.key===\'Enter\'){event.stopPropagation();navMenuAgentConnect();}"/>' +
-        '<button onclick="event.stopPropagation();navMenuAgentConnect();" style="width:100%;background:#7000ff;border:none;color:#fff;padding:8px;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;margin-bottom:8px;">Send Code</button>' +
-        '<div style="text-align:center;font-size:.68rem;color:var(--text3);margin-bottom:8px;">or</div>' +
-        '<button onclick="event.stopPropagation();navMenuConnectExisting();" style="width:100%;background:none;border:1px solid var(--border);color:var(--text);padding:8px;border-radius:8px;font-size:.8rem;font-weight:600;cursor:pointer;">Connect existing wallet</button>';
-    }
+    return;
   }
+  var hasMainWallet = typeof userAddr !== 'undefined' && !!userAddr;
+  if (hasMainWallet) {
+    var mShort = userAddr.slice(0,6) + '...' + userAddr.slice(-4);
+    navMenu.innerHTML =
+      '<div style="font-size:.72rem;color:var(--text3);margin-bottom:10px;">Set up your Agent Wallet — linked to your connected wallet, takes a few seconds.</div>' +
+      '<button onclick="event.stopPropagation();navMenuAgentConnect();" style="width:100%;background:#7000ff;border:none;color:#fff;padding:9px;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;margin-bottom:10px;">Connect Agent Wallet</button>' +
+      '<div style="height:1px;background:var(--border);margin:8px 0;"></div>' +
+      '<div id="navMainWalletChip" onclick="event.stopPropagation();navToggleMainWalletActions();" style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:.76rem;color:var(--text2);background:var(--card);">' +
+        '<span style="font-family:monospace;">' + mShort + '</span>' +
+        '<span style="color:var(--text3);">Connected wallet ▾</span>' +
+      '</div>' +
+      '<div id="navMainWalletActions" style="display:none;margin-top:6px;">' +
+        '<button onclick="event.stopPropagation();navMainWalletCopy();" style="display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;background:none;border:none;border-radius:8px;cursor:pointer;font-size:.78rem;color:var(--text1);" onmouseover="this.style.background=\'rgba(112,0,255,.1)\'" onmouseout="this.style.background=\'none\'">Copy Address</button>' +
+        '<button onclick="event.stopPropagation();navMainWalletDisconnect();" style="display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;background:none;border:none;border-radius:8px;cursor:pointer;font-size:.78rem;color:#a855f7;" onmouseover="this.style.background=\'rgba(248,113,113,.1)\'" onmouseout="this.style.background=\'none\'">Disconnect</button>' +
+      '</div>';
+    return;
+  }
+  navMenu.innerHTML =
+    '<div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">New here? Sign in with email</div>' +
+    '<input id="navAgentEmailInput" type="email" placeholder="Email address" style="width:100%;box-sizing:border-box;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:.8rem;color:var(--text);outline:none;margin-bottom:6px;" onkeydown="if(event.key===\'Enter\'){event.stopPropagation();navMenuAgentConnect();}"/>' +
+    '<button onclick="event.stopPropagation();navMenuAgentConnect();" style="width:100%;background:#7000ff;border:none;color:#fff;padding:8px;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;margin-bottom:8px;">Send Code</button>' +
+    '<div style="text-align:center;font-size:.68rem;color:var(--text3);margin-bottom:8px;">or</div>' +
+    '<button onclick="event.stopPropagation();navMenuConnectExisting();" style="width:100%;background:none;border:1px solid var(--border);color:var(--text);padding:8px;border-radius:8px;font-size:.8rem;font-weight:600;cursor:pointer;">Connect wallet</button>';
 }
 function navToggleAgentWalletMenu(e, pillEl){
   if (e) e.stopPropagation();
-  var settingsMenu = document.getElementById('nanProfileMenu');
-  if (settingsMenu) settingsMenu.style.display = 'none';
+  closeCenteredMenus();
   var navMenu = _navGetWalletMenu();
   var isOpen = navMenu.style.display === 'block';
   if (isOpen) { navMenu.style.display = 'none'; return; }
   _navRenderWalletMenu();
   var r = pillEl.getBoundingClientRect();
+  navMenu.style.position = 'fixed';
   navMenu.style.top = (r.bottom + 8) + 'px';
   navMenu.style.left = 'auto';
   navMenu.style.right = (window.innerWidth - r.right) + 'px';
+  navMenu.style.transform = 'none';
   navMenu.style.display = 'block';
 }
 function navAgentWalletCopy(){
@@ -3832,17 +3887,54 @@ function navMenuAgentConnect(){
   var val = (document.getElementById('navAgentEmailInput') || {}).value || '';
   var heroInput = document.getElementById('agentEmailInput');
   if (heroInput) heroInput.value = val.trim();
+  closeCenteredMenus();
   var navMenu = _navGetWalletMenu();
   navMenu.style.display = 'none';
   if (typeof agentLoginInit === 'function') agentLoginInit();
 }
 function navMenuAgentDisconnect(){
+  closeCenteredMenus();
   var navMenu = _navGetWalletMenu();
   navMenu.style.display = 'none';
   if (typeof agentDisconnect === 'function') agentDisconnect();
 }
-function navMenuConnectExisting(){
+
+// ── Main wallet (userAddr) actions: silent reconnect, copy, disconnect ─────
+function navToggleMainWalletActions(){
+  var el = document.getElementById('navMainWalletActions');
+  if (el) el.style.display = (el.style.display === 'block') ? 'none' : 'block';
+}
+function navMainWalletCopy(){
+  if (typeof userAddr === 'undefined' || !userAddr) return;
+  navigator.clipboard.writeText(userAddr).then(function(){
+    var chip = document.getElementById('navMainWalletChip');
+    var lbl = chip && chip.querySelector('span:last-child');
+    if (lbl) { var orig = lbl.textContent; lbl.textContent = '✓ Copied'; setTimeout(function(){ lbl.textContent = orig; }, 1500); }
+  });
+}
+function navMainWalletDisconnect(){
+  closeCenteredMenus();
   var navMenu = _navGetWalletMenu();
+  navMenu.style.display = 'none';
+  if (typeof disconnect === 'function') disconnect(); // full logout — matches existing app behavior
+}
+async function navMenuConnectExisting(){
+  var navMenu = _navGetWalletMenu();
+  try {
+    var provider = window.ethereum || (window.evmproviders && Object.values(window.evmproviders)[0]);
+    if (provider) {
+      var accounts = await provider.request({ method: 'eth_accounts' }); // silent — no popup if already permitted
+      if (accounts && accounts.length) {
+        window.userAddr = accounts[0];
+        userAddr = accounts[0];
+        localStorage.setItem('nan_dynamic_address', accounts[0]);
+        _navRenderWalletMenu();
+        if (typeof toast === 'function') toast('Reconnected to ' + accounts[0].slice(0,6) + '...' + accounts[0].slice(-4), 'success');
+        return;
+      }
+    }
+  } catch(e) { /* fall through to picker */ }
+  closeCenteredMenus();
   navMenu.style.display = 'none';
   if (typeof showWalletPicker === 'function') showWalletPicker();
 }
