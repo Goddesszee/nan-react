@@ -1367,30 +1367,40 @@ html,body{background-color:var(--bg);}
       <div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">Career agent</div>
       <div style="font-size:.82rem;color:var(--text2);margin-bottom:14px;">Find a job as a candidate, post a job as an employer, or browse what's been posted.</div>
 
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
-        <button id="careerModeFind" onclick="careerSwitchMode('find')" class="tnav-btn nan-feat-card" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:28px 24px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);height:auto;min-height:240px;cursor:pointer;">
-          <div style="width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#7000ff,#a855f7);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
-          <div style="font-weight:700;font-size:1.35rem;margin-bottom:10px;">Find a job</div>
-          <div style="font-size:.88rem;font-weight:400;line-height:1.5;opacity:.75;">Browse open roles and apply as a candidate.</div>
-        </button>
-        <button id="careerModePost" onclick="careerSwitchMode('post')" class="tnav-btn nan-feat-card" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:28px 24px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);height:auto;min-height:240px;cursor:pointer;">
-          <div style="width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#fbbf24);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg></div>
-          <div style="font-weight:700;font-size:1.35rem;margin-bottom:10px;">Post a job</div>
-          <div style="font-size:.88rem;font-weight:400;line-height:1.5;opacity:.75;">Hire — post an opening as an employer.</div>
-        </button>
-        <button id="careerModeBrowse" onclick="careerSwitchMode('browse')" class="tnav-btn nan-feat-card" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:28px 24px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);height:auto;min-height:240px;cursor:pointer;">
-          <div style="width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#06b6d4,#22d3ee);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
-          <div style="font-weight:700;font-size:1.35rem;margin-bottom:10px;">Browse jobs</div>
-          <div style="font-size:.88rem;font-weight:400;line-height:1.5;opacity:.75;">See everything that's been posted.</div>
-        </button>
-        <button id="careerModeMyjobs" onclick="careerSwitchMode('myjobs')" class="tnav-btn nan-feat-card" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:28px 24px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);height:auto;min-height:240px;cursor:pointer;">
-          <div style="width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#10b981,#34d399);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-          <div style="font-weight:700;font-size:1.35rem;margin-bottom:10px;">My jobs</div>
-          <div style="font-size:.88rem;font-weight:400;line-height:1.5;opacity:.75;">Track your applications and posts.</div>
-        </button>
+      <div id="careerLandingView">
+        <div id="careerTopRow" style="display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-bottom:20px;align-items:stretch;">
+          <div id="careerWelcomeBanner" style="background:#f0e6ff;border-top:5px solid #7000ff;border-radius:16px;padding:24px 28px;color:#111;">
+            <div style="font-size:1.3rem;font-weight:800;margin-bottom:14px;color:#111;">Land a better job faster!</div>
+            <div style="font-size:.95rem;font-weight:700;margin-bottom:6px;color:#111;">👋 Welcome, <span id="careerWelcomeName">there</span>!</div>
+            <div style="font-size:.85rem;color:#333;line-height:1.5;margin-bottom:20px;">Upload your CV or generate one in seconds, and let the career agent start matching you to roles.</div>
+            <button onclick="careerWelcomeCta();" style="background:#7000ff;color:#fff;border:none;padding:14px 20px;border-radius:100px;font-weight:700;font-size:.9rem;cursor:pointer;display:flex;align-items:center;gap:10px;width:100%;justify-content:space-between;">
+              Start your search
+              <span style="background:#fff;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7000ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+            </button>
+          </div>
+          <button id="careerModePost" onclick="careerSwitchMode('post')" class="tnav-btn nan-feat-card" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:28px 24px;border-radius:16px;border:none;border-top:5px solid #7000ff;background:#f0e6ff;color:#111;height:auto;min-height:240px;cursor:pointer;box-sizing:border-box;overflow:hidden;">
+            <div style="width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#fbbf24);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg></div>
+            <div style="font-weight:700;font-size:1.35rem;margin-bottom:10px;">Post a job</div>
+            <div style="font-size:.88rem;font-weight:400;line-height:1.5;opacity:.75;width:100%;box-sizing:border-box;word-break:break-word;">Hire — post an opening as an employer.</div>
+          </button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-bottom:20px;">
+          <button id="careerModeBrowse" onclick="careerSwitchMode('browse')" class="tnav-btn nan-feat-card" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:28px 24px;border-radius:16px;border:none;border-top:5px solid #7000ff;background:#f0e6ff;color:#111;height:auto;min-height:240px;cursor:pointer;box-sizing:border-box;overflow:hidden;">
+            <div style="width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#06b6d4,#22d3ee);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
+            <div style="font-weight:700;font-size:1.35rem;margin-bottom:10px;">Browse jobs</div>
+            <div style="font-size:.88rem;font-weight:400;line-height:1.5;opacity:.75;width:100%;box-sizing:border-box;word-break:break-word;">See everything that's been posted.</div>
+          </button>
+          <button id="careerModeMyjobs" onclick="careerSwitchMode('myjobs')" class="tnav-btn nan-feat-card" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:28px 24px;border-radius:16px;border:none;border-top:5px solid #7000ff;background:#f0e6ff;color:#111;height:auto;min-height:240px;cursor:pointer;box-sizing:border-box;overflow:hidden;">
+            <div style="width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#10b981,#34d399);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+            <div style="font-weight:700;font-size:1.35rem;margin-bottom:10px;">My jobs</div>
+            <div style="font-size:.88rem;font-weight:400;line-height:1.5;opacity:.75;width:100%;box-sizing:border-box;word-break:break-word;">Track your applications and posts.</div>
+          </button>
+        </div>
       </div>
 
-      <div id="careerFindPane">
+      <div id="careerBackFromCv" onclick="careerBackToLanding();" style="display:none;font-size:.82rem;color:#7000ff;font-weight:700;cursor:pointer;margin-bottom:14px;">← Back to Career agent</div>
+
+      <div id="careerFindPane" style="display:none;">
       <div id="careerStep1">
         <div style="display:flex;gap:8px;margin-bottom:12px;">
           <button id="careerTabUpload" onclick="careerSwitchTab('upload')" class="tnav-btn" style="flex:1;">Upload CV</button>
@@ -1471,13 +1481,41 @@ html,body{background-color:var(--bg);}
   <script>
   function careerSwitchMode(mode){
     ['find','post','browse','myjobs'].forEach(m => {
-      document.getElementById('career'+m.charAt(0).toUpperCase()+m.slice(1)+'Pane').style.display = (m===mode) ? 'block' : 'none';
+      const pane = document.getElementById('career'+m.charAt(0).toUpperCase()+m.slice(1)+'Pane');
+      if (pane) pane.style.display = (m===mode) ? 'block' : 'none';
       const btn = document.getElementById('careerMode'+m.charAt(0).toUpperCase()+m.slice(1));
-      btn.style.background = (m===mode) ? '#7000ff' : '';
-      btn.style.color = (m===mode) ? '#fff' : '';
+      if (btn) {
+        btn.style.background = (m===mode) ? '#7000ff' : '';
+        btn.style.color = (m===mode) ? '#fff' : '';
+      }
     });
     if (mode === 'browse') careerBrowseJobs();
     if (mode === 'myjobs') careerMyJobs();
+  }
+  function careerUpdateWelcomeName(){
+    const el = document.getElementById('careerWelcomeName');
+    if (!el) return;
+    const mine = typeof arcNames !== 'undefined'
+      ? arcNames.find(n => n.owner === userAddr || n.owner === agentWalletAddr)
+      : null;
+    let name = mine ? mine.name
+      : (typeof otpEmail !== 'undefined' && otpEmail) ? otpEmail.split('@')[0]
+      : (typeof userAddr !== 'undefined' && userAddr ? userAddr.slice(0,6)+'...'+userAddr.slice(-4) : 'there');
+    el.textContent = name.charAt(0).toUpperCase() + name.slice(1);
+  }
+  document.addEventListener('DOMContentLoaded', careerUpdateWelcomeName);
+  function careerWelcomeCta(){
+    document.getElementById('careerLandingView').style.display = 'none';
+    document.getElementById('careerBackFromCv').style.display = 'block';
+    document.getElementById('careerFindPane').style.display = 'block';
+    careerSwitchMode('find');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+  function careerBackToLanding(){
+    document.getElementById('careerLandingView').style.display = 'block';
+    document.getElementById('careerBackFromCv').style.display = 'none';
+    document.getElementById('careerFindPane').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }
   function careerSwitchTab(tab){
     document.getElementById('careerUploadPane').style.display = tab==='upload' ? 'block':'none';
@@ -3786,6 +3824,7 @@ function nanUpdateProfileLabel(){
   labelEl.style.color = '#fff';
   labelEl.style.fontWeight = '700';
   nanUpdateSidebarWalletLabel();
+  if (typeof careerUpdateWelcomeName === 'function') careerUpdateWelcomeName();
 }
 function nanUpdateSidebarWalletLabel(){
   var lbl = document.querySelector('#nanSidebar .nan-sb-wallet-btn .nan-sb-label');
