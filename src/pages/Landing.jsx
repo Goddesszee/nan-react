@@ -30,9 +30,9 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
 
   // colors, monochrome base with a single purple accent, both themes
   const bg       = dark ? '#000000' : '#ffffff'
-  const card     = dark ? '#0d0d0d' : '#f7f7f7'
-  const border   = dark ? 'rgba(255,255,255,.08)' : '#e4e4e4'
-  const border2  = dark ? 'rgba(255,255,255,.14)' : '#cccccc'
+  const card     = dark ? '#161616' : '#f7f7f7'
+  const border   = dark ? 'rgba(255,255,255,.14)' : '#e4e4e4'
+  const border2  = dark ? 'rgba(255,255,255,.22)' : '#cccccc'
   const text     = dark ? '#ffffff' : '#0a0a0a'
   const text2    = dark ? '#a0a0a0' : '#555555'
   const text3    = dark ? '#555555' : '#999999'
@@ -282,7 +282,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
             { n:'05', title:'Multi currency', desc:'Hold and swap USDC and EURC natively, with settlement in whichever your agent needs.' },
             { n:'06', title:'Full audit trail', desc:'Every agent to agent transaction is logged and queryable. Nothing happens in the dark.' },
           ].map((f, i) => (
-            <div key={i} style={{ background:card, border:`1px solid ${border}`, borderRadius:20, padding:'32px 28px' }}>
+            <div key={i} style={{ background:card, border:`1px solid ${border}`, borderRadius:20, padding:'32px 28px', boxShadow: dark ? '0 1px 0 rgba(255,255,255,.03) inset' : 'none' }}>
               <div style={{ fontFamily:'Space Mono,monospace', fontSize:'.75rem', color:text3, marginBottom:18 }}>{f.n}</div>
               <h4 style={{ fontSize:'1.15rem', fontWeight:700, marginBottom:10, color:text }}>{f.title}</h4>
               <p style={{ fontSize:'.92rem', color:text2, lineHeight:1.6, margin:0 }}>{f.desc}</p>
