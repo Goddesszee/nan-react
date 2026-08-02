@@ -2010,33 +2010,19 @@ html,body{background-color:var(--bg);}
       <div style="font-size:1rem;font-weight:700;color:#7000ff;margin-bottom:4px;">Marketplace</div>
       <div style="font-size:.82rem;color:var(--text2);margin-bottom:14px;">Buy and sell anything — payment held in real escrow until you confirm receipt.</div>
 
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
-        <button id="mktTabBrowse" class="tnav-btn nan-feat-card" onclick="mktSwitchTab('browse')" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:28px 24px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);height:auto;min-height:240px;cursor:pointer;box-sizing:border-box;overflow:hidden;">
-          <div style="width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#7000ff,#a855f7);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
-          <div style="font-weight:700;font-size:1.35rem;margin-bottom:10px;">Browse</div>
-          <div style="font-size:.88rem;font-weight:400;line-height:1.5;opacity:.75;width:100%;box-sizing:border-box;word-break:break-word;">See everything currently for sale.</div>
-        </button>
-        <button id="mktTabSell" class="tnav-btn nan-feat-card" onclick="mktSwitchTab('sell')" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:28px 24px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);height:auto;min-height:240px;cursor:pointer;box-sizing:border-box;overflow:hidden;">
-          <div style="width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#fbbf24);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
-          <div style="font-weight:700;font-size:1.35rem;margin-bottom:10px;">Sell</div>
-          <div style="font-size:.88rem;font-weight:400;line-height:1.5;opacity:.75;width:100%;box-sizing:border-box;word-break:break-word;">List something for sale, escrow-protected.</div>
-        </button>
-        <button id="mktTabOrders" class="tnav-btn nan-feat-card" onclick="mktSwitchTab('orders')" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:28px 24px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);height:auto;min-height:240px;cursor:pointer;box-sizing:border-box;overflow:hidden;">
-          <div style="width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#06b6d4,#22d3ee);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg></div>
-          <div style="font-weight:700;font-size:1.35rem;margin-bottom:10px;">My orders</div>
-          <div style="font-size:.88rem;font-weight:400;line-height:1.5;opacity:.75;width:100%;box-sizing:border-box;word-break:break-word;">Track things you've bought.</div>
-        </button>
-        <button id="mktTabListings" class="tnav-btn nan-feat-card" onclick="mktSwitchTab('listings')" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:28px 24px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);height:auto;min-height:240px;cursor:pointer;box-sizing:border-box;overflow:hidden;">
-          <div style="width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#10b981,#34d399);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 000-7.78z"/></svg></div>
-          <div style="font-weight:700;font-size:1.35rem;margin-bottom:10px;">Offers on my listings</div>
-          <div style="font-size:.88rem;font-weight:400;line-height:1.5;opacity:.75;width:100%;box-sizing:border-box;word-break:break-word;">Review and respond to buyer offers.</div>
-        </button>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px;flex-wrap:wrap;">
+        <div style="display:flex;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:100px;padding:4px;">
+          <button id="mktTabBrowse" onclick="mktSwitchTab('browse')" style="padding:9px 18px;border-radius:100px;font-size:.85rem;font-weight:700;border:none;background:#7000ff;color:#fff;cursor:pointer;">Browse</button>
+          <button id="mktTabOrders" onclick="mktSwitchTab('orders')" style="padding:9px 18px;border-radius:100px;font-size:.85rem;font-weight:700;border:none;background:transparent;color:var(--text2);cursor:pointer;">My orders</button>
+          <button id="mktTabListings" onclick="mktSwitchTab('listings')" style="padding:9px 18px;border-radius:100px;font-size:.85rem;font-weight:700;border:none;background:transparent;color:var(--text2);cursor:pointer;">Offers on my listings</button>
+        </div>
+        <button id="mktTabSell" onclick="mktSwitchTab('sell')" style="padding:11px 22px;border-radius:100px;font-size:.85rem;font-weight:700;background:transparent;color:#7000ff;border:1.5px solid #7000ff;cursor:pointer;">+ Sell an item</button>
       </div>
 
       <div id="mktBrowsePane">
-        <div style="display:flex;gap:8px;margin-bottom:12px;max-width:520px;">
-          <input id="mktSearchQuery" placeholder="Search listings..." style="flex:1 1 auto;min-width:0;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
-          <button class="btn" onclick="mktBrowse()" style="flex:0 0 auto;width:110px;padding:0 18px;border-radius:10px;white-space:nowrap;">Search</button>
+        <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+          <input id="mktSearchQuery" placeholder="Search listings..." style="flex:1;min-width:220px;padding:11px 14px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+          <button class="btn" onclick="mktBrowse()" style="flex:0 0 auto;padding:0 24px;border-radius:12px;white-space:nowrap;">Search</button>
         </div>
         <div id="mktBrowseResults" style="font-size:.85rem;color:var(--text3);">Loading listings...</div>
       </div>
@@ -2085,12 +2071,16 @@ html,body{background-color:var(--bg);}
     return true;
   }
   function mktSwitchTab(tab){
-    ['browse','sell','orders','listings'].forEach(t => {
+    ['browse','orders','listings'].forEach(t => {
       document.getElementById('mkt'+t.charAt(0).toUpperCase()+t.slice(1)+'Pane').style.display = (t===tab)?'block':'none';
       const btn = document.getElementById('mktTab'+t.charAt(0).toUpperCase()+t.slice(1));
-      btn.style.background = (t===tab) ? '#7000ff' : '';
-      btn.style.color = (t===tab) ? '#fff' : '';
+      btn.style.background = (t===tab) ? '#7000ff' : 'transparent';
+      btn.style.color = (t===tab) ? '#fff' : 'var(--text2)';
     });
+    document.getElementById('mktSellPane').style.display = (tab==='sell') ? 'block' : 'none';
+    const sellBtn = document.getElementById('mktTabSell');
+    sellBtn.style.background = (tab==='sell') ? '#7000ff' : 'transparent';
+    sellBtn.style.color = (tab==='sell') ? '#fff' : '#7000ff';
     if (tab === 'browse') mktBrowse();
     if (tab === 'sell') mktLoadSellGate();
     if (tab === 'orders') mktLoadOrders();
@@ -2115,7 +2105,7 @@ html,body{background-color:var(--bg);}
     } else {
       formEl.style.display = 'none';
       if(d.status === 'pending'){
-        gateEl.innerHTML = `<div style="font-size:.85rem;color:#c084fc;">Your verification request is pending review. Check back soon.</div>`;
+        gateEl.innerHTML = `<div style="font-size:.85rem;color:#7000ff;">Your verification request is pending review. Check back soon.</div>`;
       } else if(d.status === 'rejected'){
         gateEl.innerHTML = `<div style="font-size:.85rem;color:#e24b4a;margin-bottom:10px;">Your last verification request wasn't approved. Submit a new one below.</div>` + vlVerifyFormHtml();
       } else {
@@ -2148,24 +2138,32 @@ html,body{background-color:var(--bg);}
     try{
       const d = await mktCall('listing-list', { query: document.getElementById('mktSearchQuery').value.trim() });
       if(!d.success) throw new Error(d.error||'Search failed');
-      if(d.listings.length === 0){ el.innerHTML = 'No listings found.'; return; }
+      if(d.listings.length === 0){
+        el.innerHTML = `<div style="text-align:center;padding:56px 24px;border:2px dashed var(--border);border-radius:16px;">No listings yet — be the first to sell something.</div>`;
+        return;
+      }
+      el.style.display = 'grid';
+      el.style.gridTemplateColumns = 'repeat(auto-fill, minmax(220px, 1fr))';
+      el.style.gap = '16px';
       el.innerHTML = d.listings.map(l => `
-        <div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;">
-          ${l.images && l.images.length ? `<div style="display:flex;gap:6px;margin-bottom:8px;overflow-x:auto;">${l.images.map(src=>`<img src="${src}" style="width:72px;height:72px;object-fit:cover;border-radius:8px;flex-shrink:0;"/>`).join('')}</div>` : ''}
-          <div style="display:flex;justify-content:space-between;">
-            <div style="font-weight:700;color:var(--text);">${l.title}</div>
-            <div style="font-weight:700;color:#c084fc;">$${l.price}</div>
+        <div style="border:1px solid var(--border);border-radius:16px;overflow:hidden;background:var(--card);">
+          <div style="aspect-ratio:1;background:rgba(112,0,255,.06);position:relative;overflow:hidden;">
+            ${l.images && l.images.length ? `<img src="${l.images[0]}" style="width:100%;height:100%;object-fit:cover;"/>` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:.75rem;">No photo</div>`}
           </div>
-          <span style="font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:6px;background:rgba(34,197,94,.12);color:#22c55e;">&#10003; Verified seller</span>
-          <div style="font-size:.8rem;color:var(--text2);margin:6px 0;">${l.description||''}</div>
-          <div style="font-size:.75rem;color:var(--text3);margin-bottom:8px;">${l.category||''} ${l.location?(' &middot; '+l.location):''}</div>
-          <div style="display:flex;gap:10px;align-items:center;">
-            <button class="btn" style="padding:8px 16px;border-radius:8px;font-size:.8rem;" onclick="mktMakeOffer('${l.id}', ${l.price})">Make offer</button>
-            <span onclick="mktToggleReviews('${l.id}')" style="font-size:.78rem;color:var(--text3);cursor:pointer;text-decoration:underline;">Reviews</span>
+          <div style="padding:14px;">
+            <div style="font-weight:700;font-size:.9rem;margin-bottom:6px;line-height:1.3;">${l.title}</div>
+            <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#7000ff;font-size:1.02rem;">$${l.price}</div>
+            <span style="display:inline-flex;font-size:.66rem;font-weight:700;padding:3px 8px;border-radius:6px;background:rgba(34,197,94,.12);color:#22c55e;margin-top:6px;">&#10003; Verified seller</span>
+            <div style="font-size:.78rem;color:var(--text2);margin:8px 0;line-height:1.4;">${l.description||''}</div>
+            <div style="font-size:.72rem;color:var(--text3);margin-bottom:10px;">${l.category||''}${l.location?(' · '+l.location):''}</div>
+            <div style="display:flex;gap:8px;align-items:center;justify-content:space-between;">
+              <button class="btn" style="padding:8px 16px;border-radius:8px;font-size:.78rem;" onclick="mktMakeOffer('${l.id}', ${l.price})">Make offer</button>
+              <span onclick="mktToggleReviews('${l.id}')" style="font-size:.74rem;color:var(--text3);cursor:pointer;text-decoration:underline;">Reviews</span>
+            </div>
+            <div id="mktReviews-${l.id}" style="display:none;margin-top:10px;padding-top:10px;border-top:0.5px solid var(--border);"></div>
           </div>
-          <div id="mktReviews-${l.id}" style="display:none;margin-top:10px;padding-top:10px;border-top:0.5px solid var(--border);"></div>
         </div>`).join('');
-    }catch(err){ el.textContent = '❌ ' + err.message; }
+    }catch(err){ el.style.display = 'block'; el.textContent = '❌ ' + err.message; }
   }
   async function mktMakeOffer(listingId, askingPrice){
     if(!mktRequireWallet()) return;
@@ -2228,17 +2226,34 @@ html,body{background-color:var(--bg);}
   function mktOrderCard(o, myAddr){
     const iAmBuyer = o.buyerAddress?.toLowerCase() === myAddr.toLowerCase();
     let action = '';
-    if(o.status === 'awaiting_payment' && iAmBuyer) action = `<button class="btn" style="padding:8px 16px;border-radius:8px;font-size:.8rem;" onclick="mktPay('${o.id}')">Pay $${o.amount}</button>`;
-    else if(o.status === 'escrowed' && !iAmBuyer) action = `<button class="btn" style="padding:8px 16px;border-radius:8px;font-size:.8rem;" onclick="mktMarkShipped('${o.id}')">Mark shipped</button>`;
-    else if(o.status === 'shipped' && iAmBuyer) action = `<button class="btn" style="padding:8px 16px;border-radius:8px;font-size:.8rem;" onclick="mktConfirmReceived('${o.id}','${o.sellerAddress}')">Confirm received</button>`;
+    if(o.status === 'awaiting_payment' && iAmBuyer) action = `<button class="btn" style="padding:9px 18px;border-radius:8px;font-size:.8rem;" onclick="mktPay('${o.id}')">Pay $${o.amount}</button>`;
+    else if(o.status === 'escrowed' && !iAmBuyer) action = `<button class="btn" style="padding:9px 18px;border-radius:8px;font-size:.8rem;" onclick="mktMarkShipped('${o.id}')">Mark shipped</button>`;
+    else if(o.status === 'shipped' && iAmBuyer) action = `<button class="btn" style="padding:9px 18px;border-radius:8px;font-size:.8rem;" onclick="mktConfirmReceived('${o.id}','${o.sellerAddress}')">Confirm received</button>`;
     else if(o.status === 'released' && iAmBuyer) action = `<span onclick="mktShowReviewForm('${o.id}')" style="font-size:.78rem;color:var(--accent3);cursor:pointer;text-decoration:underline;">Leave a review</span>`;
     const disputable = ['escrowed','shipped'].includes(o.status);
-    return `<div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;">
-      <div style="display:flex;justify-content:space-between;">
-        <div style="font-weight:700;color:var(--text);">${iAmBuyer?'Buying':'Selling'} &middot; $${o.amount}</div>
-        <div style="font-size:.75rem;font-weight:700;color:var(--text3);text-transform:uppercase;">${o.status}</div>
+    const steps = ['awaiting_payment','escrowed','shipped','released'];
+    const stepLabels = {awaiting_payment:'Payment', escrowed:'Secured', shipped:'Shipped', released:'Released'};
+    const isDisputed = o.status === 'disputed';
+    const curIdx = steps.indexOf(o.status);
+    const fillPct = isDisputed ? 0 : (curIdx <= 0 ? 0 : (curIdx / (steps.length - 1)) * 100);
+    const tracker = isDisputed
+      ? `<div style="margin:14px 0;padding:10px 14px;border-radius:10px;background:rgba(226,75,74,.1);color:#e24b4a;font-size:.78rem;font-weight:700;">⚠ Disputed — locked until manually resolved</div>`
+      : `<div style="display:flex;align-items:center;position:relative;margin:16px 0 6px;">
+          <div style="position:absolute;top:11px;left:12px;right:12px;height:2px;background:var(--border);"></div>
+          <div style="position:absolute;top:11px;left:12px;height:2px;background:#7000ff;width:${fillPct}%;transition:width .3s;"></div>
+          ${steps.map((s,i) => `
+            <div style="flex:1;text-align:center;position:relative;z-index:1;">
+              <div style="width:22px;height:22px;border-radius:50%;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-size:.6rem;background:${i<=curIdx?'#7000ff':'var(--card)'};border:2px solid ${i<=curIdx?'#7000ff':'var(--border)'};color:${i<=curIdx?'#fff':'var(--text3)'};">${i<curIdx?'✓':(i===curIdx?'●':'')}</div>
+              <p style="font-size:.64rem;color:${i<=curIdx?'var(--text)':'var(--text3)'};font-weight:${i<=curIdx?700:500};margin:0;">${stepLabels[s]}</p>
+            </div>`).join('')}
+        </div>`;
+    return `<div style="border:1px solid var(--border);border-radius:16px;padding:18px 20px;margin-bottom:12px;background:var(--card);">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div style="font-weight:700;color:var(--text);font-size:.95rem;">${iAmBuyer?'Buying':'Selling'} · $${o.amount}</div>
+        ${!isDisputed ? `<span style="font-size:.68rem;font-weight:700;padding:4px 10px;border-radius:100px;background:rgba(112,0,255,.1);color:#7000ff;text-transform:uppercase;">${stepLabels[o.status]||o.status}</span>` : ''}
       </div>
-      <div style="display:flex;gap:10px;margin-top:8px;align-items:center;">
+      ${tracker}
+      <div style="display:flex;gap:12px;margin-top:10px;align-items:center;padding-top:12px;border-top:1px solid var(--border);">
         ${action}
         ${disputable ? `<span onclick="mktDispute('${o.id}')" style="font-size:.78rem;color:#e24b4a;cursor:pointer;">Dispute</span>` : ''}
       </div>
@@ -2257,7 +2272,7 @@ html,body{background-color:var(--bg);}
     el.innerHTML = `<div style="font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:8px;">${stars(Math.round(d.avgRating))} ${d.avgRating.toFixed(1)} (${d.count})</div>` +
       d.reviews.map(r => `
         <div style="margin-bottom:10px;">
-          <div style="color:#c084fc;font-size:.85rem;">${stars(r.rating)}</div>
+          <div style="color:#7000ff;font-size:.85rem;">${stars(r.rating)}</div>
           <div style="font-size:.8rem;color:var(--text2);">${r.comment||''}</div>
           ${r.images && r.images.length ? `<div style="display:flex;gap:6px;margin-top:6px;">${r.images.map(src=>`<img src="${src}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;"/>`).join('')}</div>` : ''}
         </div>`).join('');
@@ -2301,7 +2316,7 @@ html,body{background-color:var(--bg);}
     el.textContent = 'Loading...';
     const d = await mktCall('my-orders', { walletAddress: circleWalletAddress });
     if(!d.success){ el.textContent = '❌ ' + d.error; return; }
-    if(d.orders.length === 0){ el.innerHTML = 'No orders yet.'; return; }
+    if(d.orders.length === 0){ el.innerHTML = `<div style="text-align:center;padding:56px 24px;border:2px dashed var(--border);border-radius:16px;">No orders yet.</div>`; return; }
     el.innerHTML = d.orders.map(o => mktOrderCard(o, circleWalletAddress)).join('');
   }
   async function mktPay(orderId){
@@ -2335,14 +2350,17 @@ html,body{background-color:var(--bg);}
     el.textContent = 'Loading...';
     const d = await mktCall('my-listings-offers', { sellerAddress: circleWalletAddress });
     if(!d.success){ el.textContent = '❌ ' + d.error; return; }
-    if(d.offers.length === 0){ el.innerHTML = 'No pending offers.'; return; }
+    if(d.offers.length === 0){ el.innerHTML = `<div style="text-align:center;padding:56px 24px;border:2px dashed var(--border);border-radius:16px;">No pending offers.</div>`; return; }
     const listingById = Object.fromEntries(d.listings.map(l => [l.id, l]));
     el.innerHTML = d.offers.map(o => `
-      <div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;">
-        <div style="font-weight:700;color:var(--text);">${listingById[o.listingId]?.title||'Listing'} — offer $${o.price}</div>
-        <div style="display:flex;gap:8px;margin-top:8px;">
-          <button class="btn" style="padding:8px 16px;border-radius:8px;font-size:.8rem;" onclick="mktRespondOffer('${o.id}','accept')">Accept</button>
-          <button style="padding:8px 16px;border-radius:8px;font-size:.8rem;background:none;border:1px solid var(--border);color:var(--text3);cursor:pointer;" onclick="mktRespondOffer('${o.id}','reject')">Reject</button>
+      <div style="border:1px solid var(--border);border-radius:16px;padding:16px 18px;margin-bottom:10px;background:var(--card);">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-weight:700;color:var(--text);font-size:.92rem;">${listingById[o.listingId]?.title||'Listing'}</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#7000ff;">$${o.price}</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
+          <button class="btn" style="padding:9px 18px;border-radius:8px;font-size:.8rem;" onclick="mktRespondOffer('${o.id}','accept')">Accept</button>
+          <button style="padding:9px 18px;border-radius:8px;font-size:.8rem;background:none;border:1px solid var(--border);color:var(--text3);cursor:pointer;" onclick="mktRespondOffer('${o.id}','reject')">Reject</button>
         </div>
       </div>`).join('');
   }
