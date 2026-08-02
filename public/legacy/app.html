@@ -327,13 +327,9 @@ html,body{background-color:var(--bg);}
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
       <span class="nan-sb-label">Career agent</span>
     </div>
-    <div class="nan-sb-item-row" id="sb-research" onclick="goPage('explore')">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <span class="nan-sb-label">Explore</span>
-    </div>
-    <div class="nan-sb-item-row" id="sb-realestate" onclick="goPage('realestate')">
+    <div class="nan-sb-item-row" id="sb-research" onclick="goPage('supplier-agent')">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 9h1M9 13h1M14 9h1M14 13h1"/></svg>
-      <span class="nan-sb-label">Real Estate</span>
+      <span class="nan-sb-label">Research agent</span>
     </div>
     <div class="nan-sb-item-row" id="sb-marketplace" onclick="goPage('marketplace')">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9M3 9v10a1 1 0 001 1h16a1 1 0 001-1V9M3 9h18M9 13a2 2 0 11-4 0M19 13a2 2 0 11-4 0"/></svg>
@@ -420,13 +416,9 @@ html,body{background-color:var(--bg);}
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
         Career agent
       </button>
-      <button onclick="goPage('explore')" id="tnav-supplier" class="tnav-btn" style="display:none;align-items:center;gap:4px;">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        Explore
-      </button>
-      <button onclick="goPage('realestate')" id="tnav-realestate" class="tnav-btn" style="display:none;align-items:center;gap:4px;">
+      <button onclick="goPage('supplier-agent')" id="tnav-supplier" class="tnav-btn" style="display:none;align-items:center;gap:4px;">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 9h1M9 13h1M14 9h1M14 13h1"/></svg>
-        Real Estate
+        Research agent
       </button>
       <button onclick="goPage('marketplace')" id="tnav-marketplace" class="tnav-btn" style="display:none;align-items:center;gap:4px;">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l1.5-5h15L21 9M3 9v10a1 1 0 001 1h16a1 1 0 001-1V9M3 9h18M9 13a2 2 0 11-4 0M19 13a2 2 0 11-4 0"/></svg>
@@ -563,9 +555,9 @@ html,body{background-color:var(--bg);}
         <span class="ni"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></span>
         Career
       </button>
-      <button class="nav-btn" id="nav-supplier" onclick="goPage('explore')">
-        <span class="ni"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
-        Explore
+      <button class="nav-btn" id="nav-supplier" onclick="goPage('supplier-agent')">
+        <span class="ni"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 9h1M9 13h1M14 9h1M14 13h1"/></svg></span>
+        Research
       </button>
       <button class="nav-btn" id="nav-marketplace" onclick="goPage('marketplace')">
         <span class="ni"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9M3 9v10a1 1 0 001 1h16a1 1 0 001-1V9M3 9h18M9 13a2 2 0 11-4 0M19 13a2 2 0 11-4 0"/></svg></span>
@@ -2366,344 +2358,153 @@ html,body{background-color:var(--bg);}
   </script>
 
   <!-- ══ SUPPLIER AGENT PAGE ══ -->
-  <div class="page" id="page-explore">
+  <div class="page" id="page-supplier-agent">
     <style>
-      #page-explore, #page-explore * { color: #ffffff !important; }
-      [data-theme=light] #page-explore, [data-theme=light] #page-explore * { color: #000000 !important; }
-      #page-explore input::placeholder, #page-explore textarea::placeholder { color: #ffffff !important; opacity: 1 !important; }
-      [data-theme=light] #page-explore input::placeholder, [data-theme=light] #page-explore textarea::placeholder { color: #000000 !important; opacity: 1 !important; }
-      #page-explore .btn, #page-explore .btn * { color: #ffffff !important; }
-      #page-explore [style*="7000ff"] { color: #7000ff !important; }
-      #page-explore [style*="accent3"] { color: var(--accent3) !important; }
-      #page-explore input:not([type="checkbox"]), #page-explore textarea { font-weight: 700 !important; background: var(--bg) !important; border: 1px solid var(--border) !important; }
-      #page-explore .btn { font-weight: 800 !important; font-size: 15px !important; min-height: 48px !important; }
-      #page-explore .etab { padding:9px 16px;border-radius:100px;font-size:.82rem;font-weight:700;border:none;background:transparent;color:var(--text2) !important;cursor:pointer; }
-      #page-explore .etab.active { background:#7000ff;color:#fff !important; }
-      #page-explore [style*="border-radius:16px;padding:18px 20px"] { box-shadow:0 1px 3px rgba(0,0,0,.04); }
+      #page-supplier-agent, #page-supplier-agent * { color: #ffffff !important; }
+      [data-theme=light] #page-supplier-agent, [data-theme=light] #page-supplier-agent * { color: #000000 !important; }
+      #page-supplier-agent input::placeholder { color: #ffffff !important; opacity: 1 !important; }
+      [data-theme=light] #page-supplier-agent input::placeholder { color: #000000 !important; opacity: 1 !important; }
+      #page-supplier-agent .btn, #page-supplier-agent .btn * { color: #ffffff !important; }
+      #page-supplier-agent [style*="c084fc"] { color: #c084fc !important; }
+      #page-supplier-agent [style*="accent3"] { color: var(--accent3) !important; }
+      #page-supplier-agent [style*="7000ff"] { color: #7000ff !important; }
+      #page-supplier-agent [style*="a855f7"] { color: #a855f7 !important; }
+      #page-supplier-agent [style*="eab308"] { color: #eab308 !important; }
+      #page-supplier-agent div[style*="font-size:1rem"] { font-weight: 900 !important; font-size: 2.2rem !important; letter-spacing: -0.03em !important; }
+      #page-supplier-agent div[style*="font-size:.82rem"] { font-weight: 600 !important; opacity: 1 !important; }
+      #page-supplier-agent input:not([type="checkbox"]), #page-supplier-agent textarea { font-weight: 700 !important; background: var(--bg) !important; border: 1px solid var(--border) !important; }
+      #page-supplier-agent input[type="checkbox"] { all: revert !important; }
+      #page-supplier-agent input:focus, #page-supplier-agent textarea:focus { border-color: rgba(168,85,247,.6) !important; background: rgba(168,85,247,.12) !important; }
+      #page-supplier-agent .btn { font-weight: 800 !important; font-size: 15px !important; min-height: 48px !important; }
     </style>
     <div style="padding:20px;width:100%;box-sizing:border-box;">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
-        <div style="width:34px;height:34px;border-radius:10px;background:#7000ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
-        <div style="font-size:1.3rem;font-weight:800;color:#7000ff;letter-spacing:-.01em;">Explore</div>
-      </div>
-      <div style="font-size:.85rem;color:var(--text2);margin-bottom:18px;">Find almost anything — businesses, people, places, and services — with one AI-powered search.</div>
+      <div style="font-size:1rem;font-weight:700;color:#7000ff;margin-bottom:4px;">Research agent</div>
+      <div style="font-size:.82rem;color:var(--text2);margin-bottom:16px;">AI-powered research and a verified real estate marketplace, in one place.</div>
 
-      <div style="display:flex;gap:6px;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:100px;padding:4px;margin-bottom:20px;box-shadow:0 1px 2px rgba(0,0,0,.04);">
-        <button id="exploreTabSearch" class="etab active" onclick="exploreSwitchTab('search')">🔍 Search</button>
-        <button id="exploreTabAssistant" class="etab" onclick="exploreSwitchTab('assistant')">💬 AI Assistant</button>
-        <button id="exploreTabNearby" class="etab" onclick="exploreSwitchTab('nearby')">📍 Nearby</button>
-        <button id="exploreTabCollections" class="etab" onclick="exploreSwitchTab('collections')">📁 Collections</button>
-        <button id="exploreTabSaved" class="etab" onclick="exploreSwitchTab('saved')">♡ Saved</button>
-        <button id="exploreTabHistory" class="etab" onclick="exploreSwitchTab('history')">🕓 History</button>
-      </div>
-
-      <div id="exploreSearchPane">
-        <div style="background:#0a0a0a;border-radius:18px;padding:24px;margin-bottom:16px;">
-          <div style="display:flex;gap:8px;">
-            <input id="exploreQuery" placeholder="Try 'best restaurants near me' or 'immigration lawyers in Lagos'" style="flex:1;padding:13px 16px;border-radius:12px;border:none;font-size:.9rem;background:#fff;color:#111 !important;" onkeydown="if(event.key==='Enter')exploreRunSearch()"/>
-            <button class="btn" onclick="exploreRunSearch()" id="exploreSearchBtn" style="width:auto;padding:0 24px;border-radius:12px;font-weight:700;">Search</button>
-          </div>
-        </div>
-        <div style="font-size:.72rem;color:var(--text3);margin-bottom:14px;">Searching costs a small fee, paid from your Agent Wallet — same model as Career agent's other actions.</div>
-        <div id="exploreStatus" style="font-size:.8rem;color:var(--text3);margin-bottom:8px;"></div>
-        <div id="exploreReceipt"></div>
-        <div id="exploreSummaryBox"></div>
-        <div id="exploreResults"></div>
-      </div>
-
-      <div id="exploreAssistantPane" style="display:none;max-width:640px;">
-        <div style="font-size:.82rem;color:var(--text2);margin-bottom:14px;">Ask follow-up questions about your last search — it remembers the results.</div>
-        <div id="exploreChatMessages" style="border:1px solid var(--border);border-radius:16px;padding:18px;min-height:180px;margin-bottom:12px;display:flex;flex-direction:column;gap:10px;background:var(--card);"></div>
-        <div style="display:flex;gap:8px;">
-          <input id="exploreChatInput" placeholder="Ask a follow-up..." style="flex:1;padding:11px 14px;border-radius:100px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;" onkeydown="if(event.key==='Enter')exploreChatSend()"/>
-          <button class="btn" onclick="exploreChatSend()" style="width:auto;padding:11px 20px;border-radius:100px;font-weight:700;font-size:.85rem;">Send</button>
-        </div>
-        <div id="exploreChatStatus" style="font-size:.78rem;color:var(--text3);margin-top:8px;"></div>
-      </div>
-
-      <div id="exploreNearbyPane" style="display:none;">
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
-          <select id="exploreNearbyCategory" style="padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-weight:700;">
-            <option>Restaurants</option><option>Hotels</option><option>Hospitals</option><option>Pharmacies</option>
-            <option>Banks</option><option>Fuel Stations</option><option>Shopping Malls</option><option>Police Stations</option>
-            <option>Schools</option><option>ATMs</option><option>Government Offices</option><option>Churches</option>
-            <option>Mosques</option><option>Parks</option>
-          </select>
-          <input id="exploreNearbyLocation" placeholder="City or area — no GPS access, type where you are" style="flex:1;min-width:200px;padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
-          <button class="btn" onclick="exploreNearbySearch()" style="width:auto;padding:10px 22px;border-radius:10px;font-weight:700;font-size:.85rem;">Find</button>
-        </div>
-        <div id="exploreNearbyStatus" style="font-size:.8rem;color:var(--text3);margin-bottom:8px;"></div>
-        <div id="exploreNearbyResults"></div>
-      </div>
-
-      <div id="exploreCollectionsPane" style="display:none;">
-        <div style="display:flex;gap:8px;margin-bottom:16px;max-width:400px;">
-          <input id="exploreNewCollectionName" placeholder="New collection name" style="flex:1;padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
-          <button class="btn" onclick="exploreCreateCollection()" style="width:auto;padding:10px 20px;border-radius:10px;font-weight:700;font-size:.85rem;">Create</button>
-        </div>
-        <div id="exploreCollectionsResults" style="font-size:.85rem;color:var(--text3);">Loading collections...</div>
-        <div id="exploreCollectionItemsView" style="display:none;margin-top:16px;">
-          <div onclick="exploreBackToCollections()" style="cursor:pointer;color:#7000ff;font-weight:700;font-size:.85rem;margin-bottom:14px;">← Back to collections</div>
-          <div id="exploreCollectionItemsList"></div>
+      <div id="researchChooserPane">
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;max-width:700px;">
+          <button id="chooseSourcing" onclick="researchOpenPane('sourcing')" class="tnav-btn nan-feat-card" style="text-align:left;padding:26px 22px;border-radius:18px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;box-sizing:border-box;">
+            <div style="width:44px;height:44px;border-radius:12px;background:#7000ff;display:flex;align-items:center;justify-content:center;margin-bottom:16px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+            <div style="font-weight:700;font-size:1.05rem;margin-bottom:6px;">Sourcing & Suppliers</div>
+            <div style="font-size:.8rem;opacity:.75;">Find manufacturers and suppliers for anything, anywhere.</div>
+          </button>
+          <button id="chooseRealEstate" onclick="researchOpenPane('realestate')" class="tnav-btn nan-feat-card" style="text-align:left;padding:26px 22px;border-radius:18px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;box-sizing:border-box;">
+            <div style="width:44px;height:44px;border-radius:12px;background:#7000ff;display:flex;align-items:center;justify-content:center;margin-bottom:16px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1V10"/></svg></div>
+            <div style="font-weight:700;font-size:1.05rem;margin-bottom:6px;">Real Estate Marketplace</div>
+            <div style="font-size:.8rem;opacity:.75;">Find verified rental and sale properties &mdash; no more scams.</div>
+          </button>
         </div>
       </div>
 
-      <div id="exploreSavedPane" style="display:none;">
-        <div id="exploreSavedResults" style="font-size:.85rem;color:var(--text3);">Loading saved results...</div>
+      <div id="researchSourcingPane" style="display:none;">
+        <div onclick="researchShowChooser()" style="cursor:pointer;color:#7000ff;font-weight:700;font-size:.85rem;margin-bottom:18px;display:flex;align-items:center;gap:6px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7000ff" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Back to Research agent
+        </div>
+        <input id="supplierProduct" placeholder="What are you sourcing? e.g. school bags" style="width:100%;max-width:400px;padding:11px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+        <input id="supplierLocation" placeholder="Preferred location, e.g. Guangzhou (optional)" style="width:100%;max-width:400px;padding:11px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+          <input id="supplierBudget" placeholder="Target unit budget (optional)" style="flex:1;min-width:140px;max-width:196px;padding:11px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+          <input id="supplierMoq" placeholder="Max MOQ (optional)" style="flex:1;min-width:140px;max-width:196px;padding:11px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+        </div>
+        <button class="btn" id="supplierSearchBtn" onclick="supplierRunSearch()" style="width:auto;padding:14px 40px;border-radius:14px;font-weight:700;">Find suppliers</button>
+        <div id="supplierStatus" style="font-size:.8rem;color:var(--text3);margin-top:8px;"></div>
+        <div id="supplierReceipt"></div>
+        <div id="supplierResults" style="margin-top:16px;"></div>
       </div>
 
-      <div id="exploreHistoryPane" style="display:none;">
-        <div id="exploreHistoryResults" style="font-size:.85rem;color:var(--text3);">Loading search history...</div>
+      <div id="researchRealEstatePane" style="display:none;margin:-20px -20px 0;position:relative;">
+        <div onclick="researchShowChooser()" style="cursor:pointer;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.92);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;position:absolute;top:4px;left:12px;z-index:20;box-shadow:0 2px 8px rgba(0,0,0,.15);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7000ff" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </div>
+        <iframe id="realEstateFrame" style="width:100%;height:1400px;border:none;border-radius:16px;display:block;"></iframe>
       </div>
-    </div>
-  </div>
-
-  <div class="page" id="page-realestate">
-    <div style="padding:0;width:100%;box-sizing:border-box;">
-      <iframe id="realEstateFrame" style="width:100%;height:1400px;border:none;display:block;"></iframe>
     </div>
   </div>
 
   <script>
   var REAL_ESTATE_HTML = "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<script>\n  (function(){\n    try{\n      var t = localStorage.getItem('nan_theme') || 'dark';\n      document.documentElement.setAttribute('data-theme', t);\n    }catch(e){}\n  })();\n<\/script>\n<meta charset=\"UTF-8\"/>\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"/>\n<title>Nan \u2014 Find Your Next Home Without the Fear of Scams</title>\n<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap\" rel=\"stylesheet\">\n<style>\n  :root{\n    --navy:#7000ff; --navy-deep:#5c00d6; --navy-tint:#F3E8FF;\n    --bg:#FAFAF8; --card:#FFFFFF;\n    --gold:#a855f7; --gold-tint:#F3E8FF;\n    --sage:#7000ff; --sage-tint:#F3E8FF;\n    --text:#12203A; --text2:#5B6B85; --text3:#94A0B5;\n    --border:#E7E5DF;\n    --shadow-sm: 0 1px 3px rgba(10,38,71,.06);\n    --shadow-md: 0 8px 24px rgba(10,38,71,.08);\n    --shadow-lg: 0 24px 60px rgba(10,38,71,.14);\n  }\n  html[data-theme=\"dark\"]{\n    --navy:#7000ff; --navy-deep:#8f33ff; --navy-tint:rgba(112,0,255,.18);\n    --bg:#0a0a0a; --card:#161616;\n    --gold:#a855f7; --gold-tint:rgba(112,0,255,.18);\n    --sage:#7000ff; --sage-tint:rgba(112,0,255,.18);\n    --text:#f5f5f5; --text2:#a3a3a3; --text3:#6b6b6b;\n    --border:rgba(255,255,255,.14);\n    --shadow-sm: 0 1px 3px rgba(0,0,0,.4);\n    --shadow-md: 0 8px 24px rgba(0,0,0,.5);\n    --shadow-lg: 0 24px 60px rgba(0,0,0,.6);\n  }\n  html[data-theme=\"dark\"] .verified-pill,\n  html[data-theme=\"dark\"] .float-chip,\n  html[data-theme=\"dark\"] .flow-dot{background:var(--card) !important;}\n  *{box-sizing:border-box;margin:0;padding:0;}\n  html{scroll-behavior:smooth;}\n  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.5;overflow-x:hidden;}\n  h1,h2,h3,.serif{font-family:'Fraunces',serif;}\n  a{color:inherit;text-decoration:none;}\n  img{max-width:100%;display:block;}\n  .wrap{max-width:1240px;margin:0 auto;padding:0 40px;}\n  .fade{opacity:1;}\n\n  nav{position:sticky;top:0;z-index:50;background:rgba(250,250,248,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);}\n  .nav-inner{display:flex;align-items:center;justify-content:space-between;padding:20px 40px;max-width:1240px;margin:0 auto;}\n  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.3rem;color:var(--navy);}\n  .brand-mark{width:34px;height:34px;border-radius:9px;background:var(--navy);display:flex;align-items:center;justify-content:center;}\n  .nav-links{display:flex;gap:36px;font-size:.92rem;font-weight:600;color:var(--text2);}\n  .nav-links a:hover{color:var(--navy);}\n  .nav-cta{display:flex;gap:12px;align-items:center;}\n  .btn-ghost{padding:11px 22px;border-radius:100px;border:1.5px solid var(--navy);color:var(--navy);font-weight:700;font-size:.88rem;cursor:pointer;background:none;}\n  .btn-primary{padding:12px 24px;border-radius:100px;border:none;background:var(--navy);color:#fff;font-weight:700;font-size:.88rem;cursor:pointer;box-shadow:var(--shadow-sm);}\n  .btn-primary:hover{background:var(--navy-deep);}\n\n  .hero{padding:24px 40px 20px;max-width:1240px;margin:0 auto;display:grid;grid-template-columns:1.05fr .95fr;gap:50px;align-items:center;}\n  .seal-badge{display:inline-flex;align-items:center;gap:8px;background:var(--sage-tint);color:var(--sage);border-radius:100px;padding:8px 16px;font-size:.78rem;font-weight:700;letter-spacing:.03em;margin-bottom:12px;}\n  .hero h1{font-size:2.6rem;font-weight:600;line-height:1.15;letter-spacing:-.02em;color:var(--navy);margin-bottom:12px;}\n  .hero p{font-size:.95rem;color:var(--text2);line-height:1.6;max-width:480px;margin-bottom:16px;}\n  .hero-ctas{display:flex;gap:14px;margin-bottom:16px;}\n  .btn-primary-lg{padding:16px 30px;border-radius:100px;border:none;background:var(--navy);color:#fff;font-weight:700;font-size:.98rem;cursor:pointer;box-shadow:var(--shadow-md);}\n  .btn-outline-lg{padding:16px 30px;border-radius:100px;border:1.5px solid var(--navy);color:var(--navy);font-weight:700;font-size:.98rem;cursor:pointer;background:none;}\n  .hero-trust{display:flex;gap:28px;}\n  .hero-trust div{display:flex;flex-direction:column;}\n  .hero-trust .num{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:600;color:var(--navy);}\n  .hero-trust .lbl{font-size:.76rem;color:var(--text3);}\n\n  .hero-visual{position:relative;height:380px;}\n  .hero-card{position:absolute;background:var(--card);border-radius:20px;box-shadow:var(--shadow-lg);overflow:hidden;border:1px solid var(--border);}\n  .hero-card-1{width:300px;top:0;right:40px;z-index:2;}\n  .hero-card-2{width:260px;bottom:0;left:0;z-index:1;}\n  .hero-card-img{height:170px;position:relative;overflow:hidden;}\n  .hero-card-2 .hero-card-img{height:140px;}\n  .verified-pill{position:absolute;top:12px;left:12px;background:#fff;border-radius:100px;padding:5px 11px 5px 8px;display:flex;align-items:center;gap:5px;font-size:.7rem;font-weight:700;color:var(--sage);box-shadow:var(--shadow-sm);}\n  .hero-card-body{padding:16px 18px;}\n  .hero-card-price{font-family:'Fraunces',serif;font-weight:600;font-size:1.15rem;color:var(--navy);}\n  .hero-card-loc{font-size:.78rem;color:var(--text3);margin-top:3px;}\n  .float-chip{position:absolute;background:#fff;border-radius:14px;box-shadow:var(--shadow-md);padding:12px 16px;display:flex;align-items:center;gap:10px;z-index:3;}\n  .float-chip-1{top:200px;left:-10px;}\n  .float-chip-2{bottom:60px;right:0;}\n\n  section{padding:48px 0;}\n  #view-landing > section#why{padding-top:8px;}\n  .section-tag{font-size:.78rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;}\n  .section-head{max-width:640px;margin:0 auto 32px;text-align:center;}\n  .section-head h2{font-size:2.4rem;font-weight:600;color:var(--navy);letter-spacing:-.02em;line-height:1.15;}\n  .section-head p{color:var(--text2);font-size:1.05rem;margin-top:14px;}\n\n  .prop-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;}\n  .prop-card{background:var(--card);border-radius:20px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow-sm);transition:box-shadow .25s,transform .25s;}\n  .prop-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-4px);}\n  .prop-img{height:200px;position:relative;}\n  .prop-body{padding:22px;}\n  .prop-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}\n  .prop-price{font-family:'Fraunces',serif;font-weight:600;font-size:1.3rem;color:var(--navy);}\n  .prop-price span{font-size:.75rem;font-weight:500;color:var(--text3);}\n  .prop-loc{font-size:.85rem;color:var(--text2);margin-bottom:14px;display:flex;align-items:center;gap:5px;}\n  .prop-meta{display:flex;gap:16px;padding-top:14px;border-top:1px solid var(--border);font-size:.8rem;color:var(--text2);margin-bottom:16px;}\n  .prop-meta span{display:flex;align-items:center;gap:5px;}\n  .prop-btn{width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--navy);background:none;color:var(--navy);font-weight:700;font-size:.85rem;cursor:pointer;}\n  .prop-btn:hover{background:var(--navy);color:#fff;}\n\n  .steps{position:relative;max-width:900px;margin:0 auto;}\n  .step-row{display:flex;gap:28px;padding:30px 0;position:relative;}\n  .step-row:not(:last-child)::after{content:'';position:absolute;left:23px;top:70px;bottom:-10px;width:1.5px;background:var(--border);}\n  .step-num{width:48px;height:48px;border-radius:50%;background:var(--navy);color:#fff;font-family:'Fraunces',serif;font-weight:600;font-size:1.15rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:1;}\n  .step-content h4{font-size:1.1rem;font-weight:700;color:var(--navy);margin-bottom:6px;}\n  .step-content p{color:var(--text2);font-size:.95rem;max-width:560px;}\n\n  .why-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;}\n  .why-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px 24px;}\n  .why-icon{width:46px;height:46px;border-radius:12px;background:var(--navy-tint);display:flex;align-items:center;justify-content:center;margin-bottom:18px;color:var(--navy);}\n  .why-card h4{font-size:.98rem;font-weight:700;color:var(--navy);margin-bottom:6px;}\n  .why-card p{font-size:.82rem;color:var(--text2);line-height:1.5;}\n\n  .dash-section{background:var(--navy);border-radius:0;}\n  .dash-inner{max-width:1240px;margin:0 auto;padding:0 40px;}\n  .dash-section .section-head h2, .dash-section .section-tag{color:#fff;}\n  .dash-section .section-head p{color:#B9C4D9;}\n  .dash-mock{background:#fff;border-radius:20px;box-shadow:0 40px 100px rgba(0,0,0,.35);overflow:hidden;display:grid;grid-template-columns:220px 1fr;min-height:480px;}\n  .dash-side{background:#F5F3EE;padding:24px 18px;border-right:1px solid var(--border);}\n  .dash-side-item{padding:11px 14px;border-radius:10px;font-size:.85rem;font-weight:600;color:var(--text2);margin-bottom:4px;display:flex;align-items:center;gap:10px;}\n  .dash-side-item.active{background:var(--navy);color:#fff;}\n  .dash-main{padding:28px 32px;}\n  .dash-search{display:flex;gap:10px;margin-bottom:24px;}\n  .dash-search input{flex:1;border:1px solid var(--border);border-radius:12px;padding:12px 16px;font-size:.85rem;font-family:'Inter',sans-serif;background:#F9F8F5;}\n  .dash-search button{background:var(--navy);color:#fff;border:none;border-radius:12px;padding:12px 20px;font-size:.85rem;font-weight:700;}\n  .dash-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;}\n  .dash-stat{background:#F9F8F5;border-radius:14px;padding:18px;}\n  .dash-stat .lbl{font-size:.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;}\n  .dash-stat .val{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:600;color:var(--navy);margin-top:6px;}\n  .dash-list-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);font-size:.85rem;}\n  .dash-list-row .left{display:flex;align-items:center;gap:12px;}\n  .dash-avatar{width:34px;height:34px;border-radius:9px;background:var(--navy-tint);}\n  .status-chip{padding:4px 12px;border-radius:100px;font-size:.72rem;font-weight:700;}\n  .status-chip.progress{background:var(--gold-tint);color:var(--gold);}\n  .status-chip.done{background:var(--sage-tint);color:var(--sage);}\n\n  .flow{display:flex;align-items:flex-start;justify-content:space-between;max-width:1100px;margin:0 auto;position:relative;}\n  .flow::before{content:'';position:absolute;top:24px;left:60px;right:60px;height:1.5px;background:var(--border);z-index:0;}\n  .flow-step{position:relative;z-index:1;text-align:center;flex:1;padding:0 8px;}\n  .flow-dot{width:48px;height:48px;border-radius:50%;background:#fff;border:2px solid var(--navy);color:var(--navy);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-weight:700;font-family:'Fraunces',serif;}\n  .flow-step.done .flow-dot{background:var(--navy);color:#fff;}\n  .flow-step p{font-size:.78rem;font-weight:600;color:var(--text2);max-width:130px;margin:0 auto;line-height:1.4;}\n\n  footer{background:var(--navy-deep);color:#B9C4D9;padding:70px 0 30px;}\n  .footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;padding-bottom:50px;border-bottom:1px solid rgba(255,255,255,.1);}\n  .footer-brand{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:600;color:#fff;margin-bottom:14px;}\n  .footer-col h5{color:#fff;font-size:.85rem;font-weight:700;margin-bottom:16px;}\n  .footer-col a{display:block;font-size:.85rem;color:#8FA0BC;margin-bottom:11px;}\n  .footer-col a:hover{color:#fff;}\n  .footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:28px;font-size:.78rem;color:#7A8CA8;}\n  .social-row{display:flex;gap:14px;}\n  .social-row a{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;}\n\n  @media(max-width:980px){\n    .hero{grid-template-columns:1fr;padding-top:60px;}\n    .hero-visual{display:none;}\n    .prop-grid,.why-grid{grid-template-columns:repeat(2,1fr);}\n    .footer-grid{grid-template-columns:1fr 1fr;}\n    .nav-links{display:none;}\n  }\n\n  #view-landing{display:block;}\n  #view-details, #view-landlord{display:none;}\n  .view-back{display:inline-flex;align-items:center;gap:6px;color:var(--navy);font-weight:700;font-size:.85rem;cursor:pointer;margin:32px 40px 0;}\n  .pd-wrap{max-width:1100px;margin:0 auto;padding:24px 40px 100px;}\n  .pd-gallery{display:grid;grid-template-columns:2fr 1fr;gap:10px;border-radius:20px;overflow:hidden;margin-bottom:36px;height:420px;}\n  .pd-gallery-main svg, .pd-gallery-sub svg{width:100%;height:100%;display:block;}\n  .pd-gallery-sub{display:grid;grid-template-rows:1fr 1fr;gap:10px;}\n  .pd-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;flex-wrap:wrap;gap:16px;}\n  .pd-title h1{font-size:2rem;font-weight:600;color:var(--navy);margin-bottom:8px;}\n  .pd-title .loc{color:var(--text2);font-size:.95rem;display:flex;align-items:center;gap:6px;}\n  .pd-price{font-family:'Fraunces',serif;font-size:2rem;font-weight:600;color:var(--navy);text-align:right;}\n  .pd-price span{font-size:.8rem;color:var(--text3);font-weight:500;}\n  .pd-grid{display:grid;grid-template-columns:2fr 1fr;gap:36px;}\n  .pd-section{margin-bottom:32px;}\n  .pd-section h3{font-size:1.1rem;font-weight:700;color:var(--navy);margin-bottom:12px;}\n  .pd-section p{color:var(--text2);font-size:.92rem;line-height:1.7;}\n  .pd-amenities{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}\n  .pd-amenity{display:flex;align-items:center;gap:8px;font-size:.85rem;color:var(--text2);background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 12px;}\n  .pd-map{height:220px;border-radius:16px;background:var(--navy-tint);display:flex;align-items:center;justify-content:center;color:var(--navy);font-size:.85rem;font-weight:600;margin-bottom:14px;}\n  .pd-nearby{display:flex;flex-direction:column;gap:8px;}\n  .pd-nearby-row{display:flex;justify-content:space-between;font-size:.85rem;color:var(--text2);padding:8px 0;border-bottom:1px solid var(--border);}\n  .pd-sidebar{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:24px;height:fit-content;box-shadow:var(--shadow-md);}\n  .pd-manager{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border);}\n  .pd-manager-avatar{width:48px;height:48px;border-radius:50%;background:var(--navy-tint);display:flex;align-items:center;justify-content:center;color:var(--navy);font-weight:700;font-family:'Fraunces',serif;}\n  .pd-btn{width:100%;padding:14px;border-radius:12px;font-weight:700;font-size:.9rem;cursor:pointer;margin-bottom:10px;border:none;}\n  .pd-btn.primary{background:var(--navy);color:#fff;}\n  .pd-btn.outline{background:none;border:1.5px solid var(--navy);color:var(--navy);}\n\n  .ld-wrap{max-width:1100px;margin:0 auto;padding:24px 40px 100px;}\n  .ld-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;flex-wrap:wrap;gap:14px;}\n  .ld-header h1{font-size:1.8rem;font-weight:600;color:var(--navy);}\n  .ld-tabs{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;}\n  .ld-tab{padding:9px 18px;border-radius:100px;font-size:.82rem;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--card);color:var(--text2);}\n  .ld-tab.active{background:var(--navy);color:#fff;border-color:var(--navy);}\n  .ld-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}\n  .ld-stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;}\n  .ld-stat .lbl{font-size:.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;}\n  .ld-stat .val{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:600;color:var(--navy);margin-top:6px;}\n  .ld-row{display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin-bottom:10px;}\n  .ld-row-left{display:flex;align-items:center;gap:14px;}\n  .ld-thumb{width:52px;height:52px;border-radius:10px;background:var(--navy-tint);}\n  .ld-currency{display:flex;gap:10px;margin-top:8px;}\n  .ld-currency label{flex:1;border:1.5px solid var(--border);border-radius:12px;padding:14px;text-align:center;font-size:.85rem;font-weight:700;cursor:pointer;color:var(--text2);}\n  .ld-currency input{display:none;}\n  .ld-currency input:checked + label{border-color:var(--navy);background:var(--navy-tint);color:var(--navy);}\n  .ld-upload-form input, .ld-upload-form textarea{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg);font-family:'Inter',sans-serif;font-size:.85rem;margin-bottom:12px;box-sizing:border-box;}\n  .ld-upload-form label{font-size:.78rem;font-weight:700;color:var(--text2);margin-bottom:6px;display:block;}\n  .ld-upload-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}\n</style>\n</head>\n<body>\n\n<div id=\"view-landing\">\n<div style=\"display:flex;align-items:center;justify-content:space-between;gap:24px;padding:24px 40px 8px;flex-wrap:wrap;\">\n  <button class=\"btn-primary-lg\" onclick=\"document.getElementById('properties') ? document.getElementById('properties').scrollIntoView({behavior:'smooth'}) : null\">Browse Properties</button>\n  <div style=\"flex:1;min-width:220px;text-align:center;\">\n    <div class=\"section-tag\" style=\"font-weight:800;\">Why Choose Nan</div>\n    <h2 style=\"margin:0;\">Built around one promise</h2>\n  </div>\n  <button class=\"btn-outline-lg\" onclick=\"showView('landlord')\">List Your Property</button>\n</div>\n<section id=\"why\">\n  <div class=\"wrap\">\n    <div class=\"section-head fade\">\n      <p>No more fake listings, disappearing agents, or lost deposits.</p>\n    </div>\n    <div class=\"why-grid\">\n      <div class=\"why-card fade\">\n        <div class=\"why-icon\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M9 12l2 2 4-4\"/><circle cx=\"12\" cy=\"12\" r=\"10\"/></svg></div>\n        <h4>Verified Properties</h4><p>Every listing checked for ownership and accuracy before it goes live.</p>\n      </div>\n      <div class=\"why-card fade\">\n        <div class=\"why-icon\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"3\" y=\"11\" width=\"18\" height=\"11\" rx=\"2\"/><path d=\"M7 11V7a5 5 0 0110 0v4\"/></svg></div>\n        <h4>Secure Payments</h4><p>Funds held safely until every condition of the deal is met.</p>\n      </div>\n      <div class=\"why-card fade\">\n        <div class=\"why-icon\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z\"/></svg></div>\n        <h4>No Rental Scams</h4><p>No fake agents, no double-let apartments, no disappearing landlords.</p>\n      </div>\n      <div class=\"why-card fade\">\n        <div class=\"why-icon\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z\"/><path d=\"M14 2v6h6\"/></svg></div>\n        <h4>Lawyer-backed Documentation</h4><p>Tenancy and sale agreements reviewed by real estate lawyers.</p>\n      </div>\n      <div class=\"why-card fade\">\n        <div class=\"why-icon\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0116 0z\"/><circle cx=\"12\" cy=\"10\" r=\"3\"/></svg></div>\n        <h4>Viewing Assistance</h4><p>A Nan representative joins every inspection, in person.</p>\n      </div>\n      <div class=\"why-card fade\">\n        <div class=\"why-icon\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M13 2 3 14h7l-1 8 10-12h-7l1-8z\"/></svg></div>\n        <h4>Fast Settlement</h4><p>Verified landlords get paid within hours, not weeks.</p>\n      </div>\n      <div class=\"why-card fade\">\n        <div class=\"why-icon\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"2\" y=\"7\" width=\"20\" height=\"14\" rx=\"2\"/><path d=\"M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2\"/></svg></div>\n        <h4>Transparent Fees</h4><p>You see the full cost breakdown before you commit to anything.</p>\n      </div>\n    </div>\n  </div>\n</section>\n\n<section id=\"properties\">\n  <div class=\"wrap\">\n    <div class=\"section-head fade\">\n      <div class=\"section-tag\">Featured Properties</div>\n      <h2>Homes worth trusting</h2>\n      <p>A hand-picked selection of verified listings across Lagos, Abuja, and Port Harcourt.</p>\n    </div>\n    <div class=\"prop-grid\" style=\"grid-template-columns:1fr;\">\n      <div class=\"fade\" style=\"text-align:center;padding:64px 24px;border:2px dashed var(--border);border-radius:16px;\">\n        <div style=\"font-size:40px;margin-bottom:12px;\">\ud83c\udfe0</div>\n        <div style=\"font-weight:700;font-size:1.1rem;color:var(--text);margin-bottom:6px;\">No properties listed yet</div>\n        <div style=\"font-size:.9rem;color:var(--text3);\">Verified listings will appear here once landlords list their properties.</div>\n      </div>\n    </div>\n  </div>\n</section>\n\n<section>\n  <div class=\"wrap\">\n    <div class=\"section-head fade\">\n      <div class=\"section-tag\">Payment Flow</div>\n      <h2>Your money, protected at every step</h2>\n    </div>\n    <div class=\"flow fade\">\n      <div class=\"flow-step done\"><div class=\"flow-dot\">1</div><p>Tenant confirms property</p></div>\n      <div class=\"flow-step done\"><div class=\"flow-dot\">2</div><p>Tenant pays through Nan</p></div>\n      <div class=\"flow-step done\"><div class=\"flow-dot\">3</div><p>Verification process</p></div>\n      <div class=\"flow-step\"><div class=\"flow-dot\">4</div><p>Admin approval</p></div>\n      <div class=\"flow-step\"><div class=\"flow-dot\">5</div><p>Payment released</p></div>\n      <div class=\"flow-step\"><div class=\"flow-dot\">6</div><p>Landlord receives settlement</p></div>\n    </div>\n  </div>\n</section>\n\n</div><!-- end view-landing -->\n\n\n\n\n<div id=\"view-details\">\n  <div class=\"view-back\" onclick=\"showView('landing')\">&larr; Back to listings</div>\n  <div class=\"pd-wrap\">\n    <div class=\"pd-header\">\n      <div class=\"pd-title\">\n        <h1>3-Bedroom Apartment</h1>\n        <div class=\"loc\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0116 0z\"/><circle cx=\"12\" cy=\"10\" r=\"3\"/></svg>Lekki Phase 1, Lagos</div>\n      </div>\n      <div class=\"pd-price\">&#8358;3,500,000<span> /year</span></div>\n    </div>\n    <div class=\"pd-gallery\">\n      <div class=\"pd-gallery-main\"><svg viewBox=\"0 0 500 420\" preserveAspectRatio=\"xMidYMid slice\"><rect width=\"500\" height=\"420\" fill=\"#F3E8FF\"/><path d=\"M60 340 L200 200 L340 340 Z\" fill=\"#E9D9FF\"/><path d=\"M260 340 L400 160 L480 340 Z\" fill=\"#D9BFFA\"/><rect x=\"220\" y=\"260\" width=\"120\" height=\"80\" fill=\"#7000ff\"/></svg></div>\n      <div class=\"pd-gallery-sub\">\n        <svg viewBox=\"0 0 240 200\" preserveAspectRatio=\"xMidYMid slice\"><rect width=\"240\" height=\"200\" fill=\"#EADFC7\"/><circle cx=\"120\" cy=\"90\" r=\"50\" fill=\"#F3E8FF\"/></svg>\n        <svg viewBox=\"0 0 240 200\" preserveAspectRatio=\"xMidYMid slice\"><rect width=\"240\" height=\"200\" fill=\"#D9BFFA\"/><rect x=\"60\" y=\"60\" width=\"120\" height=\"90\" fill=\"#F3E8FF\"/></svg>\n      </div>\n    </div>\n    <div class=\"pd-grid\">\n      <div>\n        <div class=\"pd-section\">\n          <h3>Description</h3>\n          <p>A bright, modern 3-bedroom apartment in the heart of Lekki Phase 1. Recently renovated with quality finishes throughout, close to the Lekki-Epe Expressway, shopping malls, and the beach. Verified by Nan's inspection team.</p>\n        </div>\n        <div class=\"pd-section\">\n          <h3>Amenities</h3>\n          <div class=\"pd-amenities\">\n            <div class=\"pd-amenity\">&#9989; 24/7 Power Supply</div>\n            <div class=\"pd-amenity\">&#9989; Water Treatment</div>\n            <div class=\"pd-amenity\">&#9989; Gated Estate</div>\n            <div class=\"pd-amenity\">&#9989; Parking Space</div>\n            <div class=\"pd-amenity\">&#9989; Fitted Kitchen</div>\n            <div class=\"pd-amenity\">&#9989; CCTV Security</div>\n          </div>\n        </div>\n        <div class=\"pd-section\">\n          <h3>Nearby</h3>\n          <div class=\"pd-map\">Interactive map</div>\n          <div class=\"pd-nearby\">\n            <div class=\"pd-nearby-row\"><span>British International School</span><span>0.8 km</span></div>\n            <div class=\"pd-nearby-row\"><span>Lekki Hospital</span><span>1.2 km</span></div>\n            <div class=\"pd-nearby-row\"><span>Circle Mall</span><span>2.1 km</span></div>\n          </div>\n        </div>\n      </div>\n      <div class=\"pd-sidebar\">\n        <div class=\"pd-manager\">\n          <div class=\"pd-manager-avatar\">TA</div>\n          <div>\n            <div style=\"font-weight:700;font-size:.92rem;color:var(--text);\">Tunde Adeyemi</div>\n            <div style=\"font-size:.76rem;color:var(--text3);\">Verified Property Manager</div>\n          </div>\n        </div>\n        <button class=\"pd-btn primary\">Book Inspection</button>\n        <button class=\"pd-btn outline\">Secure Payment</button>\n        <div style=\"text-align:center;font-size:.72rem;color:var(--text3);margin-top:8px;\">Sample listing &mdash; live booking launching soon.</div>\n      </div>\n    </div>\n  </div>\n</div>\n\n<div id=\"view-landlord\">\n  <div class=\"view-back\" onclick=\"showView('landing')\">&larr; Back to listings</div>\n  <div class=\"ld-wrap\">\n    <div class=\"ld-header\">\n      <h1>Landlord Dashboard</h1>\n      <button class=\"btn-primary-lg\" style=\"padding:12px 24px;font-size:.85rem;\" onclick=\"document.getElementById('ldUploadForm').scrollIntoView({behavior:'smooth'})\">+ Upload Property</button>\n    </div>\n    <div class=\"ld-stats\">\n      <div class=\"ld-stat\"><div class=\"lbl\">Active Listings</div><div class=\"val\">0</div></div>\n      <div class=\"ld-stat\"><div class=\"lbl\">Inquiries</div><div class=\"val\">0</div></div>\n      <div class=\"ld-stat\"><div class=\"lbl\">Inspections Booked</div><div class=\"val\">0</div></div>\n      <div class=\"ld-stat\"><div class=\"lbl\">Next Payout</div><div class=\"val\">&mdash;</div></div>\n    </div>\n    <div class=\"ld-tabs\">\n      <div class=\"ld-tab active\">My Listings</div>\n      <div class=\"ld-tab\">Inquiries</div>\n      <div class=\"ld-tab\">Inspections</div>\n      <div class=\"ld-tab\">Payouts</div>\n    </div>\n    <div style=\"text-align:center;padding:48px 24px;border:2px dashed var(--border);border-radius:16px;margin-bottom:10px;\">\n      <div style=\"font-weight:700;font-size:1rem;color:var(--text);margin-bottom:6px;\">No properties listed yet</div>\n      <div style=\"font-size:.85rem;color:var(--text3);\">Upload your first property below to get started.</div>\n    </div>\n\n    <div class=\"pd-section\" style=\"margin-top:32px;\">\n      <h3>Settlement Currency</h3>\n      <div class=\"ld-currency\">\n        <input type=\"radio\" name=\"settlecur\" id=\"curNaira\" checked/><label for=\"curNaira\">Naira (&#8358;)</label>\n        <input type=\"radio\" name=\"settlecur\" id=\"curUsdc\"/><label for=\"curUsdc\">USDC</label>\n        <input type=\"radio\" name=\"settlecur\" id=\"curOther\"/><label for=\"curOther\">Other Stablecoin</label>\n      </div>\n    </div>\n\n    <div class=\"pd-section ld-upload-form\" id=\"ldUploadForm\" style=\"margin-top:32px;\">\n      <h3>Upload a New Property</h3>\n      <label>Address</label>\n      <input placeholder=\"e.g. 12 Admiralty Way, Lekki Phase 1\"/>\n      <div class=\"ld-upload-row\">\n        <div><label>Price</label><input placeholder=\"e.g. 3,500,000 /year\"/></div>\n        <div><label>Property Type</label><input placeholder=\"e.g. Apartment\"/></div>\n      </div>\n      <div class=\"ld-upload-row\">\n        <div><label>Bedrooms</label><input placeholder=\"e.g. 3\"/></div>\n        <div><label>Bathrooms</label><input placeholder=\"e.g. 2\"/></div>\n      </div>\n      <label>Description</label>\n      <textarea rows=\"3\" placeholder=\"Describe the property...\"></textarea>\n      <button class=\"pd-btn primary\" style=\"max-width:240px;\" onclick=\"submitListing()\">Submit for Verification</button>\n    </div>\n\n    <div class=\"pd-section\" id=\"ldListingProgress\" style=\"display:none;margin-top:32px;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px;\">\n      <h3 style=\"margin-bottom:24px;\">Listing Status</h3>\n      <div class=\"flow\" style=\"max-width:520px;\">\n        <div class=\"flow-step done\"><div class=\"flow-dot\">1</div><p>Listing submitted</p></div>\n        <div class=\"flow-step done\"><div class=\"flow-dot\">2</div><p>Verification in progress</p></div>\n        <div class=\"flow-step\"><div class=\"flow-dot\">3</div><p>Live on Nan</p></div>\n      </div>\n      <div style=\"text-align:center;font-size:.78rem;color:var(--text3);margin-top:20px;\">We'll notify you once verification is complete &mdash; usually within 24&ndash;48 hours.</div>\n    </div>\n  </div>\n</div>\n\n<script>\n  function submitListing(){\n    document.getElementById('ldUploadForm').style.display = 'none';\n    document.getElementById('ldListingProgress').style.display = 'block';\n  }\n<\/script>\n\n<script>\n  function showView(name){\n    document.getElementById('view-landing').style.display = name === 'landing' ? 'block' : 'none';\n    document.getElementById('view-details').style.display = name === 'details' ? 'block' : 'none';\n    document.getElementById('view-landlord').style.display = name === 'landlord' ? 'block' : 'none';\n    window.scrollTo({ top: 0, behavior: 'instant' });\n  }\n  window.addEventListener('storage', function(e){\n    if (e.key === 'nan_theme') {\n      document.documentElement.setAttribute('data-theme', e.newValue || 'dark');\n    }\n  });\n<\/script>\n\n</body>\n</html>\n";
-  // Load the real estate iframe content directly, no dependency on goPage's
-  // load order (goPage itself isn't defined yet when this script runs, since
-  // ui.js loads later in the document — wrapping it here silently no-ops).
-  document.getElementById('realEstateFrame').srcdoc = REAL_ESTATE_HTML;
-
-  const EXPLORE_API = 'https://nan-production.up.railway.app/api/explore';
-  const EXPLORE_TABS = ['search','assistant','nearby','collections','saved','history'];
-  function exploreSwitchTab(tab){
-    EXPLORE_TABS.forEach(t => {
-      document.getElementById('explore'+t.charAt(0).toUpperCase()+t.slice(1)+'Pane').style.display = (t===tab) ? (t==='search'?'block':'block') : 'none';
-      const btn = document.getElementById('exploreTab'+t.charAt(0).toUpperCase()+t.slice(1));
-      if (btn) btn.classList.toggle('active', t===tab);
-    });
-    if (tab === 'collections') exploreLoadCollections();
-    if (tab === 'saved') exploreLoadSaved();
-    if (tab === 'history') exploreLoadHistory();
+  function researchShowChooser(){
+    document.getElementById('researchChooserPane').style.display = 'block';
+    document.getElementById('researchSourcingPane').style.display = 'none';
+    document.getElementById('researchRealEstatePane').style.display = 'none';
+    var wrapper = document.querySelector('#page-supplier-agent > div[style*="padding:20px"]');
+    var titleEl = wrapper ? wrapper.children[0] : null;
+    var descEl = wrapper ? wrapper.children[1] : null;
+    if (titleEl) { titleEl.textContent = 'Research agent'; titleEl.style.display = ''; }
+    if (descEl) { descEl.textContent = 'AI-powered research and a verified real estate marketplace, in one place.'; descEl.style.display = ''; }
   }
-
-  let exploreLastResults = [];
-  let exploreChatSessionId = null;
-
-  function exploreResultCard(item, idx){
-    return `<div style="border:1px solid var(--border);border-radius:16px;padding:18px 20px;margin-bottom:12px;background:var(--card);">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
-        <div style="font-weight:700;color:var(--text);font-size:.95rem;">${item.name||'Untitled'}</div>
-        ${item.priceRange ? `<span style="font-size:.75rem;font-weight:700;color:#7000ff;">${item.priceRange}</span>` : ''}
-      </div>
-      ${item.category ? `<span style="display:inline-flex;font-size:.66rem;font-weight:700;padding:3px 9px;border-radius:100px;background:rgba(112,0,255,.1);color:#7000ff;margin-top:6px;">${item.category}</span>` : ''}
-      <div style="font-size:.84rem;color:var(--text2);margin:10px 0;line-height:1.5;">${item.description||''}</div>
-      <div style="font-size:.76rem;color:var(--text3);display:flex;flex-wrap:wrap;gap:10px;border-top:1px solid var(--border);padding-top:10px;">
-        ${item.address ? `<span>📍 ${item.address}</span>` : ''}
-        ${item.openingHours ? `<span>🕒 ${item.openingHours}</span>` : ''}
-        ${item.ratingText ? `<span>⭐ ${item.ratingText}</span>` : ''}
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
-        ${item.phone ? `<a href="tel:${item.phone}" style="padding:8px 14px;border-radius:10px;font-size:.76rem;font-weight:700;background:#7000ff;color:#fff;text-decoration:none;">📞 Call</a>` : ''}
-        ${item.email ? `<a href="mailto:${item.email}" style="padding:8px 14px;border-radius:10px;font-size:.76rem;font-weight:700;background:var(--bg);border:1px solid var(--border);color:var(--text2);text-decoration:none;">✉ Email</a>` : ''}
-        ${item.website ? `<a href="${item.website}" target="_blank" style="padding:8px 14px;border-radius:10px;font-size:.76rem;font-weight:700;background:var(--bg);border:1px solid var(--border);color:var(--text2);text-decoration:none;">🌐 Website</a>` : ''}
-        ${item.address ? `<a href="https://www.google.com/maps/search/${encodeURIComponent(item.address)}" target="_blank" style="padding:8px 14px;border-radius:10px;font-size:.76rem;font-weight:700;background:var(--bg);border:1px solid var(--border);color:var(--text2);text-decoration:none;">🧭 Directions</a>` : ''}
-        <button onclick="exploreSaveResult(${idx})" style="padding:8px 14px;border-radius:10px;font-size:.76rem;font-weight:700;background:var(--bg);border:1px solid var(--border);color:var(--text2);cursor:pointer;">♡ Save</button>
-        ${item.sourceUrl ? `<a href="${item.sourceUrl}" target="_blank" style="padding:8px 14px;border-radius:10px;font-size:.76rem;font-weight:700;background:none;color:var(--accent3);text-decoration:none;">Source →</a>` : ''}
-      </div>
-      <div id="exploreSaveStatus_${idx}" style="font-size:.74rem;color:var(--text3);margin-top:6px;"></div>
-    </div>`;
+  function researchOpenPane(which){
+    document.getElementById('researchChooserPane').style.display = 'none';
+    document.getElementById('researchSourcingPane').style.display = which === 'sourcing' ? 'block' : 'none';
+    document.getElementById('researchRealEstatePane').style.display = which === 'realestate' ? 'block' : 'none';
+    var wrapper = document.querySelector('#page-supplier-agent > div[style*="padding:20px"]');
+    var titleEl = wrapper ? wrapper.children[0] : null;
+    var descEl = wrapper ? wrapper.children[1] : null;
+    if (which === 'realestate') {
+      if (titleEl) titleEl.style.display = 'none';
+      if (descEl) descEl.style.display = 'none';
+      var frame = document.getElementById('realEstateFrame');
+      frame.srcdoc = REAL_ESTATE_HTML;
+    } else {
+      if (titleEl) { titleEl.textContent = 'Research agent'; titleEl.style.display = ''; }
+      if (descEl) { descEl.textContent = 'AI-powered research and a verified real estate marketplace, in one place.'; descEl.style.display = ''; }
+    }
   }
-
-  async function exploreRunSearch(){
-    if(!requireAgentWallet()) return;
-    const query = document.getElementById('exploreQuery').value.trim();
-    if(!query){ document.getElementById('exploreStatus').textContent = 'Type something to search for.'; return; }
-    const btn = document.getElementById('exploreSearchBtn'); btn.disabled = true;
-    document.getElementById('exploreStatus').textContent = 'Paying and searching...';
-    document.getElementById('exploreSummaryBox').innerHTML = '';
-    document.getElementById('exploreResults').innerHTML = '';
-    document.getElementById('exploreReceipt').innerHTML = '';
+    const SUPPLIER_API = 'https://nan-production.up.railway.app/api/supplier';
+  async function supplierRunSearch(){
+    const product = document.getElementById('supplierProduct').value.trim();
+    if(!product){ document.getElementById('supplierStatus').textContent = 'Enter what you\'re sourcing first.'; return; }
+    if (typeof agentWalletAddr === 'undefined' || !agentWalletAddr) {
+      window._agentWalletReturnTo = 'supplier-agent';
+      goPage('agent-wallet');
+      return;
+    }
+    const btn = document.getElementById('supplierSearchBtn'); btn.disabled = true;
+    document.getElementById('supplierStatus').textContent = 'Paying and searching sourcing platforms...';
+    document.getElementById('supplierResults').innerHTML = '';
+    document.getElementById('supplierReceipt').innerHTML = '';
     const balBefore = await nanSnapshotBalance();
     const t0 = performance.now();
     try{
-      const d = await payAndCall(EXPLORE_API, { action:'search', query, walletAddress: agentWalletAddr }, '0.06');
+      const r = await fetch(AGENT_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+        action:'pay-service', address:agentWalletAddr, url:SUPPLIER_API, method:'POST', chain:'ARC-TESTNET', maxAmount:'0.10',
+        body:{
+          action:'search-suppliers', product,
+          location: document.getElementById('supplierLocation').value.trim(),
+          budget: document.getElementById('supplierBudget').value.trim(),
+          moqLimit: document.getElementById('supplierMoq').value.trim(),
+        },
+      })});
       const elapsedMs = Math.round(performance.now() - t0);
+      const wrapped = await r.json();
+      if(!wrapped.success) throw new Error(wrapped.error || 'Payment or request failed');
+      const d = wrapped.result;
       if(!d.success) throw new Error(d.error || 'Search failed');
-      document.getElementById('exploreStatus').textContent = '';
+      document.getElementById('supplierStatus').textContent = '';
       const balAfter = await nanSnapshotBalance();
-      if(d.payment) document.getElementById('exploreReceipt').innerHTML = nanPaymentReceipt([{label:'Search', ...d.payment, elapsedMs}], balBefore, balAfter);
-      exploreLastResults = d.results || [];
-      exploreChatSessionId = null;
-      if(d.summary){
-        document.getElementById('exploreSummaryBox').innerHTML = `<div style="background:rgba(112,0,255,.06);border:1px solid rgba(112,0,255,.2);border-radius:14px;padding:16px 18px;margin-bottom:16px;">
-          <div style="font-size:.68rem;font-weight:700;color:#7000ff;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">AI Summary</div>
-          <div style="font-size:.86rem;color:var(--text);line-height:1.6;">${d.summary}</div>
-        </div>`;
+      if(d.payment) document.getElementById('supplierReceipt').innerHTML = nanPaymentReceipt([{label:'Search suppliers', ...d.payment, elapsedMs}], balBefore, balAfter);
+      const suppliers = d.suppliers || [];
+      if(suppliers.length === 0){
+        document.getElementById('supplierResults').innerHTML = '<div style="color:var(--text3);font-size:.85rem;">No matches came back. Try a broader product description.</div>';
+        return;
       }
-      if(exploreLastResults.length === 0){
-        document.getElementById('exploreResults').innerHTML = `<div style="text-align:center;padding:40px 20px;border:2px dashed var(--border);border-radius:16px;color:var(--text3);">No results came back. Try rephrasing your search.</div>`;
-      } else {
-        document.getElementById('exploreResults').innerHTML = exploreLastResults.map((item,idx) => exploreResultCard(item, idx)).join('');
-      }
-    }catch(err){ document.getElementById('exploreStatus').textContent = '❌ ' + err.message; }
-    finally{ btn.disabled = false; }
-  }
-
-  async function exploreSaveResult(idx){
-    if(!requireAgentWallet()) return;
-    const item = exploreLastResults[idx];
-    const statusEl = document.getElementById('exploreSaveStatus_'+idx);
-    statusEl.textContent = 'Saving...';
-    const r = await fetch(EXPLORE_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'save-result', walletAddress: agentWalletAddr, result: item})});
-    const d = await r.json();
-    statusEl.textContent = d.success ? '✓ Saved' : ('❌ ' + d.error);
-  }
-
-  async function exploreChatSend(){
-    if(!requireAgentWallet()) return;
-    const input = document.getElementById('exploreChatInput');
-    const text = input.value.trim();
-    if(!text) return;
-    const box = document.getElementById('exploreChatMessages');
-    box.insertAdjacentHTML('beforeend', `<div style="max-width:85%;padding:12px 16px;border-radius:14px;font-size:.85rem;background:var(--bg);border:1px solid var(--border);align-self:flex-end;">${text}</div>`);
-    input.value = '';
-    document.getElementById('exploreChatStatus').textContent = 'Thinking...';
-    try{
-      const d = await payAndCall(EXPLORE_API, {
-        action:'assistant-message', sessionId: exploreChatSessionId, walletAddress: agentWalletAddr,
-        lastResults: exploreChatSessionId ? undefined : exploreLastResults, userMessage: text,
-      }, '0.02');
-      if(!d.success) throw new Error(d.error);
-      exploreChatSessionId = d.sessionId;
-      document.getElementById('exploreChatStatus').textContent = '';
-      box.insertAdjacentHTML('beforeend', `<div style="max-width:85%;padding:12px 16px;border-radius:14px;font-size:.85rem;background:rgba(112,0,255,.08);color:var(--text);align-self:flex-start;">${d.reply}</div>`);
-      box.scrollTop = box.scrollHeight;
-    }catch(err){ document.getElementById('exploreChatStatus').textContent = '❌ ' + err.message; }
-  }
-
-  async function exploreNearbySearch(){
-    if(!requireAgentWallet()) return;
-    const category = document.getElementById('exploreNearbyCategory').value;
-    const location = document.getElementById('exploreNearbyLocation').value.trim();
-    if(!location){ document.getElementById('exploreNearbyStatus').textContent = 'Type a city or area — this tool has no GPS access.'; return; }
-    document.getElementById('exploreNearbyStatus').textContent = 'Paying and searching...';
-    document.getElementById('exploreNearbyResults').innerHTML = '';
-    try{
-      const d = await payAndCall(EXPLORE_API, { action:'nearby-search', category, location }, '0.06');
-      if(!d.success) throw new Error(d.error);
-      document.getElementById('exploreNearbyStatus').textContent = '';
-      const results = d.results || [];
-      if(results.length === 0){
-        document.getElementById('exploreNearbyResults').innerHTML = `<div style="text-align:center;padding:40px 20px;border:2px dashed var(--border);border-radius:16px;color:var(--text3);">No results found.</div>`;
-      } else {
-        document.getElementById('exploreNearbyResults').innerHTML = results.map((item,idx) => exploreResultCard(item, idx)).join('');
-        exploreLastResults = results;
-      }
-    }catch(err){ document.getElementById('exploreNearbyStatus').textContent = '❌ ' + err.message; }
-  }
-
-  async function exploreLoadSaved(){
-    if(!requireAgentWallet()) return;
-    const el = document.getElementById('exploreSavedResults');
-    el.textContent = 'Loading saved results...';
-    const r = await fetch(EXPLORE_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'saved-results-list', walletAddress: agentWalletAddr})});
-    const d = await r.json();
-    if(!d.success){ el.textContent = '❌ ' + d.error; return; }
-    if(!d.saved.length){ el.innerHTML = `<div style="text-align:center;padding:56px 24px;border:2px dashed var(--border);border-radius:16px;color:var(--text3);">Nothing saved yet. Tap "Save" on any result to keep it here.</div>`; return; }
-    el.innerHTML = d.saved.map(s => `
-      <div style="border:1px solid var(--border);border-radius:16px;padding:16px 18px;margin-bottom:10px;background:var(--card);">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <div style="font-weight:700;color:var(--text);font-size:.9rem;">${s.result.name||'Untitled'}</div>
-          <button onclick="exploreUnsave('${s.id}')" style="padding:6px 12px;border-radius:8px;font-size:.72rem;font-weight:700;background:none;border:1px solid var(--border);color:var(--text3);cursor:pointer;">Remove</button>
-        </div>
-        <div style="font-size:.78rem;color:var(--text3);margin-top:4px;">${s.result.description||''}</div>
-      </div>`).join('');
-  }
-  async function exploreUnsave(savedId){
-    await fetch(EXPLORE_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'unsave-result', walletAddress: agentWalletAddr, savedId})});
-    exploreLoadSaved();
-  }
-
-  async function exploreLoadHistory(){
-    if(!requireAgentWallet()) return;
-    const el = document.getElementById('exploreHistoryResults');
-    el.textContent = 'Loading search history...';
-    const r = await fetch(EXPLORE_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'search-history-list', walletAddress: agentWalletAddr})});
-    const d = await r.json();
-    if(!d.success){ el.textContent = '❌ ' + d.error; return; }
-    if(!d.history.length){ el.innerHTML = `<div style="text-align:center;padding:56px 24px;border:2px dashed var(--border);border-radius:16px;color:var(--text3);">No searches yet.</div>`; return; }
-    el.innerHTML = d.history.map(h => `
-      <div style="display:flex;align-items:center;justify-content:space-between;border:1px solid var(--border);border-radius:14px;padding:14px 18px;margin-bottom:8px;background:var(--card);">
-        <div>
-          <b style="font-size:.88rem;color:var(--text);">${h.pinned?'📌 ':''}${h.query}</b>
-          <div style="font-size:.74rem;color:var(--text3);">${new Date(h.createdAt).toLocaleString()}</div>
-        </div>
-        <div style="display:flex;gap:14px;font-size:.78rem;color:#7000ff;font-weight:700;">
-          <span onclick="exploreSearchAgain('${h.query.replace(/'/g,"\\'")}')" style="cursor:pointer;">Search again</span>
-          <span onclick="explorePinHistory('${h.id}', ${!h.pinned})" style="cursor:pointer;">${h.pinned?'Unpin':'Pin'}</span>
-          <span onclick="exploreDeleteHistory('${h.id}')" style="cursor:pointer;color:var(--text3);">✕</span>
-        </div>
-      </div>`).join('');
-  }
-  function exploreSearchAgain(query){
-    exploreSwitchTab('search');
-    document.getElementById('exploreQuery').value = query;
-    exploreRunSearch();
-  }
-  async function explorePinHistory(historyId, pinned){
-    await fetch(EXPLORE_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'pin-history-item', historyId, pinned})});
-    exploreLoadHistory();
-  }
-  async function exploreDeleteHistory(historyId){
-    await fetch(EXPLORE_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete-history-item', walletAddress: agentWalletAddr, historyId})});
-    exploreLoadHistory();
-  }
-
-  async function exploreCreateCollection(){
-    if(!requireAgentWallet()) return;
-    const nameInput = document.getElementById('exploreNewCollectionName');
-    const name = nameInput.value.trim();
-    if(!name) return;
-    const r = await fetch(EXPLORE_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'create-collection', walletAddress: agentWalletAddr, name})});
-    const d = await r.json();
-    if(d.success){ nameInput.value = ''; exploreLoadCollections(); }
-  }
-  async function exploreLoadCollections(){
-    if(!requireAgentWallet()) return;
-    const el = document.getElementById('exploreCollectionsResults');
-    document.getElementById('exploreCollectionItemsView').style.display = 'none';
-    el.style.display = 'block';
-    el.textContent = 'Loading collections...';
-    const r = await fetch(EXPLORE_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'list-collections', walletAddress: agentWalletAddr})});
-    const d = await r.json();
-    if(!d.success){ el.textContent = '❌ ' + d.error; return; }
-    if(!d.collections.length){ el.innerHTML = `<div style="text-align:center;padding:56px 24px;border:2px dashed var(--border);border-radius:16px;color:var(--text3);">No collections yet. Create one above to start organizing saved results.</div>`; return; }
-    el.style.display = 'grid';
-    el.style.gridTemplateColumns = 'repeat(auto-fill, minmax(220px, 1fr))';
-    el.style.gap = '16px';
-    el.innerHTML = d.collections.map(c => `
-      <div onclick="exploreOpenCollection('${c.id}','${(c.name||'').replace(/'/g,"\\'")}')" style="border:1px solid var(--border);border-radius:16px;padding:20px;background:var(--card);cursor:pointer;">
-        <div style="font-weight:700;font-size:.95rem;color:var(--text);">${c.name}</div>
-        <div style="font-size:.78rem;color:var(--text3);margin-top:6px;">${c.itemCount} saved</div>
-      </div>`).join('');
-  }
-  async function exploreOpenCollection(collectionId, name){
-    document.getElementById('exploreCollectionsResults').style.display = 'none';
-    const view = document.getElementById('exploreCollectionItemsView');
-    view.style.display = 'block';
-    const list = document.getElementById('exploreCollectionItemsList');
-    list.innerHTML = `<div style="font-weight:700;font-size:1rem;margin-bottom:14px;">${name}</div><div style="color:var(--text3);font-size:.85rem;">Loading...</div>`;
-    const r = await fetch(EXPLORE_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'collection-items', collectionId})});
-    const d = await r.json();
-    if(!d.success){ list.innerHTML = '❌ ' + d.error; return; }
-    if(!d.items.length){ list.innerHTML = `<div style="font-weight:700;font-size:1rem;margin-bottom:14px;">${name}</div><div style="text-align:center;padding:40px 20px;border:2px dashed var(--border);border-radius:16px;color:var(--text3);">Nothing in this collection yet.</div>`; return; }
-    list.innerHTML = `<div style="font-weight:700;font-size:1rem;margin-bottom:14px;">${name}</div>` + d.items.map(s => `
-      <div style="border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:8px;background:var(--card);">
-        <div style="font-weight:700;font-size:.88rem;color:var(--text);">${s.result.name||'Untitled'}</div>
-        <div style="font-size:.78rem;color:var(--text3);margin-top:4px;">${s.result.description||''}</div>
-      </div>`).join('');
-  }
-  function exploreBackToCollections(){
-    document.getElementById('exploreCollectionItemsView').style.display = 'none';
-    exploreLoadCollections();
+      document.getElementById('supplierResults').innerHTML = suppliers.map(s => `
+        <div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;">
+          <div style="font-weight:700;color:var(--text);">${s.companyName||''}</div>
+          <div style="font-size:.8rem;color:var(--text2);margin-top:2px;">${s.whatTheySell||''}</div>
+          <div style="font-size:.78rem;color:var(--text3);margin-top:6px;">${s.location||'Location unknown'} &middot; MOQ ${s.moq||'n/a'} &middot; ${s.priceRange||'price n/a'}</div>
+          ${(s.certifications&&s.certifications.length) ? `<div style="font-size:.75rem;color:var(--text3);margin-top:4px;">Certifications: ${s.certifications.join(', ')}</div>` : ''}
+          ${(s.exportMarkets&&s.exportMarkets.length) ? `<div style="font-size:.75rem;color:var(--text3);margin-top:2px;">Exports to: ${s.exportMarkets.join(', ')}</div>` : ''}
+          <div style="font-size:.75rem;color:#a855f7;margin-top:6px;">${s.riskNote||''}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+            <span style="font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:6px;background:rgba(168,85,247,.1);color:#a855f7;">AI-researched — verify before ordering</span>
+            ${s.url ? `<a href="${s.url}" target="_blank" style="font-size:.78rem;color:var(--accent3);">View source &rarr;</a>` : ''}
+          </div>
+        </div>`).join('');
+    }catch(err){
+      document.getElementById('supplierStatus').textContent = '❌ ' + err.message;
+    }finally{ btn.disabled = false; }
   }
   </script>
 
@@ -6094,8 +5895,7 @@ function nanToggleFaucet(btn){
     <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:10px 0;">
       <div style="font-size:9.5px;font-weight:700;color:#ffffff;letter-spacing:.12em;text-transform:uppercase;padding:10px 20px 5px;">Main</div>
       <button class="nan-drow" id="drow-career" onclick="nanCloseDrawer();goPage('career-agent')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></span><span class="nan-drow-lbl">Career agent</span></button>
-      <button class="nan-drow" id="drow-explore" onclick="nanCloseDrawer();goPage('explore')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span><span class="nan-drow-lbl">Explore</span></button>
-      <button class="nan-drow" id="drow-realestate" onclick="nanCloseDrawer();goPage('realestate')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 9h1M9 13h1M14 9h1M14 13h1"/></svg></span><span class="nan-drow-lbl">Real Estate</span></button>
+      <button class="nan-drow" id="drow-supplier" onclick="nanCloseDrawer();goPage('supplier-agent')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 9h1M9 13h1M14 9h1M14 13h1"/></svg></span><span class="nan-drow-lbl">Research agent</span></button>
       <button class="nan-drow" id="drow-marketplace" onclick="nanCloseDrawer();goPage('marketplace')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9M3 9v10a1 1 0 001 1h16a1 1 0 001-1V9M3 9h18M9 13a2 2 0 11-4 0M19 13a2 2 0 11-4 0"/></svg></span><span class="nan-drow-lbl">Marketplace</span></button>
       <button class="nan-drow" id="drow-gigs" onclick="nanCloseDrawer();goPage('gigs')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12l3 3 6-6"/><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 9h18"/></svg></span><span class="nan-drow-lbl">Gigs</span></button>
       <button class="nan-drow" id="drow-agent-wallet" onclick="nanCloseDrawer();goPage('agent-wallet')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><circle cx="12" cy="14" r="2"/></svg></span><span class="nan-drow-lbl">Agent Wallet</span><span style="font-size:9px;font-weight:700;background:rgba(112,0,255,.15);border:1px solid rgba(112,0,255,.25);color:#a855f7;border-radius:5px;padding:2px 6px;margin-left:auto;flex-shrink:0;">Circle</span></button>
