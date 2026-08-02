@@ -4832,6 +4832,11 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
      flex child in a space-between row, collapsing it to the left edge and
      overlapping the brand logo. Force it to the right explicitly. ── */
   #globalTopBar > div:last-of-type { margin-left: auto !important; }
+  /* ── Fix: a claimed arc name (e.g. "zarafatolu.arc") is much longer than
+     the default "Agent Wallet" label, making the pill wide enough to
+     overlap the logo on narrow screens. Truncate with ellipsis instead. ── */
+  #nanProfilePill { max-width: 46vw !important; }
+  #nanProfileLabel { max-width: 32vw !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; display: inline-block !important; }
 
   /* ── Mobile network pill (right side, grouped with burger) ── */
   #mobileNetPill {
