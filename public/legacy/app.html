@@ -1419,6 +1419,7 @@ html,body{background-color:var(--bg);}
           </div>
           <textarea id="careerCvText" placeholder="Paste your CV text here..." style="width:100%;max-width:400px;min-height:140px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--text);font-size:.85rem;box-sizing:border-box;font-family:inherit;"></textarea>
           <div style="font-size:.72rem;color:var(--text3);margin-top:6px;">PDF/DOCX upload isn't wired up yet — paste text or upload .txt for now.</div>
+          <button onclick="careerExportCvPdf()" style="width:auto;padding:9px 18px;border-radius:8px;font-weight:700;font-size:12px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;margin-top:8px;">Export as PDF</button>
         </div>
 
         <div id="careerGeneratePane" style="display:none;">
@@ -1475,6 +1476,21 @@ html,body{background-color:var(--bg);}
           <input id="careerJobDeadline" placeholder="Application deadline (optional)" style="flex:1;min-width:140px;max-width:196px;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
         </div>
         <input id="careerJobSkills" placeholder="Skills required, comma separated" style="width:100%;max-width:400px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+        <select id="careerJobCategory" style="width:100%;max-width:400px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-weight:700;">
+          <option value="Engineering">Engineering</option>
+          <option value="Design">Design</option>
+          <option value="Product">Product</option>
+          <option value="Marketing">Marketing</option>
+          <option value="Sales">Sales</option>
+          <option value="Operations">Operations</option>
+          <option value="Customer Support">Customer Support</option>
+          <option value="Finance">Finance</option>
+          <option value="Other" selected>Other</option>
+        </select>
+        <div style="font-size:.75rem;color:var(--text3);margin-bottom:6px;">Optional</div>
+        <input id="careerJobLogo" placeholder="Company logo URL (optional)" style="width:100%;max-width:400px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+        <input id="careerJobWebsite" placeholder="Company website (optional)" style="width:100%;max-width:400px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+        <input id="careerJobBenefits" placeholder="Benefits, comma separated (optional)" style="width:100%;max-width:400px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;">
           <label style="font-size:.8rem;color:var(--text2);"><input type="checkbox" id="careerJobRemote"/> Remote only</label>
           <label style="font-size:.8rem;color:var(--text2);"><input type="checkbox" id="careerJobWeb3"/> Web3 role</label>
@@ -1485,6 +1501,32 @@ html,body{background-color:var(--bg);}
       </div>
 
       <div id="careerBrowsePane" style="display:none;">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+          <select id="careerFilterCategory" onchange="careerRenderJobList()" style="padding:9px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:.8rem;font-weight:700;">
+            <option value="">All categories</option>
+          </select>
+          <select id="careerFilterType" onchange="careerRenderJobList()" style="padding:9px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:.8rem;font-weight:700;">
+            <option value="">Any employment type</option>
+            <option value="full-time">Full-time</option>
+            <option value="part-time">Part-time</option>
+            <option value="contract">Contract</option>
+            <option value="internship">Internship</option>
+          </select>
+          <select id="careerFilterLevel" onchange="careerRenderJobList()" style="padding:9px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:.8rem;font-weight:700;">
+            <option value="">Any experience level</option>
+            <option value="entry">Entry level</option>
+            <option value="mid">Mid level</option>
+            <option value="senior">Senior</option>
+            <option value="lead">Lead</option>
+            <option value="executive">Executive</option>
+          </select>
+          <select id="careerFilterSource" onchange="careerRenderJobList()" style="padding:9px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:.8rem;font-weight:700;">
+            <option value="">Verified + Community</option>
+            <option value="verified">Verified only</option>
+            <option value="community">Community only</option>
+          </select>
+          <label style="display:flex;align-items:center;gap:6px;font-size:.8rem;color:var(--text2);padding:0 6px;"><input type="checkbox" id="careerFilterRemote" onchange="careerRenderJobList()"/> Remote only</label>
+        </div>
         <div style="border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:14px;max-width:640px;">
           <div style="font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:8px;">Get emailed when a matching job is posted</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -1658,6 +1700,10 @@ html,body{background-color:var(--bg);}
     const numOpenings = parseInt(document.getElementById('careerJobOpenings').value.trim(), 10) || 1;
     const deadline = document.getElementById('careerJobDeadline').value.trim();
     const skillsRequired = document.getElementById('careerJobSkills').value.split(',').map(s=>s.trim()).filter(Boolean);
+    const category = document.getElementById('careerJobCategory').value;
+    const companyLogo = document.getElementById('careerJobLogo').value.trim();
+    const companyWebsite = document.getElementById('careerJobWebsite').value.trim();
+    const benefits = document.getElementById('careerJobBenefits').value.split(',').map(s=>s.trim()).filter(Boolean);
     if(!title || !salary){ document.getElementById('careerPostStatus').textContent = `Title and salary are required. (title="${title}", salary="${salary}")`; return; }
     document.getElementById('careerPostStatus').textContent = 'Paying and posting job...';
     try{
@@ -1665,9 +1711,10 @@ html,body{background-color:var(--bg);}
         action:'post-job', employerAddress: agentWalletAddr, title, description, salary, currency,
         location, remoteOnly, includeWeb3, employerEmail: employerEmail || undefined,
         employmentType, experienceLevel, numOpenings, deadline: deadline || undefined, skillsRequired,
+        category, companyLogo: companyLogo || undefined, companyWebsite: companyWebsite || undefined, benefits,
       }, '0.05');
       if(!d.success) throw new Error(d.error || 'Posting failed');
-      document.getElementById('careerJobTitle').value = document.getElementById('careerJobDesc').value = document.getElementById('careerJobSalary').value = document.getElementById('careerJobLocation').value = document.getElementById('careerJobEmail').value = document.getElementById('careerJobDeadline').value = document.getElementById('careerJobSkills').value = '';
+      document.getElementById('careerJobTitle').value = document.getElementById('careerJobDesc').value = document.getElementById('careerJobSalary').value = document.getElementById('careerJobLocation').value = document.getElementById('careerJobEmail').value = document.getElementById('careerJobDeadline').value = document.getElementById('careerJobSkills').value = document.getElementById('careerJobLogo').value = document.getElementById('careerJobWebsite').value = document.getElementById('careerJobBenefits').value = '';
       document.getElementById('careerPostStatus').textContent = '✓ Job posted — visible to everyone in Browse jobs now, and will also show as a referred match for candidates whose CVs fit.';
     }catch(err){ document.getElementById('careerPostStatus').textContent = '❌ ' + err.message; }
   }
@@ -1683,6 +1730,7 @@ html,body{background-color:var(--bg);}
     document.getElementById('careerWatchKeyword').value = document.getElementById('careerWatchEmail').value = '';
     statusEl.textContent = `✓ You'll be emailed when a job matching "${keyword}" is posted.`;
   }
+  let careerJobsCache = [];
   async function careerBrowseJobs(){
     const el = document.getElementById('careerBrowseResults');
     el.textContent = 'Loading jobs...';
@@ -1690,33 +1738,69 @@ html,body{background-color:var(--bg);}
       const r = await fetch(CAREER_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'job-list'})});
       const d = await r.json();
       if(!d.success) throw new Error(d.error || 'Failed to load jobs');
-      if(!d.jobs.length){ el.innerHTML = `<div style="text-align:center;padding:56px 24px;border:2px dashed var(--border);border-radius:16px;color:var(--text3);">No jobs posted yet.</div>`; return; }
-      el.style.display = 'grid';
-      el.style.gridTemplateColumns = 'repeat(auto-fill, minmax(280px, 1fr))';
-      el.style.gap = '16px';
-      el.innerHTML = d.jobs.map(j => `
-        <div id="careerJobCard_${j.id}" style="border:1px solid var(--border);border-radius:16px;padding:18px 20px;background:var(--card);">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
-            <div style="font-weight:700;color:var(--text);font-size:.95rem;">${j.title}</div>
-            <button onclick="careerSaveJob('${j.id}', this)" style="width:32px;height:32px;border-radius:50%;background:var(--bg);border:1px solid var(--border);color:var(--text3);cursor:pointer;flex-shrink:0;font-size:.9rem;">♡</button>
-          </div>
-          <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#7000ff;font-size:1rem;margin-top:8px;">${j.salary} ${j.currency}</div>
-          <span style="display:inline-flex;font-size:.66rem;font-weight:700;padding:3px 9px;border-radius:100px;margin-top:6px;${j.employerVerified ? 'background:rgba(22,163,74,.1);color:#16a34a;' : 'background:rgba(112,0,255,.1);color:#7000ff;'}">${j.employerVerified ? '✓ Verified Employer' : 'Community Listing'}</span>
-          ${j.employmentType || j.experienceLevel ? `<div style="font-size:.72rem;color:var(--text3);margin-top:8px;">${j.employmentType||''}${j.employmentType&&j.experienceLevel?' · ':''}${j.experienceLevel||''}${j.numOpenings>1?' · '+j.numOpenings+' openings':''}</div>` : ''}
-          <div style="font-size:.82rem;color:var(--text2);margin:10px 0;line-height:1.5;">${j.description||''}</div>
-          ${j.skillsRequired && j.skillsRequired.length ? `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">${j.skillsRequired.map(s=>`<span style="font-size:.68rem;font-weight:700;padding:3px 8px;border-radius:100px;background:rgba(112,0,255,.08);color:#7000ff;">${s}</span>`).join('')}</div>` : ''}
-          <div style="font-size:.74rem;color:var(--text3);border-top:1px solid var(--border);padding-top:10px;">${j.remoteOnly?'📍 Remote':(j.location?'📍 '+j.location:'Location unspecified')}${j.includeWeb3?' · Web3 role':''}${j.deadline?' · Apply by '+j.deadline:''}</div>
-          <button class="btn" onclick="careerToggleApplyForm('${j.id}')" style="width:100%;padding:10px;border-radius:10px;font-weight:700;font-size:13px;margin-top:12px;">Apply</button>
-          <div id="careerApplyForm_${j.id}" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
-            <textarea id="careerApplyResume_${j.id}" placeholder="Paste your resume/CV text" style="width:100%;min-height:70px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.82rem;font-family:inherit;"></textarea>
-            <textarea id="careerApplyCover_${j.id}" placeholder="Cover letter (or generate one with AI below)" style="width:100%;min-height:70px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.82rem;font-family:inherit;"></textarea>
-            <button onclick="careerGenerateCoverLetter('${j.id}','${(j.title||'').replace(/'/g,"\\'")}','${(j.description||'').replace(/'/g,"\\'").replace(/\n/g,' ')}')" style="width:auto;padding:8px 14px;border-radius:8px;font-size:.76rem;font-weight:700;background:transparent;border:1px solid #7000ff;color:#7000ff;cursor:pointer;margin-bottom:8px;">✨ Generate cover letter with AI</button>
-            <input id="careerApplyPortfolio_${j.id}" placeholder="Portfolio link (optional)" style="width:100%;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.82rem;"/>
-            <button class="btn" onclick="careerSubmitApplication('${j.id}')" style="width:auto;padding:9px 20px;border-radius:10px;font-weight:700;font-size:13px;">Submit application</button>
-            <div id="careerApplyStatus_${j.id}" style="font-size:.76rem;color:var(--text3);margin-top:6px;"></div>
-          </div>
-        </div>`).join('');
+      careerJobsCache = d.jobs;
+      const catSel = document.getElementById('careerFilterCategory');
+      const cats = [...new Set(d.jobs.map(j => j.category).filter(Boolean))].sort();
+      catSel.innerHTML = '<option value="">All categories</option>' + cats.map(c => `<option value="${c}">${c}</option>`).join('');
+      careerRenderJobList();
     }catch(err){ el.style.display = 'block'; el.textContent = '❌ ' + err.message; }
+  }
+  function careerRenderJobList(){
+    const el = document.getElementById('careerBrowseResults');
+    const category = document.getElementById('careerFilterCategory').value;
+    const type = document.getElementById('careerFilterType').value;
+    const level = document.getElementById('careerFilterLevel').value;
+    const source = document.getElementById('careerFilterSource').value;
+    const remoteOnly = document.getElementById('careerFilterRemote').checked;
+    let jobs = careerJobsCache.filter(j =>
+      (!category || j.category === category) &&
+      (!type || j.employmentType === type) &&
+      (!level || j.experienceLevel === level) &&
+      (!source || (source === 'verified' ? j.employerVerified : !j.employerVerified)) &&
+      (!remoteOnly || j.remoteOnly)
+    );
+    if(!jobs.length){ el.style.display = 'block'; el.innerHTML = `<div style="text-align:center;padding:56px 24px;border:2px dashed var(--border);border-radius:16px;color:var(--text3);">${careerJobsCache.length ? 'No jobs match these filters.' : 'No jobs posted yet.'}</div>`; return; }
+    el.style.display = 'grid';
+    el.style.gridTemplateColumns = 'repeat(auto-fill, minmax(280px, 1fr))';
+    el.style.gap = '16px';
+    el.innerHTML = jobs.map(j => `
+      <div id="careerJobCard_${j.id}" style="border:1px solid var(--border);border-radius:16px;padding:18px 20px;background:var(--card);">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+          <div style="display:flex;gap:10px;align-items:flex-start;">
+            ${j.companyLogo ? `<img src="${j.companyLogo}" style="width:36px;height:36px;border-radius:8px;object-fit:cover;flex-shrink:0;"/>` : ''}
+            <div style="font-weight:700;color:var(--text);font-size:.95rem;">${j.title}</div>
+          </div>
+          <button onclick="careerSaveJob('${j.id}', this)" style="width:32px;height:32px;border-radius:50%;background:var(--bg);border:1px solid var(--border);color:var(--text3);cursor:pointer;flex-shrink:0;font-size:.9rem;">♡</button>
+        </div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#7000ff;font-size:1rem;margin-top:8px;">${j.salary} ${j.currency}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
+          <span style="display:inline-flex;font-size:.66rem;font-weight:700;padding:3px 9px;border-radius:100px;${j.employerVerified ? 'background:rgba(22,163,74,.1);color:#16a34a;' : 'background:rgba(112,0,255,.1);color:#7000ff;'}">${j.employerVerified ? '✓ Verified Employer' : 'Community Listing'}</span>
+          ${j.category ? `<span style="display:inline-flex;font-size:.66rem;font-weight:700;padding:3px 9px;border-radius:100px;background:var(--bg);color:var(--text3);border:1px solid var(--border);">${j.category}</span>` : ''}
+        </div>
+        ${j.employmentType || j.experienceLevel ? `<div style="font-size:.72rem;color:var(--text3);margin-top:8px;">${j.employmentType||''}${j.employmentType&&j.experienceLevel?' · ':''}${j.experienceLevel||''}${j.numOpenings>1?' · '+j.numOpenings+' openings':''}</div>` : ''}
+        <div style="font-size:.82rem;color:var(--text2);margin:10px 0;line-height:1.5;">${j.description||''}</div>
+        ${j.skillsRequired && j.skillsRequired.length ? `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">${j.skillsRequired.map(s=>`<span style="font-size:.68rem;font-weight:700;padding:3px 8px;border-radius:100px;background:rgba(112,0,255,.08);color:#7000ff;">${s}</span>`).join('')}</div>` : ''}
+        ${j.benefits && j.benefits.length ? `<div style="font-size:.74rem;color:var(--text2);margin-bottom:8px;">✓ ${j.benefits.join(' · ')}</div>` : ''}
+        ${j.companyWebsite ? `<a href="${j.companyWebsite}" target="_blank" style="font-size:.74rem;color:var(--accent3);display:block;margin-bottom:8px;">${j.companyWebsite}</a>` : ''}
+        <div style="font-size:.74rem;color:var(--text3);border-top:1px solid var(--border);padding-top:10px;">${j.remoteOnly?'📍 Remote':(j.location?'📍 '+j.location:'Location unspecified')}${j.includeWeb3?' · Web3 role':''}${j.deadline?' · Apply by '+j.deadline:''}</div>
+        <button class="btn" onclick="careerToggleApplyForm('${j.id}')" style="width:100%;padding:10px;border-radius:10px;font-weight:700;font-size:13px;margin-top:12px;">Apply</button>
+        <div style="text-align:center;margin-top:8px;"><span onclick="careerReportListing('${j.id}')" style="font-size:.7rem;color:var(--text3);cursor:pointer;text-decoration:underline;">Report listing</span></div>
+        <div id="careerApplyForm_${j.id}" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
+          <textarea id="careerApplyResume_${j.id}" placeholder="Paste your resume/CV text" style="width:100%;min-height:70px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.82rem;font-family:inherit;"></textarea>
+          <textarea id="careerApplyCover_${j.id}" placeholder="Cover letter (or generate one with AI below)" style="width:100%;min-height:70px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.82rem;font-family:inherit;"></textarea>
+          <button onclick="careerGenerateCoverLetter('${j.id}','${(j.title||'').replace(/'/g,"\\'")}','${(j.description||'').replace(/'/g,"\\'").replace(/\n/g,' ')}')" style="width:auto;padding:8px 14px;border-radius:8px;font-size:.76rem;font-weight:700;background:transparent;border:1px solid #7000ff;color:#7000ff;cursor:pointer;margin-bottom:8px;">✨ Generate cover letter with AI</button>
+          <input id="careerApplyPortfolio_${j.id}" placeholder="Portfolio link (optional)" style="width:100%;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.82rem;"/>
+          <button class="btn" onclick="careerSubmitApplication('${j.id}')" style="width:auto;padding:9px 20px;border-radius:10px;font-weight:700;font-size:13px;">Submit application</button>
+          <div id="careerApplyStatus_${j.id}" style="font-size:.76rem;color:var(--text3);margin-top:6px;"></div>
+        </div>
+      </div>`).join('');
+  }
+  async function careerReportListing(jobId){
+    const reason = prompt('Why are you reporting this listing? (e.g. spam, fraudulent, misleading)');
+    if(!reason) return;
+    const r = await fetch(CAREER_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'report-listing', jobId, reporterAddress: (typeof agentWalletAddr!=='undefined'?agentWalletAddr:null), reason})});
+    const d = await r.json();
+    alert(d.success ? 'Thanks — this listing has been reported and flagged for review.' : ('❌ ' + d.error));
   }
   function careerToggleApplyForm(jobId){
     if(!requireAgentWallet()) return;
@@ -1831,9 +1915,13 @@ html,body{background-color:var(--bg);}
     const d = await r.json();
     if(!d.success){ el.textContent = '❌ ' + d.error; return; }
     if(!d.applications.length){ el.innerHTML = `<div style="color:var(--text3);font-size:.8rem;">No applicants yet.</div>`; return; }
-    el.innerHTML = d.applications.map(a => `
-      <div style="border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px;background:var(--bg);">
-        <div style="font-size:.78rem;color:var(--text3);font-family:'Space Mono',monospace;">${a.applicantAddress.slice(0,10)}...</div>
+    el.innerHTML = `<div style="margin-bottom:10px;"><button onclick="careerMatchCandidates('${jobId}')" style="width:auto;padding:8px 16px;border-radius:8px;font-size:.78rem;font-weight:700;background:transparent;border:1px solid #7000ff;color:#7000ff;cursor:pointer;">✨ Find best candidates (AI match)</button><div id="careerMatchStatus_${jobId}" style="font-size:.74rem;color:var(--text3);margin-top:6px;"></div></div>` +
+      d.applications.map(a => `
+      <div id="careerApplicantRow_${a.id}" style="border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px;background:var(--bg);">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-size:.78rem;color:var(--text3);font-family:'Space Mono',monospace;">${a.applicantAddress.slice(0,10)}...</div>
+          <span id="careerMatchScore_${a.id}"></span>
+        </div>
         <div style="font-size:.82rem;color:var(--text);margin-top:6px;line-height:1.5;white-space:pre-wrap;max-height:120px;overflow-y:auto;">${(a.resumeText||'').slice(0,400)}${(a.resumeText||'').length>400?'...':''}</div>
         ${a.coverLetter ? `<div style="font-size:.76rem;color:var(--text2);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);"><b>Cover letter:</b> ${a.coverLetter.slice(0,300)}${a.coverLetter.length>300?'...':''}</div>` : ''}
         ${a.portfolioLinks && a.portfolioLinks.length ? `<div style="margin-top:6px;">${a.portfolioLinks.map(l=>`<a href="${l}" target="_blank" style="font-size:.76rem;color:var(--accent3);margin-right:10px;">${l}</a>`).join('')}</div>` : ''}
@@ -1846,6 +1934,23 @@ html,body{background-color:var(--bg);}
         </div>
         <div id="careerAppStatusMsg_${a.id}" style="font-size:.74rem;color:var(--text3);margin-top:6px;"></div>
       </div>`).join('');
+  }
+  async function careerMatchCandidates(jobId){
+    const statusEl = document.getElementById('careerMatchStatus_'+jobId);
+    statusEl.textContent = 'Scoring candidates with AI...';
+    try{
+      const d = await payAndCall(CAREER_API, {action:'match-candidates', jobId, employerAddress: agentWalletAddr}, '0.03');
+      statusEl.textContent = '✓ Matched — sorted by fit below.';
+      d.matches.forEach(m => {
+        const badge = document.getElementById('careerMatchScore_'+m.applicationId);
+        if (badge) badge.innerHTML = m.matchScore !== null ? `<span title="${(m.reason||'').replace(/"/g,'&quot;')}" style="font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:100px;background:rgba(112,0,255,.1);color:#7000ff;">${m.matchScore}% match</span>` : '';
+        const row = document.getElementById('careerApplicantRow_'+m.applicationId);
+        if (row && m.matchScore !== null) row.style.order = String(100 - m.matchScore);
+      });
+      const container = statusEl.closest('div').parentElement;
+      container.style.display = 'flex';
+      container.style.flexDirection = 'column';
+    }catch(err){ statusEl.textContent = '❌ ' + err.message; }
   }
   async function careerUpdateAppStatus(applicationId, jobId){
     const status = document.getElementById('careerAppStatus_'+applicationId).value;
@@ -1925,6 +2030,16 @@ html,body{background-color:var(--bg);}
           ${walletUrl ? `<a href="${walletUrl}" target="_blank" style="font-size:.7rem;color:#7000ff;text-decoration:underline;display:inline-block;margin-top:6px;">View agent wallet on Arc Explorer &#8599;</a>` : ''}
         </div>
       </div>`;
+  }
+  function careerExportCvPdf(){
+    const text = document.getElementById('careerCvText').value.trim();
+    if(!text){ alert('Add or generate CV text first.'); return; }
+    const w = window.open('', '_blank');
+    w.document.write(`<!DOCTYPE html><html><head><title>CV</title><style>
+      body{font-family:Georgia,serif;max-width:680px;margin:40px auto;padding:0 20px;line-height:1.6;color:#111;white-space:pre-wrap;font-size:14px;}
+    </style></head><body>${text.replace(/</g,'&lt;').replace(/\n/g,'<br>')}</body></html>`);
+    w.document.close();
+    setTimeout(() => w.print(), 300);
   }
   async function careerGenerateCv(){
     if(!requireAgentWallet()) return;
