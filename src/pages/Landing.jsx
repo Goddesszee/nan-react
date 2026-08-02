@@ -260,6 +260,96 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
         </div>
       </section>
 
+      {/* FEATURES */}
+      <section style={{ padding:'80px 24px', maxWidth:1180, margin:'0 auto' }}>
+        <div style={{ maxWidth:620, margin:'0 auto 48px', textAlign:'center' }}>
+          <div style={{ fontFamily:'Space Mono,monospace', fontSize:'.76rem', fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase', color:text3, marginBottom:14 }}>
+            Why NAN
+          </div>
+          <h2 style={{ fontFamily:'Space Grotesk,sans-serif', fontSize:'2.3rem', fontWeight:700, letterSpacing:'-.02em', lineHeight:1.15, color:text, margin:0 }}>
+            Everything an agent needs to transact
+          </h2>
+          <p style={{ color:text2, fontSize:'1.02rem', marginTop:14 }}>
+            One wallet that handles identity, limits, and settlement, so your agent can act without a human in the loop.
+          </p>
+        </div>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:24 }}>
+          {[
+            { n:'01', title:'Nanopayments', desc:'Send fractions of a cent between agents with x402, settled onchain in under a second.' },
+            { n:'02', title:'Spending limits', desc:'Set hard caps per agent, per task, or per counterparty. No surprise drains, ever.' },
+            { n:'03', title:'Agent identity', desc:'Every agent gets a verifiable onchain identity, so counterparties know exactly who they are paying.' },
+            { n:'04', title:'Escrow built in', desc:'Funds release only when both sides confirm the task is done. No trust required.' },
+            { n:'05', title:'Multi currency', desc:'Hold and swap USDC and EURC natively, with settlement in whichever your agent needs.' },
+            { n:'06', title:'Full audit trail', desc:'Every agent to agent transaction is logged and queryable. Nothing happens in the dark.' },
+          ].map((f, i) => (
+            <div key={i} style={{ background:card, border:`1px solid ${border}`, borderRadius:20, padding:'32px 28px' }}>
+              <div style={{ fontFamily:'Space Mono,monospace', fontSize:'.75rem', color:text3, marginBottom:18 }}>{f.n}</div>
+              <h4 style={{ fontSize:'1.15rem', fontWeight:700, marginBottom:10, color:text }}>{f.title}</h4>
+              <p style={{ fontSize:'.92rem', color:text2, lineHeight:1.6, margin:0 }}>{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* HOW IT WORKS */}
+      <section style={{ padding:'0 24px 80px', maxWidth:1180, margin:'0 auto' }}>
+        <div style={{ background:'#0a0a0a', borderRadius:28, padding:'70px 50px' }}>
+          <div style={{ maxWidth:620, margin:'0 auto 48px', textAlign:'center' }}>
+            <div style={{ fontFamily:'Space Mono,monospace', fontSize:'.76rem', fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase', color:accentL, marginBottom:14 }}>
+              How it works
+            </div>
+            <h2 style={{ fontFamily:'Space Grotesk,sans-serif', fontSize:'2.3rem', fontWeight:700, letterSpacing:'-.02em', lineHeight:1.15, color:'#fff', margin:0 }}>
+              From task to settlement, no human required
+            </h2>
+            <p style={{ color:'#b0b0b0', fontSize:'1.02rem', marginTop:14 }}>
+              Your agent handles the whole exchange. You just set the limits.
+            </p>
+          </div>
+          <div style={{ display:'flex', justifyContent:'space-between', gap:16, flexWrap:'wrap' }}>
+            {[
+              { n:'1', title:'Agent gets a wallet', desc:'Provisioned instantly, funded with a spending limit you set.' },
+              { n:'2', title:'Agent finds a service', desc:'It discovers another agent or API that can complete its task.' },
+              { n:'3', title:'Payment is quoted', desc:'The counterparty responds with a price via the x402 protocol.' },
+              { n:'4', title:'Funds settle instantly', desc:'Payment clears onchain, the task completes, and it is all logged.' },
+            ].map((s, i) => (
+              <div key={i} style={{ flex:1, minWidth:150 }}>
+                <div style={{ width:40, height:40, borderRadius:'50%', background:'rgba(255,255,255,.08)', border:'1px solid rgba(255,255,255,.18)', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'Space Mono,monospace', fontWeight:700, fontSize:'.9rem', marginBottom:16, color:accentL }}>
+                  {s.n}
+                </div>
+                <h5 style={{ fontSize:'.98rem', fontWeight:700, marginBottom:6, color:'#fff' }}>{s.title}</h5>
+                <p style={{ fontSize:'.82rem', color:'#b0b0b0', lineHeight:1.5, margin:0 }}>{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CLOSING CTA */}
+      <section style={{ textAlign:'center', padding:'100px 24px' }}>
+        <h2 style={{ fontFamily:'Space Grotesk,sans-serif', fontSize:'2.6rem', fontWeight:700, letterSpacing:'-.02em', marginBottom:16, color:text }}>
+          Let your agents handle it.
+        </h2>
+        <p style={{ color:text2, fontSize:'1.05rem', marginBottom:36 }}>
+          Set up a wallet in minutes. Your agent does the rest.
+        </p>
+        <button onClick={openConnect} style={{ background:accent, border:'none', color:'#fff', fontWeight:700, fontSize:'.98rem', padding:'16px 32px', borderRadius:100, cursor:'pointer', fontFamily:'Inter,sans-serif', boxShadow:'0 8px 30px rgba(112,0,255,.35)' }}>
+          Get started free
+        </button>
+      </section>
+
+      {/* FOOTER */}
+      <footer style={{ background:'#0a0a0a', color:'#b0b0b0', padding:'56px 24px 28px' }}>
+        <div style={{ maxWidth:1180, margin:'0 auto', display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:20 }}>
+          <div style={{ fontFamily:'Space Grotesk,sans-serif', fontSize:'1.1rem', fontWeight:700, color:'#fff' }}>NAN</div>
+          <div style={{ display:'flex', gap:28, fontSize:'.85rem' }}>
+            <a href="#" style={{ color:'#b0b0b0' }}>Docs</a>
+            <a href="#" style={{ color:'#b0b0b0' }}>GitHub</a>
+            <a href="#" style={{ color:'#b0b0b0' }}>Twitter</a>
+          </div>
+          <div style={{ fontSize:'.78rem' }}>© 2026 NAN. Built on Arc Testnet.</div>
+        </div>
+      </footer>
+
       <style>{`@keyframes pulseDot{0%,100%{opacity:.4}50%{opacity:1}} @keyframes tickerScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}`}</style>
     </div>
   )
