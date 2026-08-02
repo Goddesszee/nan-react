@@ -293,15 +293,15 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
 
       {/* HOW IT WORKS */}
       <section style={{ padding:'0 24px 80px', maxWidth:1180, margin:'0 auto' }}>
-        <div style={{ background:'#0a0a0a', borderRadius:28, padding:'70px 50px' }}>
+        <div style={{ background:card, border:`1px solid ${border}`, borderRadius:28, padding:'70px 50px' }}>
           <div style={{ maxWidth:620, margin:'0 auto 48px', textAlign:'center' }}>
             <div style={{ fontFamily:'Space Mono,monospace', fontSize:'.76rem', fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase', color:accentL, marginBottom:14 }}>
               How it works
             </div>
-            <h2 style={{ fontFamily:'Space Grotesk,sans-serif', fontSize:'2.3rem', fontWeight:700, letterSpacing:'-.02em', lineHeight:1.15, color:'#fff', margin:0 }}>
+            <h2 style={{ fontFamily:'Space Grotesk,sans-serif', fontSize:'2.3rem', fontWeight:700, letterSpacing:'-.02em', lineHeight:1.15, color:text, margin:0 }}>
               From task to settlement, no human required
             </h2>
-            <p style={{ color:'#b0b0b0', fontSize:'1.02rem', marginTop:14 }}>
+            <p style={{ color:text2, fontSize:'1.02rem', marginTop:14 }}>
               Your agent handles the whole exchange. You just set the limits.
             </p>
           </div>
@@ -313,11 +313,11 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
               { n:'4', title:'Funds settle instantly', desc:'Payment clears onchain, the task completes, and it is all logged.' },
             ].map((s, i) => (
               <div key={i} style={{ flex:1, minWidth:150 }}>
-                <div style={{ width:40, height:40, borderRadius:'50%', background:'rgba(255,255,255,.08)', border:'1px solid rgba(255,255,255,.18)', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'Space Mono,monospace', fontWeight:700, fontSize:'.9rem', marginBottom:16, color:accentL }}>
+                <div style={{ width:40, height:40, borderRadius:'50%', background:inputBg2, border:`1px solid ${border2}`, display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'Space Mono,monospace', fontWeight:700, fontSize:'.9rem', marginBottom:16, color:accentL }}>
                   {s.n}
                 </div>
-                <h5 style={{ fontSize:'.98rem', fontWeight:700, marginBottom:6, color:'#fff' }}>{s.title}</h5>
-                <p style={{ fontSize:'.82rem', color:'#b0b0b0', lineHeight:1.5, margin:0 }}>{s.desc}</p>
+                <h5 style={{ fontSize:'.98rem', fontWeight:700, marginBottom:6, color:text }}>{s.title}</h5>
+                <p style={{ fontSize:'.82rem', color:text2, lineHeight:1.5, margin:0 }}>{s.desc}</p>
               </div>
             ))}
           </div>
