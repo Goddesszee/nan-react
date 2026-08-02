@@ -4823,8 +4823,11 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
      overlapping the brand logo. Force it to the right explicitly. ── */
   /* Previously forced margin-left:auto here to avoid overlapping the mobile
      logo. Logo is now hidden entirely, so removed — the pill naturally sits
-     left now, which is what's wanted. */
-  #globalTopBar > div:last-of-type { margin-left: 0 !important; }
+     left now, which is what's wanted. Scoped to mobile only — this was
+     leaking globally before and canceling the desktop right-alignment fix. */
+  @media(max-width:767px){
+    #globalTopBar > div:last-of-type { margin-left: 0 !important; }
+  }
   /* ── Fix: a claimed arc name (e.g. "zarafatolu.arc") is much longer than
      the default "Agent Wallet" label, making the pill wide enough to
      overlap the logo on narrow screens. Truncate with ellipsis instead. ── */
