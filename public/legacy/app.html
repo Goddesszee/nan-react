@@ -1613,17 +1613,21 @@ html,body{background-color:var(--bg);}
       const r = await fetch(CAREER_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'job-list'})});
       const d = await r.json();
       if(!d.success) throw new Error(d.error || 'Failed to load jobs');
-      if(!d.jobs.length){ el.innerHTML = '<div style="color:var(--text3);font-size:.85rem;">No jobs posted yet.</div>'; return; }
+      if(!d.jobs.length){ el.innerHTML = `<div style="text-align:center;padding:56px 24px;border:2px dashed var(--border);border-radius:16px;color:var(--text3);">No jobs posted yet.</div>`; return; }
+      el.style.display = 'grid';
+      el.style.gridTemplateColumns = 'repeat(auto-fill, minmax(260px, 1fr))';
+      el.style.gap = '16px';
       el.innerHTML = d.jobs.map(j => `
-        <div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;">
-          <div style="display:flex;justify-content:space-between;align-items:start;">
-            <div style="font-weight:700;color:var(--text);">${j.title}</div>
-            <div style="font-weight:700;color:#c084fc;white-space:nowrap;margin-left:8px;">${j.salary} ${j.currency}</div>
+        <div style="border:1px solid var(--border);border-radius:16px;padding:18px 20px;background:var(--card);">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+            <div style="font-weight:700;color:var(--text);font-size:.95rem;">${j.title}</div>
           </div>
-          <div style="font-size:.8rem;color:var(--text2);margin-top:6px;">${j.description||''}</div>
-          <div style="font-size:.75rem;color:var(--text3);margin-top:6px;">${j.remoteOnly?'Remote':(j.location||'Location unspecified')}${j.includeWeb3?' &middot; Web3 role':''}</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#7000ff;font-size:1rem;margin-top:8px;">${j.salary} ${j.currency}</div>
+          <span style="display:inline-flex;font-size:.66rem;font-weight:700;padding:3px 9px;border-radius:100px;background:rgba(112,0,255,.1);color:#7000ff;margin-top:6px;">Community Listing</span>
+          <div style="font-size:.82rem;color:var(--text2);margin:10px 0;line-height:1.5;">${j.description||''}</div>
+          <div style="font-size:.74rem;color:var(--text3);border-top:1px solid var(--border);padding-top:10px;">${j.remoteOnly?'📍 Remote':(j.location?'📍 '+j.location:'Location unspecified')}${j.includeWeb3?' · Web3 role':''}</div>
         </div>`).join('');
-    }catch(err){ el.textContent = '❌ ' + err.message; }
+    }catch(err){ el.style.display = 'block'; el.textContent = '❌ ' + err.message; }
   }
   async function careerDebugAllJobs(){
     const el = document.getElementById('careerJobDebugResults');
@@ -1646,7 +1650,7 @@ html,body{background-color:var(--bg);}
       const d = await r.json();
       if(!d.success) throw new Error(d.error || 'Failed to load jobs');
       if(!d.jobs.length){
-        el.innerHTML = `<div style="color:var(--text3);font-size:.85rem;">You haven't posted any jobs yet.</div>
+        el.innerHTML = `<div style="text-align:center;padding:56px 24px;border:2px dashed var(--border);border-radius:16px;color:var(--text3);">You haven't posted any jobs yet.</div>
           <div style="margin-top:16px;padding:10px;border:1px dashed var(--border);border-radius:8px;font-size:.72rem;color:var(--text3);word-break:break-all;">
             Debug: queried with employerAddress <b>${wallet}</b>.
             <div style="margin-top:6px;"><button onclick="careerDebugAllJobs()" style="padding:6px 12px;border-radius:6px;font-size:.72rem;background:#7000FF;color:#fff;border:none;">Show ALL jobs in system (debug)</button></div>
@@ -1655,16 +1659,17 @@ html,body{background-color:var(--bg);}
         return;
       }
       el.innerHTML = d.jobs.map(j => `
-        <div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;">
-          <div style="display:flex;justify-content:space-between;align-items:start;">
-            <div style="font-weight:700;color:var(--text);">${j.title}</div>
-            <div style="font-weight:700;color:#c084fc;white-space:nowrap;margin-left:8px;">${j.salary} ${j.currency}</div>
+        <div style="border:1px solid var(--border);border-radius:16px;padding:18px 20px;margin-bottom:12px;background:var(--card);">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+            <div style="font-weight:700;color:var(--text);font-size:.95rem;">${j.title}</div>
+            <span style="font-size:.68rem;font-weight:700;padding:4px 10px;border-radius:100px;background:${j.status==='open'?'rgba(22,163,74,.1)':'rgba(0,0,0,.06)'};color:${j.status==='open'?'#16a34a':'var(--text3)'};white-space:nowrap;">${j.status}</span>
           </div>
-          <div style="font-size:.8rem;color:var(--text2);margin-top:6px;">${j.description||''}</div>
-          <div style="font-size:.75rem;color:var(--text3);margin-top:6px;">${j.remoteOnly?'Remote':(j.location||'Location unspecified')}${j.includeWeb3?' &middot; Web3 role':''} &middot; ${j.status}</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
-            <button onclick="careerToggleEditForm('${j.id}')" style="width:auto;padding:8px 16px;border-radius:8px;font-weight:700;font-size:12px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;">Edit</button>
-            <button onclick="careerDeleteJob('${j.id}')" style="width:auto;padding:8px 16px;border-radius:8px;font-weight:700;font-size:12px;background:transparent;border:1px solid rgba(226,75,74,.4);color:#e24b4a;cursor:pointer;">Delete</button>
+          <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#7000ff;font-size:1rem;margin-top:8px;">${j.salary} ${j.currency}</div>
+          <div style="font-size:.82rem;color:var(--text2);margin:10px 0;line-height:1.5;">${j.description||''}</div>
+          <div style="font-size:.74rem;color:var(--text3);">${j.remoteOnly?'📍 Remote':(j.location?'📍 '+j.location:'Location unspecified')}${j.includeWeb3?' · Web3 role':''}</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);">
+            <button onclick="careerToggleEditForm('${j.id}')" style="width:auto;padding:9px 16px;border-radius:8px;font-weight:700;font-size:12px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;">Edit</button>
+            <button onclick="careerDeleteJob('${j.id}')" style="width:auto;padding:9px 16px;border-radius:8px;font-weight:700;font-size:12px;background:transparent;border:1px solid rgba(226,75,74,.4);color:#e24b4a;cursor:pointer;">Delete</button>
           </div>
           <div id="careerEditForm_${j.id}" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
             <input id="careerEditTitle_${j.id}" value="${(j.title||'').replace(/"/g,'&quot;')}" placeholder="Title" style="width:100%;max-width:400px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
@@ -1809,21 +1814,21 @@ html,body{background-color:var(--bg);}
         document.getElementById('careerResults').innerHTML = '<div style="color:var(--text3);font-size:.85rem;">No matches came back. Try widening location or skills.</div>';
       } else {
         document.getElementById('careerResults').innerHTML = jobs.map((j,i) => `
-          <div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;">
-            <div style="display:flex;justify-content:space-between;align-items:start;">
+          <div style="border:1px solid var(--border);border-radius:16px;padding:18px 20px;margin-bottom:12px;background:var(--card);">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
               <div>
-                <div style="font-weight:700;color:var(--text);">${j.title||''}</div>
-                <div style="font-size:.8rem;color:var(--text2);">${j.company||''} &middot; ${j.location||''}</div>
-                ${j.employerPosted ? `<div style="font-size:.78rem;font-weight:700;color:#c084fc;margin-top:2px;">${j.salary} ${j.currency}</div>` : ''}
+                <div style="font-weight:700;color:var(--text);font-size:.95rem;">${j.title||''}</div>
+                <div style="font-size:.82rem;color:var(--text2);margin-top:2px;">${j.company||''} · ${j.location||''}</div>
+                ${j.employerPosted ? `<div style="font-family:'Space Grotesk',sans-serif;font-size:.9rem;font-weight:700;color:#7000ff;margin-top:6px;">${j.salary} ${j.currency}</div>` : ''}
               </div>
-              <div style="font-size:.75rem;font-weight:700;color:#c084fc;background:rgba(112,0,255,.1);border-radius:8px;padding:4px 8px;white-space:nowrap;">${j.matchScore||'--'}%</div>
+              <div style="font-family:'Space Grotesk',sans-serif;font-size:.85rem;font-weight:700;color:#7000ff;background:rgba(112,0,255,.1);border-radius:100px;padding:5px 12px;white-space:nowrap;">${j.matchScore||'--'}% match</div>
             </div>
-            <div style="font-size:.8rem;color:var(--text2);margin-top:8px;">${j.reason||''}</div>
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;gap:8px;">
-              <span style="font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:6px;${j.employerPosted ? 'background:rgba(34,197,94,.12);color:#22c55e;' : j.verified ? 'background:rgba(112,0,255,.1);color:#7000ff;' : 'background:rgba(168,85,247,.1);color:#a855f7;'}">${j.employerPosted ? '✓ Referred — posted on NAN' : j.verified ? '✓ Verified listing' : 'AI-found — verify before applying'}</span>
-              <span style="display:flex;gap:10px;align-items:center;">
+            <div style="font-size:.84rem;color:var(--text2);margin-top:10px;line-height:1.5;">${j.reason||''}</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);gap:8px;flex-wrap:wrap;">
+              <span style="font-size:.7rem;font-weight:700;padding:4px 10px;border-radius:100px;${j.employerPosted ? 'background:rgba(34,197,94,.12);color:#16a34a;' : j.verified ? 'background:rgba(112,0,255,.1);color:#7000ff;' : 'background:rgba(217,119,6,.1);color:#d97706;'}">${j.employerPosted ? '✓ Community Listing' : j.verified ? '✓ Verified Employer' : '⚠ Unverified, confirm before applying'}</span>
+              <span style="display:flex;gap:12px;align-items:center;">
                 ${!j.employerPosted ? `<span onclick="careerShowCompanyProfile(${i},'${(j.company||'').replace(/'/g,"\\'")}','${(j.title||'').replace(/'/g,"\\'")}')" style="font-size:.78rem;color:var(--text3);cursor:pointer;text-decoration:underline;">Company profile</span>` : ''}
-                ${j.url ? `<a href="${j.url}" target="_blank" style="font-size:.78rem;color:var(--accent3);">View listing &rarr;</a>` : ''}
+                ${j.url ? `<a href="${j.url}" target="_blank" style="font-size:.78rem;color:var(--accent3);font-weight:700;">View listing →</a>` : ''}
               </span>
             </div>
             <div id="companyProfile${i}" style="display:none;margin-top:10px;padding-top:10px;border-top:0.5px solid var(--border);font-size:.78rem;color:var(--text2);"></div>
