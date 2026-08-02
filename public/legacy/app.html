@@ -4033,7 +4033,19 @@ function navToggleAgentWalletMenu(e, pillEl){
   navMenu.style.left = 'auto';
   navMenu.style.right = (window.innerWidth - r.right) + 'px';
   navMenu.style.transform = 'none';
+  navMenu.style.maxWidth = 'calc(100vw - 24px)';
+  navMenu.style.boxSizing = 'border-box';
   navMenu.style.display = 'block';
+  // Self-correct if the menu still overflows off the left edge (e.g. on
+  // narrow phones where the pill sits close to the right edge) — measure
+  // the actual rendered position after paint and re-anchor if needed.
+  requestAnimationFrame(function(){
+    var rect = navMenu.getBoundingClientRect();
+    if (rect.left < 12) {
+      navMenu.style.left = '12px';
+      navMenu.style.right = 'auto';
+    }
+  });
 }
 function navAgentWalletCopy(){
   if (typeof agentWalletAddr === 'undefined' || !agentWalletAddr) return;
