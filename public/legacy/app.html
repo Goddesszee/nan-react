@@ -2375,7 +2375,7 @@ html,body{background-color:var(--bg);}
     </style>
     <div style="padding:20px;width:100%;box-sizing:border-box;">
       <div style="font-size:1rem;font-weight:700;color:#7000ff;margin-bottom:4px;">Gigs</div>
-      <div style="font-size:.82rem;color:var(--text2);margin-bottom:14px;">Post a task with your budget. Freelancers submit work with their own price. Review, edit the amount if needed, and accept — payment fires instantly, on-chain, straight from your Agent Wallet.</div>
+      <div style="font-size:.82rem;color:var(--text2);margin-bottom:14px;">Post a task with your budget, or browse tasks posted by others. Freelancers submit work with their own price, you review and accept, payment fires instantly, on-chain, straight from your Agent Wallet.</div>
 
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
         <button id="gigSubBrowse" class="tnav-btn nan-feat-card" onclick="gigSwitchSubTab('browse')" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:28px 24px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);height:auto;min-height:240px;cursor:pointer;box-sizing:border-box;overflow:hidden;">
@@ -2401,7 +2401,14 @@ html,body{background-color:var(--bg);}
       </div>
 
       <div id="gigBrowsePane">
-        <div style="border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:14px;max-width:640px;">
+        <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center;">
+          <input id="gigSearchInput" oninput="gigRenderTaskList()" placeholder="Search tasks by title or description..." style="flex:1;min-width:220px;padding:11px 14px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+          <div style="display:flex;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:100px;padding:4px;">
+            <button id="gigSortNewest" onclick="gigSetSort('newest')" style="padding:7px 14px;border-radius:100px;font-size:.78rem;font-weight:700;border:none;background:#7000ff;color:#fff;cursor:pointer;">Newest</button>
+            <button id="gigSortBudget" onclick="gigSetSort('budget')" style="padding:7px 14px;border-radius:100px;font-size:.78rem;font-weight:700;border:none;background:transparent;color:var(--text2);cursor:pointer;">Highest paying</button>
+          </div>
+        </div>
+        <div style="border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:16px;max-width:640px;">
           <div style="font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:8px;">Get emailed when a matching task is posted</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <input id="gigWatchKeyword" placeholder="Keyword, e.g. logo" style="flex:1;min-width:120px;padding:9px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.82rem;"/>
@@ -2414,6 +2421,10 @@ html,body{background-color:var(--bg);}
       </div>
 
       <div id="gigPostPane" style="display:none;">
+        <div style="max-width:640px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 18px;margin-bottom:18px;display:flex;gap:12px;align-items:flex-start;">
+          <div style="width:34px;height:34px;border-radius:10px;background:rgba(112,0,255,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#7000ff;font-weight:700;font-size:.85rem;">i</div>
+          <div style="font-size:.82rem;color:var(--text2);line-height:1.6;">Posting is free. Freelancers submit their own price, and when you accept one, payment fires instantly on-chain, straight from your Agent Wallet, no separate funding step needed.</div>
+        </div>
         <input id="gigNewTitle" placeholder="What do you need? e.g. Logo design" style="width:100%;max-width:640px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
         <textarea id="gigNewDesc" placeholder="Describe what you need" style="width:100%;max-width:640px;min-height:80px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;font-family:inherit;"></textarea>
         <input id="gigNewBudget" type="text" inputmode="decimal" placeholder="Budget (USDC)" style="width:100%;max-width:640px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
@@ -2424,10 +2435,12 @@ html,body{background-color:var(--bg);}
       </div>
 
       <div id="gigMyTasksPane" style="display:none;">
+        <div id="gigMyTasksStats" style="display:none;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;max-width:640px;"></div>
         <div id="gigMyTasksResults" style="font-size:.85rem;color:var(--text3);">Loading your tasks...</div>
       </div>
 
       <div id="gigMySubsPane" style="display:none;">
+        <div id="gigMySubsStats" style="display:none;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;max-width:640px;"></div>
         <div id="gigMySubsResults" style="font-size:.85rem;color:var(--text3);">Loading your submissions...</div>
       </div>
     </div>
@@ -2514,21 +2527,51 @@ html,body{background-color:var(--bg);}
     document.getElementById('gigWatchKeyword').value = document.getElementById('gigWatchEmail').value = '';
     statusEl.textContent = `✓ You'll be emailed when a task matching "${keyword}" is posted.`;
   }
+  let gigTasksCache = [];
+  let gigSortMode = 'newest';
+  function gigSetSort(mode){
+    gigSortMode = mode;
+    document.getElementById('gigSortNewest').style.background = mode==='newest' ? '#7000ff' : 'transparent';
+    document.getElementById('gigSortNewest').style.color = mode==='newest' ? '#fff' : 'var(--text2)';
+    document.getElementById('gigSortBudget').style.background = mode==='budget' ? '#7000ff' : 'transparent';
+    document.getElementById('gigSortBudget').style.color = mode==='budget' ? '#fff' : 'var(--text2)';
+    gigRenderTaskList();
+  }
   async function gigLoadTasks(){
     const el = document.getElementById('gigBrowseResults');
     el.textContent = 'Loading tasks...';
     const d = await gigCall('task-list', {});
     if(!d.success){ el.textContent = '❌ ' + d.error; return; }
-    if(!d.tasks.length){ el.innerHTML = '<div style="color:var(--text3);font-size:.85rem;">No open tasks right now.</div>'; return; }
-    el.innerHTML = d.tasks.map(t => `
-      <div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;">
-        <div style="display:flex;justify-content:space-between;align-items:start;">
-          <div style="font-weight:700;color:var(--text);">${t.title}</div>
-          <div style="font-weight:700;color:#7000ff;white-space:nowrap;margin-left:8px;">$${t.budget}${t.negotiable ? ' (negotiable)' : ''}</div>
+    gigTasksCache = d.tasks || [];
+    gigRenderTaskList();
+  }
+  function gigRenderTaskList(){
+    const el = document.getElementById('gigBrowseResults');
+    const q = (document.getElementById('gigSearchInput')?.value || '').trim().toLowerCase();
+    let list = gigTasksCache.filter(t => !q || (t.title||'').toLowerCase().includes(q) || (t.description||'').toLowerCase().includes(q));
+    if (gigSortMode === 'budget') {
+      list = list.slice().sort((a,b) => (parseFloat(b.budget)||0) - (parseFloat(a.budget)||0));
+    } else {
+      list = list.slice().reverse();
+    }
+    if(!list.length){
+      el.innerHTML = q
+        ? `<div style="text-align:center;padding:40px 20px;border:2px dashed var(--border);border-radius:16px;color:var(--text3);">No tasks match "${q}".</div>`
+        : `<div style="text-align:center;padding:40px 20px;border:2px dashed var(--border);border-radius:16px;color:var(--text3);">No open tasks right now — check back soon, or post one yourself.</div>`;
+      return;
+    }
+    el.innerHTML = list.map(t => `
+      <div style="border:1px solid var(--border);border-radius:16px;padding:18px 20px;margin-bottom:12px;background:var(--card);transition:border-color .2s;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+          <div style="font-weight:700;color:var(--text);font-size:.98rem;">${t.title}</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#7000ff;white-space:nowrap;font-size:1.05rem;">$${t.budget}${t.negotiable ? '<span style="font-size:.7rem;color:var(--text3);font-weight:500;"> (negotiable)</span>' : ''}</div>
         </div>
-        <div style="font-size:.8rem;color:var(--text2);margin-top:6px;">${t.description||''}</div>
-        <button class="btn" onclick="gigToggleSubmitForm('${t.id}')" style="width:auto;padding:9px 20px;border-radius:10px;font-weight:700;margin-top:10px;font-size:13px;">Submit work</button>
-        <div id="gigSubmitForm_${t.id}" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
+        <div style="font-size:.84rem;color:var(--text2);margin-top:8px;line-height:1.5;">${t.description||''}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);">
+          <div style="font-size:.74rem;color:var(--text3);">Posted by ${(t.requesterAddress||'').slice(0,6)}...${(t.requesterAddress||'').slice(-4)}</div>
+          <button class="btn" onclick="gigToggleSubmitForm('${t.id}')" style="width:auto;padding:9px 18px;border-radius:10px;font-weight:700;font-size:13px;">Submit work</button>
+        </div>
+        <div id="gigSubmitForm_${t.id}" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
           <textarea id="gigSubDesc_${t.id}" placeholder="Describe your submission" style="width:100%;max-width:640px;min-height:60px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;font-family:inherit;"></textarea>
           <input type="file" id="gigSubPhotoInput_${t.id}" accept="image/*" style="display:none;" onchange="gigHandleSubPhoto('${t.id}', event)"/>
           <div onclick="document.getElementById('gigSubPhotoInput_${t.id}').click()" style="width:100%;max-width:640px;border:1px dashed var(--border2);border-radius:12px;padding:14px;text-align:center;cursor:pointer;margin-bottom:8px;color:var(--text3);font-size:.8rem;box-sizing:border-box;">Click to upload a photo of your work (optional)</div>
@@ -2576,12 +2619,14 @@ html,body{background-color:var(--bg);}
   async function gigLoadMyTasks(){
     const wallet = gigMyWalletAddress();
     const el = document.getElementById('gigMyTasksResults');
-    if(!wallet){ el.textContent = 'Connect your wallet to see your posted tasks.'; return; }
+    const statsEl = document.getElementById('gigMyTasksStats');
+    if(!wallet){ el.textContent = 'Connect your wallet to see your posted tasks.'; statsEl.style.display = 'none'; return; }
     el.textContent = 'Loading your tasks...';
     const d = await gigCall('my-tasks', { requesterAddress: wallet });
-    if(!d.success){ el.textContent = '❌ ' + d.error; return; }
+    if(!d.success){ el.textContent = '❌ ' + d.error; statsEl.style.display = 'none'; return; }
     if(!d.tasks.length){
-      el.innerHTML = `<div style="color:var(--text3);font-size:.85rem;">You haven't posted any tasks yet.</div>
+      statsEl.style.display = 'none';
+      el.innerHTML = `<div style="text-align:center;padding:40px 20px;border:2px dashed var(--border);border-radius:16px;color:var(--text3);">You haven't posted any tasks yet.</div>
         <div style="margin-top:16px;padding:10px;border:1px dashed var(--border);border-radius:8px;font-size:.72rem;color:var(--text3);word-break:break-all;">
           Debug: queried with wallet <b>${wallet}</b>.
           <div style="margin-top:6px;"><button onclick="gigDebugAllTasks()" style="padding:6px 12px;border-radius:6px;font-size:.72rem;background:#7000FF;color:#fff;border:none;">Show ALL tasks in system (debug)</button></div>
@@ -2589,16 +2634,23 @@ html,body{background-color:var(--bg);}
         </div>`;
       return;
     }
+    const activeCount = d.tasks.filter(t => t.status === 'open').length;
+    const completedCount = d.tasks.length - activeCount;
+    statsEl.style.display = 'grid';
+    statsEl.innerHTML = `
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;"><div style="font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;">Active</div><div style="font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:700;margin-top:4px;">${activeCount}</div></div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;"><div style="font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;">Completed</div><div style="font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:700;margin-top:4px;">${completedCount}</div></div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;"><div style="font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;">Total posted</div><div style="font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:700;margin-top:4px;">${d.tasks.length}</div></div>`;
     el.innerHTML = d.tasks.map(t => `
-      <div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;">
-        <div style="display:flex;justify-content:space-between;align-items:start;">
-          <div style="font-weight:700;color:var(--text);">${t.title}</div>
-          <span style="font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:6px;background:rgba(112,0,255,.1);color:#7000ff;white-space:nowrap;margin-left:8px;">${t.status}</span>
+      <div style="border:1px solid var(--border);border-radius:16px;padding:18px 20px;margin-bottom:12px;background:var(--card);">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+          <div style="font-weight:700;color:var(--text);font-size:.98rem;">${t.title}</div>
+          <span style="font-size:.7rem;font-weight:700;padding:4px 10px;border-radius:100px;background:${t.status==='open' ? 'rgba(22,163,74,.1)' : 'rgba(0,0,0,.06)'};color:${t.status==='open' ? '#16a34a' : 'var(--text3)'};white-space:nowrap;">${t.status==='open' ? 'Open' : 'Completed'}</span>
         </div>
-        <div style="font-size:.8rem;color:var(--text2);margin-top:4px;">Budget: $${t.budget}${t.negotiable ? ' (negotiable)' : ''}</div>
+        <div style="font-size:.84rem;color:var(--text2);margin-top:8px;">Budget: <b style="color:#7000ff;">$${t.budget}</b>${t.negotiable ? ' (negotiable)' : ''}</div>
         ${t.status === 'open' ? `
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
-            <button class="btn" onclick="gigToggleSubmissions('${t.id}','${(t.title||'').replace(/'/g,"\\'")}')" style="width:auto;padding:9px 20px;border-radius:10px;font-weight:700;font-size:13px;">View submissions</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);">
+            <button class="btn" onclick="gigToggleSubmissions('${t.id}','${(t.title||'').replace(/'/g,"\\'")}')" style="width:auto;padding:9px 18px;border-radius:10px;font-weight:700;font-size:13px;">View submissions</button>
             <button onclick="gigToggleEditForm('${t.id}')" style="width:auto;padding:9px 16px;border-radius:10px;font-weight:700;font-size:13px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;">Edit</button>
             <button onclick="gigDeleteTask('${t.id}')" style="width:auto;padding:9px 16px;border-radius:10px;font-weight:700;font-size:13px;background:transparent;border:1px solid rgba(226,75,74,.4);color:#e24b4a;cursor:pointer;">Delete</button>
           </div>
@@ -2610,7 +2662,7 @@ html,body{background-color:var(--bg);}
               <button onclick="gigToggleEditForm('${t.id}')" style="width:auto;padding:8px 18px;border-radius:8px;font-weight:700;font-size:13px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;">Cancel</button>
             </div>
             <div id="gigEditStatus_${t.id}" style="font-size:.75rem;color:var(--text3);margin-top:6px;"></div>
-          </div>` : `<div style="font-size:.78rem;color:var(--text3);margin-top:8px;">Completed — paid submission #${(t.acceptedSubmissionId||'').slice(-6)}</div>`}
+          </div>` : `<div style="font-size:.78rem;color:var(--text3);margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">Paid out, submission #${(t.acceptedSubmissionId||'').slice(-6)}</div>`}
         <div id="gigSubsList_${t.id}" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);"></div>
       </div>`).join('');
   }
@@ -2652,25 +2704,28 @@ html,body{background-color:var(--bg);}
     el.textContent = 'Loading submissions...';
     const d = await gigCall('submission-list', { taskId });
     if(!d.success){ el.textContent = '❌ ' + d.error; return; }
-    if(!d.submissions.length){ el.innerHTML = '<div style="color:var(--text3);font-size:.8rem;">No submissions yet.</div>'; return; }
+    if(!d.submissions.length){ el.innerHTML = '<div style="color:var(--text3);font-size:.8rem;padding:14px;text-align:center;border:1px dashed var(--border);border-radius:12px;">No submissions yet.</div>'; return; }
     el.innerHTML = d.submissions.map(s => `
-      <div style="border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:8px;">
-        <div style="font-size:.78rem;color:var(--text3);">${s.freelancerAddress.slice(0,10)}...</div>
-        <div style="font-size:.82rem;color:var(--text);margin-top:4px;">${s.description}</div>
+      <div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;background:var(--bg);">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-size:.76rem;color:var(--text3);font-family:'Space Mono',monospace;">${s.freelancerAddress.slice(0,10)}...</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#7000ff;font-size:.92rem;">$${s.proposedPrice}</div>
+        </div>
+        <div style="font-size:.85rem;color:var(--text);margin-top:6px;line-height:1.5;">${s.description}</div>
         ${s.fileUrl ? (s.fileUrl.startsWith('http') ? `<a href="${s.fileUrl}" target="_blank" style="font-size:.78rem;color:var(--accent3);">View work &rarr;</a>` : `<img src="${s.fileUrl}" style="max-width:120px;border-radius:8px;margin-top:6px;"/>`) : ''}
         ${s.status === 'pending' ? `
-          <div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap;">
-            <input id="gigFinalAmt_${s.id}" type="text" inputmode="decimal" value="${s.proposedPrice}" style="width:100px;padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.82rem;font-weight:700;"/>
-            <select id="gigCurrency_${s.id}" style="padding:8px 8px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.8rem;font-weight:700;">
+          <div style="display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap;padding-top:10px;border-top:1px solid var(--border);">
+            <input id="gigFinalAmt_${s.id}" type="text" inputmode="decimal" value="${s.proposedPrice}" style="width:100px;padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);box-sizing:border-box;font-size:.82rem;font-weight:700;"/>
+            <select id="gigCurrency_${s.id}" style="padding:8px 8px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:.8rem;font-weight:700;">
               <option value="USDC">USDC</option>
               <option value="EURC">EURC</option>
             </select>
             <button class="btn" onclick="gigAcceptSubmission('${s.id}','${taskId}')" style="width:auto;padding:8px 18px;border-radius:8px;font-weight:700;font-size:12px;">Accept &amp; Pay</button>
           </div>
           <div id="gigAcceptStatus_${s.id}" style="font-size:.75rem;color:var(--text3);margin-top:6px;"></div>` :
-          s.status === 'accepted' ? `<div style="font-size:.75rem;font-weight:700;color:#22c55e;margin-top:8px;">✓ Accepted — paid $${s.finalAmount} ${s.currency||'USDC'}</div>
+          s.status === 'accepted' ? `<div style="font-size:.78rem;font-weight:700;color:#16a34a;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">✓ Accepted, paid $${s.finalAmount} ${s.currency||'USDC'}</div>
           <button onclick="gigGenerateReceipt('${(taskTitle||'').replace(/'/g,"\\'")}','${s.finalAmount}','${s.txHash||''}','${s.freelancerAddress}','paid_by_me','${s.currency||'USDC'}')" style="width:auto;padding:6px 14px;border-radius:8px;font-weight:700;font-size:11px;margin-top:6px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;">Generate receipt</button>` :
-          `<div style="font-size:.75rem;color:var(--text3);margin-top:8px;">Not selected</div>`}
+          `<div style="font-size:.78rem;color:var(--text3);margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">Not selected</div>`}
       </div>`).join('');
   }
   async function gigAcceptSubmission(submissionId, taskId){
@@ -2695,19 +2750,30 @@ html,body{background-color:var(--bg);}
   async function gigLoadMySubmissions(){
     const wallet = gigMyWalletAddress();
     const el = document.getElementById('gigMySubsResults');
-    if(!wallet){ el.textContent = 'Connect your wallet to see your submissions.'; return; }
+    const statsEl = document.getElementById('gigMySubsStats');
+    if(!wallet){ el.textContent = 'Connect your wallet to see your submissions.'; statsEl.style.display = 'none'; return; }
     el.textContent = 'Loading your submissions...';
     const d = await gigCall('my-submissions', { freelancerAddress: wallet });
-    if(!d.success){ el.textContent = '❌ ' + d.error; return; }
-    if(!d.submissions.length){ el.innerHTML = '<div style="color:var(--text3);font-size:.85rem;">You haven\'t submitted work to any tasks yet.</div>'; return; }
+    if(!d.success){ el.textContent = '❌ ' + d.error; statsEl.style.display = 'none'; return; }
+    if(!d.submissions.length){ statsEl.style.display = 'none'; el.innerHTML = '<div style="text-align:center;padding:40px 20px;border:2px dashed var(--border);border-radius:16px;color:var(--text3);">You haven\'t submitted work to any tasks yet.</div>'; return; }
+    const pendingCount = d.submissions.filter(s => s.status === 'pending').length;
+    const acceptedSubs = d.submissions.filter(s => s.status === 'accepted');
+    const totalEarned = acceptedSubs.reduce((sum, s) => sum + (parseFloat(s.finalAmount) || 0), 0);
+    statsEl.style.display = 'grid';
+    statsEl.innerHTML = `
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;"><div style="font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;">Awaiting review</div><div style="font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:700;margin-top:4px;">${pendingCount}</div></div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;"><div style="font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;">Accepted</div><div style="font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:700;margin-top:4px;">${acceptedSubs.length}</div></div>
+      <div style="background:rgba(112,0,255,.06);border:1px solid rgba(112,0,255,.2);border-radius:14px;padding:14px 16px;"><div style="font-size:.7rem;color:#7000ff;text-transform:uppercase;letter-spacing:.05em;">Total earned</div><div style="font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:700;margin-top:4px;color:#7000ff;">$${totalEarned.toFixed(2)}</div></div>`;
     el.innerHTML = d.submissions.map(s => `
-      <div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;">
-        <div style="font-size:.82rem;color:var(--text);">${s.description}</div>
-        <div style="font-size:.78rem;color:var(--text3);margin-top:4px;">Proposed: $${s.proposedPrice}</div>
-        ${s.status === 'accepted' ? `<div style="font-size:.78rem;font-weight:700;color:#22c55e;margin-top:6px;">✓ Accepted — paid $${s.finalAmount} ${s.currency||'USDC'}</div>
+      <div style="border:1px solid var(--border);border-radius:16px;padding:18px 20px;margin-bottom:12px;background:var(--card);">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+          <div style="font-size:.88rem;color:var(--text);line-height:1.5;">${s.description}</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#7000ff;white-space:nowrap;font-size:.95rem;">$${s.proposedPrice}</div>
+        </div>
+        ${s.status === 'accepted' ? `<div style="font-size:.8rem;font-weight:700;color:#16a34a;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">✓ Accepted, paid $${s.finalAmount} ${s.currency||'USDC'}</div>
           <button onclick="gigGenerateReceipt('${(s.taskTitle||'').replace(/'/g,"\\'")}','${s.finalAmount}','${s.txHash||''}','${s.requesterAddress||''}','paid_to_me','${s.currency||'USDC'}')" style="width:auto;padding:6px 14px;border-radius:8px;font-weight:700;font-size:11px;margin-top:6px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;">Generate receipt</button>` :
-          s.status === 'not_selected' ? `<div style="font-size:.78rem;color:var(--text3);margin-top:6px;">Not selected</div>` :
-          `<div style="font-size:.78rem;color:#7000ff;margin-top:6px;">Awaiting review</div>`}
+          s.status === 'not_selected' ? `<div style="font-size:.8rem;color:var(--text3);margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">Not selected</div>` :
+          `<div style="font-size:.8rem;color:#7000ff;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">Awaiting review</div>`}
       </div>`).join('');
   }
 
