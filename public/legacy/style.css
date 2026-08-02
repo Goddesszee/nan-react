@@ -5518,3 +5518,14 @@ body.nan-sidebar-collapsed #page-agent-wallet{padding-left:72px !important;}
 .bottom-nav .nav-btn:not(.active) svg { stroke: #d8d8d8 !important; }
 [data-theme="light"] .bottom-nav .nav-btn:not(.active) { color: rgba(76,29,149,.8) !important; }
 [data-theme="light"] .bottom-nav .nav-btn:not(.active) svg { stroke: rgba(76,29,149,.8) !important; }
+
+/* ── Wallet dropdown menu (navWalletMenu) was staying dark regardless of
+   theme, even though it's set to background:var(--surface) inline — adding
+   an explicit, guaranteed-priority override rather than continuing to
+   chase why the variable wasn't resolving as expected. ── */
+#navWalletMenu { background: var(--surface) !important; color: var(--text) !important; }
+[data-theme="light"] #navWalletMenu { background: #ffffff !important; border-color: rgba(0,0,0,.12) !important; box-shadow: 0 8px 24px rgba(0,0,0,.15) !important; }
+[data-theme="light"] #navWalletMenu * { color: #111111 !important; }
+[data-theme="light"] #navWalletMenu button[onclick*="navMenuAgentDisconnect"],
+[data-theme="light"] #navWalletMenu button[onclick*="navMainWalletDisconnect"] { color: #a855f7 !important; }
+[data-theme="light"] #navWalletMenu button[onclick*="navShowWelcomeModal"] { color: #7000ff !important; }
