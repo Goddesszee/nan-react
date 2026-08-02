@@ -6091,8 +6091,10 @@ function nanToggleFaucet(btn){
   <div id="nanDrawer" style="display:none;position:fixed;top:0;left:0;bottom:0;width:285px;background:var(--nan-drawer-bg,#0a0a0a);border-right:1px solid rgba(112,0,255,.14);z-index:10002;flex-direction:column;overflow:hidden;">
     <div style="padding:52px 20px 18px;border-bottom:1px solid rgba(255,255,255,.05);position:relative;">
       <button onclick="nanCloseDrawer()" style="position:absolute;top:16px;right:16px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:#ffffff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;line-height:1;">✕</button>
-      <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#7000ff,#a855f7);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#fff;margin-bottom:11px;">Z</div>
-      <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:3px;letter-spacing:-.3px;">Zara</div>
+      <div id="nanDrawerAvatar" style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#7000ff,#a855f7);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#fff;margin-bottom:11px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+      <div id="nanDrawerName" style="font-size:15px;font-weight:700;color:#fff;margin-bottom:3px;letter-spacing:-.3px;">Agent Wallet</div>
       <div id="nanDrawerAddr" style="font-family:'Inter var','Inter',monospace;font-size:10.5px;color:#ffffff;margin-bottom:10px;">0x6915…556d</div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;">
         <span style="font-size:10px;font-weight:700;background:rgba(112,0,255,.1);border:1px solid rgba(112,0,255,.2);color:#a855f7;border-radius:6px;padding:3px 8px;">Arc Testnet</span>
@@ -6144,6 +6146,17 @@ function nanToggleFaucet(btn){
     nanDrawerSetActive(window._nanCurrentPage||'agent-wallet');
     var addr=window.userAddr||localStorage.getItem('nan_dynamic_address')||'';
     if(addr){var el=document.getElementById('nanDrawerAddr');if(el)el.textContent=addr.slice(0,6)+'…'+addr.slice(-4);}
+    var mine = (addr && typeof arcNames !== 'undefined') ? arcNames.find(function(n){ return n.owner === addr; }) : null;
+    var nameEl = document.getElementById('nanDrawerName');
+    var avatarEl = document.getElementById('nanDrawerAvatar');
+    if (nameEl) nameEl.textContent = mine ? (mine.name + '.arc') : 'Agent Wallet';
+    if (avatarEl) {
+      if (mine && mine.name) {
+        avatarEl.textContent = mine.name.charAt(0).toUpperCase();
+      } else {
+        avatarEl.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+      }
+    }
   }
   function nanCloseDrawer(){
     var overlay=document.getElementById('nanDrawerOverlay');
