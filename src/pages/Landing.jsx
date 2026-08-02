@@ -28,12 +28,12 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
       .catch(() => {})
   }, [])
 
-  // colors — match the app exactly, both themes
-  const bg       = dark ? '#111111' : '#fafafa'
-  const card     = dark ? '#1a1a1a' : '#ffffff'
-  const border   = dark ? 'rgba(255,255,255,.07)' : '#e4e4e4'
-  const border2  = dark ? 'rgba(255,255,255,.12)' : '#cccccc'
-  const text     = dark ? '#ffffff' : '#1a1a1a'
+  // colors, monochrome base with a single purple accent, both themes
+  const bg       = dark ? '#000000' : '#ffffff'
+  const card     = dark ? '#0d0d0d' : '#f7f7f7'
+  const border   = dark ? 'rgba(255,255,255,.08)' : '#e4e4e4'
+  const border2  = dark ? 'rgba(255,255,255,.14)' : '#cccccc'
+  const text     = dark ? '#ffffff' : '#0a0a0a'
   const text2    = dark ? '#a0a0a0' : '#555555'
   const text3    = dark ? '#555555' : '#999999'
   const inputBg  = dark ? 'rgba(255,255,255,.05)' : 'rgba(0,0,0,.04)'
@@ -41,8 +41,17 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
   const accent   = '#7000ff'
   const accentL  = '#a855f7'
 
-  // ── OTP send ──────────────────────────────────────────────────
-  // ── Open the connect panel and scroll straight to the email input ─
+  // sample ticker feed, agent to agent nanopayments
+  const tickerRows = [
+    { from:'agent_9180', to:'agent_2247', amt:'$0.0004' },
+    { from:'agent_5521', to:'agent_1090', amt:'$0.0012' },
+    { from:'agent_3387', to:'agent_8842', amt:'$0.0002' },
+    { from:'agent_7710', to:'agent_4405', amt:'$0.0031' },
+    { from:'agent_1123', to:'agent_6690', amt:'$0.0008' },
+  ]
+
+  // OTP send
+  // Open the connect panel and scroll straight to the email input
   function openConnect() {
     setShowConnect(true)
     setTimeout(() => {
@@ -69,10 +78,10 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
     } catch { setError('Network error. Please retry'); setStep('email') }
   }
 
-  // ── OTP verify ────────────────────────────────────────────────
+  // OTP verify
   async function verifyOTP(e) {
     e.preventDefault()
-    if (otp.length !== 6) { setError('Enter the 6-digit code'); return }
+    if (otp.length !== 6) { setError('Enter the 6 digit code'); return }
     setStep('loading'); setLoadMsg('Verifying code…'); setError('')
     try {
       const r = await fetch(`${API}/api/otp`, {
@@ -86,7 +95,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
     } catch(e) { setError(e.message || 'Error'); setStep('otp') }
   }
 
-  // ── Wallet connect ────────────────────────────────────────────
+  // Wallet connect
   async function connectWallet() {
     setStep('loading'); setLoadMsg('Connecting wallet…'); setError('')
     try {
@@ -94,7 +103,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
     } catch(e) { setError(e.message?.slice(0, 80) || 'Connection failed'); setStep('email') }
   }
 
-  // ── Loading screen ────────────────────────────────────────────
+  // Loading screen
   if (step === 'loading') return (
     <div style={{ minHeight:'100vh', background:bg, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:16, fontFamily:'Inter,sans-serif' }}>
       <div style={{ display:'flex', alignItems:'center', gap:9 }}>
@@ -119,7 +128,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
   return (
     <div style={{ background:bg, color:text, fontFamily:'Inter,sans-serif', minHeight:'100vh', overflowX:'hidden' }}>
 
-      {/* ── NAV ── */}
+      {/* NAV */}
       <nav style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'26px 48px', maxWidth:1400, margin:'0 auto', borderBottom:`1px solid ${border}` }}>
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
           <div style={{ width:30, height:30, borderRadius:'50%', background:accent, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
@@ -140,7 +149,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
         </div>
       </nav>
 
-      {/* ── HERO ── */}
+      {/* HERO */}
       <section style={{ minHeight:'auto', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center', padding:'48px 24px 60px' }}>
 
         <div style={{ display:'inline-flex', alignItems:'center', gap:9, fontSize:'.72rem', fontWeight:600, letterSpacing:'.12em', textTransform:'uppercase', color:accentL, background:'rgba(112,0,255,.1)', border:'1px solid rgba(112,0,255,.28)', padding:'8px 18px', borderRadius:100, marginBottom:28 }}>
@@ -149,12 +158,26 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
         </div>
 
         <h1 style={{ fontFamily:'Space Grotesk,sans-serif', fontSize:'clamp(2.6rem,8vw,5.6rem)', fontWeight:800, lineHeight:1.02, letterSpacing:'-.035em', margin:'0 0 18px' }}>
-          Weave. Connect.<br/><span style={{ color:accentL }}>Build.</span>
+          Payments built<br/>for <span style={{ color:accentL }}>machines.</span>
         </h1>
 
         <p style={{ fontSize:'clamp(1rem,1.7vw,1.2rem)', color:text2, lineHeight:1.6, maxWidth:560, margin:'0 0 32px' }}>
-          The payment infrastructure for autonomous agents. Nanopayments, spending limits, and identity, in one wallet.
+          Give your agents a wallet, a spending limit, and an identity. Then let them pay each other, autonomously, in nanoseconds.
         </p>
+
+        <div style={{ width:'100%', maxWidth:640, margin:'0 0 40px', background:card, border:`1px solid ${border}`, borderRadius:16, overflow:'hidden', position:'relative' }}>
+          <div style={{ position:'absolute', top:0, left:0, background:accent, color:'#fff', fontFamily:'Space Mono,monospace', fontSize:'.62rem', fontWeight:700, letterSpacing:'.08em', padding:'5px 12px', borderRadius:'0 0 8px 0', zIndex:2 }}>
+            AGENT PAYMENTS · LIVE
+          </div>
+          <div style={{ display:'flex', whiteSpace:'nowrap', animation:'tickerScroll 22s linear infinite', padding:'26px 0 12px' }}>
+            {[...tickerRows, ...tickerRows].map((row, i) => (
+              <span key={i} style={{ fontFamily:'Space Mono,monospace', fontSize:'.8rem', color:text2, padding:'0 24px', borderRight:`1px solid ${border}`, display:'inline-flex', alignItems:'center', gap:7 }}>
+                <span style={{ width:6, height:6, borderRadius:'50%', background:accentL, flexShrink:0 }}/>
+                {row.from} → {row.to} <b style={{ color:text }}>{row.amt}</b> USDC
+              </span>
+            ))}
+          </div>
+        </div>
 
         <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:16, width:'100%', maxWidth:400 }}>
 
@@ -200,7 +223,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
 
               <p style={{ fontSize:'.72rem', color:text3, display:'flex', alignItems:'center', justifyContent:'center', gap:5, margin:'2px 0 0' }}>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                Non-custodial. No seed phrase. Circle MPC.
+                Noncustodial. No seed phrase. Circle MPC.
               </p>
 
               <button onClick={() => setShowConnect(false)} style={{ background:'none', border:'none', color:text3, fontSize:'.8rem', cursor:'pointer', fontFamily:'Inter,sans-serif', margin:'2px auto 0' }}>
@@ -229,7 +252,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
                 </button>
               </form>
               <button onClick={() => { setStep('email'); setOtp(''); setError('') }} style={{ background:'none', border:'none', color:text3, fontSize:'.82rem', cursor:'pointer', fontFamily:'Inter,sans-serif' }}>
-                Back — use different email
+                Back, use a different email
               </button>
             </div>
           )}
@@ -237,7 +260,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
         </div>
       </section>
 
-      <style>{`@keyframes pulseDot{0%,100%{opacity:.4}50%{opacity:1}}`}</style>
+      <style>{`@keyframes pulseDot{0%,100%{opacity:.4}50%{opacity:1}} @keyframes tickerScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}`}</style>
     </div>
   )
 }
