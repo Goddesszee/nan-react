@@ -1369,34 +1369,41 @@ html,body{background-color:var(--bg);}
       { color: #fff !important; }
       #page-career-agent .ctab { padding:9px 16px;border-radius:100px;font-size:.82rem;font-weight:700;border:none;background:transparent;color:var(--text2) !important;cursor:pointer; }
       #page-career-agent .ctab.active { background:#7000ff;color:#fff !important; }
+      #page-career-agent [style*="border-radius:16px;padding:18px 20px"] { box-shadow:0 1px 3px rgba(0,0,0,.04); transition:box-shadow .2s,transform .15s; }
+      #page-career-agent [style*="border-radius:16px;padding:18px 20px"]:hover { box-shadow:0 6px 18px rgba(112,0,255,.08); transform:translateY(-1px); }
+      #page-career-agent [style*="border-radius:14px;padding:14px 16px"] { box-shadow:0 1px 2px rgba(0,0,0,.03); }
     </style>
     <div style="padding:20px;width:100%;box-sizing:border-box;">
-      <div style="font-size:1rem;font-weight:700;color:#7000ff;margin-bottom:4px;">Career agent</div>
-      <div style="font-size:.82rem;color:var(--text2);margin-bottom:14px;">Find a job as a candidate, post a job as an employer, or browse what's been posted.</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+        <div style="width:34px;height:34px;border-radius:10px;background:#7000ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <div style="font-size:1.3rem;font-weight:800;color:#7000ff;letter-spacing:-.01em;">Career agent</div>
+      </div>
+      <div style="font-size:.85rem;color:var(--text2);margin-bottom:18px;">Find a job as a candidate, post a job as an employer, or browse what's been posted.</div>
 
       <div id="careerLandingView">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap;">
-          <div style="display:flex;gap:6px;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:100px;padding:4px;">
-            <button id="careerModeFind" class="ctab active" onclick="careerOpenFeature('find')">Discover</button>
-            <button id="careerModePost" class="ctab" onclick="careerOpenFeature('post')">Post a job</button>
-            <button id="careerModeBrowse" class="ctab" onclick="careerOpenFeature('browse')">Browse jobs</button>
-            <button id="careerModeMyjobs" class="ctab" onclick="careerOpenFeature('myjobs')">My jobs</button>
-            <button id="careerModeApplications" class="ctab" onclick="careerOpenFeature('applications')">My applications</button>
-            <button id="careerModeSaved" class="ctab" onclick="careerOpenFeature('saved')">Saved jobs</button>
-            <button id="careerModeProfile" class="ctab" onclick="careerOpenFeature('profile')">Career profile</button>
-            <button id="careerModeCoach" class="ctab" onclick="careerOpenFeature('coach')">Interview coach</button>
-            <button id="careerModeMessages" class="ctab" onclick="careerOpenFeature('messages')">Messages</button>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:100px;padding:4px;box-shadow:0 1px 2px rgba(0,0,0,.04);">
+            <button id="careerModeFind" class="ctab active" onclick="careerOpenFeature('find')">🔍 Discover</button>
+            <button id="careerModePost" class="ctab" onclick="careerOpenFeature('post')">➕ Post a job</button>
+            <button id="careerModeBrowse" class="ctab" onclick="careerOpenFeature('browse')">📋 Browse jobs</button>
+            <button id="careerModeMyjobs" class="ctab" onclick="careerOpenFeature('myjobs')">💼 My jobs</button>
+            <button id="careerModeApplications" class="ctab" onclick="careerOpenFeature('applications')">📨 My applications</button>
+            <button id="careerModeSaved" class="ctab" onclick="careerOpenFeature('saved')">♡ Saved jobs</button>
+            <button id="careerModeProfile" class="ctab" onclick="careerOpenFeature('profile')">👤 Career profile</button>
+            <button id="careerModeCoach" class="ctab" onclick="careerOpenFeature('coach')">🎯 Interview coach</button>
+            <button id="careerModeMessages" class="ctab" onclick="careerOpenFeature('messages')">💬 Messages</button>
           </div>
-          <button id="careerNotifBell" onclick="careerOpenFeature('notifications')" style="position:relative;width:40px;height:40px;border-radius:50%;background:var(--card);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <button id="careerNotifBell" onclick="careerOpenFeature('notifications')" style="position:relative;width:40px;height:40px;border-radius:50%;background:var(--card);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 1px 2px rgba(0,0,0,.04);">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
             <span id="careerNotifDot" style="display:none;position:absolute;top:6px;right:7px;width:8px;height:8px;border-radius:50%;background:#e24b4a;border:2px solid var(--card);"></span>
           </button>
         </div>
-        <div id="careerWelcomeBanner" style="background:#f0e6ff;border-top:5px solid #7000ff;border-radius:16px;padding:24px 28px;color:#111;margin-bottom:20px;">
-          <div style="font-size:1.3rem;font-weight:800;margin-bottom:14px;color:#111;">Land a better job faster!</div>
-          <div style="font-size:.95rem;font-weight:700;margin-bottom:6px;color:#111;">👋 Welcome, <span id="careerWelcomeName">there</span>!</div>
-          <div style="font-size:.85rem;color:#333;line-height:1.5;margin-bottom:20px;">Upload your CV or generate one in seconds, and let the career agent start matching you to roles.</div>
-          <button onclick="careerWelcomeCta();" style="background:#7000ff;color:#fff;border:none;padding:14px 20px;border-radius:100px;font-weight:700;font-size:.9rem;cursor:pointer;display:flex;align-items:center;gap:10px;max-width:320px;justify-content:space-between;">
+        <div id="careerWelcomeBanner" style="background:#f0e6ff;border-top:5px solid #7000ff;border-radius:18px;padding:28px 32px;color:#111;margin-bottom:20px;box-shadow:0 4px 20px rgba(112,0,255,.08);position:relative;overflow:hidden;">
+          <div style="position:absolute;top:-30px;right:-30px;width:140px;height:140px;border-radius:50%;background:rgba(112,0,255,.08);"></div>
+          <div style="font-size:1.4rem;font-weight:800;margin-bottom:14px;color:#111;position:relative;">Land a better job faster!</div>
+          <div style="font-size:.95rem;font-weight:700;margin-bottom:6px;color:#111;position:relative;">👋 Welcome, <span id="careerWelcomeName">there</span>!</div>
+          <div style="font-size:.85rem;color:#333;line-height:1.5;margin-bottom:20px;position:relative;">Upload your CV or generate one in seconds, and let the career agent start matching you to roles.</div>
+          <button onclick="careerWelcomeCta();" style="background:#7000ff;color:#fff;border:none;padding:14px 20px;border-radius:100px;font-weight:700;font-size:.9rem;cursor:pointer;display:flex;align-items:center;gap:10px;max-width:320px;justify-content:space-between;position:relative;box-shadow:0 4px 14px rgba(112,0,255,.35);">
             Start your search
             <span style="background:#fff;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7000ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
           </button>
