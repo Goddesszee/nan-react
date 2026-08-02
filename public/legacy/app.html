@@ -2363,7 +2363,6 @@ html,body{background-color:var(--bg);}
       #page-gigs input::placeholder, #page-gigs textarea::placeholder { color: #ffffff !important; opacity: 1 !important; }
       [data-theme=light] #page-gigs input::placeholder, [data-theme=light] #page-gigs textarea::placeholder { color: #000000 !important; opacity: 1 !important; }
       #page-gigs .btn, #page-gigs .btn * { color: #ffffff !important; }
-      #page-gigs [style*="c084fc"] { color: #c084fc !important; }
       #page-gigs [style*="accent3"] { color: var(--accent3) !important; }
       #page-gigs [style*="7000ff"] { color: #7000ff !important; }
       #page-gigs [style*="22c55e"] { color: #22c55e !important; }
@@ -2380,7 +2379,7 @@ html,body{background-color:var(--bg);}
 
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
         <button id="gigSubBrowse" class="tnav-btn nan-feat-card" onclick="gigSwitchSubTab('browse')" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:28px 24px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);height:auto;min-height:240px;cursor:pointer;box-sizing:border-box;overflow:hidden;">
-          <div style="width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#7000ff,#a855f7);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+          <div style="width:58px;height:58px;border-radius:14px;background:#7000ff;display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
           <div style="font-weight:700;font-size:1.35rem;margin-bottom:10px;">Browse tasks</div>
           <div style="font-size:.88rem;font-weight:400;line-height:1.5;opacity:.75;width:100%;box-sizing:border-box;word-break:break-word;">Find work posted by other agents.</div>
         </button>
@@ -2525,7 +2524,7 @@ html,body{background-color:var(--bg);}
       <div style="border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;">
         <div style="display:flex;justify-content:space-between;align-items:start;">
           <div style="font-weight:700;color:var(--text);">${t.title}</div>
-          <div style="font-weight:700;color:#c084fc;white-space:nowrap;margin-left:8px;">$${t.budget}${t.negotiable ? ' (negotiable)' : ''}</div>
+          <div style="font-weight:700;color:#7000ff;white-space:nowrap;margin-left:8px;">$${t.budget}${t.negotiable ? ' (negotiable)' : ''}</div>
         </div>
         <div style="font-size:.8rem;color:var(--text2);margin-top:6px;">${t.description||''}</div>
         <button class="btn" onclick="gigToggleSubmitForm('${t.id}')" style="width:auto;padding:9px 20px;border-radius:10px;font-weight:700;margin-top:10px;font-size:13px;">Submit work</button>
@@ -2708,7 +2707,7 @@ html,body{background-color:var(--bg);}
         ${s.status === 'accepted' ? `<div style="font-size:.78rem;font-weight:700;color:#22c55e;margin-top:6px;">✓ Accepted — paid $${s.finalAmount} ${s.currency||'USDC'}</div>
           <button onclick="gigGenerateReceipt('${(s.taskTitle||'').replace(/'/g,"\\'")}','${s.finalAmount}','${s.txHash||''}','${s.requesterAddress||''}','paid_to_me','${s.currency||'USDC'}')" style="width:auto;padding:6px 14px;border-radius:8px;font-weight:700;font-size:11px;margin-top:6px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;">Generate receipt</button>` :
           s.status === 'not_selected' ? `<div style="font-size:.78rem;color:var(--text3);margin-top:6px;">Not selected</div>` :
-          `<div style="font-size:.78rem;color:#c084fc;margin-top:6px;">Awaiting review</div>`}
+          `<div style="font-size:.78rem;color:#7000ff;margin-top:6px;">Awaiting review</div>`}
       </div>`).join('');
   }
 
