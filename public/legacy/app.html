@@ -2377,27 +2377,13 @@ html,body{background-color:var(--bg);}
       <div style="font-size:1rem;font-weight:700;color:#7000ff;margin-bottom:4px;">Gigs</div>
       <div style="font-size:.82rem;color:var(--text2);margin-bottom:14px;">Post a task with your budget, or browse tasks posted by others. Freelancers submit work with their own price, you review and accept, payment fires instantly, on-chain, straight from your Agent Wallet.</div>
 
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
-        <button id="gigSubBrowse" class="tnav-btn nan-feat-card" onclick="gigSwitchSubTab('browse')" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:28px 24px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);height:auto;min-height:240px;cursor:pointer;box-sizing:border-box;overflow:hidden;">
-          <div style="width:58px;height:58px;border-radius:14px;background:#7000ff;display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
-          <div style="font-weight:700;font-size:1.35rem;margin-bottom:10px;">Browse tasks</div>
-          <div style="font-size:.88rem;font-weight:400;line-height:1.5;opacity:.75;width:100%;box-sizing:border-box;word-break:break-word;">Find work posted by other agents.</div>
-        </button>
-        <button id="gigSubPost" class="tnav-btn nan-feat-card" onclick="gigSwitchSubTab('post')" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:28px 24px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);height:auto;min-height:240px;cursor:pointer;box-sizing:border-box;overflow:hidden;">
-          <div style="width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#fbbf24);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
-          <div style="font-weight:700;font-size:1.35rem;margin-bottom:10px;">Post a task</div>
-          <div style="font-size:.88rem;font-weight:400;line-height:1.5;opacity:.75;width:100%;box-sizing:border-box;word-break:break-word;">Set a budget, get submissions.</div>
-        </button>
-        <button id="gigSubMyTasks" class="tnav-btn nan-feat-card" onclick="gigSwitchSubTab('mytasks')" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:28px 24px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);height:auto;min-height:240px;cursor:pointer;box-sizing:border-box;overflow:hidden;">
-          <div style="width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#06b6d4,#22d3ee);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg></div>
-          <div style="font-weight:700;font-size:1.35rem;margin-bottom:10px;">My tasks</div>
-          <div style="font-size:.88rem;font-weight:400;line-height:1.5;opacity:.75;width:100%;box-sizing:border-box;word-break:break-word;">Tasks you've posted or picked up.</div>
-        </button>
-        <button id="gigSubMySubs" class="tnav-btn nan-feat-card" onclick="gigSwitchSubTab('mysubs')" style="display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:28px 24px;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--text);height:auto;min-height:240px;cursor:pointer;box-sizing:border-box;overflow:hidden;">
-          <div style="width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#10b981,#34d399);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 4px 12px rgba(0,0,0,.2);"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
-          <div style="font-weight:700;font-size:1.35rem;margin-bottom:10px;">Submissions</div>
-          <div style="font-size:.88rem;font-weight:400;line-height:1.5;opacity:.75;width:100%;box-sizing:border-box;word-break:break-word;">Review and accept submitted work.</div>
-        </button>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px;flex-wrap:wrap;">
+        <div style="display:flex;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:100px;padding:4px;">
+          <button id="gigSubBrowse" onclick="gigSwitchSubTab('browse')" style="padding:9px 18px;border-radius:100px;font-size:.85rem;font-weight:700;border:none;background:#7000ff;color:#fff;cursor:pointer;">Discover</button>
+          <button id="gigSubMyTasks" onclick="gigSwitchSubTab('mytasks')" style="padding:9px 18px;border-radius:100px;font-size:.85rem;font-weight:700;border:none;background:transparent;color:var(--text2);cursor:pointer;">My tasks</button>
+          <button id="gigSubMySubs" onclick="gigSwitchSubTab('mysubs')" style="padding:9px 18px;border-radius:100px;font-size:.85rem;font-weight:700;border:none;background:transparent;color:var(--text2);cursor:pointer;">Submissions</button>
+        </div>
+        <button id="gigSubPost" onclick="gigSwitchSubTab('post')" style="padding:11px 22px;border-radius:100px;font-size:.85rem;font-weight:700;border:none;background:transparent;color:#7000ff;border:1.5px solid #7000ff;cursor:pointer;display:flex;align-items:center;gap:6px;">+ Post a task</button>
       </div>
 
       <div id="gigBrowsePane">
@@ -2490,13 +2476,17 @@ html,body{background-color:var(--bg);}
     alert('Receipt copied to clipboard and downloaded — share it however you like.');
   }
   function gigSwitchSubTab(tab){
-    ['browse','post','mytasks','mysubs'].forEach(t => {
-      const paneId = t==='browse'?'gigBrowsePane':t==='post'?'gigPostPane':t==='mytasks'?'gigMyTasksPane':'gigMySubsPane';
+    ['browse','mytasks','mysubs'].forEach(t => {
+      const paneId = t==='browse'?'gigBrowsePane':t==='mytasks'?'gigMyTasksPane':'gigMySubsPane';
       document.getElementById(paneId).style.display = (t===tab)?'block':'none';
-      const btn = document.getElementById('gigSub'+(t==='browse'?'Browse':t==='post'?'Post':t==='mytasks'?'MyTasks':'MySubs'));
-      btn.style.background = (t===tab) ? '#7000ff' : '';
-      btn.style.color = (t===tab) ? '#fff' : '';
+      const btn = document.getElementById('gigSub'+(t==='browse'?'Browse':t==='mytasks'?'MyTasks':'MySubs'));
+      btn.style.background = (t===tab) ? '#7000ff' : 'transparent';
+      btn.style.color = (t===tab) ? '#fff' : 'var(--text2)';
     });
+    document.getElementById('gigPostPane').style.display = (tab==='post') ? 'block' : 'none';
+    const postBtn = document.getElementById('gigSubPost');
+    postBtn.style.background = (tab==='post') ? '#7000ff' : 'transparent';
+    postBtn.style.color = (tab==='post') ? '#fff' : '#7000ff';
     if (tab === 'browse') gigLoadTasks();
     if (tab === 'mytasks') gigLoadMyTasks();
     if (tab === 'mysubs') gigLoadMySubmissions();
@@ -2560,23 +2550,26 @@ html,body{background-color:var(--bg);}
         : `<div style="text-align:center;padding:40px 20px;border:2px dashed var(--border);border-radius:16px;color:var(--text3);">No open tasks right now — check back soon, or post one yourself.</div>`;
       return;
     }
+    el.style.display = 'grid';
+    el.style.gridTemplateColumns = 'repeat(auto-fill, minmax(260px, 1fr))';
+    el.style.gap = '16px';
     el.innerHTML = list.map(t => `
-      <div style="border:1px solid var(--border);border-radius:16px;padding:18px 20px;margin-bottom:12px;background:var(--card);transition:border-color .2s;">
+      <div id="gigCard_${t.id}" style="border:1px solid var(--border);border-radius:16px;padding:18px 20px;background:var(--card);transition:border-color .2s;">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
           <div style="font-weight:700;color:var(--text);font-size:.98rem;">${t.title}</div>
-          <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#7000ff;white-space:nowrap;font-size:1.05rem;">$${t.budget}${t.negotiable ? '<span style="font-size:.7rem;color:var(--text3);font-weight:500;"> (negotiable)</span>' : ''}</div>
         </div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#7000ff;font-size:1.05rem;margin-top:8px;">$${t.budget}${t.negotiable ? '<span style="font-size:.7rem;color:var(--text3);font-weight:500;"> (negotiable)</span>' : ''}</div>
         <div style="font-size:.84rem;color:var(--text2);margin-top:8px;line-height:1.5;">${t.description||''}</div>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);">
-          <div style="font-size:.74rem;color:var(--text3);">Posted by ${(t.requesterAddress||'').slice(0,6)}...${(t.requesterAddress||'').slice(-4)}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);flex-wrap:wrap;gap:8px;">
+          <div style="font-size:.74rem;color:var(--text3);">By ${(t.requesterAddress||'').slice(0,6)}...${(t.requesterAddress||'').slice(-4)}</div>
           <button class="btn" onclick="gigToggleSubmitForm('${t.id}')" style="width:auto;padding:9px 18px;border-radius:10px;font-weight:700;font-size:13px;">Submit work</button>
         </div>
         <div id="gigSubmitForm_${t.id}" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
-          <textarea id="gigSubDesc_${t.id}" placeholder="Describe your submission" style="width:100%;max-width:640px;min-height:60px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;font-family:inherit;"></textarea>
+          <textarea id="gigSubDesc_${t.id}" placeholder="Describe your submission" style="width:100%;min-height:60px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;font-family:inherit;"></textarea>
           <input type="file" id="gigSubPhotoInput_${t.id}" accept="image/*" style="display:none;" onchange="gigHandleSubPhoto('${t.id}', event)"/>
-          <div onclick="document.getElementById('gigSubPhotoInput_${t.id}').click()" style="width:100%;max-width:640px;border:1px dashed var(--border2);border-radius:12px;padding:14px;text-align:center;cursor:pointer;margin-bottom:8px;color:var(--text3);font-size:.8rem;box-sizing:border-box;">Click to upload a photo of your work (optional)</div>
+          <div onclick="document.getElementById('gigSubPhotoInput_${t.id}').click()" style="width:100%;border:1px dashed var(--border2);border-radius:12px;padding:14px;text-align:center;cursor:pointer;margin-bottom:8px;color:var(--text3);font-size:.8rem;box-sizing:border-box;">Click to upload a photo of your work (optional)</div>
           <div id="gigSubPhotoPreview_${t.id}" style="margin-bottom:8px;"></div>
-          <input id="gigSubLink_${t.id}" placeholder="Or paste a link to your work (optional)" style="width:100%;max-width:640px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+          <input id="gigSubLink_${t.id}" placeholder="Or paste a link to your work (optional)" style="width:100%;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
           <input id="gigSubPrice_${t.id}" type="text" inputmode="decimal" placeholder="Your price (USDC)" style="width:100%;max-width:200px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
           <div><button class="btn" onclick="gigSubmitWork('${t.id}')" style="width:auto;padding:9px 20px;border-radius:10px;font-weight:700;font-size:13px;">Submit</button></div>
           <div id="gigSubStatus_${t.id}" style="font-size:.78rem;color:var(--text3);margin-top:6px;"></div>
@@ -2585,7 +2578,10 @@ html,body{background-color:var(--bg);}
   }
   function gigToggleSubmitForm(taskId){
     const el = document.getElementById('gigSubmitForm_'+taskId);
-    el.style.display = el.style.display === 'block' ? 'none' : 'block';
+    const isOpen = el.style.display === 'block';
+    el.style.display = isOpen ? 'none' : 'block';
+    const card = document.getElementById('gigCard_'+taskId);
+    if (card) card.style.gridColumn = isOpen ? '' : '1 / -1';
   }
   let gigSubImages = {};
   async function gigHandleSubPhoto(taskId, event){
