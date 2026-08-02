@@ -70,7 +70,7 @@ function goPage(name) {
     market:      'nav-more',
     'agent-wallet': 'nav-agent',
     'career-agent': 'nav-career',
-    'explore': 'nav-supplier',
+    'supplier-agent': 'nav-supplier',
     marketplace: 'nav-marketplace',
     gigs: 'nav-gigs',
   };
@@ -211,7 +211,6 @@ function updateTopbarPageInfo(page) {
     history:'History', swap:'Swap', bridge:'Bridge',
     arcname:'.arc Name', more:'More', naira:'Naira',
     bulk:'Payroll', payreq:'Pay Requests',
-    explore:'Explore', realestate:'Real Estate',
   };
 
   nameEl.textContent = labels[page] || page.charAt(0).toUpperCase()+page.slice(1);
