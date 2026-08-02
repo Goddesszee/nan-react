@@ -4821,7 +4821,10 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
      other items hidden, the wallet/profile pill group was the only remaining
      flex child in a space-between row, collapsing it to the left edge and
      overlapping the brand logo. Force it to the right explicitly. ── */
-  #globalTopBar > div:last-of-type { margin-left: auto !important; }
+  /* Previously forced margin-left:auto here to avoid overlapping the mobile
+     logo. Logo is now hidden entirely, so removed — the pill naturally sits
+     left now, which is what's wanted. */
+  #globalTopBar > div:last-of-type { margin-left: 0 !important; }
   /* ── Fix: a claimed arc name (e.g. "zarafatolu.arc") is much longer than
      the default "Agent Wallet" label, making the pill wide enough to
      overlap the logo on narrow screens. Truncate with ellipsis instead. ── */
