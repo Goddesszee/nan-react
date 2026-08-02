@@ -724,7 +724,7 @@ a:hover{color:var(--text);}
 /* Topbar & Nav */
 [data-theme="light"] #globalTopBar{background:rgba(245,243,255,.97)!important;border-bottom:1px solid rgba(85,0,204,.15)!important;}
 [data-theme="light"] .bottom-nav{background:rgba(245,243,255,.98)!important;border-top:1px solid rgba(85,0,204,.15)!important;}
-[data-theme="light"] .nav-btn{color:rgba(76,29,149,.45)!important;}
+[data-theme="light"] .nav-btn{color:rgba(76,29,149,.75)!important;}
 [data-theme="light"] .nav-btn.active{color:#7000ff!important;background:rgba(85,0,204,.1)!important;}
 [data-theme="light"] .net-pill{color:#7000ff!important;border-color:rgba(85,0,204,.25)!important;background:rgba(85,0,204,.07)!important;}
 [data-theme="light"] .net-pill::before{background:#7000ff!important;box-shadow:0 0 6px #7000ff!important;}
@@ -4813,19 +4813,9 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
   /* ── Burger moves to the right, grouped with the Arc pill ── */
   #nanDrawerBurger { display: flex !important; flex-shrink: 0; order: 3; margin-left: 8px; }
 
-  /* ── New flat NAN mark + "NAN" wordmark, both purple — pinned to left edge ── */
+  /* ── Logo hidden on mobile per request — only the arc-name/wallet pill shows now ── */
   #mobileBrandLogo {
-    display: flex !important; align-items: center; gap: 7px; flex-shrink: 0;
-    position: absolute; left: 13px; top: 50%;
-    transform: translateY(-50%);
-  }
-  #mobileBrandLogo .mb-badge {
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-  #mobileBrandLogo .mb-word {
-    font-weight: 800; font-size: 1.15rem; letter-spacing: .02em; font-style: normal;
-    color: var(--text);
+    display: none !important;
   }
   /* ── Fix: with the brand logo removed from flex flow (position:absolute) and
      other items hidden, the wallet/profile pill group was the only remaining
@@ -5515,3 +5505,13 @@ body.nan-sidebar-collapsed #page-agent-wallet{padding-left:72px !important;}
 /* ── Page titles: unify to NAN purple across all features ── */
 .page-title{color:#7000ff !important;}
 [data-theme="light"] .page-title{color:#7000ff !important;}
+
+/* ── Bottom nav contrast fix: many accumulated .nav-btn rules across this
+   file were conflicting, leaving inactive tab icons/labels too faint to
+   read clearly in both themes. Target .bottom-nav .nav-btn specifically
+   (higher specificity, placed last) to guarantee this wins. Bottom nav is
+   mobile-only (hidden entirely on desktop), so this can't affect desktop. ── */
+.bottom-nav .nav-btn:not(.active) { color: #d8d8d8 !important; }
+.bottom-nav .nav-btn:not(.active) svg { stroke: #d8d8d8 !important; }
+[data-theme="light"] .bottom-nav .nav-btn:not(.active) { color: rgba(76,29,149,.8) !important; }
+[data-theme="light"] .bottom-nav .nav-btn:not(.active) svg { stroke: rgba(76,29,149,.8) !important; }
