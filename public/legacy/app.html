@@ -1366,14 +1366,15 @@ html,body{background-color:var(--bg);}
 
       @media(max-width:768px){
         #page-career-agent div[style*="grid-template-columns:repeat(2,1fr);gap:20px;margin-bottom:20px;"] { grid-template-columns: 1fr !important; }
-        /* These cards have a fixed light-lavender background (#f0e6ff) that
-           doesn't change with theme, but the page's blanket dark-theme rule
-           (color:#fff !important on every descendant) was overriding their
-           intended dark text, making it invisible in dark mode. Force it
-           back to dark regardless of theme. */
-        #page-career-agent [style*="background:#f0e6ff"],
-        #page-career-agent [style*="background:#f0e6ff"] * { color: #111 !important; }
       }
+      /* These cards have a fixed light-lavender background (#f0e6ff) that
+         doesn't change with theme, but the page's blanket dark-theme rule
+         (color:#fff !important on every descendant) was overriding their
+         intended dark text, making it invisible in dark mode. Force it
+         back to dark regardless of theme — applies at all screen sizes
+         since this isn't a mobile-specific bug. */
+      #page-career-agent [style*="background:#f0e6ff"],
+      #page-career-agent [style*="background:#f0e6ff"] * { color: #111 !important; }
     </style>
     <div style="padding:20px;width:100%;box-sizing:border-box;">
       <div style="font-size:1rem;font-weight:700;color:#7000ff;margin-bottom:4px;">Career agent</div>
