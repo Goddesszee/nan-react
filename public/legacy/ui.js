@@ -119,7 +119,7 @@ function goPage(name) {
   if (name === 'history') renderHistory();
   if (name === 'arcname') renderArcDirectory();
   if (name === 'swap') { refreshBalances(); if(typeof fetchLiveFX==='function') fetchLiveFX(); }
-  if (name === 'bulk') { renderBulkRecipients(); updateBulkSummary(); }
+  if (name === 'bulk') { renderBulkRecipients(); updateBulkSummary(); if(typeof renderPayrollGroups==='function') renderPayrollGroups(); if(typeof payrollSwitchTab==='function') payrollSwitchTab('dashboard'); }
   if (name === 'home') updateHomeScreen();
   if (name === 'payreq') renderPaymentRequests();
   if (name === 'multichain') { if(typeof mcRefresh==='function') setTimeout(mcRefresh, 100); }
