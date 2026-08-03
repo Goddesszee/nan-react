@@ -211,7 +211,6 @@ function updateTopbarPageInfo(page) {
     history:'History', swap:'Swap', bridge:'Bridge',
     arcname:'.arc Name', more:'More', naira:'Naira',
     bulk:'Payroll', payreq:'Pay Requests',
-    realestate:'Real Estate',
   };
 
   nameEl.textContent = labels[page] || page.charAt(0).toUpperCase()+page.slice(1);
