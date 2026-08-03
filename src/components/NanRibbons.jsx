@@ -14,11 +14,11 @@ function wave(y, amp, per, close) {
 }
 
 const BANDS = [
-  { d: wave(345, 30, 340, 400), fill: '#7000ff', o: 0.098, dur: 18 },
-  { d: wave(361, 36, 272, 400), fill: '#a855f7', o: 0.112, dur: 26 },
+  { d: wave(345, 30, 340, 400), fill: '#4338CA', o: 0.098, dur: 18 },
+  { d: wave(361, 36, 272, 400), fill: '#3B82F6', o: 0.112, dur: 26 },
   { d: wave(377, 29, 680, 400), fill: '#4a0f8f', o: 0.210, dur: 34 },
 ]
-const TOPLINE = { d: wave(120, 18, 340), stroke: '#a855f7', o: 0.182, dur: 22 }
+const TOPLINE = { d: wave(120, 18, 340), stroke: '#3B82F6', o: 0.182, dur: 22 }
 
 export function NanRibbons({ dark = true }) {
   const k = dark ? OPACITY_DARK : OPACITY_LIGHT

@@ -38,8 +38,8 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
   const text3    = dark ? '#555555' : '#999999'
   const inputBg  = dark ? 'rgba(255,255,255,.05)' : 'rgba(0,0,0,.04)'
   const inputBg2 = dark ? 'rgba(255,255,255,.04)' : 'rgba(0,0,0,.04)'
-  const accent   = '#7000ff'
-  const accentL  = '#a855f7'
+  const accent   = '#4338CA'
+  const accentL  = '#3B82F6'
 
   // sample ticker feed, agent to agent nanopayments
   const tickerRows = [
@@ -107,7 +107,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
   if (step === 'loading') return (
     <div style={{ minHeight:'100vh', background:bg, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:16, fontFamily:'Inter,sans-serif' }}>
       <div style={{ display:'flex', alignItems:'center', gap:9 }}>
-        <div style={{ width:44, height:44, borderRadius:'50%', background:'#7000ff', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+        <div style={{ width:44, height:44, borderRadius:'50%', background:'#4338CA', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 480" width={19} height={27}>
             <path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill="#fff"/>
             <path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill="#fff"/>
@@ -117,7 +117,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
       </div>
       <div style={{ color:text, fontSize:'1rem', fontWeight:600 }}>{loadMsg}</div>
       <div style={{ display:'flex', gap:6 }}>
-        {['#7000ff','#9333ea','#c084fc'].map((c,i) => (
+        {['#4338CA','#4338CA','#3B82F6'].map((c,i) => (
           <div key={i} style={{ width:6, height:6, borderRadius:'50%', background:c, animation:`pulse 1s ease-in-out ${i*0.2}s infinite` }}/>
         ))}
       </div>
@@ -157,12 +157,12 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
           Live on Arc Testnet
         </div>
 
-        <h1 style={{ fontFamily:'Space Grotesk,sans-serif', fontSize:'clamp(2.6rem,8vw,5.6rem)', fontWeight:800, lineHeight:1.02, letterSpacing:'-.035em', margin:'0 0 18px' }}>
-          Payments built<br/>for <span style={{ color:accentL }}>machines.</span>
+        <h1 style={{ fontFamily:'Inter,sans-serif', fontSize:'clamp(2.6rem,8vw,5.6rem)', fontWeight:800, lineHeight:1.02, letterSpacing:'-.035em', margin:'0 0 18px' }}>
+          The trusted layer<br/>for <span style={{ color:accentL }}>everyday commerce.</span>
         </h1>
 
         <p style={{ fontSize:'clamp(1rem,1.7vw,1.2rem)', color:text2, lineHeight:1.6, maxWidth:560, margin:'0 0 32px' }}>
-          Give your agents a wallet, a spending limit, and an identity. Then let them pay each other, autonomously, in nanoseconds.
+          One stablecoin wallet for people, businesses, and autonomous agents — send, swap, pay, and get paid, with zero gas fees.
         </p>
 
         <div style={{ width:'100%', maxWidth:640, margin:'0 0 40px', background:card, border:`1px solid ${border}`, borderRadius:16, overflow:'hidden', position:'relative' }}>
@@ -266,7 +266,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
           <div style={{ fontFamily:'Space Mono,monospace', fontSize:'.76rem', fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase', color:text3, marginBottom:14 }}>
             Why NAN
           </div>
-          <h2 style={{ fontFamily:'Space Grotesk,sans-serif', fontSize:'2.3rem', fontWeight:700, letterSpacing:'-.02em', lineHeight:1.15, color:text, margin:0 }}>
+          <h2 style={{ fontFamily:'Inter,sans-serif', fontSize:'2.3rem', fontWeight:700, letterSpacing:'-.02em', lineHeight:1.15, color:text, margin:0 }}>
             Everything an agent needs to transact
           </h2>
           <p style={{ color:text2, fontSize:'1.02rem', marginTop:14 }}>
@@ -291,6 +291,39 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
         </div>
       </section>
 
+      {/* ECOSYSTEM */}
+      <section style={{ padding:'0 24px 80px', maxWidth:1180, margin:'0 auto' }}>
+        <div style={{ maxWidth:620, margin:'0 auto 48px', textAlign:'center' }}>
+          <div style={{ fontFamily:'Inter,monospace', fontSize:'.76rem', fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase', color:text3, marginBottom:14 }}>
+            One ecosystem
+          </div>
+          <h2 style={{ fontFamily:'Inter,sans-serif', fontSize:'2.3rem', fontWeight:700, letterSpacing:'-.02em', lineHeight:1.15, color:text, margin:0 }}>
+            Everything runs on one wallet
+          </h2>
+          <p style={{ color:text2, fontSize:'1.02rem', marginTop:14 }}>
+            Rent a home, buy or sell, hire or get hired, run payroll, or let your agent handle it — all settled in stablecoins.
+          </p>
+        </div>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(200px, 1fr))', gap:20 }}>
+          {[
+            { title:'Homes', desc:'Verified landlords, secure rent payments.' },
+            { title:'Market', desc:'Buy and sell with built-in escrow.' },
+            { title:'Gigs', desc:'Pre-funded jobs, milestone payments.' },
+            { title:'Careers', desc:'Verified listings, AI resume tools.' },
+            { title:'Payroll', desc:'Bulk pay your team, on time, every time.' },
+            { title:'AI Assistant', desc:'One assistant across the whole ecosystem.' },
+          ].map((p, i) => (
+            <div key={i} style={{ background:card, border:`1px solid ${border}`, borderRadius:20, padding:'26px 22px' }}>
+              <div style={{ width:38, height:38, borderRadius:12, background:'rgba(67,56,202,.12)', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:16 }}>
+                <span style={{ width:8, height:8, borderRadius:'50%', background:accent }}/>
+              </div>
+              <h4 style={{ fontSize:'1.02rem', fontWeight:700, marginBottom:6, color:text }}>{p.title}</h4>
+              <p style={{ fontSize:'.85rem', color:text2, lineHeight:1.5, margin:0 }}>{p.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* HOW IT WORKS */}
       <section style={{ padding:'0 24px 80px', maxWidth:1180, margin:'0 auto' }}>
         <div style={{ background:card, border:`1px solid ${border}`, borderRadius:28, padding:'70px 50px' }}>
@@ -298,7 +331,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
             <div style={{ fontFamily:'Space Mono,monospace', fontSize:'.76rem', fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase', color:accentL, marginBottom:14 }}>
               How it works
             </div>
-            <h2 style={{ fontFamily:'Space Grotesk,sans-serif', fontSize:'2.3rem', fontWeight:700, letterSpacing:'-.02em', lineHeight:1.15, color:text, margin:0 }}>
+            <h2 style={{ fontFamily:'Inter,sans-serif', fontSize:'2.3rem', fontWeight:700, letterSpacing:'-.02em', lineHeight:1.15, color:text, margin:0 }}>
               From task to settlement, no human required
             </h2>
             <p style={{ color:text2, fontSize:'1.02rem', marginTop:14 }}>
@@ -326,7 +359,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
 
       {/* CLOSING CTA */}
       <section style={{ textAlign:'center', padding:'100px 24px' }}>
-        <h2 style={{ fontFamily:'Space Grotesk,sans-serif', fontSize:'2.6rem', fontWeight:700, letterSpacing:'-.02em', marginBottom:16, color:text }}>
+        <h2 style={{ fontFamily:'Inter,sans-serif', fontSize:'2.6rem', fontWeight:700, letterSpacing:'-.02em', marginBottom:16, color:text }}>
           Let your agents handle it.
         </h2>
         <p style={{ color:text2, fontSize:'1.05rem', marginBottom:36 }}>
@@ -340,7 +373,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
       {/* FOOTER */}
       <footer style={{ background:'#0a0a0a', color:'#b0b0b0', padding:'56px 24px 28px' }}>
         <div style={{ maxWidth:1180, margin:'0 auto', display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:20 }}>
-          <div style={{ fontFamily:'Space Grotesk,sans-serif', fontSize:'1.1rem', fontWeight:700, color:'#fff' }}>NAN</div>
+          <div style={{ fontFamily:'Inter,sans-serif', fontSize:'1.1rem', fontWeight:700, color:'#fff' }}>NAN</div>
           <div style={{ display:'flex', gap:28, fontSize:'.85rem' }}>
             <a href="#" style={{ color:'#b0b0b0' }}>Docs</a>
             <a href="#" style={{ color:'#b0b0b0' }}>GitHub</a>

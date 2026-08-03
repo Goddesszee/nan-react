@@ -76,7 +76,7 @@ export default function App() {
       <div style={{minHeight:'100vh',background:'#000',display:'flex',flexDirection:'column',
         alignItems:'center',justifyContent:'center',gap:16,fontFamily:'Inter,sans-serif'}}>
         <div style={{display:'flex',alignItems:'center',gap:9}}>
-          <div style={{width:44,height:44,borderRadius:'50%',background:'#7000ff',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+          <div style={{width:44,height:44,borderRadius:'50%',background:'#4338CA',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 480" width={19} height={27}>
               <path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill="#fff"/>
               <path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill="#fff"/>
@@ -86,9 +86,9 @@ export default function App() {
         </div>
         <div style={{color:'#fff',fontSize:'1rem',fontWeight:600}}>{status}</div>
         <div style={{display:'flex',gap:6}}>
-          <div style={{width:6,height:6,borderRadius:'50%',background:'#7000ff',animation:'pulse 1s ease-in-out infinite'}}/>
-          <div style={{width:6,height:6,borderRadius:'50%',background:'#9333ea',animation:'pulse 1s ease-in-out .2s infinite'}}/>
-          <div style={{width:6,height:6,borderRadius:'50%',background:'#c084fc',animation:'pulse 1s ease-in-out .4s infinite'}}/>
+          <div style={{width:6,height:6,borderRadius:'50%',background:'#4338CA',animation:'pulse 1s ease-in-out infinite'}}/>
+          <div style={{width:6,height:6,borderRadius:'50%',background:'#4338CA',animation:'pulse 1s ease-in-out .2s infinite'}}/>
+          <div style={{width:6,height:6,borderRadius:'50%',background:'#3B82F6',animation:'pulse 1s ease-in-out .4s infinite'}}/>
         </div>
         <style>{`@keyframes pulse{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}`}</style>
       </div>

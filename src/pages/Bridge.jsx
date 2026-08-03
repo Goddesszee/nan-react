@@ -268,15 +268,15 @@ export function Bridge({ toast, setPage, usdcBal, address, apiFetch }) {
                   <div key={s.id} style={{display:'flex',alignItems:'center',gap:10}}>
                     <div style={{
                       width:22,height:22,borderRadius:'50%',flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center',fontSize:'.75rem',fontWeight:700,
-                      background: isDone ? '#7000ff' : isActive ? 'rgba(112,0,255,.2)' : 'rgba(255,255,255,.06)',
-                      border: isDone ? 'none' : isActive ? '1.5px solid #7000ff' : '1.5px solid rgba(255,255,255,.12)',
-                      color: isDone ? '#fff' : isActive ? '#a855f7' : 'var(--text3)',
+                      background: isDone ? '#4338CA' : isActive ? 'rgba(112,0,255,.2)' : 'rgba(255,255,255,.06)',
+                      border: isDone ? 'none' : isActive ? '1.5px solid #4338CA' : '1.5px solid rgba(255,255,255,.12)',
+                      color: isDone ? '#fff' : isActive ? '#3B82F6' : 'var(--text3)',
                     }}>
                       {isDone ? '✓' : isActive ? <span style={{display:'inline-block',animation:'spin .6s linear infinite'}}>⟳</span> : (i+1)}
                     </div>
                     <span style={{
                       fontSize:'.88rem',
-                      color: isDone ? 'var(--text)' : isActive ? '#a855f7' : 'var(--text3)',
+                      color: isDone ? 'var(--text)' : isActive ? '#3B82F6' : 'var(--text3)',
                       fontWeight: isActive ? 600 : 400,
                     }}>
                       {s.label}
@@ -293,7 +293,7 @@ export function Bridge({ toast, setPage, usdcBal, address, apiFetch }) {
               </div>
             )}
             {step === 'done' && (
-              <div style={{fontSize:'.9rem',color:'#7000ff',fontWeight:600,marginBottom:10}}>
+              <div style={{fontSize:'.9rem',color:'#4338CA',fontWeight:600,marginBottom:10}}>
                 ✅ {stepMsg}
               </div>
             )}
