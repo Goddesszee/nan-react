@@ -4902,6 +4902,20 @@ async function doBulkSend(){
     renderPayrollHistory();
   }catch(e){console.warn('Payroll history save error:',e.message);}
 
+  // Log to backend so Dashboard/Reports can aggregate real data across devices
+  try{
+    await fetch('https://nan-production.up.railway.app/api/payroll', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        action:'log-run', employerAddress:userAddr,
+        recipients: bulkRecipients.map(r=>({name:r.name||r.addr.slice(0,10),addr:r.addr,amount:r.amount,status:r.status})),
+        token: bulkToken,
+        totalAmount: bulkRecipients.reduce((s,r)=>s+(r.status==='done'?r.amount:0),0),
+        sentCount: done, failedCount: total-done, runType: 'bulk',
+      }),
+    });
+  }catch(e){console.warn('Payroll backend log error:',e.message);}
+
   bulkRecipients = bulkRecipients.filter(r => r.status !== 'done');
   setTimeout(() => {
     renderBulkRecipients();
@@ -4909,6 +4923,185 @@ async function doBulkSend(){
     btn.disabled = false;
     if(!bulkRecipients.length) progress.style.display = 'none';
   }, 3000);
+}
+
+// ═══════════════════════════════════════════
+// NAN PAYROLL — Dashboard, Employees, Scheduled, Reports, Wallet tabs
+// ═══════════════════════════════════════════
+const PAYROLL_API = 'https://nan-production.up.railway.app/api/payroll';
+const PAYROLL_TABS = ['dashboard','run','employees','scheduled','reports','wallet'];
+function payrollSwitchTab(tab){
+  PAYROLL_TABS.forEach(t => {
+    const pane = document.getElementById('payroll'+t.charAt(0).toUpperCase()+t.slice(1)+'Pane');
+    if (pane) pane.style.display = (t===tab) ? 'block' : 'none';
+    const btn = document.getElementById('payrollTab'+t.charAt(0).toUpperCase()+t.slice(1));
+    if (btn) btn.classList.toggle('active', t===tab);
+  });
+  if (tab === 'dashboard') payrollLoadDashboard();
+  if (tab === 'employees') payrollLoadEmployees();
+  if (tab === 'reports') payrollLoadReports();
+  if (tab === 'wallet') payrollLoadWalletTab();
+}
+
+async function payrollLoadDashboard(){
+  if (!userAddr) return;
+  document.getElementById('dashWalletBal').textContent = (parseFloat(usdcBal||0)).toFixed(2) + ' USDC';
+  try{
+    const r = await fetch(PAYROLL_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'dashboard-stats', employerAddress:userAddr})});
+    const d = await r.json();
+    if(!d.success) throw new Error(d.error);
+    document.getElementById('dashEmpCount').textContent = d.stats.totalEmployees;
+    document.getElementById('dashMonthTotal').textContent = '$' + d.stats.payrollThisMonth.toFixed(2);
+    document.getElementById('dashTotalRuns').textContent = d.stats.totalRuns;
+    const el = document.getElementById('dashRecentRuns');
+    if(!d.stats.recentRuns.length){
+      el.innerHTML = '<div style="text-align:center;padding:32px 20px;border:2px dashed var(--border);border-radius:14px;color:var(--text3);">No payroll runs logged yet.</div>';
+    } else {
+      el.innerHTML = d.stats.recentRuns.map(run => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border:1px solid var(--border);border-radius:12px;margin-bottom:8px;background:var(--card);">
+          <div>
+            <div style="font-weight:700;font-size:.86rem;color:var(--text);">${run.recipients.length} recipient${run.recipients.length!==1?'s':''}</div>
+            <div style="font-size:.74rem;color:var(--text3);">${new Date(run.createdAt).toLocaleString()}</div>
+          </div>
+          <div style="font-family:'JetBrains Mono',monospace;font-weight:700;color:#7000ff;">${run.totalAmount.toFixed(2)} ${run.token}</div>
+        </div>`).join('');
+    }
+  }catch(e){ document.getElementById('dashRecentRuns').textContent = '❌ ' + e.message; }
+}
+
+let payrollEmployeesCache = [];
+async function payrollLoadEmployees(){
+  if(!userAddr){ document.getElementById('empResults').textContent = 'Connect your wallet first.'; return; }
+  const el = document.getElementById('empResults');
+  el.textContent = 'Loading employees...';
+  try{
+    const r = await fetch(PAYROLL_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'list-employees', employerAddress:userAddr})});
+    const d = await r.json();
+    if(!d.success) throw new Error(d.error);
+    payrollEmployeesCache = d.employees;
+    payrollRenderEmployees();
+  }catch(e){ el.textContent = '❌ ' + e.message; }
+}
+function payrollRenderEmployees(){
+  const el = document.getElementById('empResults');
+  const q = (document.getElementById('empSearchInput')?.value || '').trim().toLowerCase();
+  const list = payrollEmployeesCache.filter(e => !q || (e.fullName||'').toLowerCase().includes(q) || (e.position||'').toLowerCase().includes(q) || (e.department||'').toLowerCase().includes(q));
+  if(!list.length){ el.innerHTML = `<div style="text-align:center;padding:40px 20px;border:2px dashed var(--border);border-radius:14px;color:var(--text3);">${payrollEmployeesCache.length ? 'No employees match your search.' : 'No employees yet. Add your first employee, or import a CSV.'}</div>`; return; }
+  el.innerHTML = `<table style="width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;">
+    <tr style="text-align:left;font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);background:var(--surface);">
+      <th style="padding:10px 14px;">Name</th><th style="padding:10px 14px;">Position</th><th style="padding:10px 14px;">Department</th><th style="padding:10px 14px;">Salary</th><th style="padding:10px 14px;">Status</th><th style="padding:10px 14px;"></th>
+    </tr>
+    ${list.map(e => `
+    <tr style="border-top:1px solid var(--border);font-size:.82rem;">
+      <td style="padding:10px 14px;font-weight:700;color:var(--text);">${e.fullName}</td>
+      <td style="padding:10px 14px;color:var(--text2);">${e.position||'—'}</td>
+      <td style="padding:10px 14px;color:var(--text2);">${e.department||'—'}</td>
+      <td style="padding:10px 14px;color:var(--text2);">${e.salary ? '$'+e.salary+' '+e.currency : '—'}</td>
+      <td style="padding:10px 14px;"><span style="font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:100px;background:rgba(22,163,74,.1);color:#16a34a;">${e.status}</span></td>
+      <td style="padding:10px 14px;"><span onclick="payrollDeleteEmployee('${e.id}')" style="color:#e24b4a;font-size:.76rem;font-weight:700;cursor:pointer;">Remove</span></td>
+    </tr>`).join('')}
+  </table>`;
+}
+async function payrollAddEmployee(){
+  if(!userAddr){ toast('Connect your wallet first','error'); return; }
+  const fullName = document.getElementById('empFullName').value.trim();
+  const walletAddress = document.getElementById('empWallet').value.trim();
+  const statusEl = document.getElementById('empAddStatus');
+  if(!fullName || !walletAddress){ statusEl.textContent = 'Name and wallet address are required.'; return; }
+  statusEl.textContent = 'Saving...';
+  const r = await fetch(PAYROLL_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+    action:'add-employee', employerAddress:userAddr, fullName, walletAddress,
+    email: document.getElementById('empEmail').value.trim(),
+    phone: document.getElementById('empPhone').value.trim(),
+    position: document.getElementById('empPosition').value.trim(),
+    department: document.getElementById('empDepartment').value.trim(),
+    salary: document.getElementById('empSalary').value.trim(),
+    currency: document.getElementById('empCurrency').value,
+  })});
+  const d = await r.json();
+  if(!d.success){ statusEl.textContent = '❌ ' + d.error; return; }
+  statusEl.textContent = '✓ Employee added.';
+  ['empFullName','empWallet','empEmail','empPhone','empPosition','empDepartment','empSalary'].forEach(id => document.getElementById(id).value = '');
+  payrollLoadEmployees();
+}
+async function payrollDeleteEmployee(employeeId){
+  if(!confirm('Remove this employee?')) return;
+  await fetch(PAYROLL_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete-employee', employerAddress:userAddr, employeeId})});
+  payrollLoadEmployees();
+}
+async function payrollImportEmployeesCSV(event){
+  const file = event.target.files[0];
+  if(!file || !userAddr) return;
+  const text = await file.text();
+  const lines = text.trim().split('\n');
+  const rows = lines.map(line => {
+    const [fullName, walletAddress, position, department, salary, currency, email, phone] = line.split(',').map(s => (s||'').trim());
+    return { fullName, walletAddress, position, department, salary, currency, email, phone };
+  }).filter(r => r.fullName && r.walletAddress);
+  const r = await fetch(PAYROLL_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'import-employees-csv', employerAddress:userAddr, rows})});
+  const d = await r.json();
+  toast(d.success ? `✓ Imported ${d.imported} employees` : ('❌ ' + d.error), d.success?'success':'error', 3000);
+  event.target.value = '';
+  payrollLoadEmployees();
+}
+
+let payrollFreq = 'month';
+function payrollSetFreq(freq, btnEl){
+  payrollFreq = freq;
+  document.querySelectorAll('#payrollScheduledPane .freq-pill').forEach(b => {
+    const active = b === btnEl;
+    b.style.background = active ? '#7000ff' : 'var(--bg)';
+    b.style.color = active ? '#fff' : 'var(--text2)';
+    b.style.border = active ? 'none' : '1px solid var(--border)';
+  });
+}
+function schedulePayrollWithFreq(){
+  if(!bulkRecipients.length){ toast('Add recipients in Run Payroll first','error'); return; }
+  const intervals = { week: 604800000, '2week': 1209600000, month: 2592000000, quarter: 7776000000 };
+  const freqLabels = { week:'weekly', '2week':'bi-weekly', month:'monthly', quarter:'quarterly' };
+  const total = bulkRecipients.reduce((s,r)=>s+r.amount,0);
+  if(!confirm(`Schedule ${freqLabels[payrollFreq]} payroll?\n\n${bulkRecipients.length} recipients · ${total.toFixed(2)} ${bulkToken} total`)) return;
+  const nextRun = Date.now() + intervals[payrollFreq];
+  bulkRecipients.forEach(r=>{
+    createOrder({
+      type:'standing', amount:r.amount, token:bulkToken, to:r.addr,
+      interval: intervals[payrollFreq], nextRun, freq: freqLabels[payrollFreq],
+      label: r.name||r.addr.slice(0,10),
+    });
+  });
+  toast(`✓ ${freqLabels[payrollFreq]} payroll scheduled — ${bulkRecipients.length} recipients`, 'success', 5000);
+}
+
+async function payrollLoadReports(){
+  if(!userAddr){ document.getElementById('payrollReportsResults').textContent = 'Connect your wallet first.'; return; }
+  const el = document.getElementById('payrollReportsResults');
+  el.textContent = 'Loading reports...';
+  try{
+    const r = await fetch(PAYROLL_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'reports', employerAddress:userAddr})});
+    const d = await r.json();
+    if(!d.success) throw new Error(d.error);
+    if(!d.hasData){ el.innerHTML = `<div style="text-align:center;padding:40px 20px;border:2px dashed var(--border);border-radius:14px;color:var(--text3);">Not enough data yet — run at least one payroll to see reports.</div>`; return; }
+    const maxSpend = Math.max(...d.monthlySpending.map(m => m.total), 1);
+    el.innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;">
+          <h4 style="font-size:.9rem;font-weight:700;margin-bottom:14px;">Monthly payroll spending</h4>
+          <div style="display:flex;align-items:flex-end;gap:8px;height:100px;">
+            ${d.monthlySpending.map(m => `<div style="flex:1;background:rgba(112,0,255,.15);border-radius:4px 4px 0 0;height:${Math.max(4,(m.total/maxSpend)*100)}%;" title="${m.month}: $${m.total.toFixed(2)}"></div>`).join('')}
+          </div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;">
+          <h4 style="font-size:.9rem;font-weight:700;margin-bottom:14px;">Payment success rate</h4>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:2rem;font-weight:700;color:#16a34a;">${d.successRate !== null ? d.successRate.toFixed(1)+'%' : '—'}</div>
+          <div style="font-size:.78rem;color:var(--text3);margin-top:10px;">Total spent: $${d.totalSpent.toFixed(2)} across ${d.totalRuns} run${d.totalRuns!==1?'s':''}</div>
+        </div>
+      </div>`;
+  }catch(e){ el.textContent = '❌ ' + e.message; }
+}
+
+function payrollLoadWalletTab(){
+  document.getElementById('payrollWalletUsdc').textContent = (parseFloat(usdcBal||0)).toFixed(2) + ' USDC';
+  document.getElementById('payrollWalletEurc').textContent = (parseFloat(eurcBal||0)).toFixed(2) + ' EURC';
 }
 
 // ═══════════════════════════════════════════
