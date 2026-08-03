@@ -343,6 +343,10 @@ html,body{background-color:var(--bg);}
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12l3 3 6-6"/><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 9h18"/></svg>
       <span class="nan-sb-label">Gigs</span>
     </div>
+    <div class="nan-sb-item-row" id="sb-cashinout" onclick="goPage('cashinout')">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>
+      <span class="nan-sb-label">Cash In Cash Out</span>
+    </div>
     <div class="nan-sb-item-row" onclick="goPage('send');setTimeout(()=>setSendTab('send'),100)">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
       <span class="nan-sb-label">Send</span>
@@ -435,6 +439,10 @@ html,body{background-color:var(--bg);}
       <button onclick="goPage('gigs')" id="tnav-gigs" class="tnav-btn" style="display:none;align-items:center;gap:4px;">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12l3 3 6-6"/><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 9h18"/></svg>
         Gigs
+      </button>
+      <button onclick="goPage('cashinout')" id="tnav-cashinout" class="tnav-btn" style="display:none;align-items:center;gap:4px;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/></svg>
+        Cash In Cash Out
       </button>
       <button id="tnav-trade-btn" class="tnav-btn" style="display:none;" onclick="event.stopPropagation();nanToggleDd('trade',this)">Wallet <span class="nan-caret" style="font-size:10px;margin-left:3px;display:inline-block;transition:transform .2s;">&#9660;</span></button>
       
@@ -3813,6 +3821,144 @@ html,body{background-color:var(--bg);}
 
   </div><!-- end card -->
 </div> ══ -->
+<div class="page" id="page-cashinout">
+    <style>
+      #page-cashinout .ctab { padding:9px 16px;border-radius:100px;font-size:.82rem;font-weight:700;border:none;background:transparent;color:var(--text2) !important;cursor:pointer; }
+      #page-cashinout .ctab.active { background:#7000ff;color:#fff !important; }
+      #page-cashinout .pcard { background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,.04); }
+      #page-cashinout .fx-ticker{background:#0a0a0a;border-radius:16px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;}
+      #page-cashinout .fx-lbl{display:flex;align-items:center;gap:8px;font-size:.7rem;font-weight:700;color:#a3a3a3;text-transform:uppercase;letter-spacing:.05em;}
+      #page-cashinout .fx-dot{width:7px;height:7px;border-radius:50%;background:#16a34a;animation:cioFxPulse 1.6s ease-in-out infinite;}
+      @keyframes cioFxPulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+      #page-cashinout .fx-pair{display:flex;align-items:center;gap:8px;}
+      #page-cashinout .fx-pair .sym{font-size:.78rem;color:#a3a3a3;}
+      #page-cashinout .fx-pair .rate{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:700;color:#fff;}
+    </style>
+    <div style="max-width:1000px;margin:0 auto;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+        <div style="width:34px;height:34px;border-radius:10px;background:#7000ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/></svg></div>
+        <div style="font-size:1.3rem;font-weight:800;color:#7000ff;letter-spacing:-.01em;">Cash In Cash Out</div>
+      </div>
+      <div style="font-size:.85rem;color:var(--text2);margin-bottom:18px;">Move between stablecoins and Naira, directly from your Nan Wallet.</div>
+
+      <div style="display:flex;gap:6px;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:100px;padding:4px;margin-bottom:20px;box-shadow:0 1px 2px rgba(0,0,0,.04);">
+        <button id="cioTabOverview" class="ctab active" onclick="cioSwitchTab('overview')">Overview</button>
+        <button id="cioTabCashin" class="ctab" onclick="cioSwitchTab('cashin')">Cash In</button>
+        <button id="cioTabCashout" class="ctab" onclick="cioSwitchTab('cashout')">Cash Out</button>
+        <button id="cioTabBanks" class="ctab" onclick="cioSwitchTab('banks')">Bank Accounts</button>
+        <button id="cioTabHistory" class="ctab" onclick="cioSwitchTab('history')">Transaction History</button>
+      </div>
+
+      <div id="cioOverviewPane">
+        <div class="fx-ticker">
+          <div class="fx-lbl"><span class="fx-dot"></span>Live rates</div>
+          <div id="cioRateUsdc" class="fx-pair"><span class="sym">USDC to NGN</span><span class="rate">Loading</span></div>
+          <div id="cioRateEurc" class="fx-pair"><span class="sym">EURC to NGN</span><span class="rate">Loading</span></div>
+          <div id="cioRateUsdcEurc" class="fx-pair"><span class="sym">USDC to EURC</span><span class="rate">Loading</span></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
+          <div class="pcard"><div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;">USDC balance</div><div id="cioBalUsdc" style="font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700;margin-top:4px;">0.00</div></div>
+          <div class="pcard"><div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;">EURC balance</div><div id="cioBalEurc" style="font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700;margin-top:4px;">0.00</div></div>
+          <div class="pcard" style="background:rgba(112,0,255,.06);border-color:rgba(112,0,255,.2);"><div style="font-size:.68rem;color:#7000ff;text-transform:uppercase;letter-spacing:.05em;">Naira balance</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700;margin-top:4px;color:#7000ff;">Not yet supported</div></div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px;">
+          <button class="btn" onclick="cioSwitchTab('cashin')" style="width:auto;padding:12px 20px;border-radius:12px;font-size:.85rem;">Cash In</button>
+          <button class="btn" onclick="cioSwitchTab('cashout')" style="width:auto;padding:12px 20px;border-radius:12px;font-size:.85rem;">Cash Out</button>
+          <button onclick="goPage('swap')" style="padding:12px 20px;border-radius:12px;font-size:.85rem;font-weight:700;background:var(--card);border:1px solid var(--border);color:var(--text);cursor:pointer;">Swap</button>
+          <button onclick="goPage('send')" style="padding:12px 20px;border-radius:12px;font-size:.85rem;font-weight:700;background:var(--card);border:1px solid var(--border);color:var(--text);cursor:pointer;">Send</button>
+          <button onclick="goPage('receive')" style="padding:12px 20px;border-radius:12px;font-size:.85rem;font-weight:700;background:var(--card);border:1px solid var(--border);color:var(--text);cursor:pointer;">Receive</button>
+        </div>
+        <h3 style="font-size:.9rem;margin-bottom:10px;">Recent activity</h3>
+        <div id="cioOverviewRecent" style="font-size:.85rem;color:var(--text3);">Loading</div>
+      </div>
+
+      <div id="cioCashinPane" style="display:none;max-width:460px;">
+        <div class="fx-ticker">
+          <div class="fx-lbl"><span class="fx-dot"></span>Live rates</div>
+          <div id="cioRateUsdc2" class="fx-pair"><span class="sym">USDC to NGN</span><span class="rate">Loading</span></div>
+          <div id="cioRateEurc2" class="fx-pair"><span class="sym">EURC to NGN</span><span class="rate">Loading</span></div>
+        </div>
+        <div class="pcard" style="margin-bottom:16px;">
+          <div style="font-size:.78rem;color:var(--text2);margin-bottom:16px;">There is no licensed Naira payment processor connected yet, so a cash in request is created and tracked, but it will not automatically credit your wallet. This is stated here so the flow is never misleading.</div>
+          <div style="margin-bottom:14px;">
+            <div style="font-size:.8rem;font-weight:700;margin-bottom:6px;">Amount to deposit, Naira</div>
+            <input id="cioCashinAmount" type="text" inputmode="decimal" placeholder="0.00" oninput="cioUpdateCashinPreview()" style="width:100%;padding:14px 16px;border-radius:12px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;"/>
+          </div>
+          <div style="margin-bottom:14px;">
+            <div style="font-size:.8rem;font-weight:700;margin-bottom:6px;">Convert to</div>
+            <select id="cioCashinToken" onchange="cioUpdateCashinPreview()" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-weight:700;">
+              <option value="USDC">USDC</option>
+              <option value="EURC">EURC</option>
+            </select>
+          </div>
+          <div style="background:var(--purple-tint, rgba(112,0,255,.06));border:1px solid rgba(112,0,255,.2);border-radius:12px;padding:14px 16px;margin-bottom:14px;">
+            <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--text2);padding:5px 0;"><span>Exchange rate</span><span id="cioCashinRate">Loading</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--text2);padding:5px 0;"><span>Conversion fee</span><span>0.00</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.95rem;font-weight:700;color:var(--text);padding-top:10px;border-top:1px solid rgba(112,0,255,.2);"><span>Estimated to receive</span><span id="cioCashinEstimate">0.00</span></div>
+          </div>
+          <button class="btn" onclick="cioCreateCashin()" style="width:100%;padding:15px;border-radius:12px;">Create cash in request</button>
+          <div id="cioCashinStatus" style="font-size:.78rem;color:var(--text3);margin-top:8px;"></div>
+        </div>
+        <div id="cioCashinFlow" style="display:none;"></div>
+      </div>
+
+      <div id="cioCashoutPane" style="display:none;max-width:460px;">
+        <div class="fx-ticker">
+          <div class="fx-lbl"><span class="fx-dot"></span>Live rates</div>
+          <div id="cioRateUsdc3" class="fx-pair"><span class="sym">USDC to NGN</span><span class="rate">Loading</span></div>
+          <div id="cioRateEurc3" class="fx-pair"><span class="sym">EURC to NGN</span><span class="rate">Loading</span></div>
+        </div>
+        <div class="pcard" style="margin-bottom:16px;">
+          <div style="font-size:.78rem;color:var(--text2);margin-bottom:16px;">There is no licensed Naira payment processor connected yet, so a cash out request is created and tracked, but funds are not automatically sent to your bank. This is stated here so the flow is never misleading.</div>
+          <div style="margin-bottom:14px;">
+            <div style="font-size:.8rem;font-weight:700;margin-bottom:6px;">Withdraw from</div>
+            <select id="cioCashoutToken" onchange="cioUpdateCashoutPreview()" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-weight:700;">
+              <option value="USDC">USDC</option>
+              <option value="EURC">EURC</option>
+            </select>
+          </div>
+          <div style="margin-bottom:14px;">
+            <div style="font-size:.8rem;font-weight:700;margin-bottom:6px;">Amount to withdraw</div>
+            <input id="cioCashoutAmount" type="text" inputmode="decimal" placeholder="0.00" oninput="cioUpdateCashoutPreview()" style="width:100%;padding:14px 16px;border-radius:12px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;"/>
+          </div>
+          <div style="margin-bottom:14px;">
+            <div style="font-size:.8rem;font-weight:700;margin-bottom:6px;">Send to</div>
+            <select id="cioCashoutBank" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-weight:700;">
+              <option value="">Loading bank accounts</option>
+            </select>
+          </div>
+          <div style="background:rgba(112,0,255,.06);border:1px solid rgba(112,0,255,.2);border-radius:12px;padding:14px 16px;margin-bottom:14px;">
+            <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--text2);padding:5px 0;"><span>Live exchange rate</span><span id="cioCashoutRate">Loading</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--text2);padding:5px 0;"><span>Transaction fee</span><span>0.00</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--text2);padding:5px 0;"><span>Processing time</span><span>Pending manual settlement</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.95rem;font-weight:700;color:var(--text);padding-top:10px;border-top:1px solid rgba(112,0,255,.2);"><span>Estimated amount, Naira</span><span id="cioCashoutEstimate">0.00</span></div>
+          </div>
+          <button class="btn" onclick="cioCreateCashout()" style="width:100%;padding:15px;border-radius:12px;">Review and create request</button>
+          <div id="cioCashoutStatus" style="font-size:.78rem;color:var(--text3);margin-top:8px;"></div>
+        </div>
+      </div>
+
+      <div id="cioBanksPane" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <div></div>
+          <button class="btn" onclick="document.getElementById('cioAddBankForm').style.display = document.getElementById('cioAddBankForm').style.display==='block'?'none':'block'" style="width:auto;padding:10px 18px;border-radius:10px;font-size:.82rem;">Add bank account</button>
+        </div>
+        <div id="cioAddBankForm" class="pcard" style="display:none;margin-bottom:16px;max-width:420px;">
+          <input id="cioBankName" placeholder="Bank name" style="width:100%;padding:10px 12px;margin-bottom:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;"/>
+          <input id="cioBankAccNum" placeholder="Account number" style="width:100%;padding:10px 12px;margin-bottom:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;"/>
+          <input id="cioBankAccName" placeholder="Account name" style="width:100%;padding:10px 12px;margin-bottom:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;"/>
+          <button class="btn" onclick="cioAddBank()" style="width:auto;padding:9px 20px;border-radius:8px;font-size:.82rem;">Save account</button>
+          <div id="cioAddBankStatus" style="font-size:.76rem;color:var(--text3);margin-top:6px;"></div>
+        </div>
+        <div id="cioBanksResults" style="font-size:.85rem;color:var(--text3);">Loading bank accounts</div>
+      </div>
+
+      <div id="cioHistoryPane" style="display:none;">
+        <div id="cioHistoryResults" style="font-size:.85rem;color:var(--text3);">Loading transaction history</div>
+      </div>
+    </div>
+  </div>
+
   <div class="page" id="page-naira">
     <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;max-width:460px !important;">
       <button class="back-btn" onclick="goBack()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg> Back</button>
@@ -6193,6 +6339,7 @@ function nanToggleFaucet(btn){
       <button class="nan-drow" id="drow-supplier" onclick="nanCloseDrawer();goPage('supplier-agent')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 9h1M9 13h1M14 9h1M14 13h1"/></svg></span><span class="nan-drow-lbl">Real Estate Marketplace</span></button>
       <button class="nan-drow" id="drow-marketplace" onclick="nanCloseDrawer();goPage('marketplace')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9M3 9v10a1 1 0 001 1h16a1 1 0 001-1V9M3 9h18M9 13a2 2 0 11-4 0M19 13a2 2 0 11-4 0"/></svg></span><span class="nan-drow-lbl">Marketplace</span></button>
       <button class="nan-drow" id="drow-gigs" onclick="nanCloseDrawer();goPage('gigs')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12l3 3 6-6"/><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 9h18"/></svg></span><span class="nan-drow-lbl">Gigs</span></button>
+      <button class="nan-drow" id="drow-cashinout" onclick="nanCloseDrawer();goPage('cashinout')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/></svg></span><span class="nan-drow-lbl">Cash In Cash Out</span></button>
       <button class="nan-drow" id="drow-agent-wallet" onclick="nanCloseDrawer();goPage('agent-wallet')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><circle cx="12" cy="14" r="2"/></svg></span><span class="nan-drow-lbl">Agent Wallet</span><span style="font-size:9px;font-weight:700;background:rgba(112,0,255,.15);border:1px solid rgba(112,0,255,.25);color:#a855f7;border-radius:5px;padding:2px 6px;margin-left:auto;flex-shrink:0;">Circle</span></button>
       <button class="nan-drow" id="drow-naira" onclick="nanCloseDrawer();goPage('naira')"><span class="nan-drow-ic" style="font-size:15px;font-weight:700;">&#8358;</span><span class="nan-drow-lbl">Naira</span></button>
       <button class="nan-drow" id="drow-swap" onclick="nanCloseDrawer();goPage('swap')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg></span><span class="nan-drow-lbl">Swap</span></button>
