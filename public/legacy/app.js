@@ -4930,7 +4930,7 @@ async function doBulkSend(){
 // ═══════════════════════════════════════════
 const CASHIO_API = 'https://nan-production.up.railway.app/api/cashinout';
 let cioRatesCache = null;
-const CIO_TABS = ['overview','cashin','cashout','banks','history'];
+const CIO_TABS = ['overview','swap','cashin','cashout','banks','history'];
 function cioSwitchTab(tab){
   CIO_TABS.forEach(t => {
     const pane = document.getElementById('cio'+t.charAt(0).toUpperCase()+t.slice(1)+'Pane');
@@ -4942,6 +4942,7 @@ function cioSwitchTab(tab){
   if (tab === 'overview') cioLoadOverview();
   if (tab === 'banks') cioLoadBanks();
   if (tab === 'cashout') cioLoadBanksForCashout();
+  if (tab === 'swap') cioLoadBanksForSwap();
   if (tab === 'history') cioLoadHistory();
 }
 
@@ -4954,11 +4955,12 @@ async function cioLoadRates(){
     const usdcText = d.rates.usdcToNgn ? d.rates.usdcToNgn.toFixed(2) : 'Unavailable';
     const eurcText = d.rates.eurcToNgn ? d.rates.eurcToNgn.toFixed(2) : 'Unavailable';
     const crossText = d.rates.usdcToEurc ? d.rates.usdcToEurc.toFixed(4) : 'Unavailable';
-    ['cioRateUsdc','cioRateUsdc2','cioRateUsdc3'].forEach(id => { const el = document.getElementById(id); if(el) el.querySelector('.rate').textContent = usdcText; });
-    ['cioRateEurc','cioRateEurc2','cioRateEurc3'].forEach(id => { const el = document.getElementById(id); if(el) el.querySelector('.rate').textContent = eurcText; });
+    ['cioRateUsdc','cioRateUsdc2','cioRateUsdc3','cioRateUsdc4'].forEach(id => { const el = document.getElementById(id); if(el) el.querySelector('.rate').textContent = usdcText; });
+    ['cioRateEurc','cioRateEurc2','cioRateEurc3','cioRateEurc4'].forEach(id => { const el = document.getElementById(id); if(el) el.querySelector('.rate').textContent = eurcText; });
     const crossEl = document.getElementById('cioRateUsdcEurc'); if(crossEl) crossEl.querySelector('.rate').textContent = crossText;
     cioUpdateCashinPreview();
     cioUpdateCashoutPreview();
+    cioUpdateSwapPreview();
   }catch(e){ console.warn('Cash in cash out rate fetch error:', e.message); }
 }
 
@@ -4967,7 +4969,7 @@ function cioLoadOverview(){
   document.getElementById('cioBalEurc').textContent = (parseFloat(eurcBal||0)).toFixed(2);
   cioFetchTransactions().then(txs => {
     const el = document.getElementById('cioOverviewRecent');
-    if(!txs.length){ el.innerHTML = '<div style="text-align:center;padding:32px 20px;border:2px dashed var(--border);border-radius:14px;color:var(--text3);">No cash in or cash out activity yet.</div>'; return; }
+    if(!txs.length){ el.innerHTML = '<div style="text-align:center;padding:32px 20px;border:2px dashed var(--border);border-radius:14px;color:var(--text3);">No deposit or withdrawal activity yet.</div>'; return; }
     el.innerHTML = txs.slice(0,5).map(cioTxRow).join('');
   });
 }
@@ -4990,7 +4992,7 @@ function cioTxRow(tx){
   const amountText = isCashin ? tx.nairaAmount.toFixed(2)+' NGN' : tx.stablecoinAmount.toFixed(2)+' '+tx.fromToken;
   return `<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border:1px solid var(--border);border-radius:12px;margin-bottom:8px;background:var(--card);">
     <div>
-      <div style="font-weight:700;font-size:.86rem;color:var(--text);">${isCashin ? 'Cash In' : 'Cash Out'}, ${amountText}</div>
+      <div style="font-weight:700;font-size:.86rem;color:var(--text);">${isCashin ? 'Deposit' : 'Withdrawal'}, ${amountText}</div>
       <div style="font-size:.74rem;color:var(--text3);">${new Date(tx.createdAt).toLocaleString()}</div>
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
@@ -5065,6 +5067,43 @@ async function cioCreateCashout(){
   toast('Cash out request created', 'success', 3000);
 }
 
+async function cioLoadBanksForSwap(){
+  if(!userAddr) return;
+  const sel = document.getElementById('cioSwapBank');
+  const r = await fetch(CASHIO_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'list-bank-accounts', walletAddress:userAddr})});
+  const d = await r.json();
+  if(!d.success || !d.accounts.length){ sel.innerHTML = '<option value="">No saved bank account, add one first</option>'; return; }
+  sel.innerHTML = d.accounts.map(a => `<option value="${a.id}">${a.bankName}, ${a.accountNumber}</option>`).join('');
+}
+function cioUpdateSwapPreview(){
+  const amt = parseFloat(document.getElementById('cioSwapAmount')?.value) || 0;
+  const token = document.getElementById('cioSwapToken')?.value || 'USDC';
+  const rate = cioRatesCache ? (token === 'EURC' ? cioRatesCache.eurcToNgn : cioRatesCache.usdcToNgn) : null;
+  const rateEl = document.getElementById('cioSwapRate');
+  const estEl = document.getElementById('cioSwapEstimate');
+  const receiveEl = document.getElementById('cioSwapReceive');
+  if(!rateEl || !estEl) return;
+  rateEl.textContent = rate ? '1 '+token+' equals '+rate.toFixed(2)+' NGN' : 'Unavailable';
+  const total = rate && amt ? (amt*rate).toFixed(2) : '0.00';
+  estEl.textContent = total+' NGN';
+  if(receiveEl) receiveEl.value = total;
+}
+async function cioSwapCreate(){
+  if(!userAddr){ toast('Connect your wallet first','error'); return; }
+  const amt = parseFloat(document.getElementById('cioSwapAmount').value);
+  const token = document.getElementById('cioSwapToken').value;
+  const bankAccountId = document.getElementById('cioSwapBank').value;
+  const statusEl = document.getElementById('cioSwapStatus');
+  if(!amt || amt <= 0){ statusEl.textContent = 'Enter an amount to swap.'; return; }
+  if(!bankAccountId){ statusEl.textContent = 'Add and select a bank account first.'; return; }
+  statusEl.textContent = 'Creating request';
+  const r = await fetch(CASHIO_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'create-cashout-request', walletAddress:userAddr, stablecoinAmount:amt, fromToken:token, bankAccountId})});
+  const d = await r.json();
+  if(!d.success){ statusEl.textContent = 'Error, '+d.error; return; }
+  statusEl.textContent = 'Swap request created, pending settlement.';
+  toast('Swap to Naira request created', 'success', 3000);
+}
+
 async function cioLoadBanks(){
   if(!userAddr){ document.getElementById('cioBanksResults').textContent = 'Connect your wallet first.'; return; }
   const el = document.getElementById('cioBanksResults');
@@ -5131,14 +5170,14 @@ async function cioDownloadReceipt(transactionId){
   ctx.strokeStyle = 'rgba(168,85,247,0.5)'; ctx.lineWidth = 1.5;
   ctx.beginPath(); ctx.roundRect(10,10,580,300,16); ctx.stroke();
   ctx.fillStyle = '#f3e8ff'; ctx.font = 'bold 20px sans-serif';
-  ctx.textAlign = 'left'; ctx.fillText('Nan Cash In Cash Out Receipt', 28, 48);
+  ctx.textAlign = 'left'; ctx.fillText('Nan Fiat Receipt', 28, 48);
   ctx.fillStyle = '#c084fc'; ctx.font = '12px monospace';
   ctx.fillText(new Date(tx.createdAt).toLocaleString(), 28, 70);
   ctx.strokeStyle = 'rgba(168,85,247,0.2)'; ctx.setLineDash([4,4]);
   ctx.beginPath(); ctx.moveTo(28,84); ctx.lineTo(572,84); ctx.stroke(); ctx.setLineDash([]);
   const rows = tx.type === 'cashin'
-    ? [['Transaction ID', tx.id], ['Type', 'Cash In'], ['Amount sent', tx.nairaAmount.toFixed(2)+' NGN'], ['Exchange rate', tx.rate ? tx.rate.toFixed(2) : 'Unavailable'], ['Amount received', tx.estimatedReceive ? tx.estimatedReceive.toFixed(2)+' '+tx.convertTo : 'Unavailable'], ['Wallet address', tx.walletAddress], ['Status', tx.status]]
-    : [['Transaction ID', tx.id], ['Type', 'Cash Out'], ['Amount sent', tx.stablecoinAmount.toFixed(2)+' '+tx.fromToken], ['Exchange rate', tx.rate ? tx.rate.toFixed(2) : 'Unavailable'], ['Amount received', tx.estimatedNaira ? tx.estimatedNaira.toFixed(2)+' NGN' : 'Unavailable'], ['Bank details', tx.bankName+', '+tx.accountNumber], ['Status', tx.status]];
+    ? [['Transaction ID', tx.id], ['Type', 'Deposit'], ['Amount sent', tx.nairaAmount.toFixed(2)+' NGN'], ['Exchange rate', tx.rate ? tx.rate.toFixed(2) : 'Unavailable'], ['Amount received', tx.estimatedReceive ? tx.estimatedReceive.toFixed(2)+' '+tx.convertTo : 'Unavailable'], ['Wallet address', tx.walletAddress], ['Status', tx.status]]
+    : [['Transaction ID', tx.id], ['Type', 'Withdrawal'], ['Amount sent', tx.stablecoinAmount.toFixed(2)+' '+tx.fromToken], ['Exchange rate', tx.rate ? tx.rate.toFixed(2) : 'Unavailable'], ['Amount received', tx.estimatedNaira ? tx.estimatedNaira.toFixed(2)+' NGN' : 'Unavailable'], ['Bank details', tx.bankName+', '+tx.accountNumber], ['Status', tx.status]];
   rows.forEach((row, i) => {
     const y = 108 + i*30;
     ctx.fillStyle = '#a3a3a3'; ctx.font = '12px sans-serif'; ctx.textAlign = 'left';
