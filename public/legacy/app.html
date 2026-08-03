@@ -3952,7 +3952,94 @@ html,body{background-color:var(--bg);}
 
     <!-- ══ BULK PAY PAGE ══ -->
   <div class="page" id="page-bulk">
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;max-width:460px !important;">
+    <style>
+      #page-bulk .ptab { padding:9px 16px;border-radius:100px;font-size:.82rem;font-weight:700;border:none;background:transparent;color:var(--text2) !important;cursor:pointer; }
+      #page-bulk .ptab.active { background:#7000ff;color:#fff !important; }
+      #page-bulk .pcard { background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,.04); }
+    </style>
+    <div style="max-width:900px;margin:0 auto;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+        <div style="width:34px;height:34px;border-radius:10px;background:#7000ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
+        <div style="font-size:1.3rem;font-weight:800;color:#7000ff;letter-spacing:-.01em;">Payroll</div>
+      </div>
+      <div style="font-size:.85rem;color:var(--text2);margin-bottom:18px;">Pay your team in stablecoins, on-chain, in one click.</div>
+
+      <div style="display:flex;gap:6px;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:100px;padding:4px;margin-bottom:20px;box-shadow:0 1px 2px rgba(0,0,0,.04);">
+        <button id="payrollTabDashboard" class="ptab active" onclick="payrollSwitchTab('dashboard')">📊 Dashboard</button>
+        <button id="payrollTabRun" class="ptab" onclick="payrollSwitchTab('run')">💸 Run Payroll</button>
+        <button id="payrollTabEmployees" class="ptab" onclick="payrollSwitchTab('employees')">👥 Employees</button>
+        <button id="payrollTabScheduled" class="ptab" onclick="payrollSwitchTab('scheduled')">📅 Scheduled</button>
+        <button id="payrollTabReports" class="ptab" onclick="payrollSwitchTab('reports')">📈 Reports</button>
+        <button id="payrollTabWallet" class="ptab" onclick="payrollSwitchTab('wallet')">👛 Wallet</button>
+      </div>
+
+      <div id="payrollDashboardPane">
+        <div id="payrollStatsRow" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
+          <div class="pcard"><div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;">Employees</div><div id="dashEmpCount" style="font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700;margin-top:4px;">—</div></div>
+          <div class="pcard"><div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;">This month</div><div id="dashMonthTotal" style="font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700;margin-top:4px;">—</div></div>
+          <div class="pcard"><div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;">Total runs</div><div id="dashTotalRuns" style="font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700;margin-top:4px;">—</div></div>
+          <div class="pcard" style="background:rgba(112,0,255,.06);border-color:rgba(112,0,255,.2);"><div style="font-size:.68rem;color:#7000ff;text-transform:uppercase;letter-spacing:.05em;">Wallet balance</div><div id="dashWalletBal" style="font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700;margin-top:4px;color:#7000ff;">—</div></div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;">
+          <button class="btn" onclick="payrollSwitchTab('run')" style="width:auto;padding:11px 18px;border-radius:10px;font-size:.82rem;">+ Run payroll</button>
+          <button onclick="payrollSwitchTab('employees')" style="padding:11px 18px;border-radius:10px;font-size:.82rem;font-weight:700;background:var(--card);border:1px solid var(--border);color:var(--text);cursor:pointer;">+ Add employee</button>
+          <button onclick="payrollSwitchTab('reports')" style="padding:11px 18px;border-radius:10px;font-size:.82rem;font-weight:700;background:var(--card);border:1px solid var(--border);color:var(--text);cursor:pointer;">Generate report</button>
+        </div>
+        <h3 style="font-size:.9rem;margin-bottom:10px;">Recent activity</h3>
+        <div id="dashRecentRuns" style="font-size:.85rem;color:var(--text3);">Loading...</div>
+      </div>
+
+      <div id="payrollEmployeesPane" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+          <input id="empSearchInput" oninput="payrollRenderEmployees()" placeholder="Search employees..." style="flex:1;min-width:200px;padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+          <button class="btn" onclick="document.getElementById('empAddForm').style.display = document.getElementById('empAddForm').style.display==='block'?'none':'block'" style="width:auto;padding:10px 18px;border-radius:10px;font-size:.82rem;">+ Add employee</button>
+          <button onclick="document.getElementById('empCsvInput').click()" style="padding:10px 18px;border-radius:10px;font-size:.82rem;font-weight:700;background:var(--card);border:1px solid var(--border);color:var(--text);cursor:pointer;">Import CSV</button>
+          <input id="empCsvInput" type="file" accept=".csv,.txt" style="display:none;" onchange="payrollImportEmployeesCSV(event)"/>
+        </div>
+        <div id="empAddForm" class="pcard" style="display:none;margin-bottom:16px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+            <input id="empFullName" placeholder="Full name" style="padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);"/>
+            <input id="empWallet" placeholder="Wallet address" style="padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);"/>
+            <input id="empEmail" placeholder="Email (optional)" style="padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);"/>
+            <input id="empPhone" placeholder="Phone (optional)" style="padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);"/>
+            <input id="empPosition" placeholder="Position" style="padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);"/>
+            <input id="empDepartment" placeholder="Department" style="padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);"/>
+            <input id="empSalary" type="text" inputmode="decimal" placeholder="Salary" style="padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);"/>
+            <select id="empCurrency" style="padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);"><option>USDC</option><option>EURC</option></select>
+          </div>
+          <button class="btn" onclick="payrollAddEmployee()" style="width:auto;padding:10px 20px;border-radius:8px;font-size:.82rem;">Save employee</button>
+          <div id="empAddStatus" style="font-size:.78rem;color:var(--text3);margin-top:6px;"></div>
+        </div>
+        <div id="empResults" style="font-size:.85rem;color:var(--text3);">Loading employees...</div>
+      </div>
+
+      <div id="payrollScheduledPane" style="display:none;">
+        <div class="pcard" style="max-width:460px;">
+          <h3 style="font-size:.92rem;margin-bottom:12px;">Schedule recurring payroll</h3>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;">
+            <button class="freq-pill" data-freq="week" onclick="payrollSetFreq('week',this)" style="padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg);font-size:.8rem;font-weight:700;color:var(--text2);cursor:pointer;">Weekly</button>
+            <button class="freq-pill" data-freq="2week" onclick="payrollSetFreq('2week',this)" style="padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg);font-size:.8rem;font-weight:700;color:var(--text2);cursor:pointer;">Bi-weekly</button>
+            <button class="freq-pill active" data-freq="month" onclick="payrollSetFreq('month',this)" style="padding:8px 14px;border-radius:8px;border:none;background:#7000ff;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;">Monthly</button>
+            <button class="freq-pill" data-freq="quarter" onclick="payrollSetFreq('quarter',this)" style="padding:8px 14px;border-radius:8px;border:1px solid var(--border);background:var(--bg);font-size:.8rem;font-weight:700;color:var(--text2);cursor:pointer;">Quarterly</button>
+          </div>
+          <div style="font-size:.8rem;color:var(--text2);margin-bottom:14px;">Uses the recipients currently in your Run Payroll list. Add recipients there first, then come back here to schedule them.</div>
+          <button class="btn" onclick="schedulePayrollWithFreq()" style="width:auto;padding:10px 22px;border-radius:10px;font-size:.82rem;">Schedule payroll</button>
+        </div>
+      </div>
+
+      <div id="payrollReportsPane" style="display:none;">
+        <div id="payrollReportsResults" style="font-size:.85rem;color:var(--text3);">Loading reports...</div>
+      </div>
+
+      <div id="payrollWalletPane" style="display:none;">
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+          <div class="pcard"><div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;">USDC balance</div><div id="payrollWalletUsdc" style="font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700;margin-top:4px;">—</div></div>
+          <div class="pcard"><div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;">EURC balance</div><div id="payrollWalletEurc" style="font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700;margin-top:4px;">—</div></div>
+        </div>
+      </div>
+
+      <div id="payrollRunPane" style="display:none;">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
     <div style="font-size:1.0625rem;font-weight:700;color:var(--text);margin-bottom:4px;">Payroll</div>
     <div style="font-size:.875rem;color:var(--text);margin-bottom:16px;">Bulk send USDC or EURC to your team</div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
@@ -4049,6 +4136,7 @@ html,body{background-color:var(--bg);}
     </div>
   </div>
 
+    </div><!-- end payrollRunPane -->
     </div><!-- end bulk unified card -->
   <!-- ══ HISTORY PAGE ══ -->
   <div class="page" id="page-history">
