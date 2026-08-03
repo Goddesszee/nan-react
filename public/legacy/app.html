@@ -327,6 +327,10 @@ html,body{background-color:var(--bg);}
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
       <span class="nan-sb-label">Career agent</span>
     </div>
+    <div class="nan-sb-item-row" id="sb-explore" onclick="goPage('explore')">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span class="nan-sb-label">Explore</span>
+    </div>
     <div class="nan-sb-item-row" id="sb-research" onclick="goPage('supplier-agent')">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 9h1M9 13h1M14 9h1M14 13h1"/></svg>
       <span class="nan-sb-label">Research agent</span>
@@ -415,6 +419,10 @@ html,body{background-color:var(--bg);}
       <button onclick="goPage('career-agent')" id="tnav-career" class="tnav-btn" style="display:none;align-items:center;gap:4px;">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
         Career agent
+      </button>
+      <button onclick="goPage('explore')" id="tnav-explore" class="tnav-btn" style="display:none;align-items:center;gap:4px;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Explore
       </button>
       <button onclick="goPage('supplier-agent')" id="tnav-supplier" class="tnav-btn" style="display:none;align-items:center;gap:4px;">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 9h1M9 13h1M14 9h1M14 13h1"/></svg>
@@ -2358,7 +2366,336 @@ html,body{background-color:var(--bg);}
   </script>
 
   <!-- ══ SUPPLIER AGENT PAGE ══ -->
-  <div class="page" id="page-supplier-agent">
+<div class="page" id="page-explore">
+    <style>
+      #page-explore, #page-explore * { color: #ffffff !important; }
+      [data-theme=light] #page-explore, [data-theme=light] #page-explore * { color: #000000 !important; }
+      #page-explore input::placeholder, #page-explore textarea::placeholder { color: #ffffff !important; opacity: 1 !important; }
+      [data-theme=light] #page-explore input::placeholder, [data-theme=light] #page-explore textarea::placeholder { color: #000000 !important; opacity: 1 !important; }
+      #page-explore .btn, #page-explore .btn * { color: #ffffff !important; }
+      #page-explore [style*="7000ff"] { color: #7000ff !important; }
+      #page-explore [style*="accent3"] { color: var(--accent3) !important; }
+      #page-explore input:not([type="checkbox"]), #page-explore textarea { font-weight: 700 !important; background: var(--bg) !important; border: 1px solid var(--border) !important; }
+      #page-explore .btn { font-weight: 800 !important; font-size: 15px !important; min-height: 48px !important; }
+      #page-explore .etab { padding:9px 16px;border-radius:100px;font-size:.82rem;font-weight:700;border:none;background:transparent;color:var(--text2) !important;cursor:pointer; }
+      #page-explore .etab.active { background:#7000ff;color:#fff !important; }
+      #page-explore [style*="border-radius:16px;padding:18px 20px"] { box-shadow:0 1px 3px rgba(0,0,0,.04); }
+    </style>
+    <div style="padding:20px;width:100%;box-sizing:border-box;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+        <div style="width:34px;height:34px;border-radius:10px;background:#7000ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+        <div style="font-size:1.3rem;font-weight:800;color:#7000ff;letter-spacing:-.01em;">Explore</div>
+      </div>
+      <div style="font-size:.85rem;color:var(--text2);margin-bottom:18px;">Find almost anything — businesses, people, places, and services — with one AI-powered search.</div>
+
+      <div style="display:flex;gap:6px;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:100px;padding:4px;margin-bottom:20px;box-shadow:0 1px 2px rgba(0,0,0,.04);">
+        <button id="exploreTabSearch" class="etab active" onclick="exploreSwitchTab('search')">🔍 Search</button>
+        <button id="exploreTabAssistant" class="etab" onclick="exploreSwitchTab('assistant')">💬 AI Assistant</button>
+        <button id="exploreTabNearby" class="etab" onclick="exploreSwitchTab('nearby')">📍 Nearby</button>
+        <button id="exploreTabCollections" class="etab" onclick="exploreSwitchTab('collections')">📁 Collections</button>
+        <button id="exploreTabSaved" class="etab" onclick="exploreSwitchTab('saved')">♡ Saved</button>
+        <button id="exploreTabHistory" class="etab" onclick="exploreSwitchTab('history')">🕓 History</button>
+      </div>
+
+      <div id="exploreSearchPane">
+        <div style="background:#0a0a0a;border-radius:18px;padding:24px;margin-bottom:16px;">
+          <div style="display:flex;gap:8px;">
+            <input id="exploreQuery" placeholder="Try 'best restaurants near me' or 'immigration lawyers in Lagos'" style="flex:1;padding:13px 16px;border-radius:12px;border:none;font-size:.9rem;background:#fff;color:#111 !important;" onkeydown="if(event.key==='Enter')exploreRunSearch()"/>
+            <button class="btn" onclick="exploreRunSearch()" id="exploreSearchBtn" style="width:auto;padding:0 24px;border-radius:12px;font-weight:700;">Search</button>
+          </div>
+        </div>
+        <div style="font-size:.72rem;color:var(--text3);margin-bottom:14px;">Searching costs a small fee, paid from your Agent Wallet — same model as Career agent's other actions.</div>
+        <div id="exploreStatus" style="font-size:.8rem;color:var(--text3);margin-bottom:8px;"></div>
+        <div id="exploreReceipt"></div>
+        <div id="exploreSummaryBox"></div>
+        <div id="exploreResults"></div>
+      </div>
+
+      <div id="exploreAssistantPane" style="display:none;max-width:640px;">
+        <div style="font-size:.82rem;color:var(--text2);margin-bottom:14px;">Ask follow-up questions about your last search — it remembers the results.</div>
+        <div id="exploreChatMessages" style="border:1px solid var(--border);border-radius:16px;padding:18px;min-height:180px;margin-bottom:12px;display:flex;flex-direction:column;gap:10px;background:var(--card);"></div>
+        <div style="display:flex;gap:8px;">
+          <input id="exploreChatInput" placeholder="Ask a follow-up..." style="flex:1;padding:11px 14px;border-radius:100px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;" onkeydown="if(event.key==='Enter')exploreChatSend()"/>
+          <button class="btn" onclick="exploreChatSend()" style="width:auto;padding:11px 20px;border-radius:100px;font-weight:700;font-size:.85rem;">Send</button>
+        </div>
+        <div id="exploreChatStatus" style="font-size:.78rem;color:var(--text3);margin-top:8px;"></div>
+      </div>
+
+      <div id="exploreNearbyPane" style="display:none;">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+          <select id="exploreNearbyCategory" style="padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-weight:700;">
+            <option>Restaurants</option><option>Hotels</option><option>Hospitals</option><option>Pharmacies</option>
+            <option>Banks</option><option>Fuel Stations</option><option>Shopping Malls</option><option>Police Stations</option>
+            <option>Schools</option><option>ATMs</option><option>Government Offices</option><option>Churches</option>
+            <option>Mosques</option><option>Parks</option>
+          </select>
+          <input id="exploreNearbyLocation" placeholder="City or area — no GPS access, type where you are" style="flex:1;min-width:200px;padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+          <button class="btn" onclick="exploreNearbySearch()" style="width:auto;padding:10px 22px;border-radius:10px;font-weight:700;font-size:.85rem;">Find</button>
+        </div>
+        <div id="exploreNearbyStatus" style="font-size:.8rem;color:var(--text3);margin-bottom:8px;"></div>
+        <div id="exploreNearbyResults"></div>
+      </div>
+
+      <div id="exploreCollectionsPane" style="display:none;">
+        <div style="display:flex;gap:8px;margin-bottom:16px;max-width:400px;">
+          <input id="exploreNewCollectionName" placeholder="New collection name" style="flex:1;padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+          <button class="btn" onclick="exploreCreateCollection()" style="width:auto;padding:10px 20px;border-radius:10px;font-weight:700;font-size:.85rem;">Create</button>
+        </div>
+        <div id="exploreCollectionsResults" style="font-size:.85rem;color:var(--text3);">Loading collections...</div>
+        <div id="exploreCollectionItemsView" style="display:none;margin-top:16px;">
+          <div onclick="exploreBackToCollections()" style="cursor:pointer;color:#7000ff;font-weight:700;font-size:.85rem;margin-bottom:14px;">← Back to collections</div>
+          <div id="exploreCollectionItemsList"></div>
+        </div>
+      </div>
+
+      <div id="exploreSavedPane" style="display:none;">
+        <div id="exploreSavedResults" style="font-size:.85rem;color:var(--text3);">Loading saved results...</div>
+      </div>
+
+      <div id="exploreHistoryPane" style="display:none;">
+        <div id="exploreHistoryResults" style="font-size:.85rem;color:var(--text3);">Loading search history...</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  const EXPLORE_API = 'https://nan-production.up.railway.app/api/explore';
+  const EXPLORE_TABS = ['search','assistant','nearby','collections','saved','history'];
+  function exploreSwitchTab(tab){
+    EXPLORE_TABS.forEach(t => {
+      document.getElementById('explore'+t.charAt(0).toUpperCase()+t.slice(1)+'Pane').style.display = (t===tab) ? (t==='search'?'block':'block') : 'none';
+      const btn = document.getElementById('exploreTab'+t.charAt(0).toUpperCase()+t.slice(1));
+      if (btn) btn.classList.toggle('active', t===tab);
+    });
+    if (tab === 'collections') exploreLoadCollections();
+    if (tab === 'saved') exploreLoadSaved();
+    if (tab === 'history') exploreLoadHistory();
+  }
+
+  let exploreLastResults = [];
+  let exploreChatSessionId = null;
+
+  function exploreResultCard(item, idx){
+    return `<div style="border:1px solid var(--border);border-radius:16px;padding:18px 20px;margin-bottom:12px;background:var(--card);">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+        <div style="font-weight:700;color:var(--text);font-size:.95rem;">${item.name||'Untitled'}</div>
+        ${item.priceRange ? `<span style="font-size:.75rem;font-weight:700;color:#7000ff;">${item.priceRange}</span>` : ''}
+      </div>
+      ${item.category ? `<span style="display:inline-flex;font-size:.66rem;font-weight:700;padding:3px 9px;border-radius:100px;background:rgba(112,0,255,.1);color:#7000ff;margin-top:6px;">${item.category}</span>` : ''}
+      <div style="font-size:.84rem;color:var(--text2);margin:10px 0;line-height:1.5;">${item.description||''}</div>
+      <div style="font-size:.76rem;color:var(--text3);display:flex;flex-wrap:wrap;gap:10px;border-top:1px solid var(--border);padding-top:10px;">
+        ${item.address ? `<span>📍 ${item.address}</span>` : ''}
+        ${item.openingHours ? `<span>🕒 ${item.openingHours}</span>` : ''}
+        ${item.ratingText ? `<span>⭐ ${item.ratingText}</span>` : ''}
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+        ${item.phone ? `<a href="tel:${item.phone}" style="padding:8px 14px;border-radius:10px;font-size:.76rem;font-weight:700;background:#7000ff;color:#fff;text-decoration:none;">📞 Call</a>` : ''}
+        ${item.email ? `<a href="mailto:${item.email}" style="padding:8px 14px;border-radius:10px;font-size:.76rem;font-weight:700;background:var(--bg);border:1px solid var(--border);color:var(--text2);text-decoration:none;">✉ Email</a>` : ''}
+        ${item.website ? `<a href="${item.website}" target="_blank" style="padding:8px 14px;border-radius:10px;font-size:.76rem;font-weight:700;background:var(--bg);border:1px solid var(--border);color:var(--text2);text-decoration:none;">🌐 Website</a>` : ''}
+        ${item.address ? `<a href="https://www.google.com/maps/search/${encodeURIComponent(item.address)}" target="_blank" style="padding:8px 14px;border-radius:10px;font-size:.76rem;font-weight:700;background:var(--bg);border:1px solid var(--border);color:var(--text2);text-decoration:none;">🧭 Directions</a>` : ''}
+        <button onclick="exploreSaveResult(${idx})" style="padding:8px 14px;border-radius:10px;font-size:.76rem;font-weight:700;background:var(--bg);border:1px solid var(--border);color:var(--text2);cursor:pointer;">♡ Save</button>
+        ${item.sourceUrl ? `<a href="${item.sourceUrl}" target="_blank" style="padding:8px 14px;border-radius:10px;font-size:.76rem;font-weight:700;background:none;color:var(--accent3);text-decoration:none;">Source →</a>` : ''}
+      </div>
+      <div id="exploreSaveStatus_${idx}" style="font-size:.74rem;color:var(--text3);margin-top:6px;"></div>
+    </div>`;
+  }
+
+  async function exploreRunSearch(){
+    if(!requireAgentWallet()) return;
+    const query = document.getElementById('exploreQuery').value.trim();
+    if(!query){ document.getElementById('exploreStatus').textContent = 'Type something to search for.'; return; }
+    const btn = document.getElementById('exploreSearchBtn'); btn.disabled = true;
+    document.getElementById('exploreStatus').textContent = 'Paying and searching...';
+    document.getElementById('exploreSummaryBox').innerHTML = '';
+    document.getElementById('exploreResults').innerHTML = '';
+    document.getElementById('exploreReceipt').innerHTML = '';
+    const balBefore = await nanSnapshotBalance();
+    const t0 = performance.now();
+    try{
+      const d = await payAndCall(EXPLORE_API, { action:'search', query, walletAddress: agentWalletAddr }, '0.06');
+      const elapsedMs = Math.round(performance.now() - t0);
+      if(!d.success) throw new Error(d.error || 'Search failed');
+      document.getElementById('exploreStatus').textContent = '';
+      const balAfter = await nanSnapshotBalance();
+      if(d.payment) document.getElementById('exploreReceipt').innerHTML = nanPaymentReceipt([{label:'Search', ...d.payment, elapsedMs}], balBefore, balAfter);
+      exploreLastResults = d.results || [];
+      exploreChatSessionId = null;
+      if(d.summary){
+        document.getElementById('exploreSummaryBox').innerHTML = `<div style="background:rgba(112,0,255,.06);border:1px solid rgba(112,0,255,.2);border-radius:14px;padding:16px 18px;margin-bottom:16px;">
+          <div style="font-size:.68rem;font-weight:700;color:#7000ff;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">AI Summary</div>
+          <div style="font-size:.86rem;color:var(--text);line-height:1.6;">${d.summary}</div>
+        </div>`;
+      }
+      if(exploreLastResults.length === 0){
+        document.getElementById('exploreResults').innerHTML = `<div style="text-align:center;padding:40px 20px;border:2px dashed var(--border);border-radius:16px;color:var(--text3);">No results came back. Try rephrasing your search.</div>`;
+      } else {
+        document.getElementById('exploreResults').innerHTML = exploreLastResults.map((item,idx) => exploreResultCard(item, idx)).join('');
+      }
+    }catch(err){ document.getElementById('exploreStatus').textContent = '❌ ' + err.message; }
+    finally{ btn.disabled = false; }
+  }
+
+  async function exploreSaveResult(idx){
+    if(!requireAgentWallet()) return;
+    const item = exploreLastResults[idx];
+    const statusEl = document.getElementById('exploreSaveStatus_'+idx);
+    statusEl.textContent = 'Saving...';
+    const r = await fetch(EXPLORE_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'save-result', walletAddress: agentWalletAddr, result: item})});
+    const d = await r.json();
+    statusEl.textContent = d.success ? '✓ Saved' : ('❌ ' + d.error);
+  }
+
+  async function exploreChatSend(){
+    if(!requireAgentWallet()) return;
+    const input = document.getElementById('exploreChatInput');
+    const text = input.value.trim();
+    if(!text) return;
+    const box = document.getElementById('exploreChatMessages');
+    box.insertAdjacentHTML('beforeend', `<div style="max-width:85%;padding:12px 16px;border-radius:14px;font-size:.85rem;background:var(--bg);border:1px solid var(--border);align-self:flex-end;">${text}</div>`);
+    input.value = '';
+    document.getElementById('exploreChatStatus').textContent = 'Thinking...';
+    try{
+      const d = await payAndCall(EXPLORE_API, {
+        action:'assistant-message', sessionId: exploreChatSessionId, walletAddress: agentWalletAddr,
+        lastResults: exploreChatSessionId ? undefined : exploreLastResults, userMessage: text,
+      }, '0.02');
+      if(!d.success) throw new Error(d.error);
+      exploreChatSessionId = d.sessionId;
+      document.getElementById('exploreChatStatus').textContent = '';
+      box.insertAdjacentHTML('beforeend', `<div style="max-width:85%;padding:12px 16px;border-radius:14px;font-size:.85rem;background:rgba(112,0,255,.08);color:var(--text);align-self:flex-start;">${d.reply}</div>`);
+      box.scrollTop = box.scrollHeight;
+    }catch(err){ document.getElementById('exploreChatStatus').textContent = '❌ ' + err.message; }
+  }
+
+  async function exploreNearbySearch(){
+    if(!requireAgentWallet()) return;
+    const category = document.getElementById('exploreNearbyCategory').value;
+    const location = document.getElementById('exploreNearbyLocation').value.trim();
+    if(!location){ document.getElementById('exploreNearbyStatus').textContent = 'Type a city or area — this tool has no GPS access.'; return; }
+    document.getElementById('exploreNearbyStatus').textContent = 'Paying and searching...';
+    document.getElementById('exploreNearbyResults').innerHTML = '';
+    try{
+      const d = await payAndCall(EXPLORE_API, { action:'nearby-search', category, location }, '0.06');
+      if(!d.success) throw new Error(d.error);
+      document.getElementById('exploreNearbyStatus').textContent = '';
+      const results = d.results || [];
+      if(results.length === 0){
+        document.getElementById('exploreNearbyResults').innerHTML = `<div style="text-align:center;padding:40px 20px;border:2px dashed var(--border);border-radius:16px;color:var(--text3);">No results found.</div>`;
+      } else {
+        document.getElementById('exploreNearbyResults').innerHTML = results.map((item,idx) => exploreResultCard(item, idx)).join('');
+        exploreLastResults = results;
+      }
+    }catch(err){ document.getElementById('exploreNearbyStatus').textContent = '❌ ' + err.message; }
+  }
+
+  async function exploreLoadSaved(){
+    if(!requireAgentWallet()) return;
+    const el = document.getElementById('exploreSavedResults');
+    el.textContent = 'Loading saved results...';
+    const r = await fetch(EXPLORE_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'saved-results-list', walletAddress: agentWalletAddr})});
+    const d = await r.json();
+    if(!d.success){ el.textContent = '❌ ' + d.error; return; }
+    if(!d.saved.length){ el.innerHTML = `<div style="text-align:center;padding:56px 24px;border:2px dashed var(--border);border-radius:16px;color:var(--text3);">Nothing saved yet. Tap "Save" on any result to keep it here.</div>`; return; }
+    el.innerHTML = d.saved.map(s => `
+      <div style="border:1px solid var(--border);border-radius:16px;padding:16px 18px;margin-bottom:10px;background:var(--card);">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-weight:700;color:var(--text);font-size:.9rem;">${s.result.name||'Untitled'}</div>
+          <button onclick="exploreUnsave('${s.id}')" style="padding:6px 12px;border-radius:8px;font-size:.72rem;font-weight:700;background:none;border:1px solid var(--border);color:var(--text3);cursor:pointer;">Remove</button>
+        </div>
+        <div style="font-size:.78rem;color:var(--text3);margin-top:4px;">${s.result.description||''}</div>
+      </div>`).join('');
+  }
+  async function exploreUnsave(savedId){
+    await fetch(EXPLORE_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'unsave-result', walletAddress: agentWalletAddr, savedId})});
+    exploreLoadSaved();
+  }
+
+  async function exploreLoadHistory(){
+    if(!requireAgentWallet()) return;
+    const el = document.getElementById('exploreHistoryResults');
+    el.textContent = 'Loading search history...';
+    const r = await fetch(EXPLORE_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'search-history-list', walletAddress: agentWalletAddr})});
+    const d = await r.json();
+    if(!d.success){ el.textContent = '❌ ' + d.error; return; }
+    if(!d.history.length){ el.innerHTML = `<div style="text-align:center;padding:56px 24px;border:2px dashed var(--border);border-radius:16px;color:var(--text3);">No searches yet.</div>`; return; }
+    el.innerHTML = d.history.map(h => `
+      <div style="display:flex;align-items:center;justify-content:space-between;border:1px solid var(--border);border-radius:14px;padding:14px 18px;margin-bottom:8px;background:var(--card);">
+        <div>
+          <b style="font-size:.88rem;color:var(--text);">${h.pinned?'📌 ':''}${h.query}</b>
+          <div style="font-size:.74rem;color:var(--text3);">${new Date(h.createdAt).toLocaleString()}</div>
+        </div>
+        <div style="display:flex;gap:14px;font-size:.78rem;color:#7000ff;font-weight:700;">
+          <span onclick="exploreSearchAgain('${h.query.replace(/'/g,"\\'")}')" style="cursor:pointer;">Search again</span>
+          <span onclick="explorePinHistory('${h.id}', ${!h.pinned})" style="cursor:pointer;">${h.pinned?'Unpin':'Pin'}</span>
+          <span onclick="exploreDeleteHistory('${h.id}')" style="cursor:pointer;color:var(--text3);">✕</span>
+        </div>
+      </div>`).join('');
+  }
+  function exploreSearchAgain(query){
+    exploreSwitchTab('search');
+    document.getElementById('exploreQuery').value = query;
+    exploreRunSearch();
+  }
+  async function explorePinHistory(historyId, pinned){
+    await fetch(EXPLORE_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'pin-history-item', historyId, pinned})});
+    exploreLoadHistory();
+  }
+  async function exploreDeleteHistory(historyId){
+    await fetch(EXPLORE_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete-history-item', walletAddress: agentWalletAddr, historyId})});
+    exploreLoadHistory();
+  }
+
+  async function exploreCreateCollection(){
+    if(!requireAgentWallet()) return;
+    const nameInput = document.getElementById('exploreNewCollectionName');
+    const name = nameInput.value.trim();
+    if(!name) return;
+    const r = await fetch(EXPLORE_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'create-collection', walletAddress: agentWalletAddr, name})});
+    const d = await r.json();
+    if(d.success){ nameInput.value = ''; exploreLoadCollections(); }
+  }
+  async function exploreLoadCollections(){
+    if(!requireAgentWallet()) return;
+    const el = document.getElementById('exploreCollectionsResults');
+    document.getElementById('exploreCollectionItemsView').style.display = 'none';
+    el.style.display = 'block';
+    el.textContent = 'Loading collections...';
+    const r = await fetch(EXPLORE_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'list-collections', walletAddress: agentWalletAddr})});
+    const d = await r.json();
+    if(!d.success){ el.textContent = '❌ ' + d.error; return; }
+    if(!d.collections.length){ el.innerHTML = `<div style="text-align:center;padding:56px 24px;border:2px dashed var(--border);border-radius:16px;color:var(--text3);">No collections yet. Create one above to start organizing saved results.</div>`; return; }
+    el.style.display = 'grid';
+    el.style.gridTemplateColumns = 'repeat(auto-fill, minmax(220px, 1fr))';
+    el.style.gap = '16px';
+    el.innerHTML = d.collections.map(c => `
+      <div onclick="exploreOpenCollection('${c.id}','${(c.name||'').replace(/'/g,"\\'")}')" style="border:1px solid var(--border);border-radius:16px;padding:20px;background:var(--card);cursor:pointer;">
+        <div style="font-weight:700;font-size:.95rem;color:var(--text);">${c.name}</div>
+        <div style="font-size:.78rem;color:var(--text3);margin-top:6px;">${c.itemCount} saved</div>
+      </div>`).join('');
+  }
+  async function exploreOpenCollection(collectionId, name){
+    document.getElementById('exploreCollectionsResults').style.display = 'none';
+    const view = document.getElementById('exploreCollectionItemsView');
+    view.style.display = 'block';
+    const list = document.getElementById('exploreCollectionItemsList');
+    list.innerHTML = `<div style="font-weight:700;font-size:1rem;margin-bottom:14px;">${name}</div><div style="color:var(--text3);font-size:.85rem;">Loading...</div>`;
+    const r = await fetch(EXPLORE_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'collection-items', collectionId})});
+    const d = await r.json();
+    if(!d.success){ list.innerHTML = '❌ ' + d.error; return; }
+    if(!d.items.length){ list.innerHTML = `<div style="font-weight:700;font-size:1rem;margin-bottom:14px;">${name}</div><div style="text-align:center;padding:40px 20px;border:2px dashed var(--border);border-radius:16px;color:var(--text3);">Nothing in this collection yet.</div>`; return; }
+    list.innerHTML = `<div style="font-weight:700;font-size:1rem;margin-bottom:14px;">${name}</div>` + d.items.map(s => `
+      <div style="border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:8px;background:var(--card);">
+        <div style="font-weight:700;font-size:.88rem;color:var(--text);">${s.result.name||'Untitled'}</div>
+        <div style="font-size:.78rem;color:var(--text3);margin-top:4px;">${s.result.description||''}</div>
+      </div>`).join('');
+  }
+  function exploreBackToCollections(){
+    document.getElementById('exploreCollectionItemsView').style.display = 'none';
+    exploreLoadCollections();
+  }
+  </script>
+
+    <div class="page" id="page-supplier-agent">
     <style>
       #page-supplier-agent, #page-supplier-agent * { color: #ffffff !important; }
       [data-theme=light] #page-supplier-agent, [data-theme=light] #page-supplier-agent * { color: #000000 !important; }
@@ -5895,6 +6232,7 @@ function nanToggleFaucet(btn){
     <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:10px 0;">
       <div style="font-size:9.5px;font-weight:700;color:#ffffff;letter-spacing:.12em;text-transform:uppercase;padding:10px 20px 5px;">Main</div>
       <button class="nan-drow" id="drow-career" onclick="nanCloseDrawer();goPage('career-agent')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></span><span class="nan-drow-lbl">Career agent</span></button>
+      <button class="nan-drow" id="drow-explore" onclick="nanCloseDrawer();goPage('explore')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span><span class="nan-drow-lbl">Explore</span></button>
       <button class="nan-drow" id="drow-supplier" onclick="nanCloseDrawer();goPage('supplier-agent')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 9h1M9 13h1M14 9h1M14 13h1"/></svg></span><span class="nan-drow-lbl">Research agent</span></button>
       <button class="nan-drow" id="drow-marketplace" onclick="nanCloseDrawer();goPage('marketplace')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9M3 9v10a1 1 0 001 1h16a1 1 0 001-1V9M3 9h18M9 13a2 2 0 11-4 0M19 13a2 2 0 11-4 0"/></svg></span><span class="nan-drow-lbl">Marketplace</span></button>
       <button class="nan-drow" id="drow-gigs" onclick="nanCloseDrawer();goPage('gigs')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12l3 3 6-6"/><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 9h18"/></svg></span><span class="nan-drow-lbl">Gigs</span></button>
