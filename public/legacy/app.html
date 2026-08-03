@@ -68,7 +68,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="/legacy/style.css?v=1785793286"/>
+<link rel="stylesheet" href="/legacy/style.css?v=1785793487"/>
 <style>
 /* ══ THEME TOKENS — scoped per theme so neither fights the other ══ */
 :root,[data-theme="dark"]{
@@ -339,6 +339,14 @@ html,body{background-color:var(--bg);}
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9M3 9v10a1 1 0 001 1h16a1 1 0 001-1V9M3 9h18M9 13a2 2 0 11-4 0M19 13a2 2 0 11-4 0"/></svg>
       <span class="nan-sb-label">Marketplace</span>
     </div>
+    <div class="nan-sb-item-row" id="sb-payreq" onclick="goPage('payreq')">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M12 11v4M10 13h4"/></svg>
+      <span class="nan-sb-label">Pay Requests</span>
+    </div>
+    <div class="nan-sb-item-row" id="sb-ajo" onclick="doAjo()">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      <span class="nan-sb-label">Ajo Savings</span>
+    </div>
     <div class="nan-sb-item-row" id="sb-gigs" onclick="goPage('gigs')">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12l3 3 6-6"/><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 9h18"/></svg>
       <span class="nan-sb-label">Gigs</span>
@@ -574,14 +582,6 @@ html,body{background-color:var(--bg);}
       <button class="nav-btn" id="nav-marketplace" onclick="goPage('marketplace')">
         <span class="ni"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9M3 9v10a1 1 0 001 1h16a1 1 0 001-1V9M3 9h18M9 13a2 2 0 11-4 0M19 13a2 2 0 11-4 0"/></svg></span>
         Market
-      </button>
-      <button class="nav-btn" id="nav-payreq" onclick="goPage('payreq')">
-        <span class="ni"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M12 11v4M10 13h4"/></svg></span>
-        Requests
-      </button>
-      <button class="nav-btn" id="nav-ajo" onclick="doAjo()">
-        <span class="ni"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></span>
-        Ajo
       </button>
       <button class="nav-btn" id="nav-gigs" onclick="goPage('gigs')">
         <span class="ni"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12l3 3 6-6"/><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 9h18"/></svg></span>
@@ -4933,8 +4933,8 @@ document.addEventListener('DOMContentLoaded',function(){
   }
 })();
 </script>
-<script src="/legacy/app.js?v=1785793286"></script>
-<script src="/legacy/ui.js?v=1785793286"></script>
+<script src="/legacy/app.js?v=1785793487"></script>
+<script src="/legacy/ui.js?v=1785793487"></script>
 <script>
 /* ══ Nav restructure: sidebar product links, split Profile / Agent Wallet menus ══
    Career agent / Research agent / Marketplace / Gigs moved from top nav to the
@@ -6383,6 +6383,8 @@ function nanToggleFaucet(btn){
       <button class="nan-drow" id="drow-explore" onclick="nanCloseDrawer();goPage('explore')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span><span class="nan-drow-lbl">Explore</span></button>
       <button class="nan-drow" id="drow-supplier" onclick="nanCloseDrawer();goPage('supplier-agent')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 9h1M9 13h1M14 9h1M14 13h1"/></svg></span><span class="nan-drow-lbl">Real Estate Marketplace</span></button>
       <button class="nan-drow" id="drow-marketplace" onclick="nanCloseDrawer();goPage('marketplace')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9M3 9v10a1 1 0 001 1h16a1 1 0 001-1V9M3 9h18M9 13a2 2 0 11-4 0M19 13a2 2 0 11-4 0"/></svg></span><span class="nan-drow-lbl">Marketplace</span></button>
+      <button class="nan-drow" id="drow-payreq" onclick="nanCloseDrawer();goPage('payreq')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M12 11v4M10 13h4"/></svg></span><span class="nan-drow-lbl">Pay Requests</span></button>
+      <button class="nan-drow" id="drow-ajo" onclick="nanCloseDrawer();doAjo()"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></span><span class="nan-drow-lbl">Ajo Savings</span></button>
       <button class="nan-drow" id="drow-gigs" onclick="nanCloseDrawer();goPage('gigs')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12l3 3 6-6"/><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 9h18"/></svg></span><span class="nan-drow-lbl">Gigs</span></button>
       <button class="nan-drow" id="drow-cashinout" onclick="nanCloseDrawer();goPage('cashinout')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/></svg></span><span class="nan-drow-lbl">Fiat</span></button>
       <button class="nan-drow" id="drow-agent-wallet" onclick="nanCloseDrawer();goPage('agent-wallet')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><circle cx="12" cy="14" r="2"/></svg></span><span class="nan-drow-lbl">Agent Wallet</span><span style="font-size:9px;font-weight:700;background:rgba(67,56,202,.15);border:1px solid rgba(67,56,202,.25);color:#3B82F6;border-radius:5px;padding:2px 6px;margin-left:auto;flex-shrink:0;">Circle</span></button>
