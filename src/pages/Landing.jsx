@@ -175,7 +175,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
         </h1>
 
         <p style={{ fontSize:'clamp(1rem,1.7vw,1.2rem)', color:text2, lineHeight:1.6, maxWidth:560, margin:'0 0 32px' }}>
-          One stablecoin wallet for people, businesses, and autonomous agents — send, swap, pay, and get paid, with zero gas fees.
+          One stablecoin wallet for people, businesses, and autonomous agents. Send, swap, pay, and get paid, with zero gas fees.
         </p>
 
         <div style={{ width:'100%', maxWidth:640, margin:'0 0 40px', background:card, border:`1px solid ${border}`, borderRadius:16, overflow:'hidden', position:'relative' }}>
@@ -314,7 +314,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
             Everything runs on one wallet
           </h2>
           <p style={{ color:text2, fontSize:'1.02rem', marginTop:14 }}>
-            Rent a home, buy or sell, hire or get hired, run payroll, or let your agent handle it — all settled in stablecoins.
+            Rent a home, buy or sell, hire or get hired, run payroll, or let your agent handle it. All settled in stablecoins.
           </p>
         </div>
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(200px, 1fr))', gap:20 }}>

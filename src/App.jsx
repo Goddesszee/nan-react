@@ -4,15 +4,15 @@ import './App.css'
 
 const API = 'https://nan-production.up.railway.app'
 
-// Handle disconnect at module load — before anything renders
+// Handle disconnect at module load, before anything renders
 const _params = new URLSearchParams(window.location.search)
 if (_params.get('__nan_disconnected') === '1') {
   window.history.replaceState({}, '', '/')
   try { localStorage.clear(); sessionStorage.clear(); } catch(e) {}
 }
 
-// If already have a session — redirect immediately, no React needed
-// (unless ?home=1 is present — that's the sidebar "Home" link asking to see
+// If already have a session, redirect immediately, no React needed
+// (unless ?home=1 is present, that's the sidebar "Home" link asking to see
 // the landing page on purpose, even while logged in)
 const _forceLanding = _params.get('home') === '1'
 const _token = localStorage.getItem('nan_dynamic_token')

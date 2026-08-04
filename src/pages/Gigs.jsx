@@ -4,9 +4,8 @@ export function Gigs({ setPage }) {
   return (
     <EcosystemPage
       setPage={setPage}
-      icon="⚡"
       title="NAN Gigs"
-      tagline="Freelance work with funds locked up front — get paid the moment a milestone is approved."
+      tagline="Freelance work with funds locked up front. Get paid the moment a milestone is approved."
       features={[
         'Pre-funded jobs',
         'Milestone-based payments',

@@ -3,11 +3,11 @@ import { useState, useEffect, useRef } from 'react'
 const API = 'https://nan-production.up.railway.app'
 
 const CHAINS = [
-  { val:'ETH-SEPOLIA',  label:'Ethereum Sepolia', icon:'⟠' },
-  { val:'BASE-SEPOLIA', label:'Base Sepolia',      icon:'🔵' },
-  { val:'ARB-SEPOLIA',  label:'Arbitrum Sepolia',  icon:'🔷' },
-  { val:'OP-SEPOLIA',   label:'OP Sepolia',        icon:'🔴' },
-  { val:'AVAX-FUJI',   label:'Avalanche Fuji',    icon:'🔺' },
+  { val:'ETH-SEPOLIA',  label:'Ethereum Sepolia' },
+  { val:'BASE-SEPOLIA', label:'Base Sepolia' },
+  { val:'ARB-SEPOLIA',  label:'Arbitrum Sepolia' },
+  { val:'OP-SEPOLIA',   label:'OP Sepolia' },
+  { val:'AVAX-FUJI',    label:'Avalanche Fuji' },
 ]
 
 // Step labels shown during bridge
@@ -59,7 +59,7 @@ export function Bridge({ toast, setPage, usdcBal, address, apiFetch }) {
         clearInterval(pollRef.current)
         stopElapsedTimer()
         setStep('error')
-        setStepMsg('Attestation still pending after 20 min — check Circle Iris manually.')
+        setStepMsg('Attestation still pending after 20 min. Check Circle Iris manually.')
         setBridging(false)
         return
       }
@@ -80,12 +80,12 @@ export function Bridge({ toast, setPage, usdcBal, address, apiFetch }) {
           stopElapsedTimer()
           setStep('done')
           setStepMsg(`Bridge complete! USDC arrived on ${chain}.`)
-          toast(`✅ Bridge complete! USDC arrived on ${chain}`, 'success', 8000)
+          toast(`Bridge complete! USDC arrived on ${chain}`, 'success', 8000)
           setBridging(false)
           setAmt('')
           return
         }
-        // Still pending — update elapsed display in stepMsg
+        // Still pending, update elapsed display in stepMsg
         setStepMsg(`Iris attesting… (${attempts * 15}s elapsed, up to ~5 min on testnet)`)
       } catch (e) {
         // ignore individual poll errors, keep trying
@@ -126,26 +126,26 @@ export function Bridge({ toast, setPage, usdcBal, address, apiFetch }) {
         stopElapsedTimer()
         setStep('done')
         setStepMsg(`Bridge complete! USDC arrived on ${chain}.`)
-        toast(`✅ Bridge complete! USDC arrived on ${chain}`, 'success', 8000)
+        toast(`Bridge complete! USDC arrived on ${chain}`, 'success', 8000)
         setBridging(false)
         setAmt('')
         return
       }
 
-      // Pending — move to attestation polling
+      // Pending, move to attestation polling
       setStep('attest')
       setStepMsg('Waiting for Circle Iris attestation…')
-      toast('✓ Bridge submitted via CCTP V2 — polling for confirmation…', 'success', 5000)
+      toast('Bridge submitted via CCTP V2. Polling for confirmation.', 'success', 5000)
 
       if (txHash) {
         startPolling(txHash)
       } else {
-        // No txHash returned — backend handles everything, wait a flat 25s then mark done
+        // No txHash returned, backend handles everything, wait a flat 25s then mark done
         setTimeout(() => {
           clearInterval(pollRef.current)
           stopElapsedTimer()
           setStep('done')
-          setStepMsg(`Bridge submitted — USDC should arrive on ${chain} within ~30 seconds.`)
+          setStepMsg(`Bridge submitted. USDC should arrive on ${chain} within ~30 seconds.`)
           setBridging(false)
           setAmt('')
         }, 25000)
@@ -192,12 +192,12 @@ export function Bridge({ toast, setPage, usdcBal, address, apiFetch }) {
               onChange={e => setChain(e.target.value)}
               disabled={bridging}
             >
-              {CHAINS.map(c => <option key={c.val} value={c.val}>{c.icon} {c.label}</option>)}
+              {CHAINS.map(c => <option key={c.val} value={c.val}>{c.label}</option>)}
             </select>
           </div>
         </div>
 
-        <div className="bridge-info">⚡ Powered by Circle CCTP V2 · Arrives in ~20 seconds · No gas on destination</div>
+        <div className="bridge-info">Powered by Circle CCTP V2 · Arrives in ~20 seconds · No gas on destination</div>
 
         {/* Destination address */}
         <div className="form-group">
@@ -221,7 +221,7 @@ export function Bridge({ toast, setPage, usdcBal, address, apiFetch }) {
           />
           {toAddr && toAddr === address && (
             <div style={{fontSize:'.78rem',color:'var(--accent3)',marginTop:4}}>
-              ✓ Same address on {CHAINS.find(c=>c.val===chain)?.label}
+              Same address on {CHAINS.find(c=>c.val===chain)?.label}
             </div>
           )}
         </div>
@@ -272,7 +272,7 @@ export function Bridge({ toast, setPage, usdcBal, address, apiFetch }) {
                       border: isDone ? 'none' : isActive ? '1.5px solid #4338CA' : '1.5px solid rgba(255,255,255,.12)',
                       color: isDone ? '#fff' : isActive ? '#3B82F6' : 'var(--text3)',
                     }}>
-                      {isDone ? '✓' : isActive ? <span style={{display:'inline-block',animation:'spin .6s linear infinite'}}>⟳</span> : (i+1)}
+                      {isDone ? <span style={{width:6,height:6,borderRadius:'50%',background:'#fff',display:'inline-block'}}/> : isActive ? <span style={{display:'inline-block',animation:'spin .6s linear infinite'}}>⟳</span> : (i+1)}
                     </div>
                     <span style={{
                       fontSize:'.88rem',
@@ -294,12 +294,12 @@ export function Bridge({ toast, setPage, usdcBal, address, apiFetch }) {
             )}
             {step === 'done' && (
               <div style={{fontSize:'.9rem',color:'#4338CA',fontWeight:600,marginBottom:10}}>
-                ✅ {stepMsg}
+                {stepMsg}
               </div>
             )}
             {step === 'error' && (
               <div style={{fontSize:'.85rem',color:'var(--danger)',marginBottom:10}}>
-                ⚠️ {stepMsg}
+                {stepMsg}
               </div>
             )}
 
@@ -332,7 +332,7 @@ export function Bridge({ toast, setPage, usdcBal, address, apiFetch }) {
                     clearInterval(pollRef.current)
                     stopElapsedTimer()
                     setStep('done')
-                    setStepMsg('Bridge submitted — check your balance in ~30 seconds.')
+                    setStepMsg('Bridge submitted. Check your balance in ~30 seconds.')
                     setBridging(false)
                     setAmt('')
                   }}

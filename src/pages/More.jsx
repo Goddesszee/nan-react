@@ -1,11 +1,11 @@
 export function More({ setPage, address, disconnect }) {
-  const short = a => a ? `${a.slice(0,6)}...${a.slice(-4)}` : '—'
+  const short = a => a ? `${a.slice(0,6)}...${a.slice(-4)}` : 'Not set'
   const items = [
     { label:'Send',    page:'send',    ico:'↑' },
     { label:'Receive', page:'receive', ico:'↓' },
     { label:'Swap',    page:'swap',    ico:'⇄' },
     { label:'Bridge',  page:'bridge',  ico:'⊞' },
-    { label:'Earn',    page:'earn',    ico:'📈' },
+    { label:'Earn',    page:'earn' },
   ]
   return (
     <div className="page">

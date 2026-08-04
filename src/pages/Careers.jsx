@@ -4,7 +4,6 @@ export function Careers({ setPage }) {
   return (
     <EcosystemPage
       setPage={setPage}
-      icon="💼"
       title="NAN Careers"
       tagline="Find verified jobs and let AI sharpen your resume, prep you for interviews, and track every application."
       features={[

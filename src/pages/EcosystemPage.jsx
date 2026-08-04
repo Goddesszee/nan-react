@@ -1,9 +1,10 @@
 // Shared scaffold for new NAN ecosystem verticals (Homes, Market, Gigs, Careers, Payroll, AI Assistant).
 // Each page below wraps this with its own copy/icon. Wire up real data/routes as each
-// vertical goes live — this gives every section a consistent, on-brand shell in the
+// vertical goes live. This gives every section a consistent, on-brand shell in the
 // meantime rather than a broken link or blank page.
 
-export function EcosystemPage({ setPage, icon, title, tagline, features }) {
+export function EcosystemPage({ setPage, title, tagline, features }) {
+  const letter = title.replace('NAN ', '').charAt(0)
   return (
     <div className="page">
       <div className="page-card" style={{ maxWidth: 560 }}>
@@ -18,9 +19,9 @@ export function EcosystemPage({ setPage, icon, title, tagline, features }) {
           <div style={{
             width: 56, height: 56, borderRadius: 16, margin: '0 auto 18px',
             background: 'var(--violet2)', display: 'flex', alignItems: 'center',
-            justifyContent: 'center', fontSize: '1.5rem',
+            justifyContent: 'center', fontSize: '1.3rem', fontWeight: 800, color: 'var(--violet)',
           }}>
-            {icon}
+            {letter}
           </div>
           <p style={{ color: 'var(--text2)', fontSize: '.95rem', lineHeight: 1.6, maxWidth: 400, margin: '0 auto' }}>
             {tagline}

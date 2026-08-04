@@ -19,8 +19,8 @@ export function Receive({ setPage, address }) {
           <div className="qr-frame">QR Code</div>
         </div>
         <div className="addr-box">
-          <span className="addr-text">{address || '—'}</span>
-          <button className="copy-btn" onClick={copy}>{copied ? '✓ Copied!' : 'Copy'}</button>
+          <span className="addr-text">{address || 'Not set'}</span>
+          <button className="copy-btn" onClick={copy}>{copied ? 'Copied!' : 'Copy'}</button>
         </div>
         <div className="network-info">
           <span>Network: Arc Testnet</span>

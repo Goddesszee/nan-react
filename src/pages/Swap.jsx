@@ -112,7 +112,7 @@ export function Swap({ toast, setPage, usdcBal, eurcBal, fetchBalances, address,
     } finally { setSwapping(false) }
   }
 
-  // Add liquidity — MetaMask only (Circle users can't sign on other dapps directly)
+  // Add liquidity, MetaMask only (Circle users can't sign on other dapps directly)
   const doAddLiquidity = async () => {
     const uAmt = parseFloat(liqUsdc)
     const eAmt = parseFloat(liqEurc)
@@ -159,7 +159,7 @@ export function Swap({ toast, setPage, usdcBal, eurcBal, fetchBalances, address,
       const tx = await swapC.addLiquidity(uParsed, eParsed, gasOpts)
       await tx.wait(0)
 
-      toast(`✅ Added ${uAmt} USDC + ${eAmt} EURC to NANSwap pool!`, 'success', 7000)
+      toast(`Added ${uAmt} USDC + ${eAmt} EURC to NANSwap pool!`, 'success', 7000)
       setLiqUsdc(''); setLiqEurc('')
       setShowAddLiq(false)
       fetchBalances(address)
@@ -189,7 +189,7 @@ export function Swap({ toast, setPage, usdcBal, eurcBal, fetchBalances, address,
           <span style={{fontSize:'.75rem', color: poolEmpty ? 'var(--danger)' : 'var(--accent3)'}}>
             {poolLoading ? 'Checking pool…' :
               poolEmpty
-                ? `⚠ Pool empty — swaps may fail`
+                ? `Pool empty, swaps may fail`
                 : `● Pool: ${poolUsdc} USDC / ${poolEurc} EURC`}
           </span>
           <button
@@ -284,7 +284,7 @@ export function Swap({ toast, setPage, usdcBal, eurcBal, fetchBalances, address,
             background:'rgba(248,113,113,.07)', border:'1px solid rgba(248,113,113,.18)',
             borderRadius:9, padding:'8px 12px', marginBottom:8,
           }}>
-            ⚠ The swap pool has no liquidity — swaps will fail. Add liquidity above first.
+            The swap pool has no liquidity, swaps will fail. Add liquidity above first.
           </div>
         )}
 
