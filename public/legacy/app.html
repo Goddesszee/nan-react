@@ -68,7 +68,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="/legacy/style.css?v=1785793487"/>
+<link rel="stylesheet" href="/legacy/style.css?v=1785827943"/>
 <style>
 /* ══ THEME TOKENS — scoped per theme so neither fights the other ══ */
 :root,[data-theme="dark"]{
@@ -937,8 +937,11 @@ html,body{background-color:var(--bg);}
 </div>
 
 <div id="agentConnectedSection" style="display:none;">
-  <div id="agentPageTitle" style="font-family:'Space Grotesk',sans-serif;font-size:1.9rem;font-weight:800;color:#4338CA;letter-spacing:-.02em;padding:24px 24px 0;">Agent Wallet</div>
-  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap;padding:28px 24px;">
+  <div style="padding:32px 24px 4px;">
+    <div id="agentPageTitle" style="font-family:'Inter',sans-serif;font-size:2.1rem;font-weight:700;color:var(--text);letter-spacing:-.02em;">Agent Wallet</div>
+    <div style="font-family:'Inter',sans-serif;font-size:1rem;font-weight:500;color:var(--text2);margin-top:6px;">Manage your agent's balance, spending policy, and activity — all in one place.</div>
+  </div>
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap;padding:24px 24px 28px;">
     <div>
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
         <span style="font-size:12px;color:var(--text3);">Total balance</span>
@@ -947,7 +950,7 @@ html,body{background-color:var(--bg);}
       <div id="agentBalDisplay" style="font-size:3rem;font-weight:700;color:var(--text);letter-spacing:-.02em;">&#x2014;</div>
     </div>
     <div style="display:flex;gap:10px;flex-shrink:0;position:relative;">
-      <button id="agentDepositBtn" onclick="nanToggleAgentDepositDropdown(event)" style="background:#4338CA;border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:700;padding:11px 20px;cursor:pointer;white-space:nowrap;">&#8595; Deposit</button>
+      <button id="agentDepositBtn" onclick="nanToggleAgentDepositDropdown(event)" style="background:linear-gradient(135deg,#4338CA 0%,#4F46E5 50%,#3B82F6 100%);border:none;border-radius:12px;color:#fff;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;height:48px;padding:0 22px;cursor:pointer;white-space:nowrap;box-shadow:0 4px 14px rgba(67,56,202,.32);">&#8595; Deposit</button>
       <div id="agentDepositDropdown" style="display:none;position:absolute;top:calc(100% + 8px);left:0;width:280px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;box-shadow:0 8px 24px rgba(0,0,0,.3);z-index:999;box-sizing:border-box;">
         <div style="font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:6px;">Agent Wallet address</div>
         <div style="font-size:.68rem;color:var(--text3);margin-bottom:10px;line-height:1.4;">USDC / EURC on Arc Testnet only. This is your agent's own wallet, not your main connected wallet.</div>
@@ -956,14 +959,14 @@ html,body{background-color:var(--bg);}
           <button onclick="nanCopyAgentDepositAddr()" id="agentDepositCopyBtn" style="flex-shrink:0;padding:5px 10px;border-radius:7px;background:#4338CA;border:none;color:#fff;font-size:.7rem;font-weight:700;cursor:pointer;">Copy</button>
         </div>
       </div>
-      <button onclick="agentSend()" style="background:transparent;border:1px solid var(--border2);border-radius:10px;color:var(--text);font-size:13px;font-weight:700;padding:11px 20px;cursor:pointer;white-space:nowrap;" onmouseover="this.style.background='rgba(67,56,202,.08)'" onmouseout="this.style.background='transparent'">&#8593; Withdraw</button>
+      <button onclick="agentSend()" style="background:transparent;border:1.5px solid #4338CA;border-radius:12px;color:#4338CA;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;height:48px;padding:0 22px;cursor:pointer;white-space:nowrap;" onmouseover="this.style.background='rgba(67,56,202,.08)'" onmouseout="this.style.background='transparent'">&#8593; Withdraw</button>
     </div>
   </div>
 
   <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:16px;padding:0 24px 20px;" class="nan-dash-grid">
-    <div style="background:var(--card2);border-radius:20px;padding:20px;">
+    <div style="background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:24px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
-        <div style="font-size:1rem;font-weight:700;color:var(--text);">Portfolio Performance</div>
+        <div style="font-family:'Inter',sans-serif;font-size:1.1rem;font-weight:600;color:var(--text);">Portfolio Performance</div>
         <div style="display:flex;gap:4px;">
           <button class="nan-perf-range" style="background:#4338CA;color:#fff;border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:.72rem;font-weight:700;cursor:pointer;">24H</button>
           <button class="nan-perf-range" style="background:transparent;color:var(--text2);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:.72rem;font-weight:700;cursor:pointer;">7D</button>
@@ -981,8 +984,8 @@ html,body{background-color:var(--bg);}
       <div id="agentPerfNote" style="font-size:.72rem;color:var(--text3);margin-top:10px;">No balance history recorded yet — this starts tracking real changes from today. Flat line reflects your current total, not a fabricated trend.</div>
     </div>
 
-    <div style="background:var(--card2);border-radius:20px;padding:20px;">
-      <div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:16px;">Portfolio Holdings</div>
+    <div style="background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:24px;">
+      <div style="font-family:'Inter',sans-serif;font-size:1.1rem;font-weight:600;color:var(--text);margin-bottom:16px;">Portfolio Holdings</div>
       <div style="position:relative;width:180px;height:180px;margin:0 auto 20px;">
         <svg viewBox="0 0 180 180" style="width:100%;height:100%;transform:rotate(-90deg);">
           <circle cx="90" cy="90" r="70" fill="none" stroke="var(--border)" stroke-width="18"/>
@@ -1008,9 +1011,9 @@ html,body{background-color:var(--bg);}
   </div>
 
   <div style="padding:0 24px 4px;">
-    <div style="background:var(--card2);border-radius:20px;padding:20px;">
+    <div style="background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:24px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-        <span style="font-size:12px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;">Spending policy</span>
+        <span style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;">Spending policy</span>
         <span style="font-size:11px;color:var(--text3);">Per-call caps, enforced on every payment</span>
       </div>
       <div style="background:none;border-radius:12px;">
@@ -1036,8 +1039,8 @@ html,body{background-color:var(--bg);}
   </div>
 
   <div style="display:flex;padding:16px 24px 24px;gap:10px;">
-    <button onclick="agentRefreshBalance()" style="flex:1;background:#4338CA;border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:500;padding:13px;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='#4F46E5'" onmouseout="this.style.background='#4338CA'">&#x21BB; Refresh</button>
-    <button onclick="window.open('https://faucet.circle.com','_blank')" style="flex:1;background:transparent;border:0.5px solid var(--border2);border-radius:10px;color:var(--text);font-size:13px;font-weight:500;padding:13px;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='rgba(67,56,202,.08)'" onmouseout="this.style.background='transparent'">Fund</button>
+    <button onclick="agentRefreshBalance()" style="flex:1;background:linear-gradient(135deg,#4338CA 0%,#4F46E5 50%,#3B82F6 100%);border:none;border-radius:12px;color:#fff;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;height:48px;cursor:pointer;box-shadow:0 4px 14px rgba(67,56,202,.32);">&#x21BB; Refresh</button>
+    <button onclick="window.open('https://faucet.circle.com','_blank')" style="flex:1;background:transparent;border:1.5px solid #4338CA;border-radius:12px;color:#4338CA;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;height:48px;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='rgba(67,56,202,.08)'" onmouseout="this.style.background='transparent'">Fund</button>
   </div>
 </div>
 <style>@media(max-width:767px){@keyframes agentSpin{to{transform:rotate(360deg)}} .nan-dash-grid{grid-template-columns:1fr !important;}}</style>
@@ -4945,8 +4948,8 @@ document.addEventListener('DOMContentLoaded',function(){
   }
 })();
 </script>
-<script src="/legacy/app.js?v=1785793487"></script>
-<script src="/legacy/ui.js?v=1785793487"></script>
+<script src="/legacy/app.js?v=1785827943"></script>
+<script src="/legacy/ui.js?v=1785827943"></script>
 <script>
 /* ══ Nav restructure: sidebar product links, split Profile / Agent Wallet menus ══
    Career agent / Research agent / Marketplace / Gigs moved from top nav to the
