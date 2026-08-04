@@ -212,6 +212,7 @@ function updateTopbarPageInfo(page) {
     arcname:'.arc Name', more:'More', naira:'Naira',
     bulk:'Payroll', payreq:'Pay Requests',
     explore:'Explore',
+    groupsavings:'Group Savings',
   };
 
   nameEl.textContent = labels[page] || page.charAt(0).toUpperCase()+page.slice(1);
