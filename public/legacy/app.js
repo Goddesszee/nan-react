@@ -8964,27 +8964,160 @@ function renderPaymentRequests(){
   loadPaymentRequests();
   const list=document.getElementById('payreqList');
   if(!list)return;
-  const total=paymentRequests.length;
-  const paid=paymentRequests.filter(p=>p.status==='paid').length;
-  const pending=paymentRequests.filter(p=>p.status==='pending').length;
-  const el1=document.getElementById('prStatTotal');
-  const el2=document.getElementById('prStatPaid');
+  const pending=paymentRequests.filter(p=>p.status==='pending'&&!(p.expiresAt&&Date.now()>p.expiresAt)).length;
+  const now=new Date();
+  const outstanding=paymentRequests.filter(p=>p.status==='pending'&&p.amount).reduce((s,p)=>s+parseFloat(p.amount),0);
+  const paidThisMonth=paymentRequests.filter(p=>p.status==='paid'&&p.paidAt&&new Date(p.paidAt).getMonth()===now.getMonth()&&new Date(p.paidAt).getFullYear()===now.getFullYear()).reduce((s,p)=>s+parseFloat(p.amount||0),0);
+  const totalRevenue=paymentRequests.filter(p=>p.status==='paid').reduce((s,p)=>s+parseFloat(p.amount||0),0);
   const el3=document.getElementById('prStatPending');
-  if(el1)el1.textContent=total;
-  if(el2)el2.textContent=paid;
+  const elOut=document.getElementById('prStatOutstanding');
+  const elPaidMonth=document.getElementById('prStatPaidMonth');
+  const elRev=document.getElementById('prStatRevenue');
   if(el3)el3.textContent=pending;
+  if(elOut)elOut.textContent=outstanding.toFixed(2);
+  if(elPaidMonth)elPaidMonth.textContent=paidThisMonth.toFixed(2);
+  if(elRev)elRev.textContent=totalRevenue.toFixed(2);
   if(!paymentRequests.length){
-    list.innerHTML='<div style="text-align:center;padding:32px 16px;"><div style="font-size:2rem;margin-bottom:10px;">🧾</div><div style="font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:5px;">No requests yet</div><div style="font-size:.78rem;color:var(--text3);margin-bottom:16px;">Create one to start getting paid</div><button onclick="goPage(\'payreq-new\')" style="background:#4338CA;border:none;border-radius:10px;color:#EEF2FF;font-family:\'Inter\',sans-serif;font-weight:700;font-size:.82rem;padding:10px 20px;cursor:pointer;">+ Create First Request</button></div>';
+    list.innerHTML='<div style="text-align:center;padding:32px 16px;"><div style="font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:5px;">No requests yet</div><div style="font-size:.78rem;color:var(--text3);margin-bottom:16px;">Create one to start getting paid</div><button onclick="goPage(\'payreq-new\')" style="background:#4338CA;border:none;border-radius:10px;color:#EEF2FF;font-family:\'Inter\',sans-serif;font-weight:700;font-size:.82rem;padding:10px 20px;cursor:pointer;">+ Create First Request</button></div>';
     return;
   }
   list.innerHTML=paymentRequests.map(pr=>{
     const isExpired=pr.expiresAt&&Date.now()>pr.expiresAt&&pr.status==='pending';
     const status=isExpired?'expired':pr.status;
     const statusColor=status==='paid'?'var(--success)':status==='expired'?'var(--warning)':'var(--accent3)';
-    const statusLabel=status==='paid'?'✓ Paid':status==='expired'?'Expired':'Pending';
-    const amtText=pr.amount?parseFloat(pr.amount).toFixed(2)+' '+pr.token:'Open · '+pr.token;
-    return `<div onclick="viewPaymentRequest('${pr.id}')" style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--border);cursor:pointer;" onmouseover="this.style.background='rgba(59,130,246,.04)'" onmouseout="this.style.background=''"><div style="display:flex;align-items:center;gap:10px;"><div style="width:36px;height:36px;border-radius:10px;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">🧾</div><div><div style="font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:2px;">${pr.label}</div><div style="font-size:.72rem;color:var(--text3);">${new Date(pr.createdAt).toLocaleDateString()}</div></div></div><div style="text-align:right;"><div style="font-size:.88rem;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace;">${amtText}</div><div style="font-size:.68rem;font-weight:600;color:${statusColor};">${statusLabel}</div></div></div>`;
+    const statusLabel=status==='paid'?'Paid':status==='expired'?'Expired':'Pending';
+    const amtText=pr.amount?parseFloat(pr.amount).toFixed(2)+' '+pr.token:'Open, '+pr.token;
+    return `<div onclick="viewPaymentRequest('${pr.id}')" style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--border);cursor:pointer;" onmouseover="this.style.background='rgba(59,130,246,.04)'" onmouseout="this.style.background=''"><div style="display:flex;align-items:center;gap:10px;"><div style="width:36px;height:36px;border-radius:10px;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4338CA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg></div><div><div style="font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:2px;">${pr.label}</div><div style="font-size:.72rem;color:var(--text3);">${new Date(pr.createdAt).toLocaleDateString()}</div></div></div><div style="text-align:right;"><div style="font-size:.88rem;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace;">${amtText}</div><div style="font-size:.68rem;font-weight:600;color:${statusColor};">${statusLabel}</div></div></div>`;
   }).join('');
+}
+
+// ── Nan Pay dashboard: tab switching, quick actions, invoices, analytics ──
+function prSwitchDashTab(tab){
+  const activityPane = document.getElementById('prActivityPane');
+  const analyticsPane = document.getElementById('prAnalyticsPane');
+  const activityBtn = document.getElementById('prTabActivity');
+  const analyticsBtn = document.getElementById('prTabAnalytics');
+  if (tab === 'activity') {
+    activityPane.style.display = 'block'; analyticsPane.style.display = 'none';
+    activityBtn.style.background = 'linear-gradient(135deg,#4338CA,#3B82F6)'; activityBtn.style.color = '#fff';
+    analyticsBtn.style.background = 'transparent'; analyticsBtn.style.color = 'var(--text2)';
+  } else {
+    activityPane.style.display = 'none'; analyticsPane.style.display = 'block';
+    analyticsBtn.style.background = 'linear-gradient(135deg,#4338CA,#3B82F6)'; analyticsBtn.style.color = '#fff';
+    activityBtn.style.background = 'transparent'; activityBtn.style.color = 'var(--text2)';
+    renderPRAnalytics();
+  }
+}
+function renderPRAnalytics(){
+  const el = document.getElementById('prAnalyticsResults');
+  if(!paymentRequests.length){ el.innerHTML = '<div style="text-align:center;padding:40px 20px;border:2px dashed var(--border);border-radius:16px;color:var(--text3);">Not enough data yet, create and get paid on a request to see analytics.</div>'; return; }
+  const paidReqs = paymentRequests.filter(p=>p.status==='paid'&&p.paidAt);
+  const totalRevenue = paidReqs.reduce((s,p)=>s+parseFloat(p.amount||0),0);
+  const avgPaymentTimeMs = paidReqs.length ? paidReqs.reduce((s,p)=>s+(p.paidAt-p.createdAt),0)/paidReqs.length : null;
+  const avgPaymentTimeLabel = avgPaymentTimeMs ? (avgPaymentTimeMs < 3600000 ? Math.round(avgPaymentTimeMs/60000)+' minutes' : Math.round(avgPaymentTimeMs/3600000)+' hours') : 'Not enough data';
+  el.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+      <div class="pcard" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 18px;"><div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;">Total revenue</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;margin-top:4px;">${totalRevenue.toFixed(2)}</div></div>
+      <div class="pcard" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 18px;"><div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;">Payments received</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;margin-top:4px;">${paidReqs.length}</div></div>
+      <div class="pcard" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 18px;"><div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;">Avg payment time</div><div style="font-size:1rem;font-weight:700;margin-top:4px;">${avgPaymentTimeLabel}</div></div>
+    </div>`;
+}
+function openMostRecentRequestView(){
+  if(!paymentRequests.length) loadPaymentRequests();
+  if(!paymentRequests.length){ toast('Create a payment request first','error'); return; }
+  viewPaymentRequest(paymentRequests[0].id);
+}
+
+// ── Invoices: a real payment request with structured line-item details,
+//    generated on the same on-chain PAYREQ_CONTRACT used by Request Payment ──
+function openInvoiceForm(){
+  document.getElementById('prInvoiceFormOverlay').style.display = 'flex';
+}
+function closeInvoiceForm(){
+  document.getElementById('prInvoiceFormOverlay').style.display = 'none';
+}
+function updateInvoicePreview(){
+  const qty = parseFloat(document.getElementById('invQty').value) || 0;
+  const unitPrice = parseFloat(document.getElementById('invUnitPrice').value) || 0;
+  const subtotal = qty * unitPrice;
+  document.getElementById('invSubtotal').textContent = subtotal.toFixed(2);
+  document.getElementById('invTotal').textContent = subtotal.toFixed(2);
+}
+async function submitInvoice(){
+  if(!userAddr){ toast('Connect your wallet first','error'); return; }
+  const businessName = document.getElementById('invBusinessName').value.trim();
+  const customerName = document.getElementById('invCustomerName').value.trim();
+  const itemDesc = document.getElementById('invItemDesc').value.trim();
+  const qty = parseFloat(document.getElementById('invQty').value) || 0;
+  const unitPrice = parseFloat(document.getElementById('invUnitPrice').value) || 0;
+  const currency = document.getElementById('invCurrency').value;
+  const dueDate = document.getElementById('invDueDate').value.trim();
+  const statusEl = document.getElementById('invStatus');
+  const total = qty * unitPrice;
+  if(!businessName || !customerName || !itemDesc){ statusEl.textContent = 'Business name, customer name, and item description are required.'; return; }
+  if(!total || total <= 0){ statusEl.textContent = 'Enter a quantity and unit price.'; return; }
+  statusEl.textContent = 'Creating invoice on-chain, this reuses the same real payment request contract as Request Payment.';
+  try{
+    currentPRToken = currency;
+    const tokenAddr = currency==='USDC'?USDC_ADDR:EURC_ADDR;
+    const amtAtomic = ethers.parseUnits(total.toFixed(6),6);
+    const label = businessName+' invoice for '+customerName;
+    const note = itemDesc+', qty '+qty+' at '+unitPrice.toFixed(2)+' '+currency+(dueDate?', due '+dueDate:'');
+    let onChainId=null;
+    if(isCircleWallet&&circleWalletId){
+      onChainId='circ_'+Date.now();
+      fetch('https://nan-production.up.railway.app/api/circle-wallets',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action:'contractCall',walletId:circleWalletId,
+          contractAddress:PAYREQ_CONTRACT,
+          functionSignature:'createRequest(address,uint256,string,string,uint256)',
+          params:[tokenAddr,amtAtomic.toString(),label,note,'0']})}).catch(e=>console.warn('Invoice submit error:',e.message));
+    } else if(signer){
+      const c=new ethers.Contract(PAYREQ_CONTRACT,PAYREQ_ABI,signer);
+      const tx=await c.createRequest(tokenAddr,amtAtomic,label,note,0,arcGasOpts());
+      const receipt=await tx.wait(1);
+      const event=receipt?.logs?.find(l=>l.fragment?.name==='RequestCreated');
+      onChainId=event?.args?.id?.toString();
+    } else { throw new Error('No wallet connected'); }
+    const safeId=onChainId||('local_'+Date.now());
+    const pr={id:'onchain_'+safeId,onChainId:safeId,to:userAddr,token:currency,amount:total,label,note,status:'pending',createdAt:Date.now(),isInvoice:true,businessName,customerName,itemDesc,qty,unitPrice,dueDate};
+    paymentRequests.unshift(pr);
+    savePaymentRequests();
+    toast('Invoice created and payment link generated','success',4000);
+    closeInvoiceForm();
+    downloadInvoiceReceipt(pr);
+    renderPaymentRequests();
+    viewPaymentRequest(pr.id);
+  }catch(err){
+    statusEl.textContent = 'Error: '+err.message.slice(0,150);
+  }
+}
+function downloadInvoiceReceipt(pr){
+  const canvas = document.createElement('canvas');
+  canvas.width = 600; canvas.height = 420;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,600,420);
+  ctx.strokeStyle = 'rgba(67,56,202,.3)'; ctx.lineWidth = 1.5;
+  ctx.strokeRect(10,10,580,400);
+  ctx.fillStyle = '#4338CA'; ctx.font = 'bold 22px sans-serif';
+  ctx.textAlign = 'left'; ctx.fillText(pr.businessName || 'Invoice', 30, 50);
+  ctx.fillStyle = '#6B7280'; ctx.font = '12px sans-serif';
+  ctx.fillText('Billed to, ' + pr.customerName, 30, 74);
+  ctx.fillText(new Date(pr.createdAt).toLocaleDateString(), 30, 92);
+  ctx.strokeStyle = '#E5E7EB'; ctx.beginPath(); ctx.moveTo(30,110); ctx.lineTo(570,110); ctx.stroke();
+  ctx.fillStyle = '#111827'; ctx.font = 'bold 13px sans-serif';
+  ctx.fillText('Item', 30, 136); ctx.fillText('Qty', 380, 136); ctx.fillText('Unit price', 460, 136);
+  ctx.font = '13px sans-serif'; ctx.fillStyle = '#374151';
+  ctx.fillText(String(pr.itemDesc).slice(0,40), 30, 162);
+  ctx.fillText(String(pr.qty), 380, 162);
+  ctx.fillText(pr.unitPrice.toFixed(2) + ' ' + pr.token, 460, 162);
+  ctx.strokeStyle = '#E5E7EB'; ctx.beginPath(); ctx.moveTo(30,190); ctx.lineTo(570,190); ctx.stroke();
+  ctx.font = 'bold 18px sans-serif'; ctx.fillStyle = '#4338CA'; ctx.textAlign = 'right';
+  ctx.fillText('Total, ' + pr.amount.toFixed(2) + ' ' + pr.token, 570, 224);
+  if (pr.dueDate) { ctx.font = '12px sans-serif'; ctx.fillStyle = '#6B7280'; ctx.fillText('Due ' + pr.dueDate, 570, 246); }
+  const link = document.createElement('a');
+  link.download = 'invoice-' + pr.id + '.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
 }
 function selectAllLinkText(el){
   // Tap the link text to select all on mobile so user can manually copy if needed
