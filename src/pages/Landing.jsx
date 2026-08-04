@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useTheme } from '../hooks/useTheme'
 
 const API = 'https://nan-production.up.railway.app'
+const LOGO_FONT_LINK = 'https://fonts.googleapis.com/css2?family=Manrope:wght@800&display=swap'
 
 export function Landing({ onEmailConnect, onWalletConnect }) {
   const { theme, toggleTheme } = useTheme()
@@ -28,6 +29,17 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
       .catch(() => {})
   }, [])
 
+  // Manrope ExtraBold is used only for the NAN wordmark, per the design system
+  useEffect(() => {
+    if (document.getElementById('nan-logo-font')) return
+    const link = document.createElement('link')
+    link.id = 'nan-logo-font'
+    link.rel = 'stylesheet'
+    link.href = LOGO_FONT_LINK
+    document.head.appendChild(link)
+  }, [])
+  const logoFont = "'Manrope', 'Inter', sans-serif"
+
   // colors, monochrome base with a single purple accent, both themes
   const bg       = dark ? '#000000' : '#ffffff'
   const card     = dark ? '#161616' : '#f7f7f7'
@@ -40,6 +52,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
   const inputBg2 = dark ? 'rgba(255,255,255,.04)' : 'rgba(0,0,0,.04)'
   const accent   = '#4338CA'
   const accentL  = '#3B82F6'
+  const brandGradient = 'linear-gradient(135deg, #4338CA 0%, #4F46E5 50%, #3B82F6 100%)'
 
   // sample ticker feed, agent to agent nanopayments
   const tickerRows = [
@@ -107,13 +120,13 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
   if (step === 'loading') return (
     <div style={{ minHeight:'100vh', background:bg, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:16, fontFamily:'Inter,sans-serif' }}>
       <div style={{ display:'flex', alignItems:'center', gap:9 }}>
-        <div style={{ width:44, height:44, borderRadius:'50%', background:'#4338CA', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+        <div style={{ width:44, height:44, borderRadius:'50%', background:brandGradient, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 324 480" width={19} height={27}>
             <path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill="#fff"/>
             <path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill="#fff"/>
           </svg>
         </div>
-        <span style={{ fontWeight:700, fontSize:'20px', color:text, fontFamily:'Inter, sans-serif', lineHeight:'44px' }}>NAN</span>
+        <span style={{ fontWeight:800, fontSize:'20px', color:text, fontFamily:logoFont, lineHeight:'44px' }}>NAN</span>
       </div>
       <div style={{ color:text, fontSize:'1rem', fontWeight:600 }}>{loadMsg}</div>
       <div style={{ display:'flex', gap:6 }}>
@@ -131,13 +144,13 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
       {/* NAV */}
       <nav style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'26px 48px', maxWidth:1400, margin:'0 auto', borderBottom:`1px solid ${border}` }}>
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-          <div style={{ width:30, height:30, borderRadius:'50%', background:accent, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+          <div style={{ width:30, height:30, borderRadius:'50%', background:brandGradient, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
             <svg viewBox="0 0 324 480" width="12" height="18"><path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill="#fff"/><path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill="#fff"/></svg>
           </div>
-          <span style={{ fontWeight:700, fontSize:'1.1rem', letterSpacing:'-.01em' }}>NAN</span>
+          <span style={{ fontWeight:800, fontSize:'1.1rem', letterSpacing:'-.01em', fontFamily:logoFont }}>NAN</span>
         </div>
         <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-          <button onClick={openConnect} style={{ background:accent, border:'none', color:'#fff', fontWeight:700, fontSize:'.85rem', padding:'10px 20px', borderRadius:100, cursor:'pointer', fontFamily:'Inter,sans-serif' }}>
+          <button onClick={openConnect} style={{ background:brandGradient, border:'none', color:'#fff', fontWeight:700, fontSize:'.85rem', padding:'10px 20px', borderRadius:12, cursor:'pointer', fontFamily:'Inter,sans-serif' }}>
             Connect Wallet
           </button>
           <button onClick={toggleTheme} style={{ width:34, height:34, borderRadius:'50%', border:`1px solid ${border2}`, background:inputBg2, display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', color:text2 }}>
@@ -152,7 +165,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
       {/* HERO */}
       <section style={{ minHeight:'auto', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center', padding:'48px 24px 60px' }}>
 
-        <div style={{ display:'inline-flex', alignItems:'center', gap:9, fontSize:'.72rem', fontWeight:600, letterSpacing:'.12em', textTransform:'uppercase', color:accentL, background:'rgba(112,0,255,.1)', border:'1px solid rgba(112,0,255,.28)', padding:'8px 18px', borderRadius:100, marginBottom:28 }}>
+        <div style={{ display:'inline-flex', alignItems:'center', gap:9, fontSize:'.72rem', fontWeight:600, letterSpacing:'.12em', textTransform:'uppercase', color:accentL, background:'rgba(67,56,202,.1)', border:'1px solid rgba(67,56,202,.28)', padding:'8px 18px', borderRadius:100, marginBottom:28 }}>
           <span style={{ width:6, height:6, borderRadius:'50%', background:accentL, animation:'pulseDot 1.6s ease-in-out infinite' }}/>
           Live on Arc Testnet
         </div>
@@ -183,7 +196,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
 
           {!showConnect && step === 'email' && (
             <>
-              <button onClick={openConnect} style={{ width:'100%', background:accent, border:'none', color:'#fff', fontWeight:700, fontSize:'1.05rem', padding:19, borderRadius:100, cursor:'pointer', fontFamily:'Inter,sans-serif', boxShadow:'0 8px 30px rgba(112,0,255,.35)' }}>
+              <button onClick={openConnect} style={{ width:'100%', background:brandGradient, border:'none', color:'#fff', fontWeight:700, fontSize:'1.05rem', padding:19, borderRadius:12, cursor:'pointer', fontFamily:'Inter,sans-serif', boxShadow:'0 8px 30px rgba(67,56,202,.35)' }}>
                 Get Started
               </button>
               <a href="https://faucet.circle.com" target="_blank" rel="noopener noreferrer" style={{ fontSize:'.85rem', color:text3, cursor:'pointer', textDecoration:'none' }}>
@@ -326,7 +339,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
 
       {/* HOW IT WORKS */}
       <section style={{ padding:'0 24px 80px', maxWidth:1180, margin:'0 auto' }}>
-        <div style={{ background:card, border:`1px solid ${border}`, borderRadius:28, padding:'70px 50px' }}>
+        <div style={{ background:card, border:`1px solid ${border}`, borderRadius:24, padding:'70px 50px' }}>
           <div style={{ maxWidth:620, margin:'0 auto 48px', textAlign:'center' }}>
             <div style={{ fontFamily:'Space Mono,monospace', fontSize:'.76rem', fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase', color:accentL, marginBottom:14 }}>
               How it works
@@ -365,7 +378,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
         <p style={{ color:text2, fontSize:'1.05rem', marginBottom:36 }}>
           Set up a wallet in minutes. Your agent does the rest.
         </p>
-        <button onClick={openConnect} style={{ background:accent, border:'none', color:'#fff', fontWeight:700, fontSize:'.98rem', padding:'16px 32px', borderRadius:100, cursor:'pointer', fontFamily:'Inter,sans-serif', boxShadow:'0 8px 30px rgba(112,0,255,.35)' }}>
+        <button onClick={openConnect} style={{ background:brandGradient, border:'none', color:'#fff', fontWeight:700, fontSize:'.98rem', padding:'16px 32px', borderRadius:12, cursor:'pointer', fontFamily:'Inter,sans-serif', boxShadow:'0 8px 30px rgba(67,56,202,.35)' }}>
           Get started free
         </button>
       </section>
@@ -373,7 +386,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
       {/* FOOTER */}
       <footer style={{ background:'#0a0a0a', color:'#b0b0b0', padding:'56px 24px 28px' }}>
         <div style={{ maxWidth:1180, margin:'0 auto', display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:20 }}>
-          <div style={{ fontFamily:'Inter,sans-serif', fontSize:'1.1rem', fontWeight:700, color:'#fff' }}>NAN</div>
+          <div style={{ fontFamily:logoFont, fontSize:'1.1rem', fontWeight:800, color:'#fff' }}>NAN</div>
           <div style={{ display:'flex', gap:28, fontSize:'.85rem' }}>
             <a href="#" style={{ color:'#b0b0b0' }}>Docs</a>
             <a href="#" style={{ color:'#b0b0b0' }}>GitHub</a>
