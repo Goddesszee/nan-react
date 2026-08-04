@@ -43,7 +43,7 @@ const LENDING_CONTRACT  = '0x4CC84BbEf992439Cb01FeF2E1150B37916d1f2ce'; // NANLe
 const NAME_REGISTRY     = '0x043D072B12CBe488DBA3d2975c42Db3055F2836f'; // NANNameRegistry deployed
 const PAYREQ_CONTRACT   = '0x1940232f42D4e2083785bC869FbAD8dd43133817';
 const HISTORY_CONTRACT  = '0xC64Fad1CFFDE16167d5887211066b47E1df48B4d';
-const AJO_CONTRACT      = '0xced87A492edF8AfE834b2730102C7d5A0cc56cA9'; // NANAjo deployed June 21, 2026 — payout cycle, treat as beta
+const AJO_CONTRACT      = '0xced87A492edF8AfE834b2730102C7d5A0cc56cA9'; // Group Savings contract, deployed June 21, 2026, payout cycle, treat as beta
 const AJO_ABI = [
   'function createGroup(uint256 contributionAmount, uint8 maxMembers, uint256 roundLength, string label) external returns (uint256 groupId)',
   'function joinGroup(uint256 groupId) external',
@@ -1786,7 +1786,7 @@ async function ajoApi(action, extra={}){
 
 async function doAjo(){
   if(!userAddr){ toast('Connect your wallet first','error',3000); return; }
-  openBillModal('NANAjo', `
+  openBillModal('Group Savings', `
     <div style="background:rgba(67,56,202,.08);border:0.5px solid rgba(67,56,202,.2);border-radius:18px;padding:16px 18px;margin-bottom:18px;">
       <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#4338CA;margin-bottom:5px;">Savings circle</div>
       <div style="font-size:.95rem;font-weight:600;color:var(--text);line-height:1.4;">Pool money. Take turns. No bank needed.</div>
@@ -1826,7 +1826,7 @@ async function loadMyAjoGroups(){
       if(member) myGroups.push(id);
     }
     if(myGroups.length === 0){
-      el.innerHTML = `<div style="text-align:center;padding:28px 0 10px;"><div style="font-size:1.6rem;margin-bottom:10px;">🫂</div><div style="font-size:.85rem;color:var(--text3);line-height:1.6;">No groups yet.<br>Start one or ask a friend for their group code.</div></div>`;
+      el.innerHTML = `<div style="text-align:center;padding:28px 0 10px;"><div style="font-size:.85rem;color:var(--text3);line-height:1.6;">No groups yet.<br>Start one or ask a friend for their group code.</div></div>`;
       return;
     }
     const statusLabel = ['Open','Live','Done'];
@@ -1937,7 +1937,7 @@ async function submitAjoCreate(){
         if(idNow>idBefore){ newGroupId=idNow-1; break; }
       }
       if(newGroupId==null) newGroupId=idBefore; // fallback
-      addTx({hash:d.txId,to:AJO_CONTRACT,toRaw:'NANAjo Create Group',amount:contribution.toFixed(6),type:'out',token:'USDC',ts:Date.now(),confirmed:true,source:'ajo'});
+      addTx({hash:d.txId,to:AJO_CONTRACT,toRaw:'Group Savings: Create Group',amount:contribution.toFixed(6),type:'out',token:'USDC',ts:Date.now(),confirmed:true,source:'ajo'});
     } else {
       if(!signer){ toast('Connect MetaMask & switch to Arc Testnet','error',5000); btn.disabled=false; btn.textContent='Create group'; return; }
       const c=ajoContract(signer);
@@ -1960,7 +1960,7 @@ async function submitAjoCreate(){
         }
         if(newGroupId==null) newGroupId=idBefore;
       }
-      addTx({hash:tx.hash,to:AJO_CONTRACT,toRaw:'NANAjo Create Group',amount:contribution.toFixed(6),type:'out',token:'USDC',ts:Date.now(),confirmed:true,source:'ajo'});
+      addTx({hash:tx.hash,to:AJO_CONTRACT,toRaw:'Group Savings: Create Group',amount:contribution.toFixed(6),type:'out',token:'USDC',ts:Date.now(),confirmed:true,source:'ajo'});
     }
     toast('✓ Group created!','success',5000);
     showAjoGroupCode(newGroupId, label||'Group #'+newGroupId);
@@ -1996,10 +1996,10 @@ function _checkAjoDeepLink(){
     url.searchParams.delete('ajo');
     window.history.replaceState({},'',url.toString());
     // Open Ajo modal with the code pre-filled
-    openBillModal('NANAjo',`
+    openBillModal('Group Savings',`
       <div style="background:rgba(67,56,202,.08);border:0.5px solid rgba(67,56,202,.2);border-radius:18px;padding:16px 18px;margin-bottom:18px;">
         <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#4338CA;margin-bottom:5px;">Savings circle</div>
-        <div style="font-size:.95rem;font-weight:600;color:var(--text);line-height:1.4;">You've been invited to join an Ajo group.</div>
+        <div style="font-size:.95rem;font-weight:600;color:var(--text);line-height:1.4;">You've been invited to join a savings group.</div>
         <div style="font-size:.76rem;color:var(--text3);margin-top:5px;line-height:1.55;">Everyone puts in the same amount each round. One person gets the full pot — on-chain, automatic.</div>
       </div>
       <div id="ajoBody"></div>
@@ -2037,7 +2037,7 @@ function showAjoGroupCode(groupId, label){
 function ajoShareLink(groupId, displayCode){
   const link='https://nanarc.xyz/legacy/app.html?ajo='+encodeURIComponent(displayCode);
   if(navigator.share){
-    navigator.share({ title:'Join my Ajo group on NAN', text:'I\'ve invited you to join my savings circle. Use code: '+displayCode, url:link }).catch(()=>{});
+    navigator.share({ title:'Join my savings group on NAN', text:'I\'ve invited you to join my savings circle. Use code: '+displayCode, url:link }).catch(()=>{});
   } else {
     navigator.clipboard.writeText(link).then(()=>toast('Link copied! Share it with your group members.','success',4000));
   }
@@ -2279,7 +2279,7 @@ async function submitAjoContribute(groupId){
       const d=await ajoApi('contribute',{groupId,contributionAmount:amtFormatted});
       if(!d.success) throw new Error(d.error||'Failed');
       statusEl.innerHTML='<span style="color:#000000;">Confirmed ✓</span>';
-      addTx({hash:d.txId,to:AJO_CONTRACT,toRaw:'NANAjo Contribute',amount:amtFormatted,type:'out',token:'USDC',ts:Date.now(),confirmed:true,source:'ajo'});
+      addTx({hash:d.txId,to:AJO_CONTRACT,toRaw:'Group Savings: Contribute',amount:amtFormatted,type:'out',token:'USDC',ts:Date.now(),confirmed:true,source:'ajo'});
     } else {
       if(!signer){ toast('Connect MetaMask & switch to Arc Testnet','error',5000); btn.disabled=false; return; }
       const c=ajoContract(signer);
@@ -2290,7 +2290,7 @@ async function submitAjoContribute(groupId){
       const tx=await c.contribute(groupId,arcGasOpts());
       statusEl.innerHTML='<span style="color:#000000;">Confirming…</span>';
       await tx.wait(1);
-      addTx({hash:tx.hash,to:AJO_CONTRACT,toRaw:'NANAjo Contribute',amount:amtFormatted,type:'out',token:'USDC',ts:Date.now(),confirmed:true,source:'ajo'});
+      addTx({hash:tx.hash,to:AJO_CONTRACT,toRaw:'Group Savings: Contribute',amount:amtFormatted,type:'out',token:'USDC',ts:Date.now(),confirmed:true,source:'ajo'});
     }
     toast('✓ Contributed!','success',5000);
     showAjoGroup(groupId);
