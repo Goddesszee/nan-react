@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Nan Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   NAN DESIGN SYSTEM v1.0
+   Design tokens first. Components second. Pages last.
+   ============================================================ */
+
+:root{
+  /* ---- Color ---- */
+  --nan-primary: #4338CA;
+  --nan-secondary: #3B82F6;
+  --nan-gradient: linear-gradient(135deg, #4338CA 0%, #4F46E5 50%, #3B82F6 100%);
+  --nan-bg: #FFFFFF;
+  --nan-bg-2: #F8FAFC;
+  --nan-card: #FFFFFF;
+  --nan-text: #111827;
+  --nan-text-2: #6B7280;
+  --nan-border: #E5E7EB;
+  --nan-success: #22C55E;
+  --nan-warning: #F59E0B;
+  --nan-error: #EF4444;
+  --nan-info: #0EA5E9;
+
+  /* ---- Type scale ---- */
+  --nan-display: 48px;
+  --nan-title: 36px;
+  --nan-h2: 28px;
+  --nan-h3: 22px;
+  --nan-sub: 18px;
+  --nan-body: 16px;
+  --nan-label: 14px;
+  --nan-caption: 12px;
+
+  /* ---- 8pt spacing scale ---- */
+  --sp-1: 8px;
+  --sp-2: 16px;
+  --sp-3: 24px;
+  --sp-4: 32px;
+  --sp-5: 40px;
+  --sp-6: 48px;
+
+  /* ---- Shape / elevation ---- */
+  --nan-radius-btn: 12px;
+  --nan-radius-card: 20px;
+  --nan-shadow-sm: 0 1px 2px rgba(17,24,39,.05), 0 1px 3px rgba(17,24,39,.06);
+  --nan-shadow-md: 0 4px 12px rgba(17,24,39,.06), 0 2px 4px rgba(17,24,39,.04);
+  --nan-shadow-lg: 0 12px 32px rgba(67,56,202,.12), 0 4px 8px rgba(17,24,39,.04);
+  --nan-shadow-focus: 0 0 0 4px rgba(67,56,202,.12);
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  font-family:'Inter',sans-serif;
+  background:var(--nan-bg-2);
+  color:var(--nan-text);
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:rgba(67,56,202,.18);}
+:focus-visible{outline:2px solid var(--nan-primary);outline-offset:2px;border-radius:4px;}
+
+/* ---- Doc shell ---- */
+.doc-nav{
+  position:fixed;top:0;left:0;bottom:0;width:240px;
+  background:#FFFFFF;border-right:1px solid var(--nan-border);
+  padding:var(--sp-3) var(--sp-2);overflow-y:auto;z-index:50;
+}
+.doc-nav-brand{
+  font-family:'Manrope',sans-serif;font-weight:800;font-size:20px;
+  color:var(--nan-primary);margin-bottom:var(--sp-4);padding:0 var(--sp-1);
+  display:flex;align-items:center;gap:8px;
+}
+.doc-nav-brand .dot{width:10px;height:10px;border-radius:3px;background:var(--nan-gradient);}
+.doc-nav a{
+  display:block;padding:9px 12px;border-radius:8px;color:var(--nan-text-2);
+  text-decoration:none;font-size:14px;font-weight:500;margin-bottom:2px;
+  transition:background .15s,color .15s;
+}
+.doc-nav a:hover{background:var(--nan-bg-2);color:var(--nan-text);}
+.doc-nav-group{
+  font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:#9CA3AF;margin:var(--sp-3) 0 var(--sp-1) 12px;
+}
+.doc-nav-group:first-of-type{margin-top:0;}
+
+.doc-main{margin-left:240px;padding:var(--sp-6) var(--sp-6) 120px;max-width:1180px;}
+.doc-section{margin-bottom:80px;scroll-margin-top:32px;}
+.doc-section-head{margin-bottom:var(--sp-4);}
+.doc-eyebrow{
+  font-size:var(--nan-caption);font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--nan-primary);margin-bottom:8px;
+}
+.doc-h2{font-size:var(--nan-h2);font-weight:700;letter-spacing:-.01em;margin:0 0 8px;}
+.doc-p{font-size:var(--nan-body);color:var(--nan-text-2);max-width:640px;margin:0;}
+
+/* ---- Intro / hero ---- */
+.intro-hero{
+  background:var(--nan-gradient);border-radius:var(--nan-radius-card);
+  padding:64px var(--sp-5);color:#fff;margin-bottom:80px;position:relative;overflow:hidden;
+}
+.intro-hero::after{
+  content:'';position:absolute;top:-40%;right:-10%;width:480px;height:480px;
+  background:radial-gradient(circle,rgba(255,255,255,.14),transparent 70%);
+}
+.intro-hero h1{
+  font-size:var(--nan-display);font-weight:700;letter-spacing:-.02em;margin:0 0 12px;
+  position:relative;max-width:760px;
+}
+.intro-hero p{
+  font-size:20px;color:rgba(255,255,255,.85);max-width:560px;margin:0;position:relative;
+}
+.intro-hero .tag-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:24px;position:relative;}
+.intro-tag{
+  background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);
+  padding:6px 14px;border-radius:100px;font-size:13px;font-weight:600;
+}
+
+/* ---- Swatches ---- */
+.swatch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--sp-2);}
+.swatch{border-radius:14px;overflow:hidden;border:1px solid var(--nan-border);background:#fff;}
+.swatch-color{height:88px;}
+.swatch-meta{padding:12px 14px;}
+.swatch-name{font-size:13px;font-weight:700;}
+.swatch-hex{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--nan-text-2);margin-top:2px;}
+
+/* ---- Type specimen ---- */
+.type-row{
+  display:flex;align-items:baseline;justify-content:space-between;gap:24px;
+  padding:20px 0;border-bottom:1px solid var(--nan-border);
+}
+.type-row:first-child{padding-top:0;}
+.type-sample{color:var(--nan-text);}
+.type-label{
+  font-size:12px;color:var(--nan-text-2);font-family:'JetBrains Mono',monospace;
+  white-space:nowrap;text-align:right;line-height:1.6;
+}
+.t-display{font-size:var(--nan-display);font-weight:700;letter-spacing:-.02em;}
+.t-title{font-size:var(--nan-title);font-weight:700;letter-spacing:-.015em;}
+.t-h2{font-size:var(--nan-h2);font-weight:600;letter-spacing:-.01em;}
+.t-h3{font-size:var(--nan-h3);font-weight:600;}
+.t-sub{font-size:var(--nan-sub);font-weight:500;}
+.t-body{font-size:var(--nan-body);font-weight:400;}
+.t-label{font-size:var(--nan-label);font-weight:500;}
+.t-caption{font-size:var(--nan-caption);font-weight:400;color:var(--nan-text-2);}
+
+/* ---- Spacing ---- */
+.space-row{display:flex;align-items:center;gap:16px;margin-bottom:12px;}
+.space-bar{background:var(--nan-primary);border-radius:4px;height:16px;}
+.space-label{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--nan-text-2);width:170px;flex-shrink:0;}
+
+/* ---- Buttons ---- */
+.demo-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:28px;background:#fff;border:1px solid var(--nan-border);border-radius:var(--nan-radius-card);}
+.btn{
+  height:48px;padding:0 24px;border-radius:var(--nan-radius-btn);font-family:'Inter',sans-serif;
+  font-size:15px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px;
+  transition:transform .15s,box-shadow .15s,background .15s;border:none;
+}
+.btn:active{transform:translateY(1px);}
+.btn-primary{background:var(--nan-gradient);color:#fff;box-shadow:0 4px 14px rgba(67,56,202,.32);}
+.btn-primary:hover{box-shadow:0 6px 20px rgba(67,56,202,.42);}
+.btn-secondary{background:#fff;color:var(--nan-primary);border:1.5px solid var(--nan-primary);}
+.btn-secondary:hover{background:rgba(67,56,202,.05);}
+.btn-ghost{background:none;color:var(--nan-primary);padding:0 8px;height:auto;}
+.btn-ghost:hover{color:#312399;}
+.btn-sm{height:38px;padding:0 16px;font-size:13px;border-radius:9px;}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+
+/* ---- Cards ---- */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:var(--sp-3);}
+.nan-card{
+  background:var(--nan-card);border:1px solid var(--nan-border);border-radius:var(--nan-radius-card);
+  padding:var(--sp-3);box-shadow:var(--nan-shadow-sm);transition:box-shadow .2s,transform .2s;
+}
+.nan-card:hover{box-shadow:var(--nan-shadow-lg);transform:translateY(-2px);}
+.nan-card-icon{
+  width:44px;height:44px;border-radius:12px;background:rgba(67,56,202,.08);color:var(--nan-primary);
+  display:flex;align-items:center;justify-content:center;margin-bottom:16px;
+}
+.nan-card h4{font-size:var(--nan-h3);font-weight:600;margin:0 0 6px;}
+.nan-card p{font-size:var(--nan-label);color:var(--nan-text-2);margin:0;line-height:1.55;}
+.stat-card{padding:var(--sp-3);}
+.stat-label{font-size:var(--nan-caption);color:var(--nan-text-2);text-transform:uppercase;letter-spacing:.06em;font-weight:600;}
+.stat-value{font-size:32px;font-weight:700;letter-spacing:-.01em;margin-top:6px;font-variant-numeric:tabular-nums;}
+.stat-delta{font-size:13px;font-weight:600;margin-top:8px;display:inline-flex;align-items:center;gap:4px;}
+.stat-delta.up{color:var(--nan-success);}
+.stat-delta.down{color:var(--nan-error);}
+
+/* ---- Forms ---- */
+.form-demo{background:#fff;border:1px solid var(--nan-border);border-radius:var(--nan-radius-card);padding:var(--sp-4);max-width:420px;}
+.field{margin-bottom:var(--sp-2);}
+.field label{display:block;font-size:var(--nan-label);font-weight:600;margin-bottom:8px;color:var(--nan-text);}
+.field input,.field select{
+  width:100%;height:48px;border:1.5px solid var(--nan-border);border-radius:10px;
+  padding:0 14px;font-size:var(--nan-body);font-family:'Inter',sans-serif;color:var(--nan-text);
+  background:#fff;transition:border-color .15s,box-shadow .15s;
+}
+.field input:focus,.field select:focus{outline:none;border-color:var(--nan-primary);box-shadow:var(--nan-shadow-focus);}
+.field-hint{font-size:12px;color:var(--nan-text-2);margin-top:6px;}
+.field-error input{border-color:var(--nan-error);}
+.field-error .field-hint{color:var(--nan-error);}
+
+/* ---- Badges ---- */
+.badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:100px;font-size:12px;font-weight:700;}
+.badge-success{background:rgba(34,197,94,.12);color:#15803D;}
+.badge-warning{background:rgba(245,158,11,.12);color:#B45309;}
+.badge-error{background:rgba(239,68,68,.12);color:#B91C1C;}
+.badge-info{background:rgba(14,165,233,.12);color:#0369A1;}
+.badge-neutral{background:#F1F5F9;color:#475569;}
+
+/* ---- Table ---- */
+.nan-table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--nan-border);border-radius:var(--nan-radius-card);overflow:hidden;}
+.nan-table th{
+  text-align:left;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+  color:var(--nan-text-2);padding:14px 20px;background:var(--nan-bg-2);border-bottom:1px solid var(--nan-border);
+}
+.nan-table td{padding:16px 20px;font-size:var(--nan-body);border-bottom:1px solid var(--nan-border);}
+.nan-table tr:last-child td{border-bottom:none;}
+.nan-table tr:hover td{background:rgba(67,56,202,.02);}
+
+/* ---- Sidebar demo ---- */
+.sidebar-demo{
+  width:248px;background:#fff;border:1px solid var(--nan-border);border-radius:var(--nan-radius-card);
+  padding:20px 14px;box-shadow:var(--nan-shadow-sm);
+}
+.sb-brand{font-family:'Manrope',sans-serif;font-weight:800;font-size:19px;color:var(--nan-primary);padding:6px 10px 20px;}
+.sb-group{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9CA3AF;padding:16px 10px 6px;}
+.sb-group:first-of-type{padding-top:0;}
+.sb-item{
+  display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;
+  font-size:15px;font-weight:500;color:var(--nan-text-2);cursor:pointer;margin-bottom:2px;
+}
+.sb-item svg{flex-shrink:0;}
+.sb-item:hover{background:var(--nan-bg-2);color:var(--nan-text);}
+.sb-item.active{background:var(--nan-gradient);color:#fff;box-shadow:0 4px 12px rgba(67,56,202,.28);}
+
+/* ---- States ---- */
+.state-box{
+  background:#fff;border:1px solid var(--nan-border);border-radius:var(--nan-radius-card);
+  padding:56px 32px;text-align:center;
+}
+.state-icon{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;}
+.state-title{font-size:var(--nan-h3);font-weight:600;margin-bottom:6px;}
+.state-desc{font-size:var(--nan-label);color:var(--nan-text-2);max-width:320px;margin:0 auto 20px;}
+.skeleton{background:linear-gradient(90deg,#EEF0F3 25%,#F6F7F9 37%,#EEF0F3 63%);background-size:400% 100%;animation:shimmer 1.4s ease infinite;border-radius:8px;}
+@keyframes shimmer{0%{background-position:100% 0;}100%{background-position:-100% 0;}}
+@media (prefers-reduced-motion: reduce){.skeleton{animation:none;}.nan-card{transition:none;}}
+
+/* ---- Toast ---- */
+.toast{display:flex;align-items:flex-start;gap:12px;background:#111827;color:#fff;border-radius:14px;padding:16px 18px;max-width:360px;box-shadow:var(--nan-shadow-lg);}
+.toast-icon{width:20px;height:20px;border-radius:6px;flex-shrink:0;margin-top:1px;}
+.toast-title{font-size:14px;font-weight:700;}
+.toast-body{font-size:13px;color:#D1D5DB;margin-top:2px;}
+
+/* ---- Modal ---- */
+.modal-demo{background:#fff;border-radius:var(--nan-radius-card);box-shadow:var(--nan-shadow-lg);max-width:400px;overflow:hidden;border:1px solid var(--nan-border);}
+.modal-head{padding:24px 24px 0;}
+.modal-head h4{font-size:var(--nan-h3);font-weight:600;margin:0 0 8px;}
+.modal-head p{font-size:var(--nan-label);color:var(--nan-text-2);margin:0;}
+.modal-body{padding:20px 24px;}
+.modal-foot{padding:16px 24px 24px;display:flex;gap:10px;}
+.modal-foot .btn{flex:1;justify-content:center;}
+
+/* ---- Wallet page example ---- */
+.example-frame{background:var(--nan-bg-2);border:1px solid var(--nan-border);border-radius:24px;padding:32px;}
+.ex-header{margin-bottom:32px;}
+.ex-title{font-size:var(--nan-title);font-weight:700;letter-spacing:-.015em;margin:0 0 6px;}
+.ex-desc{font-size:var(--nan-sub);color:var(--nan-text-2);margin:0;}
+.ex-quick{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:32px;}
+.ex-quick-btn{
+  background:#fff;border:1px solid var(--nan-border);border-radius:16px;padding:18px 14px;text-align:center;
+  cursor:pointer;transition:border-color .15s,transform .15s;
+}
+.ex-quick-btn:hover{border-color:var(--nan-primary);transform:translateY(-2px);}
+.ex-quick-icon{
+  width:40px;height:40px;border-radius:11px;background:rgba(67,56,202,.08);color:var(--nan-primary);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 10px;
+}
+.ex-quick-label{font-size:13px;font-weight:600;}
+.ex-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px;}
+
+code.tok{
+  font-family:'JetBrains Mono',monospace;font-size:12px;background:#F1F5F9;color:var(--nan-primary);
+  padding:2px 7px;border-radius:5px;
+}
+
+@media(max-width:900px){
+  .doc-nav{display:none;}
+  .doc-main{margin-left:0;padding:var(--sp-4);}
+  .type-row{flex-direction:column;align-items:flex-start;gap:4px;}
+  .ex-quick{grid-template-columns:repeat(2,1fr);}
+  .ex-stats{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<nav class="doc-nav">
+  <div class="doc-nav-brand"><span class="dot"></span>Nan Design System</div>
+  <div class="doc-nav-group">Foundations</div>
+  <a href="#colors">Color</a>
+  <a href="#type">Typography</a>
+  <a href="#spacing">Spacing</a>
+  <a href="#shadows">Elevation</a>
+  <div class="doc-nav-group">Components</div>
+  <a href="#buttons">Buttons</a>
+  <a href="#cards">Cards</a>
+  <a href="#forms">Forms</a>
+  <a href="#badges">Badges</a>
+  <a href="#table">Tables</a>
+  <a href="#sidebar">Navigation</a>
+  <div class="doc-nav-group">Patterns</div>
+  <a href="#states">Empty / Loading / Error</a>
+  <a href="#feedback">Toasts &amp; Modals</a>
+  <a href="#example">Applied example</a>
+</nav>
+
+<main class="doc-main">
+
+  <div class="intro-hero">
+    <h1>The Nan Design System</h1>
+    <p>One visual language for every screen — Wallet, Marketplace, Payroll, Circles, Careers, and AI — so Nan feels like a single, trustworthy financial operating system, not a collection of features bolted together.</p>
+    <div class="tag-row">
+      <span class="intro-tag">v1.0</span>
+      <span class="intro-tag">Inter + Manrope</span>
+      <span class="intro-tag">8pt grid</span>
+      <span class="intro-tag">WCAG AA</span>
+    </div>
+  </div>
+
+  <!-- COLOR -->
+  <section class="doc-section" id="colors">
+    <div class="doc-section-head">
+      <div class="doc-eyebrow">Foundations</div>
+      <h2 class="doc-h2">Color</h2>
+      <p class="doc-p">Indigo is Nan's trust signal — used sparingly, on the things that matter: primary actions, the active nav state, and money moving. Everything else stays quiet so indigo keeps its meaning.</p>
+    </div>
+    <div class="swatch-grid">
+      <div class="swatch"><div class="swatch-color" style="background:#4338CA;"></div><div class="swatch-meta"><div class="swatch-name">Primary / Indigo</div><div class="swatch-hex">#4338CA</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#3B82F6;"></div><div class="swatch-meta"><div class="swatch-name">Secondary / Electric Blue</div><div class="swatch-hex">#3B82F6</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:linear-gradient(135deg,#4338CA,#4F46E5,#3B82F6);"></div><div class="swatch-meta"><div class="swatch-name">Signature Gradient</div><div class="swatch-hex">#4338CA → #3B82F6</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#111827;"></div><div class="swatch-meta"><div class="swatch-name">Text Primary</div><div class="swatch-hex">#111827</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#6B7280;"></div><div class="swatch-meta"><div class="swatch-name">Text Secondary</div><div class="swatch-hex">#6B7280</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#F8FAFC;border-bottom:1px solid #E5E7EB;"></div><div class="swatch-meta"><div class="swatch-name">Background</div><div class="swatch-hex">#F8FAFC</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#E5E7EB;"></div><div class="swatch-meta"><div class="swatch-name">Border</div><div class="swatch-hex">#E5E7EB</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#22C55E;"></div><div class="swatch-meta"><div class="swatch-name">Success</div><div class="swatch-hex">#22C55E</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#F59E0B;"></div><div class="swatch-meta"><div class="swatch-name">Warning</div><div class="swatch-hex">#F59E0B</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#EF4444;"></div><div class="swatch-meta"><div class="swatch-name">Error</div><div class="swatch-hex">#EF4444</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#0EA5E9;"></div><div class="swatch-meta"><div class="swatch-name">Information</div><div class="swatch-hex">#0EA5E9</div></div></div>
+    </div>
+  </section>
+
+  <!-- TYPE -->
+  <section class="doc-section" id="type">
+    <div class="doc-section-head">
+      <div class="doc-eyebrow">Foundations</div>
+      <h2 class="doc-h2">Typography</h2>
+      <p class="doc-p">Inter for everything in-product. Manrope ExtraBold is reserved for the Nan wordmark only — it never appears in body copy, so it keeps its weight as a brand mark.</p>
+    </div>
+    <div class="type-row"><div class="type-sample t-display">Send money globally</div><div class="type-label">Display Hero<br/>48px / Bold</div></div>
+    <div class="type-row"><div class="type-sample t-title">Wallet</div><div class="type-label">Page Title<br/>36px / Bold</div></div>
+    <div class="type-row"><div class="type-sample t-h2">Recent activity</div><div class="type-label">Section Heading<br/>28px / SemiBold</div></div>
+    <div class="type-row"><div class="type-sample t-h3">USDC Balance</div><div class="type-label">Card Title<br/>22px / SemiBold</div></div>
+    <div class="type-row"><div class="type-sample t-sub">Manage your stablecoins with confidence.</div><div class="type-label">Subheading<br/>18px / Medium</div></div>
+    <div class="type-row"><div class="type-sample t-body">Funds are held in escrow until every condition of the deal is met.</div><div class="type-label">Body<br/>16px / Regular</div></div>
+    <div class="type-row"><div class="type-sample t-label">Recipient address</div><div class="type-label">Label<br/>14px / Medium</div></div>
+    <div class="type-row"><div class="type-sample t-caption">Last updated 2 minutes ago</div><div class="type-label">Caption<br/>12px / Regular</div></div>
+  </section>
+
+  <!-- SPACING -->
+  <section class="doc-section" id="spacing">
+    <div class="doc-section-head">
+      <div class="doc-eyebrow">Foundations</div>
+      <h2 class="doc-h2">Spacing — 8pt grid</h2>
+      <p class="doc-p">Every margin, padding, and gap is a multiple of 8px. No exceptions — this alone is what makes unrelated pages feel like the same product.</p>
+    </div>
+    <div class="space-row"><div class="space-label"><code class="tok">--sp-1</code> 8px</div><div class="space-bar" style="width:8px;"></div></div>
+    <div class="space-row"><div class="space-label"><code class="tok">--sp-2</code> 16px</div><div class="space-bar" style="width:16px;"></div></div>
+    <div class="space-row"><div class="space-label"><code class="tok">--sp-3</code> 24px — card padding</div><div class="space-bar" style="width:24px;"></div></div>
+    <div class="space-row"><div class="space-label"><code class="tok">--sp-4</code> 32px — large card padding</div><div class="space-bar" style="width:32px;"></div></div>
+    <div class="space-row"><div class="space-label"><code class="tok">--sp-5</code> 40px — page margin</div><div class="space-bar" style="width:40px;"></div></div>
+    <div class="space-row"><div class="space-label"><code class="tok">--sp-6</code> 48px — section spacing</div><div class="space-bar" style="width:48px;"></div></div>
+    <p class="doc-p" style="margin-top:20px;">Button and input height are both fixed at <code class="tok">48px</code> — a tap target big enough for thumbs, and consistent across every form in the product.</p>
+  </section>
+
+  <!-- SHADOWS -->
+  <section class="doc-section" id="shadows">
+    <div class="doc-section-head">
+      <div class="doc-eyebrow">Foundations</div>
+      <h2 class="doc-h2">Elevation</h2>
+      <p class="doc-p">Shadows are soft and indigo-tinted, never pure black — it reads as depth, not as a drop shadow bolted on.</p>
+    </div>
+    <div class="swatch-grid">
+      <div style="background:#fff;border-radius:16px;padding:24px;box-shadow:var(--nan-shadow-sm);"><div class="swatch-name">Resting</div><div class="swatch-hex">shadow-sm</div></div>
+      <div style="background:#fff;border-radius:16px;padding:24px;box-shadow:var(--nan-shadow-md);"><div class="swatch-name">Raised</div><div class="swatch-hex">shadow-md</div></div>
+      <div style="background:#fff;border-radius:16px;padding:24px;box-shadow:var(--nan-shadow-lg);"><div class="swatch-name">Overlay / Hover</div><div class="swatch-hex">shadow-lg</div></div>
+    </div>
+  </section>
+
+  <!-- BUTTONS -->
+  <section class="doc-section" id="buttons">
+    <div class="doc-section-head">
+      <div class="doc-eyebrow">Components</div>
+      <h2 class="doc-h2">Buttons</h2>
+      <p class="doc-p">One primary action per screen, always the gradient. Everything else is secondary or ghost — this is what keeps busy pages (like the dashboard) from feeling like every button is shouting.</p>
+    </div>
+    <div class="demo-row">
+      <button class="btn btn-primary">Send money</button>
+      <button class="btn btn-secondary">Add funds</button>
+      <button class="btn btn-ghost">Cancel</button>
+      <button class="btn btn-primary btn-sm">Confirm</button>
+      <button class="btn btn-primary" disabled>Processing…</button>
+    </div>
+  </section>
+
+  <!-- CARDS -->
+  <section class="doc-section" id="cards">
+    <div class="doc-section-head">
+      <div class="doc-eyebrow">Components</div>
+      <h2 class="doc-h2">Cards</h2>
+      <p class="doc-p">20px radius, 24px padding, one soft shadow that deepens slightly on hover. This is the single container used everywhere — feature cards, stat cards, list rows.</p>
+    </div>
+    <div class="card-grid" style="margin-bottom:20px;">
+      <div class="nan-card">
+        <div class="nan-card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div>
+        <h4>Nan Pay</h4>
+        <p>Create invoices and receive payments from anyone, anywhere.</p>
+      </div>
+      <div class="nan-card">
+        <div class="nan-card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
+        <h4>Nan Circles</h4>
+        <p>Save together with complete transparency, every contribution visible.</p>
+      </div>
+      <div class="nan-card">
+        <div class="nan-card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0116 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+        <h4>Real Estate</h4>
+        <p>Find verified homes with secure escrow payments built in.</p>
+      </div>
+    </div>
+    <div class="card-grid">
+      <div class="nan-card stat-card">
+        <div class="stat-label">Wallet balance</div>
+        <div class="stat-value">$12,480.32</div>
+        <div class="stat-delta up">▲ 4.2% this week</div>
+      </div>
+      <div class="nan-card stat-card">
+        <div class="stat-label">Pending invoices</div>
+        <div class="stat-value">3</div>
+        <div class="stat-delta down">▼ 1 overdue</div>
+      </div>
+      <div class="nan-card stat-card">
+        <div class="stat-label">Circle savings</div>
+        <div class="stat-value">$2,150.00</div>
+        <div class="stat-delta up">▲ On track</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORMS -->
+  <section class="doc-section" id="forms">
+    <div class="doc-section-head">
+      <div class="doc-eyebrow">Components</div>
+      <h2 class="doc-h2">Forms</h2>
+      <p class="doc-p">48px inputs, 1.5px borders, indigo focus ring. Errors state exactly what's wrong — never vague.</p>
+    </div>
+    <div class="form-demo">
+      <div class="field">
+        <label>Recipient</label>
+        <input type="text" placeholder="0x... or nan.eth"/>
+      </div>
+      <div class="field">
+        <label>Amount</label>
+        <input type="text" placeholder="0.00 USDC"/>
+        <div class="field-hint">Available: 12,480.32 USDC</div>
+      </div>
+      <div class="field field-error">
+        <label>Payment reference</label>
+        <input type="text" value="Invoice #"/>
+        <div class="field-hint">Add at least 3 characters so the recipient can identify this payment.</div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;">Continue</button>
+    </div>
+  </section>
+
+  <!-- BADGES -->
+  <section class="doc-section" id="badges">
+    <div class="doc-section-head">
+      <div class="doc-eyebrow">Components</div>
+      <h2 class="doc-h2">Status badges</h2>
+      <p class="doc-p">Every state across the product — payments, listings, payroll runs — draws from this same five-color set. If a status doesn't fit one of these, it's not a status, it's a label.</p>
+    </div>
+    <div class="demo-row">
+      <span class="badge badge-success">● Paid</span>
+      <span class="badge badge-warning">● Pending</span>
+      <span class="badge badge-error">● Failed</span>
+      <span class="badge badge-info">● Processing</span>
+      <span class="badge badge-neutral">● Draft</span>
+    </div>
+  </section>
+
+  <!-- TABLE -->
+  <section class="doc-section" id="table">
+    <div class="doc-section-head">
+      <div class="doc-eyebrow">Components</div>
+      <h2 class="doc-h2">Tables</h2>
+      <p class="doc-p">Used for payroll runs, transaction history, and invoice lists. Row hover uses a 2% indigo tint — enough to track your place, not enough to distract.</p>
+    </div>
+    <table class="nan-table">
+      <thead><tr><th>Recipient</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+      <tbody>
+        <tr><td>Adaeze Okafor</td><td>2,400.00 USDC</td><td><span class="badge badge-success">● Paid</span></td><td>Aug 2, 2026</td></tr>
+        <tr><td>Femi Balogun</td><td>1,850.00 USDC</td><td><span class="badge badge-warning">● Pending</span></td><td>Aug 3, 2026</td></tr>
+        <tr><td>Chioma Eze</td><td>3,120.00 USDC</td><td><span class="badge badge-info">● Processing</span></td><td>Aug 4, 2026</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- SIDEBAR -->
+  <section class="doc-section" id="sidebar">
+    <div class="doc-section-head">
+      <div class="doc-eyebrow">Components</div>
+      <h2 class="doc-h2">Navigation</h2>
+      <p class="doc-p">Grouped by job-to-be-done, not by feature name — Finance, Commerce, Work, AI. The active item carries the gradient; nothing else on the page should use it as decoration.</p>
+    </div>
+    <div class="sidebar-demo">
+      <div class="sb-brand">nan</div>
+      <div class="sb-group">Dashboard</div>
+      <div class="sb-item active"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Overview</div>
+      <div class="sb-group">Finance</div>
+      <div class="sb-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Wallet</div>
+      <div class="sb-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14"/><path d="M7 21l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>Swap</div>
+      <div class="sb-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M4 6h16M4 18h16"/></svg>Bridge</div>
+      <div class="sb-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Nan Pay</div>
+      <div class="sb-group">Commerce</div>
+      <div class="sb-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9M3 9v10a1 1 0 001 1h16a1 1 0 001-1V9M3 9h18"/></svg>Marketplace</div>
+      <div class="sb-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0116 0z"/><circle cx="12" cy="10" r="3"/></svg>Real Estate</div>
+      <div class="sb-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Nan Circles</div>
+      <div class="sb-group">Work</div>
+      <div class="sb-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12l3 3 6-6"/><rect x="3" y="4" width="18" height="16" rx="3"/></svg>Gigs</div>
+      <div class="sb-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>Careers</div>
+      <div class="sb-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M12 11v4M10 13h4"/></svg>Payroll</div>
+      <div class="sb-group">AI</div>
+      <div class="sb-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2a9 9 0 100 18 9 9 0 000-18z"/><path d="M11 6v5l3 3"/></svg>Research</div>
+      <div class="sb-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Interview Coach</div>
+    </div>
+  </section>
+
+  <!-- STATES -->
+  <section class="doc-section" id="states">
+    <div class="doc-section-head">
+      <div class="doc-eyebrow">Patterns</div>
+      <h2 class="doc-h2">Empty, loading &amp; error states</h2>
+      <p class="doc-p">An empty screen is an invitation to act, not a dead end — it always offers the next step. Errors say exactly what happened, in Nan's voice, never the system's.</p>
+    </div>
+    <div class="card-grid">
+      <div class="state-box">
+        <div class="state-icon" style="background:rgba(67,56,202,.08);color:var(--nan-primary);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M12 11v4M10 13h4"/></svg></div>
+        <div class="state-title">No requests yet</div>
+        <div class="state-desc">Create a payment request to start getting paid, in seconds.</div>
+        <button class="btn btn-primary btn-sm">Create request</button>
+      </div>
+      <div class="state-box">
+        <div class="skeleton" style="height:14px;width:60%;margin:0 auto 12px;"></div>
+        <div class="skeleton" style="height:32px;width:40%;margin:0 auto 20px;"></div>
+        <div class="skeleton" style="height:10px;width:80%;margin:0 auto 8px;"></div>
+        <div class="skeleton" style="height:10px;width:70%;margin:0 auto;"></div>
+      </div>
+      <div class="state-box">
+        <div class="state-icon" style="background:rgba(239,68,68,.08);color:var(--nan-error);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v5M12 16h.01"/></svg></div>
+        <div class="state-title">Payment couldn't be sent</div>
+        <div class="state-desc">This wallet doesn't have enough USDC to cover the amount plus network fees.</div>
+        <button class="btn btn-secondary btn-sm">Add funds</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEEDBACK -->
+  <section class="doc-section" id="feedback">
+    <div class="doc-section-head">
+      <div class="doc-eyebrow">Patterns</div>
+      <h2 class="doc-h2">Toasts &amp; modals</h2>
+      <p class="doc-p">Confirmations use the same verb as the action that triggered them — "Send" produces "Sent," never "Success."</p>
+    </div>
+    <div class="demo-row" style="margin-bottom:20px;">
+      <div class="toast">
+        <div class="toast-icon" style="background:rgba(34,197,94,.18);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4ADE80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div><div class="toast-title">Payment sent</div><div class="toast-body">240.00 USDC to Adaeze Okafor</div></div>
+      </div>
+    </div>
+    <div class="modal-demo">
+      <div class="modal-head"><h4>Confirm payment</h4><p>You're about to send 240.00 USDC to Adaeze Okafor. This can't be undone.</p></div>
+      <div class="modal-body">
+        <div class="nan-table" style="border:none;box-shadow:none;">
+          <div style="display:flex;justify-content:space-between;padding:10px 0;font-size:14px;"><span style="color:var(--nan-text-2);">Network fee</span><span>0.02 USDC</span></div>
+          <div style="display:flex;justify-content:space-between;padding:10px 0;font-size:14px;border-top:1px solid var(--nan-border);font-weight:700;"><span>Total</span><span>240.02 USDC</span></div>
+        </div>
+      </div>
+      <div class="modal-foot"><button class="btn btn-secondary">Cancel</button><button class="btn btn-primary">Confirm &amp; send</button></div>
+    </div>
+  </section>
+
+  <!-- APPLIED EXAMPLE -->
+  <section class="doc-section" id="example">
+    <div class="doc-section-head">
+      <div class="doc-eyebrow">Applied</div>
+      <h2 class="doc-h2">Example: Wallet page</h2>
+      <p class="doc-p">The standard page structure every screen follows — title, description, quick actions, stats, content — shown here applied to Wallet.</p>
+    </div>
+    <div class="example-frame">
+      <div class="ex-header">
+        <div class="ex-title">Wallet</div>
+        <div class="ex-desc">Manage your stablecoins with confidence.</div>
+      </div>
+      <div class="ex-quick">
+        <div class="ex-quick-btn"><div class="ex-quick-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></div><div class="ex-quick-label">Send</div></div>
+        <div class="ex-quick-btn"><div class="ex-quick-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg></div><div class="ex-quick-label">Receive</div></div>
+        <div class="ex-quick-btn"><div class="ex-quick-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14"/><path d="M7 21l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg></div><div class="ex-quick-label">Swap</div></div>
+        <div class="ex-quick-btn"><div class="ex-quick-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M12 11v4M10 13h4"/></svg></div><div class="ex-quick-label">Request</div></div>
+      </div>
+      <div class="ex-stats">
+        <div class="nan-card stat-card"><div class="stat-label">Total balance</div><div class="stat-value">$12,480.32</div><div class="stat-delta up">▲ 4.2% this week</div></div>
+        <div class="nan-card stat-card"><div class="stat-label">USDC</div><div class="stat-value">9,220.00</div><div class="stat-delta up">▲ 1.1%</div></div>
+        <div class="nan-card stat-card"><div class="stat-label">EURC</div><div class="stat-value">3,260.32</div><div class="stat-delta down">▼ 0.3%</div></div>
+      </div>
+      <table class="nan-table">
+        <thead><tr><th>Activity</th><th>Amount</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Sent to Femi Balogun</td><td>−1,850.00 USDC</td><td><span class="badge badge-success">● Paid</span></td></tr>
+          <tr><td>Received from Nan Circles</td><td>+500.00 USDC</td><td><span class="badge badge-success">● Paid</span></td></tr>
+          <tr><td>Swap USDC → EURC</td><td>2,000.00 USDC</td><td><span class="badge badge-info">● Processing</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>
