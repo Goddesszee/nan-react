@@ -4369,6 +4369,7 @@ html,body{background-color:var(--bg);}
 
     </div><!-- end payrollRunPane -->
     </div><!-- end bulk unified card -->
+  </div><!-- end page-bulk -->
   <!-- ══ HISTORY PAGE ══ -->
   <div class="page" id="page-history">
     <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;padding:20px;max-width:460px !important;">
@@ -4534,43 +4535,6 @@ html,body{background-color:var(--bg);}
 
     </div><!-- end bulk unified card -->
   <!-- ══ HISTORY PAGE ══ -->
-  <div class="page" id="page-history">
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;padding:20px;max-width:460px !important;">
-
-    <button class="back-btn" onclick="goBack()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg> Back</button>
-    <!-- Header -->
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-      <div style="font-size:1.125rem;font-weight:700;color:var(--text);letter-spacing:-.02em;">Activity</div>
-      <button class="clear-hist-btn" onclick="clearHistory()">Clear all</button>
-    </div>
-
-    <!-- Stats -->
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:16px;">
-      <div class="hist-stat">
-        <div class="hist-stat-num" id="statSends">0</div>
-        <div class="hist-stat-lbl">Sends</div>
-      </div>
-      <div class="hist-stat">
-        <div class="hist-stat-num" id="histStatSwaps">0</div>
-        <div class="hist-stat-lbl">Swaps</div>
-      </div>
-      <div class="hist-stat">
-        <div class="hist-stat-num" id="histStatBridges">0</div>
-        <div class="hist-stat-lbl">Bridges</div>
-      </div>
-    </div>
-
-    <!-- TX list -->
-    <div id="txList">
-      <div style="text-align:center;padding:40px 20px;">
-        <div style="font-size:2rem;margin-bottom:12px;">◎</div>
-        <div style="font-size:.875rem;color:var(--text);line-height:1.6;">No transactions yet.<br/>Send or swap to get started.</div>
-      </div>
-    </div>
-
-    </div><!-- end history unified card -->
-  </div>
-
   <!-- ══ PAYMENT REQUESTS PAGE ══ -->
   <div class="page" id="page-payreq">
     <style>
