@@ -1280,13 +1280,13 @@ a:hover{color:var(--text);}
 
   /* Send page Ã¢â¬â recipient input */
   #sendAddr{
-    font-size:13px !important;
+    font-size:16px !important;
     word-break:break-all !important;
   }
 
   /* Bridge page Ã¢â¬â chain selector */
   #bridgeChainSel{
-    font-size:14px !important;
+    font-size:16px !important;
     width:100% !important;
   }
 
@@ -4671,7 +4671,7 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
   #page-market .mcta       { padding: 13px !important; border-radius: 13px !important; }
   #page-market .mcta-t     { font-size: 14px !important; font-weight: 700 !important; }
   #page-market .mcta-s     { font-size: 12px !important; }
-  #page-market .mkt-search input { font-size: 14px !important; }
+  #page-market .mkt-search input { font-size: 16px !important; }
   #page-market .mkt-search,
   #page-market .mkt-search input { background: var(--surface) !important; color: var(--text) !important; }
 
