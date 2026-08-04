@@ -1786,11 +1786,15 @@ async function ajoApi(action, extra={}){
 
 async function doAjo(){
   if(!userAddr){ toast('Connect your wallet first','error',3000); return; }
+  if (typeof window._currentPage !== 'undefined' && window._currentPage === 'groupsavings') {
+    groupSavingsSwitchTab('mine');
+    return;
+  }
   openBillModal('Group Savings', `
     <div style="background:rgba(67,56,202,.08);border:0.5px solid rgba(67,56,202,.2);border-radius:18px;padding:16px 18px;margin-bottom:18px;">
       <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#4338CA;margin-bottom:5px;">Savings circle</div>
       <div style="font-size:.95rem;font-weight:600;color:var(--text);line-height:1.4;">Pool money. Take turns. No bank needed.</div>
-      <div style="font-size:.76rem;color:var(--text3);margin-top:5px;line-height:1.55;">Everyone puts in the same amount each round. One person gets the full pot per round — on-chain, automatic, no one can skip.</div>
+      <div style="font-size:.76rem;color:var(--text3);margin-top:5px;line-height:1.55;">Everyone puts in the same amount each round. One person gets the full pot per round, on-chain, automatic, no one can skip.</div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px;">
       <button onclick="showAjoCreate()" style="background:#4338CA;border:none;border-radius:14px;color:#fff;padding:13px 10px;font-size:.85rem;font-weight:600;cursor:pointer;">+ Start a group</button>
@@ -1799,6 +1803,68 @@ async function doAjo(){
     <div id="ajoBody"></div>
   `);
   loadMyAjoGroups();
+}
+
+// ── Group Savings full page (wraps the existing real Ajo functions above,
+//    which target #ajoBody, none of that logic is touched) ──────────────
+function openGroupSavingsPage(){
+  if(!userAddr){ toast('Connect your wallet first','error',3000); return; }
+  goPage('groupsavings');
+  groupSavingsSwitchTab('mine');
+}
+const GROUP_SAVINGS_TABS = ['mine','create','join','transparency'];
+function groupSavingsSwitchTab(tab){
+  GROUP_SAVINGS_TABS.forEach(t => {
+    const btn = document.getElementById('gsTab'+t.charAt(0).toUpperCase()+t.slice(1));
+    if (btn) btn.classList.toggle('active', t===tab);
+  });
+  const ajoBodyEl = document.getElementById('ajoBody');
+  const transparencyPane = document.getElementById('gsTransparencyPane');
+  if (tab === 'transparency') {
+    if (ajoBodyEl) ajoBodyEl.style.display = 'none';
+    if (transparencyPane) transparencyPane.style.display = 'block';
+    return;
+  }
+  if (ajoBodyEl) ajoBodyEl.style.display = 'block';
+  if (transparencyPane) transparencyPane.style.display = 'none';
+  if (tab === 'mine') loadMyAjoGroups();
+  if (tab === 'create') showAjoCreate();
+  if (tab === 'join') showAjoJoin();
+}
+async function groupSavingsLoadTransparency(){
+  const raw = document.getElementById('gsTransparencyGroupId').value.trim();
+  const groupId = parseInt(raw, 10);
+  const el = document.getElementById('gsTransparencyResults');
+  if(isNaN(groupId) || groupId < 0){ el.innerHTML = '<div style="color:var(--text3);font-size:.85rem;">Enter a valid group number.</div>'; return; }
+  el.innerHTML = '<div style="text-align:center;padding:24px 0;"><span class="spinner"></span></div>';
+  try{
+    const readProvider = provider || getArcProvider();
+    const c = ajoContract(readProvider);
+    const g = await c.getGroup(groupId);
+    const members = await c.getMembers(groupId);
+    const sIdx = Number(g.status);
+    const statusLabel = ['Open, waiting to fill', 'In progress', 'Finished'];
+    let completedRounds = 0, successfulPayouts = 0;
+    if (sIdx >= 1) {
+      completedRounds = Number(g.currentRound);
+      successfulPayouts = sIdx === 2 ? Number(g.memberCount) : Number(g.currentRound);
+    }
+    const completionRate = Number(g.maxMembers) > 0 ? Math.round((Number(g.memberCount) / Number(g.maxMembers)) * 100) : 0;
+    el.innerHTML = `
+      <div class="pcard">
+        <div style="font-weight:700;font-size:.95rem;margin-bottom:14px;">${g.label || 'Group #'+groupId}</div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;">
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:12px 14px;"><div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;">Status</div><div style="font-weight:700;font-size:.9rem;margin-top:2px;">${statusLabel[sIdx]}</div></div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:12px 14px;"><div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;">Members joined</div><div style="font-weight:700;font-size:.9rem;margin-top:2px;">${g.memberCount} of ${g.maxMembers}, ${completionRate} percent</div></div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:12px 14px;"><div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;">Completed rounds</div><div style="font-weight:700;font-size:.9rem;margin-top:2px;">${completedRounds}</div></div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:12px 14px;"><div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;">Successful payouts</div><div style="font-weight:700;font-size:.9rem;margin-top:2px;">${successfulPayouts}</div></div>
+        </div>
+        <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:8px;">Members, in payout order</div>
+        ${members.map((m,i) => `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.82rem;"><span style="color:var(--text2);">${i+1}. ${m.slice(0,6)}...${m.slice(-4)}</span>${i < completedRounds ? '<span style="color:#22C55E;font-weight:700;">Paid out</span>' : ''}</div>`).join('')}
+      </div>`;
+  }catch(err){
+    el.innerHTML = `<div style="color:#3B82F6;font-size:.85rem;">Could not find a group with that number.</div>`;
+  }
 }
 
 function ajoInitials(addr){
@@ -2125,7 +2191,7 @@ async function showAjoGroup(groupId){
     const isCreator=g.creator.toLowerCase()===userAddr.toLowerCase();
     const isOpen=g.status==0, isActive=g.status==1, isDone=g.status==2;
     const sIdx=Number(g.status);
-    const statusLabel=['Open — waiting to fill','In progress','Finished'];
+    const statusLabel=['Open, waiting to fill','In progress','Finished'];
     const statusColor=['#3B82F6','#3B82F6','#666'];
 
     let inviteHtml='';
@@ -2139,7 +2205,7 @@ async function showAjoGroup(groupId){
           </div>
           <div style="display:flex;flex-direction:column;gap:6px;">
             <button onclick="navigator.clipboard.writeText('${_dc}').then(()=>toast('Code copied!','success',2000))" style="background:rgba(67,56,202,.12);border:0.5px solid rgba(67,56,202,.25);border-radius:10px;color:#4338CA;padding:7px 12px;font-size:.72rem;font-weight:700;cursor:pointer;">Copy</button>
-            <button onclick="ajoShareLink(${groupId},'${_dc}')" style="background:rgba(67,56,202,.12);border:0.5px solid rgba(67,56,202,.25);border-radius:10px;color:#4338CA;padding:7px 12px;font-size:.72rem;font-weight:700;cursor:pointer;">Share 🔗</button>
+            <button onclick="ajoShareLink(${groupId},'${_dc}')" style="background:rgba(67,56,202,.12);border:0.5px solid rgba(67,56,202,.25);border-radius:10px;color:#4338CA;padding:7px 12px;font-size:.72rem;font-weight:700;cursor:pointer;">Share</button>
           </div>
         </div>`;
     }
@@ -2164,7 +2230,7 @@ async function showAjoGroup(groupId){
       const roundBorder=itsYourTurn?'rgba(59,130,246,.28)':'var(--border)';
       roundHtml=`
         <div style="background:${roundBg};border:0.5px solid ${roundBorder};border-radius:16px;padding:14px 16px;margin-bottom:12px;">
-          ${itsYourTurn?`<div style="font-size:.82rem;font-weight:700;color:#3B82F6;margin-bottom:8px;">🎉 It's your turn to receive this round!</div>`:`<div style="font-size:.78rem;font-weight:600;color:var(--text);margin-bottom:8px;">Round ${Number(g.currentRound)+1} of ${Number(g.memberCount)}</div>`}
+          ${itsYourTurn?`<div style="font-size:.82rem;font-weight:700;color:#3B82F6;margin-bottom:8px;">It's your turn to receive this round!</div>`:`<div style="font-size:.78rem;font-weight:600;color:var(--text);margin-bottom:8px;">Round ${Number(g.currentRound)+1} of ${Number(g.memberCount)}</div>`}
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
             <div style="display:flex;margin-left:6px;">${avatarDots}</div>
             <div style="font-size:.72rem;color:var(--text3);margin-left:auto;">${Number(contributed)} of ${Number(total)} paid</div>
@@ -2211,14 +2277,14 @@ async function showAjoGroup(groupId){
         actionHtml=`<button onclick="submitAjoContribute(${groupId})" id="ajoActionBtn" style="width:100%;background:#4338CA;border:none;border-radius:14px;color:#fff;padding:15px;font-size:.95rem;font-weight:700;cursor:pointer;margin-top:4px;">Pay your ${ethers.formatUnits(g.contributionAmount,6)} USDC</button>`;
       } else if(isCreator&&everyonePaid){
         const recipientLabel=recipient&&recipient.toLowerCase()===userAddr.toLowerCase()?'yourself':'round recipient';
-        actionHtml=`<button onclick="submitAjoClaim(${groupId})" id="ajoCreatorPayBtn" style="width:100%;background:#3B82F6;border:none;border-radius:14px;color:#000;padding:15px;font-size:.95rem;font-weight:700;cursor:pointer;margin-top:4px;">👑 Release payout to ${recipientLabel}</button>`;
+        actionHtml=`<button onclick="submitAjoClaim(${groupId})" id="ajoCreatorPayBtn" style="width:100%;background:#3B82F6;border:none;border-radius:14px;color:#000;padding:15px;font-size:.95rem;font-weight:700;cursor:pointer;margin-top:4px;">Release payout to ${recipientLabel}</button>`;
       } else if(isCreator&&!everyonePaid){
         actionHtml=`<div style="background:rgba(67,56,202,.06);border:0.5px solid rgba(67,56,202,.18);border-radius:14px;padding:14px;margin-top:4px;text-align:center;font-size:.78rem;color:var(--text3);">You can release the payout once everyone has contributed.</div>`;
       } else {
         actionHtml=`<div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:14px;margin-top:4px;text-align:center;font-size:.78rem;color:var(--text3);">${everyonePaid?'Everyone has paid — waiting for the group admin to release the payout.':"You've paid this round — waiting for others."}</div>`;
       }
     } else {
-      actionHtml=`<div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:16px;margin-top:4px;text-align:center;font-size:.82rem;color:var(--text3);">🎉 This group is finished — everyone has had their turn.</div>`;
+      actionHtml=`<div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:16px;margin-top:4px;text-align:center;font-size:.82rem;color:var(--text3);">This group is finished, everyone has had their turn.</div>`;
     }
 
     el.innerHTML=`
