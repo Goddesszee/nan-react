@@ -22,7 +22,46 @@
   --radius-container: 24px; --radius-dialog: 24px;
   --shadow-soft: 0 2px 8px rgba(17,24,39,.06);
   --shadow-elevated: 0 8px 24px rgba(17,24,39,.10);
+
+  /* Precise typography hierarchy */
+  --type-display-hero: 700 48px/1.15 var(--font-product);
+  --type-page-title: 700 36px/1.2 var(--font-product);
+  --type-section-heading: 600 28px/1.25 var(--font-product);
+  --type-card-title: 600 22px/1.3 var(--font-product);
+  --type-subheading: 500 18px/1.4 var(--font-product);
+  --type-body: 400 16px/1.5 var(--font-product);
+  --type-label: 500 14px/1.4 var(--font-product);
+  --type-caption: 400 12px/1.4 var(--font-product);
+
+  /* Precise spacing system, 8 point grid */
+  --pad-card: 24px; --pad-card-lg: 32px;
+  --gap-section: 48px; --margin-page: 40px;
+  --height-btn: 48px; --height-input: 48px;
 }
+
+/* Reusable component classes implementing the system above */
+.nan-btn-primary{ height:var(--height-btn); padding:0 24px; border-radius:var(--radius-btn); border:none; background:var(--gradient-brand); color:#fff; font:600 15px var(--font-product); box-shadow:var(--shadow-soft); cursor:pointer; transition:transform .15s,box-shadow .15s; }
+.nan-btn-primary:hover{ transform:translateY(-1px); box-shadow:var(--shadow-elevated); }
+.nan-btn-secondary{ height:var(--height-btn); padding:0 24px; border-radius:var(--radius-btn); border:1.5px solid var(--accent); background:#fff; color:var(--accent); font:600 15px var(--font-product); cursor:pointer; transition:background .15s; }
+.nan-btn-secondary:hover{ background:rgba(67,56,202,.06); }
+.nan-btn-ghost{ height:var(--height-btn); padding:0 16px; border:none; background:transparent; color:var(--accent); font:600 15px var(--font-product); cursor:pointer; }
+.nan-input{ height:var(--height-input); padding:0 16px; border-radius:var(--radius-input); border:1px solid var(--border); background:#fff; font:400 15px var(--font-product); }
+.nan-card{ background:#fff; border-radius:var(--radius-card); padding:var(--pad-card); box-shadow:var(--shadow-soft); transition:box-shadow .2s,transform .15s; }
+.nan-card:hover{ box-shadow:var(--shadow-elevated); transform:translateY(-2px); }
+.nan-card-lg{ background:#fff; border-radius:var(--radius-container); padding:var(--pad-card-lg); box-shadow:var(--shadow-soft); }
+.nan-display-hero{ font:var(--type-display-hero); color:var(--text); }
+.nan-page-title{ font:var(--type-page-title); color:var(--text); }
+.nan-section-heading{ font:var(--type-section-heading); color:var(--text); }
+.nan-card-title{ font:var(--type-card-title); color:var(--text); }
+.nan-subheading{ font:var(--type-subheading); color:var(--text2); }
+.nan-body{ font:var(--type-body); color:var(--text); }
+.nan-label{ font:var(--type-label); color:var(--text); }
+.nan-caption{ font:var(--type-caption); color:var(--text3); }
+.nan-empty-state{ text-align:center; padding:56px 24px; border:2px dashed var(--border); border-radius:var(--radius-card); color:var(--text3); }
+.nan-empty-state .t{ font:var(--type-card-title); color:var(--text); margin-bottom:6px; }
+.nan-skeleton{ background:linear-gradient(90deg, var(--surface) 25%, var(--card2) 37%, var(--surface) 63%); background-size:400% 100%; animation:nanSkeleton 1.4s ease infinite; border-radius:var(--radius-input); }
+@keyframes nanSkeleton{ 0%{background-position:100% 50%} 100%{background-position:0 50%} }
+.nan-fade-in{ animation:fadeIn .2s ease; }
 
 [data-theme="light"]{
   --bg:#f0f0f0;
