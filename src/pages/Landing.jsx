@@ -171,11 +171,11 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
         </div>
 
         <h1 style={{ fontFamily:'Inter,sans-serif', fontSize:'clamp(2.6rem,8vw,5.6rem)', fontWeight:800, lineHeight:1.02, letterSpacing:'-.035em', margin:'0 0 18px' }}>
-          The trusted layer<br/>for <span style={{ color:accentL }}>everyday commerce.</span>
+          The intelligent payment layer<br/>for the <span style={{ color:accentL }}>stablecoin economy.</span>
         </h1>
 
         <p style={{ fontSize:'clamp(1rem,1.7vw,1.2rem)', color:text2, lineHeight:1.6, maxWidth:560, margin:'0 0 32px' }}>
-          One stablecoin wallet for people, businesses, and autonomous agents. Send, swap, pay, and get paid, with zero gas fees.
+          Nan connects people, businesses, and AI agents through secure stablecoin payments and intelligent financial automation.
         </p>
 
         <div style={{ width:'100%', maxWidth:640, margin:'0 0 40px', background:card, border:`1px solid ${border}`, borderRadius:16, overflow:'hidden', position:'relative' }}>
@@ -196,9 +196,14 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
 
           {!showConnect && step === 'email' && (
             <>
-              <button onClick={openConnect} style={{ width:'100%', background:brandGradient, border:'none', color:'#fff', fontWeight:700, fontSize:'1.05rem', padding:19, borderRadius:12, cursor:'pointer', fontFamily:'Inter,sans-serif', boxShadow:'0 8px 30px rgba(37,99,235,.35)' }}>
-                Get Started
-              </button>
+              <div style={{ display:'flex', gap:12, width:'100%' }}>
+                <button onClick={openConnect} style={{ flex:1, background:brandGradient, border:'none', color:'#fff', fontWeight:700, fontSize:'1.05rem', padding:19, borderRadius:12, cursor:'pointer', fontFamily:'Inter,sans-serif', boxShadow:'0 8px 30px rgba(37,99,235,.35)' }}>
+                  Get Started
+                </button>
+                <button onClick={() => document.getElementById('how-it-works')?.scrollIntoView({behavior:'smooth'})} style={{ flex:1, background:'transparent', border:`1.5px solid ${border2}`, color:text, fontWeight:700, fontSize:'1.05rem', padding:19, borderRadius:12, cursor:'pointer', fontFamily:'Inter,sans-serif' }}>
+                  Explore Nan
+                </button>
+              </div>
               <a href="https://faucet.circle.com" target="_blank" rel="noopener noreferrer" style={{ fontSize:'.85rem', color:text3, cursor:'pointer', textDecoration:'none' }}>
                 Need testnet tokens? Get some free.
               </a>
@@ -338,7 +343,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
       </section>
 
       {/* HOW IT WORKS */}
-      <section style={{ padding:'0 24px 80px', maxWidth:1180, margin:'0 auto' }}>
+      <section id="how-it-works" style={{ padding:'0 24px 80px', maxWidth:1180, margin:'0 auto' }}>
         <div style={{ background:card, border:`1px solid ${border}`, borderRadius:24, padding:'70px 50px' }}>
           <div style={{ maxWidth:620, margin:'0 auto 48px', textAlign:'center' }}>
             <div style={{ fontFamily:'Space Mono,monospace', fontSize:'.76rem', fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase', color:accentL, marginBottom:14 }}>
