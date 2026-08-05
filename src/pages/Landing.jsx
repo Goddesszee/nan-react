@@ -50,9 +50,9 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
   const text3    = dark ? '#555555' : '#999999'
   const inputBg  = dark ? 'rgba(255,255,255,.05)' : 'rgba(0,0,0,.04)'
   const inputBg2 = dark ? 'rgba(255,255,255,.04)' : 'rgba(0,0,0,.04)'
-  const accent   = '#4338CA'
-  const accentL  = '#3B82F6'
-  const brandGradient = 'linear-gradient(135deg, #4338CA 0%, #4F46E5 50%, #3B82F6 100%)'
+  const accent   = '#2563EB'
+  const accentL  = '#2563EB'
+  const brandGradient = 'linear-gradient(135deg, #2563EB 0%, #2563EB 50%, #2563EB 100%)'
 
   // sample ticker feed, agent to agent nanopayments
   const tickerRows = [
@@ -130,7 +130,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
       </div>
       <div style={{ color:text, fontSize:'1rem', fontWeight:600 }}>{loadMsg}</div>
       <div style={{ display:'flex', gap:6 }}>
-        {['#4338CA','#4338CA','#3B82F6'].map((c,i) => (
+        {['#2563EB','#2563EB','#2563EB'].map((c,i) => (
           <div key={i} style={{ width:6, height:6, borderRadius:'50%', background:c, animation:`pulse 1s ease-in-out ${i*0.2}s infinite` }}/>
         ))}
       </div>
@@ -165,7 +165,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
       {/* HERO */}
       <section style={{ minHeight:'auto', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center', padding:'48px 24px 60px' }}>
 
-        <div style={{ display:'inline-flex', alignItems:'center', gap:9, fontSize:'.72rem', fontWeight:600, letterSpacing:'.12em', textTransform:'uppercase', color:accentL, background:'rgba(67,56,202,.1)', border:'1px solid rgba(67,56,202,.28)', padding:'8px 18px', borderRadius:100, marginBottom:28 }}>
+        <div style={{ display:'inline-flex', alignItems:'center', gap:9, fontSize:'.72rem', fontWeight:600, letterSpacing:'.12em', textTransform:'uppercase', color:accentL, background:'rgba(37,99,235,.1)', border:'1px solid rgba(37,99,235,.28)', padding:'8px 18px', borderRadius:100, marginBottom:28 }}>
           <span style={{ width:6, height:6, borderRadius:'50%', background:accentL, animation:'pulseDot 1.6s ease-in-out infinite' }}/>
           Live on Arc Testnet
         </div>
@@ -196,7 +196,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
 
           {!showConnect && step === 'email' && (
             <>
-              <button onClick={openConnect} style={{ width:'100%', background:brandGradient, border:'none', color:'#fff', fontWeight:700, fontSize:'1.05rem', padding:19, borderRadius:12, cursor:'pointer', fontFamily:'Inter,sans-serif', boxShadow:'0 8px 30px rgba(67,56,202,.35)' }}>
+              <button onClick={openConnect} style={{ width:'100%', background:brandGradient, border:'none', color:'#fff', fontWeight:700, fontSize:'1.05rem', padding:19, borderRadius:12, cursor:'pointer', fontFamily:'Inter,sans-serif', boxShadow:'0 8px 30px rgba(37,99,235,.35)' }}>
                 Get Started
               </button>
               <a href="https://faucet.circle.com" target="_blank" rel="noopener noreferrer" style={{ fontSize:'.85rem', color:text3, cursor:'pointer', textDecoration:'none' }}>
@@ -327,7 +327,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
             { title:'AI Assistant', desc:'One assistant across the whole ecosystem.' },
           ].map((p, i) => (
             <div key={i} style={{ background:card, border:`1px solid ${border}`, borderRadius:20, padding:'26px 22px' }}>
-              <div style={{ width:38, height:38, borderRadius:12, background:'rgba(67,56,202,.12)', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:16 }}>
+              <div style={{ width:38, height:38, borderRadius:12, background:'rgba(37,99,235,.12)', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:16 }}>
                 <span style={{ width:8, height:8, borderRadius:'50%', background:accent }}/>
               </div>
               <h4 style={{ fontSize:'1.02rem', fontWeight:700, marginBottom:6, color:text }}>{p.title}</h4>
@@ -378,7 +378,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
         <p style={{ color:text2, fontSize:'1.05rem', marginBottom:36 }}>
           Set up a wallet in minutes. Your agent does the rest.
         </p>
-        <button onClick={openConnect} style={{ background:brandGradient, border:'none', color:'#fff', fontWeight:700, fontSize:'.98rem', padding:'16px 32px', borderRadius:12, cursor:'pointer', fontFamily:'Inter,sans-serif', boxShadow:'0 8px 30px rgba(67,56,202,.35)' }}>
+        <button onClick={openConnect} style={{ background:brandGradient, border:'none', color:'#fff', fontWeight:700, fontSize:'.98rem', padding:'16px 32px', borderRadius:12, cursor:'pointer', fontFamily:'Inter,sans-serif', boxShadow:'0 8px 30px rgba(37,99,235,.35)' }}>
           Get started free
         </button>
       </section>
