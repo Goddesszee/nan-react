@@ -728,10 +728,10 @@ function nanSyncWalletBtn(connected){
   if(connected && userAddr){
     const addr=userAddr;
     lbl.textContent=addr.slice(0,6)+'…'+addr.slice(-4);
-    if(dot)dot.style.background='#4338CA';
+    if(dot)dot.style.background='#2563EB';
   } else if(connected && otpEmail){
     lbl.textContent='⚡ '+otpEmail.split('@')[0].slice(0,10);
-    if(dot)dot.style.background='#4338CA';
+    if(dot)dot.style.background='#2563EB';
   } else {
     lbl.textContent='Connect';
     if(dot)dot.style.background='#6b7280';
@@ -813,7 +813,7 @@ function nanUpdateProfileLabel(){
   const showClaim=connected&&!nanHasArcName();
   labelEl.textContent=showClaim?'Claim your .arc name':'Profile';
   if(showClaim){
-    pill.style.background='#4338CA';pill.style.border='none';
+    pill.style.background='#2563EB';pill.style.border='none';
     labelEl.style.color='#fff';labelEl.style.fontWeight='700';
   }else{
     pill.style.background='var(--surface)';pill.style.border='1px solid var(--border)';
@@ -1008,8 +1008,8 @@ async function sendEmailOTP(){
       else{toast('✓ Code sent to '+email,'success',6000);}
       document.getElementById('otpBox').style.display='block';
       document.getElementById('otpInput').focus();
-      document.getElementById('stepDot1').style.width='8px';document.getElementById('stepDot1').style.background='rgba(59,130,246,.4)';
-      document.getElementById('stepDot2').style.width='20px';document.getElementById('stepDot2').style.background='#3B82F6';
+      document.getElementById('stepDot1').style.width='8px';document.getElementById('stepDot1').style.background='rgba(37,99,235,.4)';
+      document.getElementById('stepDot2').style.width='20px';document.getElementById('stepDot2').style.background='#2563EB';
       document.getElementById('stepLabel').textContent='Step 2 of 2 — Enter your code';
       window._otpToken=data.token||null;
       window._otpExpiry=data.expiresAt||Date.now()+600000;
@@ -1098,7 +1098,7 @@ function initVoice(){
     btn.innerHTML='⏹';
     btn.style.background='rgba(248,113,113,.2)';
     btn.style.borderColor='rgba(248,113,113,.5)';
-    btn.style.color='#3B82F6';
+    btn.style.color='#2563EB';
     document.getElementById('voiceStatus').style.display='block';
   };
 
@@ -1126,8 +1126,8 @@ function stopListening(){
   const btn=document.getElementById('voiceBtn');
   if(btn){
     btn.innerHTML='🎤';
-    btn.style.background='rgba(59,130,246,.1)';
-    btn.style.borderColor='rgba(59,130,246,.3)';
+    btn.style.background='rgba(37,99,235,.1)';
+    btn.style.borderColor='rgba(37,99,235,.3)';
     btn.style.color='var(--accent3)';
   }
   const status=document.getElementById('voiceStatus');
@@ -1493,7 +1493,7 @@ function doAirtime(){
         <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Amount (₦)</div>
         <input id="airtimeAmount" type="number" placeholder="0" style="width:100%;background:none;border:none;outline:none;font-size:2.2rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
       </div>
-      <button onclick="submitAirtime()" id="airtimeBtn" style="width:100%;background:#4338CA;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Buy Airtime</button>
+      <button onclick="submitAirtime()" id="airtimeBtn" style="width:100%;background:#2563EB;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Buy Airtime</button>
       <div id="airtimeStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
     </div>
   `);
@@ -1512,18 +1512,18 @@ async function submitAirtime(){
     statusEl.innerHTML = '<span style="color:#000000;">Payment sent ('+usdcAmount.toFixed(4)+' USDC) · Delivering airtime…</span>';
     const result = await vtpassCall('purchase', { serviceID, phone, amount: ngnAmount });
     if(result.success){
-      statusEl.innerHTML = '<span style="color:#3B82F6;">✓ Airtime delivered! Ref: '+result.requestId+'</span>';
+      statusEl.innerHTML = '<span style="color:#2563EB;">✓ Airtime delivered! Ref: '+result.requestId+'</span>';
       toast('✓ ₦'+ngnAmount+' airtime sent to '+phone, 'success', 6000);
       await refreshBalances();
     } else if(result.pending){
-      statusEl.innerHTML = '<span style="color:#3B82F6;">⏳ Pending — checking status…</span>';
+      statusEl.innerHTML = '<span style="color:#2563EB;">⏳ Pending — checking status…</span>';
       toast('Airtime purchase pending, checking status', 'info', 5000);
     } else {
-      statusEl.innerHTML = '<span style="color:#3B82F6;">Payment sent but delivery failed: '+(result.responseDescription||result.error||'Unknown error')+'</span>';
+      statusEl.innerHTML = '<span style="color:#2563EB;">Payment sent but delivery failed: '+(result.responseDescription||result.error||'Unknown error')+'</span>';
       toast('Airtime delivery failed — your USDC was sent, contact support with tx: '+txHash.slice(0,10), 'error', 10000);
     }
   }catch(err){
-    statusEl.innerHTML = '<span style="color:#3B82F6;">'+err.message.slice(0,150)+'</span>';
+    statusEl.innerHTML = '<span style="color:#2563EB;">'+err.message.slice(0,150)+'</span>';
     toast('Airtime purchase failed: '+err.message.slice(0,100), 'error', 6000);
   }finally{
     btn.disabled = false;
@@ -1552,7 +1552,7 @@ function doData(){
         <input id="dataPhone" type="tel" placeholder="08011111111" style="width:100%;background:none;border:none;outline:none;font-size:1.4rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
         <div style="font-size:.8rem;color:var(--text3);margin-top:6px;">Sandbox tip: use 08011111111 for a guaranteed success</div>
       </div>
-      <button onclick="submitData()" id="dataBtn" style="width:100%;background:#4338CA;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Buy Data</button>
+      <button onclick="submitData()" id="dataBtn" style="width:100%;background:#2563EB;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Buy Data</button>
       <div id="dataStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
     </div>
   `);
@@ -1585,17 +1585,17 @@ async function submitData(){
     statusEl.innerHTML = '<span style="color:#000000;">Payment sent ('+usdcAmount.toFixed(4)+' USDC) · Delivering data…</span>';
     const result = await vtpassCall('purchase', { serviceID, phone, variationCode });
     if(result.success){
-      statusEl.innerHTML = '<span style="color:#3B82F6;">✓ Data delivered! Ref: '+result.requestId+'</span>';
+      statusEl.innerHTML = '<span style="color:#2563EB;">✓ Data delivered! Ref: '+result.requestId+'</span>';
       toast('✓ Data bundle sent to '+phone, 'success', 6000);
       await refreshBalances();
     } else if(result.pending){
-      statusEl.innerHTML = '<span style="color:#3B82F6;">⏳ Pending — checking status…</span>';
+      statusEl.innerHTML = '<span style="color:#2563EB;">⏳ Pending — checking status…</span>';
     } else {
-      statusEl.innerHTML = '<span style="color:#3B82F6;">Payment sent but delivery failed: '+(result.responseDescription||result.error||'Unknown error')+'</span>';
+      statusEl.innerHTML = '<span style="color:#2563EB;">Payment sent but delivery failed: '+(result.responseDescription||result.error||'Unknown error')+'</span>';
       toast('Data delivery failed — your USDC was sent, contact support with tx: '+txHash.slice(0,10), 'error', 10000);
     }
   }catch(err){
-    statusEl.innerHTML = '<span style="color:#3B82F6;">'+err.message.slice(0,150)+'</span>';
+    statusEl.innerHTML = '<span style="color:#2563EB;">'+err.message.slice(0,150)+'</span>';
     toast('Data purchase failed: '+err.message.slice(0,100), 'error', 6000);
   }finally{
     btn.disabled = false;
@@ -1651,10 +1651,10 @@ async function doCredit(){
     if(collateral > 0) score += Math.min(50, collateral / 20);
     score = Math.min(850, Math.round(score));
 
-    const tier = score >= 700 ? {label:'Excellent', color:'#3B82F6'}
-               : score >= 600 ? {label:'Good', color:'#4338CA'}
-               : score >= 450 ? {label:'Fair', color:'#3B82F6'}
-               : {label:'Building', color:'#3B82F6'};
+    const tier = score >= 700 ? {label:'Excellent', color:'#2563EB'}
+               : score >= 600 ? {label:'Good', color:'#2563EB'}
+               : score >= 450 ? {label:'Fair', color:'#2563EB'}
+               : {label:'Building', color:'#2563EB'};
 
     document.getElementById('billBody').innerHTML = `
       <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;padding:20px;">
@@ -1671,7 +1671,7 @@ async function doCredit(){
       </div>
     `;
   }catch(err){
-    document.getElementById('billBody').innerHTML = `<div style="text-align:center;padding:30px 0;color:#3B82F6;font-size:.85rem;">Could not compute score: ${err.message.slice(0,100)}</div>`;
+    document.getElementById('billBody').innerHTML = `<div style="text-align:center;padding:30px 0;color:#2563EB;font-size:.85rem;">Could not compute score: ${err.message.slice(0,100)}</div>`;
   }
 }
 
@@ -1701,7 +1701,7 @@ function doList(){
         <div style="font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">Description (optional)</div>
         <input id="listNote" type="text" placeholder="What's this for?" style="width:100%;background:none;border:none;outline:none;font-size:.95rem;font-weight:500;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
       </div>
-      <button onclick="submitListService()" id="listBtn" style="width:100%;background:#4338CA;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">Create Payment Link</button>
+      <button onclick="submitListService()" id="listBtn" style="width:100%;background:#2563EB;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">Create Payment Link</button>
       <div id="listStatus" style="font-size:.8rem;color:var(--text);margin-top:4px;"></div>
     </div>
   `);
@@ -1754,15 +1754,15 @@ async function submitListService(){
     const link = buildPRLink(pr);
 
     statusEl.innerHTML = `
-      <div style="background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:14px;padding:14px;margin-top:6px;">
-        <div style="font-size:.85rem;color:#3B82F6;font-weight:700;margin-bottom:8px;">✓ Listed! Share this link to get paid:</div>
+      <div style="background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.2);border-radius:14px;padding:14px;margin-top:6px;">
+        <div style="font-size:.85rem;color:#2563EB;font-weight:700;margin-bottom:8px;">✓ Listed! Share this link to get paid:</div>
         <div style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text);word-break:break-all;margin-bottom:12px;">${link}</div>
-        <button onclick="navigator.clipboard.writeText('${link}').then(()=>{this.textContent='✓ Copied!';setTimeout(()=>this.textContent='📋 Copy Link',2000)})" style="background:#4338CA;border:none;border-radius:10px;color:#fff;padding:9px 16px;font-size:.82rem;font-weight:700;cursor:pointer;">📋 Copy Link</button>
+        <button onclick="navigator.clipboard.writeText('${link}').then(()=>{this.textContent='✓ Copied!';setTimeout(()=>this.textContent='📋 Copy Link',2000)})" style="background:#2563EB;border:none;border-radius:10px;color:#fff;padding:9px 16px;font-size:.82rem;font-weight:700;cursor:pointer;">📋 Copy Link</button>
       </div>
     `;
     toast('✓ Service listed', 'success', 4000);
   }catch(err){
-    statusEl.innerHTML = '<span style="color:#3B82F6;">'+err.message.slice(0,150)+'</span>';
+    statusEl.innerHTML = '<span style="color:#2563EB;">'+err.message.slice(0,150)+'</span>';
     toast('Could not create listing: '+err.message.slice(0,100), 'error', 6000);
   }finally{
     btn.disabled = false; btn.textContent = 'Create Payment Link';
@@ -1791,14 +1791,14 @@ async function doAjo(){
     return;
   }
   openBillModal('Group Savings', `
-    <div style="background:rgba(67,56,202,.08);border:0.5px solid rgba(67,56,202,.2);border-radius:18px;padding:16px 18px;margin-bottom:18px;">
-      <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#4338CA;margin-bottom:5px;">Savings circle</div>
+    <div style="background:rgba(37,99,235,.08);border:0.5px solid rgba(37,99,235,.2);border-radius:18px;padding:16px 18px;margin-bottom:18px;">
+      <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#2563EB;margin-bottom:5px;">Savings circle</div>
       <div style="font-size:.95rem;font-weight:600;color:var(--text);line-height:1.4;">Pool money. Take turns. No bank needed.</div>
       <div style="font-size:.76rem;color:var(--text3);margin-top:5px;line-height:1.55;">Everyone puts in the same amount each round. One person gets the full pot per round, on-chain, automatic, no one can skip.</div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px;">
-      <button onclick="showAjoCreate()" style="background:#4338CA;border:none;border-radius:14px;color:#fff;padding:13px 10px;font-size:.85rem;font-weight:600;cursor:pointer;">+ Start a group</button>
-      <button onclick="showAjoJoin()" style="background:rgba(67,56,202,.08);border:0.5px solid rgba(67,56,202,.25);border-radius:14px;color:#4338CA;padding:13px 10px;font-size:.85rem;font-weight:600;cursor:pointer;"># Join with code</button>
+      <button onclick="showAjoCreate()" style="background:#2563EB;border:none;border-radius:14px;color:#fff;padding:13px 10px;font-size:.85rem;font-weight:600;cursor:pointer;">+ Start a group</button>
+      <button onclick="showAjoJoin()" style="background:rgba(37,99,235,.08);border:0.5px solid rgba(37,99,235,.25);border-radius:14px;color:#2563EB;padding:13px 10px;font-size:.85rem;font-weight:600;cursor:pointer;"># Join with code</button>
     </div>
     <div id="ajoBody"></div>
   `);
@@ -1863,7 +1863,7 @@ async function groupSavingsLoadTransparency(){
         ${members.map((m,i) => `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.82rem;"><span style="color:var(--text2);">${i+1}. ${m.slice(0,6)}...${m.slice(-4)}</span>${i < completedRounds ? '<span style="color:#22C55E;font-weight:700;">Paid out</span>' : ''}</div>`).join('')}
       </div>`;
   }catch(err){
-    el.innerHTML = `<div style="color:#3B82F6;font-size:.85rem;">Could not find a group with that number.</div>`;
+    el.innerHTML = `<div style="color:#2563EB;font-size:.85rem;">Could not find a group with that number.</div>`;
   }
 }
 
@@ -1896,7 +1896,7 @@ async function loadMyAjoGroups(){
       return;
     }
     const statusLabel = ['Open','Live','Done'];
-    const statusColor = ['#3B82F6','#3B82F6','#666'];
+    const statusColor = ['#2563EB','#2563EB','#666'];
     let html = `<div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:10px;">Your groups</div>`;
     for(const id of myGroups){
       const g = await c.getGroup(id);
@@ -1909,7 +1909,7 @@ async function loadMyAjoGroups(){
         progressPct = Math.round((Number(contrib)/Number(tot))*100);
         progressLabel = `Round ${Number(g.currentRound)+1} of ${Number(g.memberCount)} · ${Number(contrib)}/${Number(tot)} paid`;
       } else if(isDone){ progressPct=100; progressLabel='Complete'; }
-      const creatorTag = isCreator ? `<span style="font-size:.62rem;color:#4338CA;font-weight:700;margin-left:6px;">Admin</span>` : '';
+      const creatorTag = isCreator ? `<span style="font-size:.62rem;color:#2563EB;font-weight:700;margin-left:6px;">Admin</span>` : '';
       html += `
         <div onclick="showAjoGroup(${id})" style="background:var(--card);border:0.5px solid var(--border);border-radius:18px;padding:15px 16px;margin-bottom:10px;cursor:pointer;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
@@ -1918,14 +1918,14 @@ async function loadMyAjoGroups(){
           </div>
           <div style="font-size:.74rem;color:var(--text3);margin-bottom:10px;">${g.memberCount}/${g.maxMembers} members · ${ethers.formatUnits(g.contributionAmount,6)} USDC/round</div>
           ${progressPct>0?`<div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:5px;">
-            <div style="height:100%;width:${progressPct}%;background:${isDone?'#3B82F6':'#4338CA'};border-radius:2px;"></div>
+            <div style="height:100%;width:${progressPct}%;background:${isDone?'#2563EB':'#2563EB'};border-radius:2px;"></div>
           </div>`:''}
           <div style="font-size:.68rem;color:var(--text3);margin-top:${progressPct>0?0:2}px;">${progressLabel}</div>
         </div>`;
     }
     el.innerHTML = html;
   }catch(err){
-    el.innerHTML = `<div style="text-align:center;padding:20px 0;color:#3B82F6;font-size:.8rem;">${err.message.slice(0,120)}</div>`;
+    el.innerHTML = `<div style="text-align:center;padding:20px 0;color:#2563EB;font-size:.8rem;">${err.message.slice(0,120)}</div>`;
   }
 }
 
@@ -1955,9 +1955,9 @@ function showAjoCreate(){
           <option value="604800" selected>Every week</option>
         </select>
       </div>
-      <div id="ajoPreview" style="background:rgba(67,56,202,.06);border:0.5px solid rgba(67,56,202,.18);border-radius:14px;padding:14px;margin-bottom:14px;font-size:.82rem;color:var(--text3);line-height:1.6;">Fill in the details above to see the summary.</div>
-      <div style="background:rgba(255,200,0,.06);border:0.5px solid rgba(255,200,0,.2);border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:.76rem;color:#3B82F6;line-height:1.5;">ℹ️ As the group admin, only you will see and share the invite code — and only you can release each round's payout.</div>
-      <button onclick="submitAjoCreate()" id="ajoCreateBtn" style="width:100%;background:#4338CA;border:none;border-radius:14px;color:#fff;padding:15px;font-size:.95rem;font-weight:700;cursor:pointer;">Create group</button>
+      <div id="ajoPreview" style="background:rgba(37,99,235,.06);border:0.5px solid rgba(37,99,235,.18);border-radius:14px;padding:14px;margin-bottom:14px;font-size:.82rem;color:var(--text3);line-height:1.6;">Fill in the details above to see the summary.</div>
+      <div style="background:rgba(255,200,0,.06);border:0.5px solid rgba(255,200,0,.2);border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:.76rem;color:#2563EB;line-height:1.5;">ℹ️ As the group admin, only you will see and share the invite code — and only you can release each round's payout.</div>
+      <button onclick="submitAjoCreate()" id="ajoCreateBtn" style="width:100%;background:#2563EB;border:none;border-radius:14px;color:#fff;padding:15px;font-size:.95rem;font-weight:700;cursor:pointer;">Create group</button>
       <div id="ajoCreateStatus" style="font-size:.78rem;color:var(--text);margin-top:10px;"></div>
     </div>
   `;
@@ -2031,7 +2031,7 @@ async function submitAjoCreate(){
     toast('✓ Group created!','success',5000);
     showAjoGroupCode(newGroupId, label||'Group #'+newGroupId);
   }catch(err){
-    statusEl.innerHTML=`<span style="color:#3B82F6;">${err.message.slice(0,150)}</span>`;
+    statusEl.innerHTML=`<span style="color:#2563EB;">${err.message.slice(0,150)}</span>`;
     toast('Could not create group: '+err.message.slice(0,100),'error',6000);
   }finally{
     btn.disabled=false; btn.textContent='Create group';
@@ -2063,8 +2063,8 @@ function _checkAjoDeepLink(){
     window.history.replaceState({},'',url.toString());
     // Open Ajo modal with the code pre-filled
     openBillModal('Group Savings',`
-      <div style="background:rgba(67,56,202,.08);border:0.5px solid rgba(67,56,202,.2);border-radius:18px;padding:16px 18px;margin-bottom:18px;">
-        <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#4338CA;margin-bottom:5px;">Savings circle</div>
+      <div style="background:rgba(37,99,235,.08);border:0.5px solid rgba(37,99,235,.2);border-radius:18px;padding:16px 18px;margin-bottom:18px;">
+        <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#2563EB;margin-bottom:5px;">Savings circle</div>
         <div style="font-size:.95rem;font-weight:600;color:var(--text);line-height:1.4;">You've been invited to join a savings group.</div>
         <div style="font-size:.76rem;color:var(--text3);margin-top:5px;line-height:1.55;">Everyone puts in the same amount each round. One person gets the full pot — on-chain, automatic.</div>
       </div>
@@ -2087,16 +2087,16 @@ function showAjoGroupCode(groupId, label){
       <div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">${label} is live!</div>
       <div style="font-size:.78rem;color:var(--text3);">Share this code so your members can join.</div>
     </div>
-    <div style="background:rgba(67,56,202,.08);border:0.5px solid rgba(67,56,202,.25);border-radius:18px;padding:20px;margin-bottom:14px;text-align:center;">
-      <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#4338CA;margin-bottom:8px;">Invite code</div>
-      <div style="font-size:1.9rem;font-weight:800;color:#4338CA;letter-spacing:.06em;font-family:'DM Mono','Roboto Mono',monospace;">${displayCode}</div>
+    <div style="background:rgba(37,99,235,.08);border:0.5px solid rgba(37,99,235,.25);border-radius:18px;padding:20px;margin-bottom:14px;text-align:center;">
+      <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#2563EB;margin-bottom:8px;">Invite code</div>
+      <div style="font-size:1.9rem;font-weight:800;color:#2563EB;letter-spacing:.06em;font-family:'DM Mono','Roboto Mono',monospace;">${displayCode}</div>
       <div style="font-size:.72rem;color:var(--text3);margin-top:8px;">Only you see this. Members enter this code to join.</div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
-      <button onclick="navigator.clipboard.writeText('${displayCode}').then(()=>toast('Code copied!','success',2000))" style="background:rgba(67,56,202,.08);border:0.5px solid rgba(67,56,202,.25);border-radius:14px;color:#4338CA;padding:13px;font-size:.85rem;font-weight:600;cursor:pointer;">Copy code</button>
-      <button onclick="ajoShareLink(${groupId},'${displayCode}')" style="background:rgba(67,56,202,.08);border:0.5px solid rgba(67,56,202,.25);border-radius:14px;color:#4338CA;padding:13px;font-size:.85rem;font-weight:600;cursor:pointer;">Share link 🔗</button>
+      <button onclick="navigator.clipboard.writeText('${displayCode}').then(()=>toast('Code copied!','success',2000))" style="background:rgba(37,99,235,.08);border:0.5px solid rgba(37,99,235,.25);border-radius:14px;color:#2563EB;padding:13px;font-size:.85rem;font-weight:600;cursor:pointer;">Copy code</button>
+      <button onclick="ajoShareLink(${groupId},'${displayCode}')" style="background:rgba(37,99,235,.08);border:0.5px solid rgba(37,99,235,.25);border-radius:14px;color:#2563EB;padding:13px;font-size:.85rem;font-weight:600;cursor:pointer;">Share link 🔗</button>
     </div>
-    <button onclick="showAjoGroup(${groupId})" style="width:100%;background:#4338CA;border:none;border-radius:14px;color:#fff;padding:13px;font-size:.9rem;font-weight:600;cursor:pointer;">Go to group →</button>
+    <button onclick="showAjoGroup(${groupId})" style="width:100%;background:#2563EB;border:none;border-radius:14px;color:#fff;padding:13px;font-size:.9rem;font-weight:600;cursor:pointer;">Go to group →</button>
   `;
 }
 
@@ -2119,7 +2119,7 @@ function showAjoJoin(){
         <div style="font-size:.72rem;color:var(--text3);margin-top:6px;">Ask the group admin — they get this after creating the group.</div>
       </div>
       <div id="ajoJoinPreview"></div>
-      <button onclick="submitAjoJoin()" id="ajoJoinBtn" style="width:100%;background:#4338CA;border:none;border-radius:14px;color:#fff;padding:15px;font-size:.95rem;font-weight:700;cursor:pointer;margin-top:14px;">Join group</button>
+      <button onclick="submitAjoJoin()" id="ajoJoinBtn" style="width:100%;background:#2563EB;border:none;border-radius:14px;color:#fff;padding:15px;font-size:.95rem;font-weight:700;cursor:pointer;margin-top:14px;">Join group</button>
       <div id="ajoJoinStatus" style="font-size:.78rem;color:var(--text);margin-top:10px;"></div>
     </div>
   `;
@@ -2138,14 +2138,14 @@ function previewAjoJoin(){
     try{
       const c=ajoContract(provider||getArcProvider());
       const g=await c.getGroup(groupId);
-      if(g.status!=0){ previewEl.innerHTML=`<div style="font-size:.78rem;color:#3B82F6;padding:10px 0;">This group has already started or finished — you can't join now.</div>`; return; }
+      if(g.status!=0){ previewEl.innerHTML=`<div style="font-size:.78rem;color:#2563EB;padding:10px 0;">This group has already started or finished — you can't join now.</div>`; return; }
       previewEl.innerHTML=`
         <div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:14px;margin-top:10px;">
           <div style="font-size:.9rem;font-weight:600;color:var(--text);">${g.label||'Group #'+groupId}</div>
           <div style="font-size:.76rem;color:var(--text3);margin-top:5px;">${ethers.formatUnits(g.contributionAmount,6)} USDC per round · ${Number(g.memberCount)}/${Number(g.maxMembers)} joined</div>
         </div>`;
     }catch(err){
-      previewEl.innerHTML=`<div style="font-size:.78rem;color:#3B82F6;padding:10px 0;">Couldn't find a group with that code.</div>`;
+      previewEl.innerHTML=`<div style="font-size:.78rem;color:#2563EB;padding:10px 0;">Couldn't find a group with that code.</div>`;
     }
   },500);
 }
@@ -2173,7 +2173,7 @@ async function submitAjoJoin(){
     toast('✓ Joined group!','success',5000);
     showAjoGroup(groupId);
   }catch(err){
-    statusEl.innerHTML=`<span style="color:#3B82F6;">${err.message.slice(0,150)}</span>`;
+    statusEl.innerHTML=`<span style="color:#2563EB;">${err.message.slice(0,150)}</span>`;
     toast('Could not join: '+err.message.slice(0,100),'error',6000);
   }finally{
     btn.disabled=false; btn.textContent='Join group';
@@ -2192,20 +2192,20 @@ async function showAjoGroup(groupId){
     const isOpen=g.status==0, isActive=g.status==1, isDone=g.status==2;
     const sIdx=Number(g.status);
     const statusLabel=['Open, waiting to fill','In progress','Finished'];
-    const statusColor=['#3B82F6','#3B82F6','#666'];
+    const statusColor=['#2563EB','#2563EB','#666'];
 
     let inviteHtml='';
     if(isCreator&&isOpen){
       const _dc=ajoFormatCode(groupId);
       inviteHtml=`
-        <div style="background:rgba(67,56,202,.07);border:0.5px solid rgba(67,56,202,.2);border-radius:16px;padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;">
+        <div style="background:rgba(37,99,235,.07);border:0.5px solid rgba(37,99,235,.2);border-radius:16px;padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;">
           <div>
-            <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#4338CA;margin-bottom:3px;">Invite code</div>
-            <div style="font-size:1.2rem;font-weight:800;color:#4338CA;letter-spacing:.04em;font-family:'DM Mono','Roboto Mono',monospace;">${_dc}</div>
+            <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#2563EB;margin-bottom:3px;">Invite code</div>
+            <div style="font-size:1.2rem;font-weight:800;color:#2563EB;letter-spacing:.04em;font-family:'DM Mono','Roboto Mono',monospace;">${_dc}</div>
           </div>
           <div style="display:flex;flex-direction:column;gap:6px;">
-            <button onclick="navigator.clipboard.writeText('${_dc}').then(()=>toast('Code copied!','success',2000))" style="background:rgba(67,56,202,.12);border:0.5px solid rgba(67,56,202,.25);border-radius:10px;color:#4338CA;padding:7px 12px;font-size:.72rem;font-weight:700;cursor:pointer;">Copy</button>
-            <button onclick="ajoShareLink(${groupId},'${_dc}')" style="background:rgba(67,56,202,.12);border:0.5px solid rgba(67,56,202,.25);border-radius:10px;color:#4338CA;padding:7px 12px;font-size:.72rem;font-weight:700;cursor:pointer;">Share</button>
+            <button onclick="navigator.clipboard.writeText('${_dc}').then(()=>toast('Code copied!','success',2000))" style="background:rgba(37,99,235,.12);border:0.5px solid rgba(37,99,235,.25);border-radius:10px;color:#2563EB;padding:7px 12px;font-size:.72rem;font-weight:700;cursor:pointer;">Copy</button>
+            <button onclick="ajoShareLink(${groupId},'${_dc}')" style="background:rgba(37,99,235,.12);border:0.5px solid rgba(37,99,235,.25);border-radius:10px;color:#2563EB;padding:7px 12px;font-size:.72rem;font-weight:700;cursor:pointer;">Share</button>
           </div>
         </div>`;
     }
@@ -2221,22 +2221,22 @@ async function showAjoGroup(groupId){
       let avatarDots='';
       for(let i=0;i<members.length;i++){
         const paid=await c.hasContributed(groupId,g.currentRound,members[i]).catch(()=>false);
-        const bg=paid?'rgba(59,130,246,.25)':'rgba(255,255,255,.07)';
-        const col=paid?'#3B82F6':'var(--text3)';
+        const bg=paid?'rgba(37,99,235,.25)':'rgba(255,255,255,.07)';
+        const col=paid?'#2563EB':'var(--text3)';
         const init=(members[i].slice(2,3)+members[i].slice(3,4)).toUpperCase();
         avatarDots+=`<div style="width:30px;height:30px;border-radius:50%;background:${bg};border:1.5px solid var(--bg);display:flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:700;color:${col};margin-left:-6px;flex-shrink:0;">${init}</div>`;
       }
-      const roundBg=itsYourTurn?'rgba(59,130,246,.08)':'var(--surface)';
-      const roundBorder=itsYourTurn?'rgba(59,130,246,.28)':'var(--border)';
+      const roundBg=itsYourTurn?'rgba(37,99,235,.08)':'var(--surface)';
+      const roundBorder=itsYourTurn?'rgba(37,99,235,.28)':'var(--border)';
       roundHtml=`
         <div style="background:${roundBg};border:0.5px solid ${roundBorder};border-radius:16px;padding:14px 16px;margin-bottom:12px;">
-          ${itsYourTurn?`<div style="font-size:.82rem;font-weight:700;color:#3B82F6;margin-bottom:8px;">It's your turn to receive this round!</div>`:`<div style="font-size:.78rem;font-weight:600;color:var(--text);margin-bottom:8px;">Round ${Number(g.currentRound)+1} of ${Number(g.memberCount)}</div>`}
+          ${itsYourTurn?`<div style="font-size:.82rem;font-weight:700;color:#2563EB;margin-bottom:8px;">It's your turn to receive this round!</div>`:`<div style="font-size:.78rem;font-weight:600;color:var(--text);margin-bottom:8px;">Round ${Number(g.currentRound)+1} of ${Number(g.memberCount)}</div>`}
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
             <div style="display:flex;margin-left:6px;">${avatarDots}</div>
             <div style="font-size:.72rem;color:var(--text3);margin-left:auto;">${Number(contributed)} of ${Number(total)} paid</div>
           </div>
           <div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;">
-            <div style="height:100%;width:${roundPct}%;background:${itsYourTurn?'#3B82F6':'#4338CA'};border-radius:2px;"></div>
+            <div style="height:100%;width:${roundPct}%;background:${itsYourTurn?'#2563EB':'#2563EB'};border-radius:2px;"></div>
           </div>
           ${already&&!everyonePaid?`<div style="font-size:.7rem;color:var(--text3);margin-top:8px;">You've paid this round — waiting on others.</div>`:''}
         </div>`;
@@ -2247,13 +2247,13 @@ async function showAjoGroup(groupId){
       const isThisRound=isActive&&i==Number(g.currentRound);
       const isPastRound=isActive&&i<Number(g.currentRound);
       const isCreatorMember=m.toLowerCase()===g.creator.toLowerCase();
-      const avatarBg=isThisRound?'rgba(59,130,246,.2)':isMe?'rgba(67,56,202,.15)':'rgba(255,255,255,.06)';
-      const avatarCol=isThisRound?'#3B82F6':isMe?'#4338CA':'var(--text3)';
+      const avatarBg=isThisRound?'rgba(37,99,235,.2)':isMe?'rgba(37,99,235,.15)':'rgba(255,255,255,.06)';
+      const avatarCol=isThisRound?'#2563EB':isMe?'#2563EB':'var(--text3)';
       const init=(m.slice(2,3)+m.slice(3,4)).toUpperCase();
       const nameLabel=isMe?'You':m.slice(0,6)+'…'+m.slice(-4);
-      const adminTag=isCreatorMember?`<span style="font-size:.58rem;color:#4338CA;font-weight:700;margin-left:4px;">Admin</span>`:'';
+      const adminTag=isCreatorMember?`<span style="font-size:.58rem;color:#2563EB;font-weight:700;margin-left:4px;">Admin</span>`:'';
       let rightTag='';
-      if(isThisRound&&isActive) rightTag=`<span style="font-size:.65rem;color:#3B82F6;font-weight:700;">← This round</span>`;
+      if(isThisRound&&isActive) rightTag=`<span style="font-size:.65rem;color:#2563EB;font-weight:700;">← This round</span>`;
       else if(isPastRound) rightTag=`<span style="font-size:.65rem;color:#000000;">Received ✓</span>`;
       return `<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:0.5px solid rgba(255,255,255,.05);">
         <div style="width:20px;font-size:.7rem;color:#000000;text-align:right;flex-shrink:0;">${i+1}</div>
@@ -2266,7 +2266,7 @@ async function showAjoGroup(groupId){
     let actionHtml='';
     if(isOpen){
       if(isCreator&&Number(g.memberCount)>=Number(g.maxMembers)){
-        actionHtml=`<button onclick="submitAjoStart(${groupId})" id="ajoActionBtn" style="width:100%;background:#3B82F6;border:none;border-radius:14px;color:#000;padding:15px;font-size:.95rem;font-weight:700;cursor:pointer;margin-top:4px;">Everyone's here — Start group</button>`;
+        actionHtml=`<button onclick="submitAjoStart(${groupId})" id="ajoActionBtn" style="width:100%;background:#2563EB;border:none;border-radius:14px;color:#000;padding:15px;font-size:.95rem;font-weight:700;cursor:pointer;margin-top:4px;">Everyone's here — Start group</button>`;
       } else if(isCreator){
         actionHtml=`<div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:14px;margin-top:4px;text-align:center;font-size:.78rem;color:var(--text3);">Waiting for ${Number(g.maxMembers)-Number(g.memberCount)} more member${Number(g.maxMembers)-Number(g.memberCount)===1?'':'s'} to join.</div>`;
       } else {
@@ -2274,12 +2274,12 @@ async function showAjoGroup(groupId){
       }
     } else if(isActive){
       if(!already){
-        actionHtml=`<button onclick="submitAjoContribute(${groupId})" id="ajoActionBtn" style="width:100%;background:#4338CA;border:none;border-radius:14px;color:#fff;padding:15px;font-size:.95rem;font-weight:700;cursor:pointer;margin-top:4px;">Pay your ${ethers.formatUnits(g.contributionAmount,6)} USDC</button>`;
+        actionHtml=`<button onclick="submitAjoContribute(${groupId})" id="ajoActionBtn" style="width:100%;background:#2563EB;border:none;border-radius:14px;color:#fff;padding:15px;font-size:.95rem;font-weight:700;cursor:pointer;margin-top:4px;">Pay your ${ethers.formatUnits(g.contributionAmount,6)} USDC</button>`;
       } else if(isCreator&&everyonePaid){
         const recipientLabel=recipient&&recipient.toLowerCase()===userAddr.toLowerCase()?'yourself':'round recipient';
-        actionHtml=`<button onclick="submitAjoClaim(${groupId})" id="ajoCreatorPayBtn" style="width:100%;background:#3B82F6;border:none;border-radius:14px;color:#000;padding:15px;font-size:.95rem;font-weight:700;cursor:pointer;margin-top:4px;">Release payout to ${recipientLabel}</button>`;
+        actionHtml=`<button onclick="submitAjoClaim(${groupId})" id="ajoCreatorPayBtn" style="width:100%;background:#2563EB;border:none;border-radius:14px;color:#000;padding:15px;font-size:.95rem;font-weight:700;cursor:pointer;margin-top:4px;">Release payout to ${recipientLabel}</button>`;
       } else if(isCreator&&!everyonePaid){
-        actionHtml=`<div style="background:rgba(67,56,202,.06);border:0.5px solid rgba(67,56,202,.18);border-radius:14px;padding:14px;margin-top:4px;text-align:center;font-size:.78rem;color:var(--text3);">You can release the payout once everyone has contributed.</div>`;
+        actionHtml=`<div style="background:rgba(37,99,235,.06);border:0.5px solid rgba(37,99,235,.18);border-radius:14px;padding:14px;margin-top:4px;text-align:center;font-size:.78rem;color:var(--text3);">You can release the payout once everyone has contributed.</div>`;
       } else {
         actionHtml=`<div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:14px;margin-top:4px;text-align:center;font-size:.78rem;color:var(--text3);">${everyonePaid?'Everyone has paid — waiting for the group admin to release the payout.':"You've paid this round — waiting for others."}</div>`;
       }
@@ -2302,7 +2302,7 @@ async function showAjoGroup(groupId){
         <div id="ajoGroupStatus" style="font-size:.78rem;color:var(--text);margin-top:10px;"></div>
       </div>`;
   }catch(err){
-    el.innerHTML=`<div style="text-align:center;padding:20px 0;color:#3B82F6;font-size:.8rem;">${err.message.slice(0,150)}</div>`;
+    el.innerHTML=`<div style="text-align:center;padding:20px 0;color:#2563EB;font-size:.8rem;">${err.message.slice(0,150)}</div>`;
   }
 }
 
@@ -2326,7 +2326,7 @@ async function submitAjoStart(groupId){
     toast('✓ Group started!','success',5000);
     showAjoGroup(groupId);
   }catch(err){
-    statusEl.innerHTML=`<span style="color:#3B82F6;">${err.message.slice(0,150)}</span>`;
+    statusEl.innerHTML=`<span style="color:#2563EB;">${err.message.slice(0,150)}</span>`;
     toast('Could not start: '+err.message.slice(0,100),'error',6000);
   }
 }
@@ -2361,7 +2361,7 @@ async function submitAjoContribute(groupId){
     toast('✓ Contributed!','success',5000);
     showAjoGroup(groupId);
   }catch(err){
-    statusEl.innerHTML=`<span style="color:#3B82F6;">${err.message.slice(0,150)}</span>`;
+    statusEl.innerHTML=`<span style="color:#2563EB;">${err.message.slice(0,150)}</span>`;
     toast('Could not contribute: '+err.message.slice(0,100),'error',6000);
   }
 }
@@ -2392,7 +2392,7 @@ async function submitAjoClaim(groupId){
     await refreshBalances();
     showAjoGroup(groupId);
   }catch(err){
-    if(statusEl) statusEl.innerHTML=`<span style="color:#3B82F6;">${err.message.slice(0,120)}</span>`;
+    if(statusEl) statusEl.innerHTML=`<span style="color:#2563EB;">${err.message.slice(0,120)}</span>`;
     toast('Could not release: '+err.message.slice(0,100),'error',6000);
   }finally{
     if(btn){ btn.disabled=false; btn.textContent='Release payout'; }
@@ -2433,7 +2433,7 @@ function doNepa(){
         <input id="nepaMeter" type="text" placeholder="1111111111111" style="width:100%;background:none;border:none;outline:none;font-size:1.4rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
         <div style="font-size:.8rem;color:var(--text3);margin-top:6px;">Sandbox: 1111111111111 (prepaid) or 1010101010101 (postpaid)</div>
       </div>
-      <button onclick="verifyNepaMeter()" id="nepaVerifyBtn" style="width:100%;background:#4338CA;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;margin-bottom:12px;">Verify Meter</button>
+      <button onclick="verifyNepaMeter()" id="nepaVerifyBtn" style="width:100%;background:#2563EB;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;margin-bottom:12px;">Verify Meter</button>
       <div id="nepaVerifyResult"></div>
     </div>
   `);
@@ -2450,7 +2450,7 @@ async function verifyNepaMeter(){
   btn.disabled = false; btn.textContent = 'Verify Meter';
 
   if(!result.success){
-    document.getElementById('nepaVerifyResult').innerHTML = '<div style="font-size:.8rem;color:#3B82F6;">'+(result.error||'Verification failed')+'</div>';
+    document.getElementById('nepaVerifyResult').innerHTML = '<div style="font-size:.8rem;color:#2563EB;">'+(result.error||'Verification failed')+'</div>';
     return;
   }
   const c = result.customer;
@@ -2467,7 +2467,7 @@ async function verifyNepaMeter(){
       <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Phone Number</div>
       <input id="nepaPhone" type="tel" placeholder="08011111111" style="width:100%;background:none;border:none;outline:none;font-size:1.4rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
     </div>
-    <button onclick="submitNepa()" id="nepaSubmitBtn" style="width:100%;background:#4338CA;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Pay Electricity Bill</button>
+    <button onclick="submitNepa()" id="nepaSubmitBtn" style="width:100%;background:#2563EB;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Pay Electricity Bill</button>
     <div id="nepaStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
   `;
 }
@@ -2488,17 +2488,17 @@ async function submitNepa(){
     const result = await vtpassCall('purchase', { serviceID, billersCode, variationCode, amount: ngnAmount, phone });
     if(result.success){
       const token = result.purchasedCode || result.transaction?.token || '';
-      statusEl.innerHTML = '<span style="color:#3B82F6;">✓ Bill paid!'+(token?' '+token:'')+'</span>';
+      statusEl.innerHTML = '<span style="color:#2563EB;">✓ Bill paid!'+(token?' '+token:'')+'</span>';
       toast('✓ Electricity bill paid', 'success', 6000);
       await refreshBalances();
     } else if(result.pending){
-      statusEl.innerHTML = '<span style="color:#3B82F6;">⏳ Pending — checking status…</span>';
+      statusEl.innerHTML = '<span style="color:#2563EB;">⏳ Pending — checking status…</span>';
     } else {
-      statusEl.innerHTML = '<span style="color:#3B82F6;">Payment sent but delivery failed: '+(result.responseDescription||result.error||'Unknown error')+'</span>';
+      statusEl.innerHTML = '<span style="color:#2563EB;">Payment sent but delivery failed: '+(result.responseDescription||result.error||'Unknown error')+'</span>';
       toast('Electricity payment failed — your USDC was sent, contact support with tx: '+txHash.slice(0,10), 'error', 10000);
     }
   }catch(err){
-    statusEl.innerHTML = '<span style="color:#3B82F6;">'+err.message.slice(0,150)+'</span>';
+    statusEl.innerHTML = '<span style="color:#2563EB;">'+err.message.slice(0,150)+'</span>';
     toast('Electricity payment failed: '+err.message.slice(0,100), 'error', 6000);
   }finally{
     btn.disabled = false;
@@ -2514,7 +2514,7 @@ function doDstv(){
         <input id="dstvCard" type="text" placeholder="1212121212" style="width:100%;background:none;border:none;outline:none;font-size:1.4rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
         <div style="font-size:.8rem;color:var(--text3);margin-top:6px;">Sandbox: 1212121212 for a guaranteed success</div>
       </div>
-      <button onclick="verifyDstvCard()" id="dstvVerifyBtn" style="width:100%;background:#4338CA;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;margin-bottom:12px;">Verify Smartcard</button>
+      <button onclick="verifyDstvCard()" id="dstvVerifyBtn" style="width:100%;background:#2563EB;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;margin-bottom:12px;">Verify Smartcard</button>
       <div id="dstvVerifyResult"></div>
     </div>
   `);
@@ -2529,7 +2529,7 @@ async function verifyDstvCard(){
   btn.disabled = false; btn.textContent = 'Verify Smartcard';
 
   if(!result.success){
-    document.getElementById('dstvVerifyResult').innerHTML = '<div style="font-size:.8rem;color:#3B82F6;">'+(result.error||'Verification failed')+'</div>';
+    document.getElementById('dstvVerifyResult').innerHTML = '<div style="font-size:.8rem;color:#2563EB;">'+(result.error||'Verification failed')+'</div>';
     return;
   }
   const c = result.customer;
@@ -2549,7 +2549,7 @@ async function verifyDstvCard(){
       <div style="font-size:1rem;color:var(--text);font-weight:500;margin-bottom:12px;">Phone Number</div>
       <input id="dstvPhone" type="tel" placeholder="08011111111" style="width:100%;background:none;border:none;outline:none;font-size:1.4rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
     </div>
-    <button onclick="submitDstv()" id="dstvSubmitBtn" style="width:100%;background:#4338CA;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Subscribe</button>
+    <button onclick="submitDstv()" id="dstvSubmitBtn" style="width:100%;background:#2563EB;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;">Subscribe</button>
     <div id="dstvStatus" style="font-size:.8rem;color:var(--text);margin-top:10px;"></div>
   `;
 }
@@ -2573,17 +2573,17 @@ async function submitDstv(){
     statusEl.innerHTML = '<span style="color:#000000;">Payment sent ('+usdcAmount.toFixed(4)+' USDC) · Processing…</span>';
     const result = await vtpassCall('purchase', { serviceID:'dstv', billersCode, variationCode, phone, subscriptionType:'change' });
     if(result.success){
-      statusEl.innerHTML = '<span style="color:#3B82F6;">✓ Subscription updated!</span>';
+      statusEl.innerHTML = '<span style="color:#2563EB;">✓ Subscription updated!</span>';
       toast('✓ DSTV subscription updated', 'success', 6000);
       await refreshBalances();
     } else if(result.pending){
-      statusEl.innerHTML = '<span style="color:#3B82F6;">⏳ Pending — checking status…</span>';
+      statusEl.innerHTML = '<span style="color:#2563EB;">⏳ Pending — checking status…</span>';
     } else {
-      statusEl.innerHTML = '<span style="color:#3B82F6;">Payment sent but delivery failed: '+(result.responseDescription||result.error||'Unknown error')+'</span>';
+      statusEl.innerHTML = '<span style="color:#2563EB;">Payment sent but delivery failed: '+(result.responseDescription||result.error||'Unknown error')+'</span>';
       toast('DSTV subscription failed — your USDC was sent, contact support with tx: '+txHash.slice(0,10), 'error', 10000);
     }
   }catch(err){
-    statusEl.innerHTML = '<span style="color:#3B82F6;">'+err.message.slice(0,150)+'</span>';
+    statusEl.innerHTML = '<span style="color:#2563EB;">'+err.message.slice(0,150)+'</span>';
     toast('DSTV subscription failed: '+err.message.slice(0,100), 'error', 6000);
   }finally{
     btn.disabled = false;
@@ -2927,7 +2927,7 @@ function onRecipInput(){
   validateSend();
 }
 function showOk(t){const b=document.getElementById('resolvedBar');b.className='res-bar ok';b.style.display='flex';document.getElementById('resolvedTxt').textContent=t;}
-function showSearching(t){const b=document.getElementById('resolvedBar');b.className='res-bar';b.style.display='flex';b.style.background='rgba(67,56,202,.06)';b.style.borderColor='rgba(67,56,202,.2)';document.getElementById('resolvedTxt').style.color='var(--accent3)';document.getElementById('resolvedTxt').textContent=t;}
+function showSearching(t){const b=document.getElementById('resolvedBar');b.className='res-bar';b.style.display='flex';b.style.background='rgba(37,99,235,.06)';b.style.borderColor='rgba(37,99,235,.2)';document.getElementById('resolvedTxt').style.color='var(--accent3)';document.getElementById('resolvedTxt').textContent=t;}
 function showNo(t){const b=document.getElementById('resolvedBar');b.className='res-bar no';b.style.display='flex';document.getElementById('resolvedTxt').textContent=t;}
 function hideRes(){document.getElementById('resolvedBar').style.display='none';}
 function toggleSendToken(){sendToken=sendToken==='USDC'?'EURC':'USDC';document.getElementById('sendTokenLabel').textContent=sendToken;updateSendAvailable();validateSend();}
@@ -2953,8 +2953,8 @@ function setSendTokenDirect(tok,el){
   sendToken=tok;
   const uBtn=document.getElementById('topt-usdc');
   const eBtn=document.getElementById('topt-eurc');
-  if(uBtn){uBtn.style.borderColor=tok==='USDC'?'rgba(67,56,202,.5)':'var(--border)';uBtn.style.background=tok==='USDC'?'rgba(67,56,202,.08)':'none';uBtn.style.color=tok==='USDC'?'var(--text)':'var(--text3)';}
-  if(eBtn){eBtn.style.borderColor=tok==='EURC'?'rgba(67,56,202,.5)':'var(--border)';eBtn.style.background=tok==='EURC'?'rgba(67,56,202,.08)':'none';eBtn.style.color=tok==='EURC'?'var(--text)':'var(--text3)';}
+  if(uBtn){uBtn.style.borderColor=tok==='USDC'?'rgba(37,99,235,.5)':'var(--border)';uBtn.style.background=tok==='USDC'?'rgba(37,99,235,.08)':'none';uBtn.style.color=tok==='USDC'?'var(--text)':'var(--text3)';}
+  if(eBtn){eBtn.style.borderColor=tok==='EURC'?'rgba(37,99,235,.5)':'var(--border)';eBtn.style.background=tok==='EURC'?'rgba(37,99,235,.08)':'none';eBtn.style.color=tok==='EURC'?'var(--text)':'var(--text3)';}
   const lbl=document.getElementById('sendTokenLabel');if(lbl)lbl.textContent=tok;
   const bal=tok==='USDC'?parseFloat(usdcBal):parseFloat(eurcBal);
   const av=document.getElementById('sendAvailable');if(av)av.textContent='Available: '+(bal||0).toFixed(2)+' '+tok;
@@ -3130,9 +3130,9 @@ function showReceipt(){
   modal.innerHTML=`
     <div style="max-width:400px;width:100%;position:relative;animation:scaleIn .25s cubic-bezier(.34,1.56,.64,1);">
       <!-- Receipt card -->
-      <div id="receiptCard" style=document.documentElement.getAttribute("data-theme")==="light" ? "background:#ffffff;border:1px solid rgba(67,56,202,.3);border-radius:24px;overflow:hidden;box-shadow:0 0 60px rgba(67,56,202,.15),0 20px 40px rgba(0,0,0,.15);" : "background:#0f102a;border:1px solid rgba(67,56,202,.5);border-radius:24px;overflow:hidden;box-shadow:0 0 80px rgba(67,56,202,.25),0 30px 60px rgba(0,0,0,.6);">
+      <div id="receiptCard" style=document.documentElement.getAttribute("data-theme")==="light" ? "background:#ffffff;border:1px solid rgba(37,99,235,.3);border-radius:24px;overflow:hidden;box-shadow:0 0 60px rgba(37,99,235,.15),0 20px 40px rgba(0,0,0,.15);" : "background:#0f102a;border:1px solid rgba(37,99,235,.5);border-radius:24px;overflow:hidden;box-shadow:0 0 80px rgba(37,99,235,.25),0 30px 60px rgba(0,0,0,.6);">
         <!-- Purple gradient header -->
-        <div style="background:linear-gradient(135deg,#3b0764,#4338CA,#4c1d95);padding:28px 24px 24px;position:relative;overflow:hidden;">
+        <div style="background:linear-gradient(135deg,#3b0764,#2563EB,#4c1d95);padding:28px 24px 24px;position:relative;overflow:hidden;">
           <!-- Animated circles decoration -->
           <div style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;border:1px solid rgba(255,255,255,.1);"></div>
           <div style="position:absolute;top:-10px;right:-10px;width:70px;height:70px;border-radius:50%;border:1px solid rgba(255,255,255,.15);"></div>
@@ -3166,39 +3166,39 @@ function showReceipt(){
         <!-- Details section -->
         <div style="padding:20px 24px;">
           <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(67,56,202,.07);border:1px solid rgba(67,56,202,.15);border-radius:10px;">
-              <span style="font-size:.75rem;color:#3B82F6;font-weight:600;letter-spacing:.04em;">NETWORK</span>
-              <span style="font-size:.75rem;color:var(--text);font-family:monospace;display:flex;align-items:center;gap:5px;"><span style="width:6px;height:6px;background:#4338CA;border-radius:50%;display:inline-block;box-shadow:0 0 5px #4338CA;"></span>Arc Testnet</span>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(37,99,235,.07);border:1px solid rgba(37,99,235,.15);border-radius:10px;">
+              <span style="font-size:.75rem;color:#2563EB;font-weight:600;letter-spacing:.04em;">NETWORK</span>
+              <span style="font-size:.75rem;color:var(--text);font-family:monospace;display:flex;align-items:center;gap:5px;"><span style="width:6px;height:6px;background:#2563EB;border-radius:50%;display:inline-block;box-shadow:0 0 5px #2563EB;"></span>Arc Testnet</span>
             </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(67,56,202,.07);border:1px solid rgba(67,56,202,.15);border-radius:10px;">
-              <span style="font-size:.75rem;color:#3B82F6;font-weight:600;letter-spacing:.04em;">STATUS</span>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(37,99,235,.07);border:1px solid rgba(37,99,235,.15);border-radius:10px;">
+              <span style="font-size:.75rem;color:#2563EB;font-weight:600;letter-spacing:.04em;">STATUS</span>
               <span style="font-size:.75rem;color:#4ade80;font-family:monospace;font-weight:700;">✓ Confirmed</span>
             </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(67,56,202,.07);border:1px solid rgba(67,56,202,.15);border-radius:10px;">
-              <span style="font-size:.75rem;color:#3B82F6;font-weight:600;letter-spacing:.04em;">GAS FEE</span>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(37,99,235,.07);border:1px solid rgba(37,99,235,.15);border-radius:10px;">
+              <span style="font-size:.75rem;color:#2563EB;font-weight:600;letter-spacing:.04em;">GAS FEE</span>
               <span style="font-size:.75rem;color:var(--text);font-family:monospace;">$0.00 🎉</span>
             </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(67,56,202,.07);border:1px solid rgba(67,56,202,.15);border-radius:10px;">
-              <span style="font-size:.75rem;color:#3B82F6;font-weight:600;letter-spacing:.04em;">TX HASH</span>
-              ${isReal?`<a href="${ARC_EXP}/tx/${hash}" target="_blank" style="font-size:.7rem;color:#3B82F6;font-family:monospace;text-decoration:none;">${shortHash} ↗</a>`:`<span style="font-size:.7rem;color:var(--text);font-family:monospace;">${shortHash}</span>`}
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(37,99,235,.07);border:1px solid rgba(37,99,235,.15);border-radius:10px;">
+              <span style="font-size:.75rem;color:#2563EB;font-weight:600;letter-spacing:.04em;">TX HASH</span>
+              ${isReal?`<a href="${ARC_EXP}/tx/${hash}" target="_blank" style="font-size:.7rem;color:#2563EB;font-family:monospace;text-decoration:none;">${shortHash} ↗</a>`:`<span style="font-size:.7rem;color:var(--text);font-family:monospace;">${shortHash}</span>`}
             </div>
           </div>
 
           <!-- Powered by -->
-          <div style="text-align:center;padding:10px;border-top:1px solid rgba(67,56,202,.15);margin-bottom:16px;">
+          <div style="text-align:center;padding:10px;border-top:1px solid rgba(37,99,235,.15);margin-bottom:16px;">
             <div style="font-size:.62rem;color:#6b21a8;letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px;">Powered by</div>
             <div style="display:flex;align-items:center;justify-content:center;gap:8px;">
-              <span style="font-size:.7rem;color:#3B82F6;font-weight:600;">Circle USDC</span>
+              <span style="font-size:.7rem;color:#2563EB;font-weight:600;">Circle USDC</span>
               <span style="color:#3b0764;">·</span>
-              <span style="font-size:.7rem;color:#3B82F6;font-weight:600;">Arc Network</span>
+              <span style="font-size:.7rem;color:#2563EB;font-weight:600;">Arc Network</span>
               <span style="color:#3b0764;">·</span>
-              <span style="font-size:.7rem;color:#3B82F6;font-weight:600;">nanarc.xyz</span>
+              <span style="font-size:.7rem;color:#2563EB;font-weight:600;">nanarc.xyz</span>
             </div>
           </div>
 
           <!-- Action buttons -->
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
-            <button onclick="downloadReceipt()" style="padding:11px;background:#4338CA;border:none;border-radius:12px;color:#fff;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+            <button onclick="downloadReceipt()" style="padding:11px;background:#2563EB;border:none;border-radius:12px;color:#fff;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               Download
             </button>
@@ -3212,7 +3212,7 @@ function showReceipt(){
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
               WhatsApp
             </button>
-            <button onclick="shareNative()" style="padding:11px;background:rgba(67,56,202,.12);border:1px solid rgba(67,56,202,.3);border-radius:12px;color:#3B82F6;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+            <button onclick="shareNative()" style="padding:11px;background:rgba(37,99,235,.12);border:1px solid rgba(37,99,235,.3);border-radius:12px;color:#2563EB;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
               More
             </button>
@@ -3275,7 +3275,7 @@ function downloadReceipt(){
   ctx.fillStyle='#07030f';ctx.fillRect(0,0,S,S);
 
   // Grid lines (subtle)
-  ctx.strokeStyle='rgba(67,56,202,0.06)';ctx.lineWidth=1;
+  ctx.strokeStyle='rgba(37,99,235,0.06)';ctx.lineWidth=1;
   for(let i=0;i<S;i+=60){
     ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,S);ctx.stroke();
     ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(S,i);ctx.stroke();
@@ -3283,21 +3283,21 @@ function downloadReceipt(){
 
   // ── Glow orbs ──
   const g1=ctx.createRadialGradient(900,120,0,900,120,380);
-  g1.addColorStop(0,'rgba(67,56,202,0.35)');g1.addColorStop(1,'rgba(67,56,202,0)');
+  g1.addColorStop(0,'rgba(37,99,235,0.35)');g1.addColorStop(1,'rgba(37,99,235,0)');
   ctx.fillStyle=g1;ctx.fillRect(0,0,S,S);
 
   const g2=ctx.createRadialGradient(150,900,0,150,900,320);
-  g2.addColorStop(0,'rgba(59,130,246,0.2)');g2.addColorStop(1,'rgba(59,130,246,0)');
+  g2.addColorStop(0,'rgba(37,99,235,0.2)');g2.addColorStop(1,'rgba(37,99,235,0)');
   ctx.fillStyle=g2;ctx.fillRect(0,0,S,S);
 
   // ── Card border ──
-  ctx.strokeStyle='rgba(67,56,202,0.6)';ctx.lineWidth=2;
+  ctx.strokeStyle='rgba(37,99,235,0.6)';ctx.lineWidth=2;
   roundRect(ctx,40,40,S-80,S-80,32);ctx.stroke();
 
   // ── Header gradient bar ──
   const hg=ctx.createLinearGradient(40,40,S-40,200);
   hg.addColorStop(0,'rgba(59,7,100,0.9)');
-  hg.addColorStop(0.5,'rgba(67,56,202,0.85)');
+  hg.addColorStop(0.5,'rgba(37,99,235,0.85)');
   hg.addColorStop(1,'rgba(76,29,149,0.9)');
   roundRect(ctx,40,40,S-80,200,32);
   ctx.fillStyle=hg;ctx.fill();
@@ -3330,11 +3330,11 @@ function downloadReceipt(){
   // ── Check circle ──
   const cx=S/2,cy=310;
   const cg=ctx.createRadialGradient(cx,cy,0,cx,cy,80);
-  cg.addColorStop(0,'rgba(67,56,202,0.4)');cg.addColorStop(1,'rgba(67,56,202,0)');
+  cg.addColorStop(0,'rgba(37,99,235,0.4)');cg.addColorStop(1,'rgba(37,99,235,0)');
   ctx.fillStyle=cg;ctx.beginPath();ctx.arc(cx,cy,80,0,Math.PI*2);ctx.fill();
-  ctx.strokeStyle='rgba(67,56,202,0.7)';ctx.lineWidth=3;
+  ctx.strokeStyle='rgba(37,99,235,0.7)';ctx.lineWidth=3;
   ctx.beginPath();ctx.arc(cx,cy,54,0,Math.PI*2);ctx.stroke();
-  ctx.fillStyle='rgba(67,56,202,0.2)';
+  ctx.fillStyle='rgba(37,99,235,0.2)';
   ctx.beginPath();ctx.arc(cx,cy,54,0,Math.PI*2);ctx.fill();
   // Checkmark
   ctx.strokeStyle='#fff';ctx.lineWidth=5;ctx.lineCap='round';ctx.lineJoin='round';
@@ -3353,13 +3353,13 @@ function downloadReceipt(){
   ctx.fillStyle=tg;ctx.fillText(amtPart,cx,480);
 
   // ── To ──
-  ctx.fillStyle='rgba(59,130,246,0.8)';ctx.font='18px monospace';
+  ctx.fillStyle='rgba(37,99,235,0.8)';ctx.font='18px monospace';
   ctx.textAlign='center';ctx.fillText('TO',cx,530);
   ctx.fillStyle='#e9d5ff';ctx.font='22px monospace';
   ctx.fillText(toPart,cx,562);
 
   // ── Divider ──
-  ctx.strokeStyle='rgba(67,56,202,0.25)';ctx.lineWidth=1;
+  ctx.strokeStyle='rgba(37,99,235,0.25)';ctx.lineWidth=1;
   ctx.setLineDash([8,8]);
   ctx.beginPath();ctx.moveTo(80,600);ctx.lineTo(S-80,600);ctx.stroke();
   ctx.setLineDash([]);
@@ -3374,11 +3374,11 @@ function downloadReceipt(){
   details.forEach(([label,value],i)=>{
     const col=i%2,row=Math.floor(i/2);
     const bx=80+col*460,by=620+row*100;
-    ctx.fillStyle='rgba(67,56,202,0.08)';
+    ctx.fillStyle='rgba(37,99,235,0.08)';
     roundRect(ctx,bx,by,420,80,14);ctx.fill();
-    ctx.strokeStyle='rgba(67,56,202,0.2)';ctx.lineWidth=1;
+    ctx.strokeStyle='rgba(37,99,235,0.2)';ctx.lineWidth=1;
     roundRect(ctx,bx,by,420,80,14);ctx.stroke();
-    ctx.fillStyle='#3B82F6';ctx.font='bold 13px monospace';
+    ctx.fillStyle='#2563EB';ctx.font='bold 13px monospace';
     ctx.textAlign='left';ctx.fillText(label,bx+18,by+28);
     ctx.fillStyle=label==='STATUS'?'#4ade80':'#e9d5ff';
     ctx.font='bold 18px Inter, Arial, sans-serif';
@@ -3387,7 +3387,7 @@ function downloadReceipt(){
 
   // ── Footer ──
   const fg=ctx.createLinearGradient(40,S-100,S-40,S-100);
-  fg.addColorStop(0,'rgba(59,7,100,0.5)');fg.addColorStop(1,'rgba(67,56,202,0.3)');
+  fg.addColorStop(0,'rgba(59,7,100,0.5)');fg.addColorStop(1,'rgba(37,99,235,0.3)');
   roundRect(ctx,40,S-100,S-80,60,16);ctx.fillStyle=fg;ctx.fill();
   ctx.fillStyle='rgba(96,165,250,0.9)';ctx.font='18px Inter, Arial, sans-serif';
   ctx.textAlign='center';ctx.fillText('nanarc.xyz  ·  Powered by Circle USDC  ·  Arc Network',cx,S-62);
@@ -3571,9 +3571,9 @@ function lbShowStatus(msg, type='info') {
   const el = document.getElementById('lbStatus');
   if (!el) return;
   el.style.display = 'block';
-  el.style.background = type==='error' ? 'rgba(67,56,202,.1)' : type==='success' ? 'rgba(59,130,246,.1)' : 'rgba(67,56,202,.1)';
-  el.style.color = type==='error' ? '#3B82F6' : type==='success' ? '#3B82F6' : '#3B82F6';
-  el.style.border = type==='error' ? '1px solid rgba(67,56,202,.2)' : type==='success' ? '1px solid rgba(59,130,246,.2)' : '1px solid rgba(67,56,202,.2)';
+  el.style.background = type==='error' ? 'rgba(37,99,235,.1)' : type==='success' ? 'rgba(37,99,235,.1)' : 'rgba(37,99,235,.1)';
+  el.style.color = type==='error' ? '#2563EB' : type==='success' ? '#2563EB' : '#2563EB';
+  el.style.border = type==='error' ? '1px solid rgba(37,99,235,.2)' : type==='success' ? '1px solid rgba(37,99,235,.2)' : '1px solid rgba(37,99,235,.2)';
   el.textContent = msg;
   setTimeout(()=>{ if(el) el.style.display='none'; }, 6000);
 }
@@ -3894,7 +3894,7 @@ function toggleBridgeAddr(){
   document.getElementById('bridgeAddrWrap').style.display=on?'block':'none';
   const track=document.getElementById('bridgeAddrTrack');
   const knob=document.getElementById('bridgeAddrKnob');
-  if(track) track.style.background=on?'rgba(67,56,202,.5)':'var(--surface)';
+  if(track) track.style.background=on?'rgba(37,99,235,.5)':'var(--surface)';
   if(track) track.style.borderColor=on?'var(--accent3)':'var(--border)';
   if(knob) knob.style.left=on?'21px':'3px';
   updateBridgeSummary();
@@ -3967,7 +3967,7 @@ function openChainPicker(){
     item.type = 'button';
     item.style.cssText = 'width:100%;background:none;border:none;color:#fff;padding:10px 12px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:10px;font-size:.88rem;font-family:Inter,sans-serif;text-align:left;';
     item.innerHTML = '<span style="width:20px;text-align:center;">' + chain.icon + '</span><span>' + chain.label + '</span>';
-    item.onmouseenter = () => item.style.background = 'rgba(59,130,246,.15)';
+    item.onmouseenter = () => item.style.background = 'rgba(37,99,235,.15)';
     item.onmouseleave = () => item.style.background = 'none';
     item.onclick = () => {
       document.getElementById('bridgeDestChain').value = chain.value;
@@ -4186,7 +4186,7 @@ async function pollIrisAttestation(txHash, destChain) {
                 Your USDC is burned on Arc. To receive it on <strong style="color:#ccc;">${destName}</strong>, complete the mint using the attestation below.
               </div>
               <div style="font-size:.68rem;font-family:'JetBrains Mono',monospace;color:#aaa;margin-bottom:6px;">MessageTransmitter on ${destName}:</div>
-              <div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#3B82F6;background:#111;padding:6px 10px;border-radius:7px;margin-bottom:10px;word-break:break-all;">${transmitterAddr}</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#2563EB;background:#111;padding:6px 10px;border-radius:7px;margin-bottom:10px;word-break:break-all;">${transmitterAddr}</div>
               <div style="font-size:.68rem;font-family:'JetBrains Mono',monospace;color:#aaa;margin-bottom:4px;">Message bytes:</div>
               <div style="font-family:'JetBrains Mono',monospace;font-size:.58rem;color:#666;background:#111;padding:6px 10px;border-radius:7px;margin-bottom:6px;word-break:break-all;">${message}</div>
               <div style="font-size:.68rem;font-family:'JetBrains Mono',monospace;color:#aaa;margin-bottom:4px;">Attestation:</div>
@@ -4194,7 +4194,7 @@ async function pollIrisAttestation(txHash, destChain) {
               <div style="display:flex;gap:8px;flex-wrap:wrap;">
                 <button onclick="navigator.clipboard.writeText('${message}').then(()=>toast('Message copied','success',2000))" style="background:#222;border:1px solid #1a1a1a;border-radius:8px;color:#aaa;padding:6px 12px;font-size:.7rem;cursor:pointer;font-family:'Inter',sans-serif;">Copy Message</button>
                 <button onclick="navigator.clipboard.writeText('${attestation}').then(()=>toast('Attestation copied','success',2000))" style="background:#222;border:1px solid #1a1a1a;border-radius:8px;color:#aaa;padding:6px 12px;font-size:.7rem;cursor:pointer;font-family:'Inter',sans-serif;">Copy Attestation</button>
-                <a href="https://developers.circle.com/cctp/transfer-usdc-on-testnet-from-ethereum-to-avalanche" target="_blank" style="background:#4338CA;border:none;border-radius:8px;color:#fff;padding:6px 12px;font-size:.7rem;cursor:pointer;font-family:'Inter',sans-serif;text-decoration:none;display:inline-flex;align-items:center;">Circle Guide ↗</a>
+                <a href="https://developers.circle.com/cctp/transfer-usdc-on-testnet-from-ethereum-to-avalanche" target="_blank" style="background:#2563EB;border:none;border-radius:8px;color:#fff;padding:6px 12px;font-size:.7rem;cursor:pointer;font-family:'Inter',sans-serif;text-decoration:none;display:inline-flex;align-items:center;">Circle Guide ↗</a>
               </div>
             </div>`;
         }
@@ -4274,7 +4274,7 @@ async function pollIrisAttestation(txHash, destChain) {
           );
           const bal=await destUSDC.balanceOf(userAddr);
           const balFmt=parseFloat(ethers.formatUnits(bal,6)).toFixed(2);
-          if(mintEl) mintEl.innerHTML+='<div style="margin-top:8px;padding:8px;background:rgba(59,130,246,.1);border-radius:8px;font-size:.78rem;color:#3B82F6;">💰 Your USDC on '+destConfig.chainName+': '+balFmt+' USDC</div>';
+          if(mintEl) mintEl.innerHTML+='<div style="margin-top:8px;padding:8px;background:rgba(37,99,235,.1);border-radius:8px;font-size:.78rem;color:#2563EB;">💰 Your USDC on '+destConfig.chainName+': '+balFmt+' USDC</div>';
         }catch(e){ console.log('dest balance check:',e.message); }
 
       } catch(mintErr) {
@@ -4358,13 +4358,13 @@ function histSwitchTab(tab){
   var clearBtn = document.getElementById('histClearBtn');
   if (tab === 'mine') {
     mine.style.display = 'block'; live.style.display = 'none';
-    tabMine.style.background = '#4338CA'; tabMine.style.color = '#fff';
+    tabMine.style.background = '#2563EB'; tabMine.style.color = '#fff';
     tabLive.style.background = ''; tabLive.style.color = '';
     if (clearBtn) clearBtn.style.display = '';
     if (_liveFeedTimer) { clearInterval(_liveFeedTimer); _liveFeedTimer = null; }
   } else {
     mine.style.display = 'none'; live.style.display = 'block';
-    tabLive.style.background = '#4338CA'; tabLive.style.color = '#fff';
+    tabLive.style.background = '#2563EB'; tabLive.style.color = '#fff';
     tabMine.style.background = ''; tabMine.style.color = '';
     if (clearBtn) clearBtn.style.display = 'none';
     liveFeedFetch();
@@ -4376,7 +4376,7 @@ function liveFeedSetFilter(type){
   _liveFeedFilter = type;
   document.querySelectorAll('.liveFeedFilterBtn').forEach(function(b){
     var active = b.getAttribute('data-type') === type;
-    b.style.background = active ? '#4338CA' : 'none';
+    b.style.background = active ? '#2563EB' : 'none';
     b.style.color = active ? '#fff' : 'var(--text2)';
   });
   liveFeedFetch();
@@ -4414,7 +4414,7 @@ function liveFeedShort(addr){
 function liveFeedRenderItem(ev){
   var icon, label, sub;
   if (ev.type === 'swap') {
-    icon = '<div style="width:36px;height:36px;border-radius:10px;background:rgba(67,56,202,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem;">🔄</div>';
+    icon = '<div style="width:36px;height:36px;border-radius:10px;background:rgba(37,99,235,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem;">🔄</div>';
     label = ev.legIn.amount.toFixed(2) + ' ' + ev.legIn.token + ' <span style="color:var(--text3);">→</span> ' + ev.legOut.amount.toFixed(2) + ' ' + ev.legOut.token;
     sub = 'Swap';
   } else if (ev.type === 'arcname') {
@@ -4484,13 +4484,13 @@ function renderHistory(){
   }
   const ICONS={
     out:`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>`,
-    in:`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4338CA" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>`,
+    in:`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>`,
     swap:`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" stroke-width="2.2" stroke-linecap="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>`,
     bridge:`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" stroke-width="2.2" stroke-linecap="round"><path d="M4 12h16"/><path d="M4 6q4 6 16 0"/><path d="M4 18q4-6 16 0"/></svg>`,
-    stake:`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>`
+    stake:`<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>`
   };
-  const ICO_BG={out:'rgba(67,56,202,.1)',in:'rgba(67,56,202,.1)',swap:'rgba(67,56,202,.1)',bridge:'rgba(67,56,202,.1)',stake:'rgba(67,56,202,.1)'};
-  const ICO_BD={out:'rgba(67,56,202,.2)',in:'rgba(67,56,202,.2)',swap:'rgba(67,56,202,.2)',bridge:'rgba(67,56,202,.2)',stake:'rgba(67,56,202,.2)'};
+  const ICO_BG={out:'rgba(37,99,235,.1)',in:'rgba(37,99,235,.1)',swap:'rgba(37,99,235,.1)',bridge:'rgba(37,99,235,.1)',stake:'rgba(37,99,235,.1)'};
+  const ICO_BD={out:'rgba(37,99,235,.2)',in:'rgba(37,99,235,.2)',swap:'rgba(37,99,235,.2)',bridge:'rgba(37,99,235,.2)',stake:'rgba(37,99,235,.2)'};
 
   function dateGroup(ts){
     const d=new Date(ts),now=new Date();
@@ -4510,10 +4510,10 @@ function renderHistory(){
   }
   function statusBadge(tx){
     const isSim=tx.hash?.startsWith('sim-');
-    if(isSim) return `<span style="font-size:.55rem;background:rgba(59,130,246,.1);color:#3B82F6;border:1px solid rgba(59,130,246,.2);border-radius:100px;padding:2px 7px;">simulated</span>`;
+    if(isSim) return `<span style="font-size:.55rem;background:rgba(37,99,235,.1);color:#2563EB;border:1px solid rgba(37,99,235,.2);border-radius:100px;padding:2px 7px;">simulated</span>`;
     const isRealHash=tx.hash&&tx.hash.startsWith('0x')&&tx.hash.length===66;
     const st=(!isRealHash||tx.confirmed)?'confirmed':tx.failed?'failed':'pending';
-    const map={confirmed:['rgba(67,56,202,.1)','#4338CA','rgba(67,56,202,.2)'],failed:['rgba(67,56,202,.1)','#60A5FA','rgba(67,56,202,.2)'],pending:['rgba(67,56,202,.08)','#3B82F6','rgba(67,56,202,.15)']};
+    const map={confirmed:['rgba(37,99,235,.1)','#2563EB','rgba(37,99,235,.2)'],failed:['rgba(37,99,235,.1)','#60A5FA','rgba(37,99,235,.2)'],pending:['rgba(37,99,235,.08)','#2563EB','rgba(37,99,235,.15)']};
     const [bg,col,bd]=map[st];
     return `<span style="font-size:.55rem;background:${bg};color:${col};border:1px solid ${bd};border-radius:100px;padding:2px 7px;font-weight:600;">${st}</span>`;
   }
@@ -4522,9 +4522,9 @@ function renderHistory(){
     const type=tx.type||'out';
     let label='',amt='',amtColor='#ffffff';
     if(type==='out'){label='Sent to '+(tx.toRaw||short(tx.to));amt='−'+parseFloat(tx.amount).toFixed(2)+' '+(tx.token||'USDC');}
-    else if(type==='in'){label=tx.toRaw||'Received';amt='+'+parseFloat(tx.amount).toFixed(2)+' '+(tx.token||'USDC');amtColor='#4338CA';}
+    else if(type==='in'){label=tx.toRaw||'Received';amt='+'+parseFloat(tx.amount).toFixed(2)+' '+(tx.token||'USDC');amtColor='#2563EB';}
     else if(type==='swap'){label=parseFloat(tx.amount).toFixed(2)+' '+(tx.fromToken||'USDC')+' → '+parseFloat(tx.outAmount||0).toFixed(2)+' '+(tx.toToken||'EURC');amt='Swap';amtColor='#60A5FA';}
-    else if(type==='stake'){label='Saved '+parseFloat(tx.amount).toFixed(2)+' USDC';amt='Save';amtColor='#4338CA';}
+    else if(type==='stake'){label='Saved '+parseFloat(tx.amount).toFixed(2)+' USDC';amt='Save';amtColor='#2563EB';}
     else if(type==='bridge'){label='Bridge → '+(tx.destChain||'');amt='−'+parseFloat(tx.amount).toFixed(2)+' USDC';}
     const isRealHash=tx.hash&&tx.hash.startsWith('0x')&&tx.hash.length===66;
     const href=isRealHash?`${ARC_EXP}/tx/${tx.hash}`:`${ARC_EXP}/address/${userAddr}`;
@@ -4532,7 +4532,7 @@ function renderHistory(){
       ?`<a href="${href}" target="_blank" onclick="verifyTx('${tx.hash}',event)" style="font-size:.58rem;color:var(--accent3);text-decoration:none;">View ↗</a>`
       :`<a href="${href}" target="_blank" style="font-size:.58rem;color:var(--accent3);text-decoration:none;">Wallet ↗</a>`):'';
     const ico=ICONS[type]||ICONS.out;
-    return `<div style="display:flex;align-items:center;gap:12px;background:var(--card);border-bottom:1px solid var(--border);padding:13px 14px;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='rgba(67,56,202,.04)'" onmouseout="this.style.background='var(--card)'">
+    return `<div style="display:flex;align-items:center;gap:12px;background:var(--card);border-bottom:1px solid var(--border);padding:13px 14px;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='rgba(37,99,235,.04)'" onmouseout="this.style.background='var(--card)'">
       <div style="width:38px;height:38px;border-radius:12px;background:${ICO_BG[type]||ICO_BG.out};border:1px solid ${ICO_BD[type]||ICO_BD.out};display:flex;align-items:center;justify-content:center;flex-shrink:0;">${ico}</div>
       <div style="flex:1;min-width:0;">
         <div style="font-size:.85rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${label}</div>
@@ -4634,10 +4634,10 @@ let bulkDefaultAmt = 10;
 
 function setBulkToken(token){
   bulkToken = token;
-  document.getElementById('bulk-usdc').style.background = token==='USDC'?'#4338CA':'var(--surface)';
+  document.getElementById('bulk-usdc').style.background = token==='USDC'?'#2563EB':'var(--surface)';
   document.getElementById('bulk-usdc').style.border = token==='USDC'?'none':'1px solid var(--border)';
   document.getElementById('bulk-usdc').style.color = token==='USDC'?'#EEF2FF':'var(--text3)';
-  document.getElementById('bulk-eurc').style.background = token==='EURC'?'#4338CA':'var(--surface)';
+  document.getElementById('bulk-eurc').style.background = token==='EURC'?'#2563EB':'var(--surface)';
   document.getElementById('bulk-eurc').style.border = token==='EURC'?'none':'1px solid var(--border)';
   document.getElementById('bulk-eurc').style.color = token==='EURC'?'#EEF2FF':'var(--text3)';
   updateBulkSummary();
@@ -4724,7 +4724,7 @@ function renderBulkRecipients(){
   }
   el.innerHTML = bulkRecipients.map((r,i) => `
     <div style="display:flex;align-items:center;gap:7px;padding:9px 11px;background:var(--surface);border:1px solid var(--border);border-radius:11px;">
-      <div style="width:22px;height:22px;border-radius:50%;background:rgba(59,130,246,.15);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:var(--accent3);flex-shrink:0;">${i+1}</div>
+      <div style="width:22px;height:22px;border-radius:50%;background:rgba(37,99,235,.15);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:var(--accent3);flex-shrink:0;">${i+1}</div>
       <div style="flex:1;min-width:0;">
         ${r.name ? `<div style="font-size:.78rem;font-weight:600;color:var(--accent3);">${r.name}</div>` : ''}
         <div style="font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.addr.slice(0,10)}…${r.addr.slice(-6)}</div>
@@ -4910,7 +4910,7 @@ function downloadPayrollReceipt(){
   const bg = ctx.createLinearGradient(0,0,600,canvas.height);
   bg.addColorStop(0,'#111111'); bg.addColorStop(1,'#111111');
   ctx.fillStyle = bg; ctx.fillRect(0,0,600,canvas.height);
-  ctx.strokeStyle = 'rgba(59,130,246,0.5)'; ctx.lineWidth = 1.5;
+  ctx.strokeStyle = 'rgba(37,99,235,0.5)'; ctx.lineWidth = 1.5;
   ctx.beginPath(); ctx.roundRect(10,10,580,canvas.height-20,16); ctx.stroke();
 
   // Header
@@ -4923,30 +4923,30 @@ function downloadPayrollReceipt(){
   ctx.fillText(lastPayrollTxs.length+' recipients · '+total.toFixed(2)+' '+bulkToken+' total', 572, 68);
 
   // Divider
-  ctx.strokeStyle = 'rgba(59,130,246,0.2)'; ctx.setLineDash([4,4]);
+  ctx.strokeStyle = 'rgba(37,99,235,0.2)'; ctx.setLineDash([4,4]);
   ctx.beginPath(); ctx.moveTo(28,82); ctx.lineTo(572,82); ctx.stroke();
   ctx.setLineDash([]);
 
   // Rows
   lastPayrollTxs.forEach((r,i)=>{
     const y = 110 + i*44;
-    ctx.fillStyle = i%2===0?'rgba(59,130,246,0.04)':'transparent';
+    ctx.fillStyle = i%2===0?'rgba(37,99,235,0.04)':'transparent';
     ctx.fillRect(18, y-16, 564, 40);
     ctx.fillStyle = '#EEF2FF'; ctx.font = 'bold 13px sans-serif';
     ctx.textAlign = 'left'; ctx.fillText(r.name||r.addr.slice(0,16)+'…', 28, y+4);
     ctx.fillStyle = '#60A5FA'; ctx.font = '10px monospace';
     ctx.fillText(r.addr.slice(0,18)+'…', 28, y+18);
-    ctx.fillStyle = r.status==='done'?'#4338CA':'#3B82F6';
+    ctx.fillStyle = r.status==='done'?'#2563EB':'#2563EB';
     ctx.font = 'bold 13px monospace'; ctx.textAlign = 'right';
     ctx.fillText(r.amount.toFixed(2)+' '+bulkToken, 572, y+4);
-    ctx.fillStyle = r.status==='done'?'#4338CA':'#3B82F6';
+    ctx.fillStyle = r.status==='done'?'#2563EB':'#2563EB';
     ctx.font = '10px monospace';
     ctx.fillText(r.status==='done'?'✓ Sent':'✗ Failed', 572, y+18);
   });
 
   // Footer
   const fy = canvas.height - 30;
-  ctx.fillStyle = 'rgba(59,130,246,0.15)'; ctx.fillRect(0,fy-14,600,44);
+  ctx.fillStyle = 'rgba(37,99,235,0.15)'; ctx.fillRect(0,fy-14,600,44);
   ctx.fillStyle = '#60A5FA'; ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
   ctx.fillText('NAN Wallet · Powered by Circle USDC · Arc Testnet', 300, fy+8);
 
@@ -5044,7 +5044,7 @@ async function doBulkSend(){
   await refreshBalances();
   progressTitle.textContent = `Done! ${done}/${total} sent successfully`;
   progressBar.style.width = '100%';
-  progressBar.style.background = done===total ? 'linear-gradient(90deg,#4338CA,#4338CA)' : 'linear-gradient(90deg,#3B82F6,#3B82F6)';
+  progressBar.style.background = done===total ? 'linear-gradient(90deg,#2563EB,#2563EB)' : 'linear-gradient(90deg,#2563EB,#2563EB)';
   renderBulkRecipients();
   toast(done===total ? `✅ All ${done} payments sent!` : `Sent ${done}/${total} — ${total-done} failed`, done===total?'success':'error', 5000);
 
@@ -5148,7 +5148,7 @@ async function cioFetchTransactions(){
   }catch(e){ return []; }
 }
 function cioStatusBadge(status){
-  const colors = { pending:['rgba(217,119,6,.1)','#d97706'], processing:['rgba(67,56,202,.1)','#4338CA'], completed:['rgba(22,163,74,.1)','#16a34a'], failed:['rgba(220,38,38,.1)','#dc2626'] };
+  const colors = { pending:['rgba(217,119,6,.1)','#d97706'], processing:['rgba(37,99,235,.1)','#2563EB'], completed:['rgba(22,163,74,.1)','#16a34a'], failed:['rgba(220,38,38,.1)','#dc2626'] };
   const c = colors[status] || colors.pending;
   return `<span style="font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:100px;background:${c[0]};color:${c[1]};text-transform:capitalize;">${status}</span>`;
 }
@@ -5162,7 +5162,7 @@ function cioTxRow(tx){
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
       ${cioStatusBadge(tx.status)}
-      <span onclick="cioDownloadReceipt('${tx.id}')" style="font-size:.76rem;color:#4338CA;font-weight:700;cursor:pointer;">Receipt</span>
+      <span onclick="cioDownloadReceipt('${tx.id}')" style="font-size:.76rem;color:#2563EB;font-weight:700;cursor:pointer;">Receipt</span>
     </div>
   </div>`;
 }
@@ -5284,7 +5284,7 @@ async function cioLoadBanks(){
         <div style="font-size:.78rem;color:var(--text3);">${a.accountName}, ${a.accountNumber}</div>
       </div>
       <div style="display:flex;align-items:center;gap:10px;">
-        ${a.isDefault ? '<span style="font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:100px;background:rgba(22,163,74,.1);color:#16a34a;">Default</span>' : `<span onclick="cioSetDefaultBank('${a.id}')" style="font-size:.76rem;color:#4338CA;font-weight:700;cursor:pointer;">Set default</span>`}
+        ${a.isDefault ? '<span style="font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:100px;background:rgba(22,163,74,.1);color:#16a34a;">Default</span>' : `<span onclick="cioSetDefaultBank('${a.id}')" style="font-size:.76rem;color:#2563EB;font-weight:700;cursor:pointer;">Set default</span>`}
         <span onclick="cioDeleteBank('${a.id}')" style="font-size:.76rem;color:#dc2626;font-weight:700;cursor:pointer;">Remove</span>
       </div>
     </div>`).join('');
@@ -5332,13 +5332,13 @@ async function cioDownloadReceipt(transactionId){
   canvas.width = 600; canvas.height = 320;
   const ctx = canvas.getContext('2d');
   ctx.fillStyle = '#111111'; ctx.fillRect(0,0,600,320);
-  ctx.strokeStyle = 'rgba(59,130,246,0.5)'; ctx.lineWidth = 1.5;
+  ctx.strokeStyle = 'rgba(37,99,235,0.5)'; ctx.lineWidth = 1.5;
   ctx.beginPath(); ctx.roundRect(10,10,580,300,16); ctx.stroke();
   ctx.fillStyle = '#EEF2FF'; ctx.font = 'bold 20px sans-serif';
   ctx.textAlign = 'left'; ctx.fillText('Nan Fiat Receipt', 28, 48);
   ctx.fillStyle = '#60A5FA'; ctx.font = '12px monospace';
   ctx.fillText(new Date(tx.createdAt).toLocaleString(), 28, 70);
-  ctx.strokeStyle = 'rgba(59,130,246,0.2)'; ctx.setLineDash([4,4]);
+  ctx.strokeStyle = 'rgba(37,99,235,0.2)'; ctx.setLineDash([4,4]);
   ctx.beginPath(); ctx.moveTo(28,84); ctx.lineTo(572,84); ctx.stroke(); ctx.setLineDash([]);
   const rows = tx.type === 'cashin'
     ? [['Transaction ID', tx.id], ['Type', 'Deposit'], ['Amount sent', tx.nairaAmount.toFixed(2)+' NGN'], ['Exchange rate', tx.rate ? tx.rate.toFixed(2) : 'Unavailable'], ['Amount received', tx.estimatedReceive ? tx.estimatedReceive.toFixed(2)+' '+tx.convertTo : 'Unavailable'], ['Wallet address', tx.walletAddress], ['Status', tx.status]]
@@ -5394,7 +5394,7 @@ async function payrollLoadDashboard(){
             <div style="font-weight:700;font-size:.86rem;color:var(--text);">${run.recipients.length} recipient${run.recipients.length!==1?'s':''}</div>
             <div style="font-size:.74rem;color:var(--text3);">${new Date(run.createdAt).toLocaleString()}</div>
           </div>
-          <div style="font-family:'JetBrains Mono',monospace;font-weight:700;color:#4338CA;">${run.totalAmount.toFixed(2)} ${run.token}</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-weight:700;color:#2563EB;">${run.totalAmount.toFixed(2)} ${run.token}</div>
         </div>`).join('');
     }
   }catch(e){ document.getElementById('dashRecentRuns').textContent = '❌ ' + e.message; }
@@ -5481,7 +5481,7 @@ function payrollSetFreq(freq, btnEl){
   payrollFreq = freq;
   document.querySelectorAll('#payrollScheduledPane .freq-pill').forEach(b => {
     const active = b === btnEl;
-    b.style.background = active ? '#4338CA' : 'var(--bg)';
+    b.style.background = active ? '#2563EB' : 'var(--bg)';
     b.style.color = active ? '#fff' : 'var(--text2)';
     b.style.border = active ? 'none' : '1px solid var(--border)';
   });
@@ -5518,7 +5518,7 @@ async function payrollLoadReports(){
         <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;">
           <h4 style="font-size:.9rem;font-weight:700;margin-bottom:14px;">Monthly payroll spending</h4>
           <div style="display:flex;align-items:flex-end;gap:8px;height:100px;">
-            ${d.monthlySpending.map(m => `<div style="flex:1;background:rgba(67,56,202,.15);border-radius:4px 4px 0 0;height:${Math.max(4,(m.total/maxSpend)*100)}%;" title="${m.month}: $${m.total.toFixed(2)}"></div>`).join('')}
+            ${d.monthlySpending.map(m => `<div style="flex:1;background:rgba(37,99,235,.15);border-radius:4px 4px 0 0;height:${Math.max(4,(m.total/maxSpend)*100)}%;" title="${m.month}: $${m.total.toFixed(2)}"></div>`).join('')}
           </div>
         </div>
         <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;">
@@ -5939,7 +5939,7 @@ function _ensureAIButton(){
   if(btn){
     // Move to body if not already there
     if(btn.parentElement!==document.body) document.body.appendChild(btn);
-    btn.style.cssText='position:fixed!important;bottom:88px!important;right:18px!important;z-index:10000!important;width:52px!important;height:52px!important;border-radius:50%!important;background:#4338CA!important;border:none!important;cursor:pointer!important;display:flex!important;align-items:center!important;justify-content:center!important;box-shadow:0 4px 20px rgba(67,56,202,.5)!important;';
+    btn.style.cssText='position:fixed!important;bottom:88px!important;right:18px!important;z-index:10000!important;width:52px!important;height:52px!important;border-radius:50%!important;background:#2563EB!important;border:none!important;cursor:pointer!important;display:flex!important;align-items:center!important;justify-content:center!important;box-shadow:0 4px 20px rgba(37,99,235,.5)!important;';
     btn._aiListenerAdded=false;
   }
   if(panel){
@@ -5999,14 +5999,14 @@ function openBankPicker(){
   const optionsHtml=BANK_DATA.map(b=>{
     const initials=b.name.split(' ').slice(0,2).map(w=>w[0]).join('');
     const logoUrl=BANK_CDN+b.code+'.png';
-    return `<div data-bank="${b.name}" style="display:flex;align-items:center;gap:14px;padding:13px 20px;cursor:pointer;border-bottom:1px solid var(--border);${b.name===cur?'background:rgba(59,130,246,.1);':''}" onclick="pickBank('${b.name.replace(/'/g,"\'")}')">
+    return `<div data-bank="${b.name}" style="display:flex;align-items:center;gap:14px;padding:13px 20px;cursor:pointer;border-bottom:1px solid var(--border);${b.name===cur?'background:rgba(37,99,235,.1);':''}" onclick="pickBank('${b.name.replace(/'/g,"\'")}')">
       <img src="${logoUrl}" style="width:36px;height:36px;border-radius:10px;object-fit:contain;background:#fff;padding:3px;box-shadow:0 1px 6px rgba(0,0,0,.1);flex-shrink:0;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
       <div style="display:none;width:36px;height:36px;border-radius:10px;background:${b.color};align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:12px;flex-shrink:0;">${initials}</div>
       <span style="font-family:'Inter',sans-serif;font-size:14.5px;font-weight:500;color:var(--text);flex:1;">${b.name}</span>
-      ${b.name===cur?'<span style="color:#3B82F6;">\u2713</span>':''}
+      ${b.name===cur?'<span style="color:#2563EB;">\u2713</span>':''}
     </div>`;
   }).join('');
-  document.getElementById('bankPickerOptions').innerHTML=`<div style="padding:12px 16px 8px;position:sticky;top:0;background:var(--bg);z-index:2;border-bottom:1px solid var(--border);"><input id="bankSearchInput" placeholder="Search bank..." oninput="filterBanks(this.value)" style="width:100%;background:var(--surface);border:1px solid rgba(67,56,202,.25);border-radius:12px;padding:11px 14px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;"></div><div id="bankOptionsList">${optionsHtml}</div>`;
+  document.getElementById('bankPickerOptions').innerHTML=`<div style="padding:12px 16px 8px;position:sticky;top:0;background:var(--bg);z-index:2;border-bottom:1px solid var(--border);"><input id="bankSearchInput" placeholder="Search bank..." oninput="filterBanks(this.value)" style="width:100%;background:var(--surface);border:1px solid rgba(37,99,235,.25);border-radius:12px;padding:11px 14px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;box-sizing:border-box;"></div><div id="bankOptionsList">${optionsHtml}</div>`;
   // Move picker to body to escape overflow clipping
   var overlay=document.getElementById('bankPickerOverlay');
   var sheet=document.getElementById('bankPickerSheet');
@@ -6172,8 +6172,8 @@ function renderAgentMsgs(){
   if(!el)return;
   el.innerHTML=agentMsgs.map(m=>`
     <div style="display:flex;flex-direction:column;align-items:${m.role==='user'?'flex-end':'flex-start'};">
-      <div style="max-width:85%;padding:11px 15px;border-radius:${m.role==='user'?'14px 14px 3px 14px':'14px 14px 14px 3px'};background:${m.role==='user'?'#4338CA':'var(--card)'};border:${m.role==='user'?'none':'1px solid var(--border)'};color:var(--text);font-size:14px;font-weight:500;line-height:1.65;letter-spacing:.01em;">${m.content}</div>
-      ${m.action?`<button onclick='executeAgentAction(${JSON.stringify(m.action)})' style="margin-top:6px;padding:7px 14px;border-radius:10px;background:#4338CA;border:none;color:#EEF2FF;font-size:13px;font-weight:700;cursor:pointer;">⚡ ${m.action.action.toUpperCase()} ${m.action.amount||''} ${m.action.token||''}</button>`:''}
+      <div style="max-width:85%;padding:11px 15px;border-radius:${m.role==='user'?'14px 14px 3px 14px':'14px 14px 14px 3px'};background:${m.role==='user'?'#2563EB':'var(--card)'};border:${m.role==='user'?'none':'1px solid var(--border)'};color:var(--text);font-size:14px;font-weight:500;line-height:1.65;letter-spacing:.01em;">${m.content}</div>
+      ${m.action?`<button onclick='executeAgentAction(${JSON.stringify(m.action)})' style="margin-top:6px;padding:7px 14px;border-radius:10px;background:#2563EB;border:none;color:#EEF2FF;font-size:13px;font-weight:700;cursor:pointer;">⚡ ${m.action.action.toUpperCase()} ${m.action.amount||''} ${m.action.token||''}</button>`:''}
     </div>
   `).join('');
 }
@@ -6193,7 +6193,7 @@ function renderAgentChips(){
   if(nanOrders.length>0) chips.push("Cancel all orders");
   chips.push("How does earn work?");
   const chipsEl=document.getElementById('agentChips');
-  chipsEl.innerHTML=chips.slice(0,6).map(c=>`<button data-msg="${c.replace(/"/g,'&quot;')}" style="font-size:13px;font-weight:600;color:var(--accent3);background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);border-radius:20px;padding:6px 13px;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;">${c}</button>`).join('');
+  chipsEl.innerHTML=chips.slice(0,6).map(c=>`<button data-msg="${c.replace(/"/g,'&quot;')}" style="font-size:13px;font-weight:600;color:var(--accent3);background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.2);border-radius:20px;padding:6px 13px;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;">${c}</button>`).join('');
   chipsEl.querySelectorAll('button').forEach(btn=>btn.addEventListener('click',()=>sendAgentMsg(btn.dataset.msg)));
 }
 function scrollAgentBottom(){const el=document.getElementById('agentMessages');setTimeout(()=>{el.scrollTop=el.scrollHeight;},50);}
@@ -6783,7 +6783,7 @@ function executeAgentAction(action){
           btns.style.cssText = 'display:flex;gap:8px;margin-top:10px;';
           var confirmBtn = document.createElement('button');
           confirmBtn.textContent = '\u2713 Confirm';
-          confirmBtn.style.cssText = 'padding:8px 18px;border-radius:10px;background:#4338CA;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
+          confirmBtn.style.cssText = 'padding:8px 18px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
           confirmBtn.onclick = function(){
             btns.remove();
             var p = window._pendingA2A;
@@ -6975,11 +6975,11 @@ function executeAgentAction(action){
               btns.style.cssText='display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;';
               const copyBtn = document.createElement('button');
               copyBtn.textContent='📋 Copy Link';
-              copyBtn.style.cssText='padding:7px 14px;border-radius:10px;background:#4338CA;border:none;color:#fff;font-size:.82rem;font-weight:700;cursor:pointer;';
+              copyBtn.style.cssText='padding:7px 14px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.82rem;font-weight:700;cursor:pointer;';
               copyBtn.onclick=()=>{ navigator.clipboard.writeText(link).then(()=>{copyBtn.textContent='✓ Copied!';setTimeout(()=>copyBtn.textContent='📋 Copy Link',2000);}); };
               const viewBtn = document.createElement('button');
               viewBtn.textContent='👁 View';
-              viewBtn.style.cssText='padding:7px 14px;border-radius:10px;background:rgba(67,56,202,.1);border:1px solid rgba(67,56,202,.3);color:#4338CA;font-size:.82rem;font-weight:700;cursor:pointer;';
+              viewBtn.style.cssText='padding:7px 14px;border-radius:10px;background:rgba(37,99,235,.1);border:1px solid rgba(37,99,235,.3);color:#2563EB;font-size:.82rem;font-weight:700;cursor:pointer;';
               viewBtn.onclick=()=>{ try{viewPaymentRequest(pr.id);}catch(e){goPage('payreq');} };
               btns.appendChild(copyBtn); btns.appendChild(viewBtn);
               last.appendChild(btns);
@@ -7076,7 +7076,7 @@ function executeAgentAction(action){
           btns.style.cssText='display:flex;gap:8px;margin-top:10px;';
           const confirmBtn = document.createElement('button');
           confirmBtn.textContent='✓ Open Send Page';
-          confirmBtn.style.cssText='padding:8px 18px;border-radius:10px;background:#4338CA;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
+          confirmBtn.style.cssText='padding:8px 18px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
           confirmBtn.onclick=()=>{ btns.remove(); goPage('send'); setTimeout(()=>{ document.getElementById('recipInput').value=to; document.getElementById('amtInput').value=amount||''; sendToken=token; document.getElementById('sendTokenLabel').textContent=token; validateSend(); },200); };
           const cancelBtn = document.createElement('button');
           cancelBtn.textContent='Cancel';
@@ -7108,7 +7108,7 @@ function executeAgentAction(action){
         btns.style.cssText='display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;';
         const confirmBtn = document.createElement('button');
         confirmBtn.textContent='✓ Swap Now';
-        confirmBtn.style.cssText='padding:8px 18px;border-radius:10px;background:#4338CA;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
+        confirmBtn.style.cssText='padding:8px 18px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
         confirmBtn.onclick = async function(){
           btns.remove();
           addAgentMsg('⏳ Executing swap...');
@@ -7168,7 +7168,7 @@ function executeAgentAction(action){
         btns.style.cssText='display:flex;gap:8px;margin-top:10px;';
         const confirmBtn = document.createElement('button');
         confirmBtn.textContent='✓ Bridge Now';
-        confirmBtn.style.cssText='padding:8px 18px;border-radius:10px;background:#4338CA;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
+        confirmBtn.style.cssText='padding:8px 18px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
         confirmBtn.onclick=()=>{
           btns.remove();
           goPage('bridge');
@@ -7241,7 +7241,7 @@ function executeAgentAction(action){
             btns.style.cssText='display:flex;gap:8px;margin-top:10px;';
             const confirmBtn = document.createElement('button');
             confirmBtn.textContent='✓ Confirm All';
-            confirmBtn.style.cssText='padding:8px 18px;border-radius:10px;background:#4338CA;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
+            confirmBtn.style.cssText='padding:8px 18px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
             confirmBtn.onclick = async function(){
               btns.remove();
               addAgentMsg('🚀 Sending to '+resolved.length+' recipients...');
@@ -7343,7 +7343,7 @@ function executeAgentAction(action){
               btns.style.cssText='display:flex;gap:8px;margin-top:10px;';
               const confirmBtn = document.createElement('button');
               confirmBtn.textContent='✓ Pay Now';
-              confirmBtn.style.cssText='padding:8px 18px;border-radius:10px;background:#4338CA;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
+              confirmBtn.style.cssText='padding:8px 18px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
               confirmBtn.onclick = async function(){
                 btns.remove();
                 addAgentMsg('💳 Processing payment...');
@@ -7361,7 +7361,7 @@ function executeAgentAction(action){
                       if(last){
                         const btn = document.createElement('button');
                         btn.textContent = '🧾 Generate Receipt';
-                        btn.style.cssText = 'margin-top:8px;padding:7px 16px;border-radius:10px;background:rgba(67,56,202,.1);border:1px solid rgba(67,56,202,.3);color:#4338CA;font-size:.82rem;font-weight:700;cursor:pointer;display:block;';
+                        btn.style.cssText = 'margin-top:8px;padding:7px 16px;border-radius:10px;background:rgba(37,99,235,.1);border:1px solid rgba(37,99,235,.3);color:#2563EB;font-size:.82rem;font-weight:700;cursor:pointer;display:block;';
                         btn.onclick = ()=>{ btn.remove(); generateAgentReceipt({type:billType==='airtime'?'Airtime Recharge':billType==='electricity'?'Electricity Bill':billType==='cable'?'Cable TV':billType,description:confirmMsg,amount:action.amount,usdcCost:d.usdcCost,txId:d.txId,token:d.token}); };
                         last.appendChild(btn);
                       }
@@ -7772,7 +7772,7 @@ async function refreshGatewayBalance(){
         const entries=Object.entries(data.balances||{}).filter(([_,v])=>parseFloat(v)>0);
         chains.innerHTML=entries.length===0
           ?'<div style="font-size:.72rem;color:var(--text3);text-align:center;">No Gateway balance yet — bridge USDC to create one</div>'
-          :entries.map(([chain,amount])=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 8px;background:rgba(59,130,246,.06);border-radius:6px;"><span style="font-size:.72rem;color:var(--text2);">${chain.replace(/_/g,' ')}</span><span style="font-size:.72rem;font-weight:600;color:var(--accent3);">${parseFloat(amount).toFixed(2)} USDC</span></div>`).join('');
+          :entries.map(([chain,amount])=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 8px;background:rgba(37,99,235,.06);border-radius:6px;"><span style="font-size:.72rem;color:var(--text2);">${chain.replace(/_/g,' ')}</span><span style="font-size:.72rem;font-weight:600;color:var(--accent3);">${parseFloat(amount).toFixed(2)} USDC</span></div>`).join('');
       }
     }else{
       if(display) display.textContent='—';
@@ -7812,8 +7812,8 @@ async function checkPoolLiquidity(){
       const healthy=poolStats.usdcLiq>=10&&poolStats.eurcLiq>=10;
       poolEl.style.display='flex';
       poolEl.innerHTML=healthy
-        ?'<span style="color:#3B82F6;">● Pool healthy · '+poolStats.usdcLiq.toFixed(0)+' USDC / '+poolStats.eurcLiq.toFixed(0)+' EURC</span>'
-        :'<span style="color:#3B82F6;">⚠ Pool low · swaps may fail</span>';
+        ?'<span style="color:#2563EB;">● Pool healthy · '+poolStats.usdcLiq.toFixed(0)+' USDC / '+poolStats.eurcLiq.toFixed(0)+' EURC</span>'
+        :'<span style="color:#2563EB;">⚠ Pool low · swaps may fail</span>';
     }
     // Auto-seed ONLY if pool is low AND this is the contract owner wallet
     const POOL_OWNER='0x86b2245d0b48bbdc58f08caea971a24ba377c366a';
@@ -8223,14 +8223,14 @@ async function checkArcName(){
   const res=document.getElementById('arcNameResult');
   if(!val){res.style.display='none';return;}
   res.style.display='block';
-  res.style.background='rgba(59,130,246,.06)';res.style.border='1px solid rgba(59,130,246,.2)';res.style.color='var(--text2)';
+  res.style.background='rgba(37,99,235,.06)';res.style.border='1px solid rgba(37,99,235,.2)';res.style.color='var(--text2)';
   res.textContent='Checking...';
   try{
     if(provider){
       const nameContract=new ethers.Contract(NAME_REGISTRY,NAME_ABI,provider);
       const available=await nameContract.isAvailable(val);
       if(available){
-        res.style.background='rgba(67,56,202,.07)';res.style.border='1px solid rgba(67,56,202,.22)';res.style.color='var(--success)';
+        res.style.background='rgba(37,99,235,.07)';res.style.border='1px solid rgba(37,99,235,.22)';res.style.color='var(--success)';
         res.textContent='✓ '+val+'.arc is available!';
       }else{
         const owner=await nameContract.resolve(val);
@@ -8240,8 +8240,8 @@ async function checkArcName(){
     } else {
       // Fallback local check
       const taken=arcNames.find(n=>n.name===val);
-      res.style.background=taken?'rgba(248,113,113,.07)':'rgba(67,56,202,.07)';
-      res.style.border=taken?'1px solid rgba(248,113,113,.22)':'1px solid rgba(67,56,202,.22)';
+      res.style.background=taken?'rgba(248,113,113,.07)':'rgba(37,99,235,.07)';
+      res.style.border=taken?'1px solid rgba(248,113,113,.22)':'1px solid rgba(37,99,235,.22)';
       res.style.color=taken?'var(--danger)':'var(--success)';
       res.textContent=taken?'✗ '+val+'.arc is taken':'✓ '+val+'.arc is available!';
     }
@@ -8342,7 +8342,7 @@ function renderMyArcNames(){
         <div style="font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:600;color:var(--text);">${n.name}.arc</div>
         <div style="font-size:.65rem;color:var(--text3);">Expires ${n.expires}</div>
       </div>
-      <span style="font-size:.65rem;padding:3px 8px;border-radius:4px;background:rgba(67,56,202,.08);color:var(--success);border:1px solid rgba(67,56,202,.2);">Active</span>
+      <span style="font-size:.65rem;padding:3px 8px;border-radius:4px;background:rgba(37,99,235,.08);color:var(--success);border:1px solid rgba(37,99,235,.2);">Active</span>
     </div>
   `).join('');
 }
@@ -8643,7 +8643,7 @@ window.addEventListener('load',()=>{
       otpEmail = _dynEmail;
       document.body.insertAdjacentHTML('beforeend',
         '<div id="dynLoader" style="position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;">'
-        +'<div style="width:44px;height:44px;border:3px solid rgba(67,56,202,.2);border-top-color:#4338CA;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px;"></div>'
+        +'<div style="width:44px;height:44px;border:3px solid rgba(37,99,235,.2);border-top-color:#2563EB;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px;"></div>'
         +'<div style="color:var(--text3);font-size:.85rem;">Setting up wallet…</div>'
         +'</div>');
       fetch('https://nan-production.up.railway.app/api/circle-wallets', {
@@ -8701,7 +8701,7 @@ window.addEventListener('load',()=>{
     // Show loading indicator
     document.body.insertAdjacentHTML('beforeend',
       '<div id="verifiedLoader" style="position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;">'
-      +'<div style="width:44px;height:44px;border:3px solid rgba(67,56,202,.2);border-top-color:#4338CA;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px;"></div>'
+      +'<div style="width:44px;height:44px;border:3px solid rgba(37,99,235,.2);border-top-color:#2563EB;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px;"></div>'
       +'<div style="color:var(--text3);font-size:.85rem;">Setting up your wallet…</div>'
       +'</div>');
     setTimeout(async function(){
@@ -8752,11 +8752,11 @@ window.addEventListener('load',()=>{
     const _txt2 = _isLight ? 'rgba(0,0,0,.72)' : 'rgba(255,255,255,.7)';
     const _txt3 = _isLight ? 'rgba(0,0,0,.45)' : 'rgba(255,255,255,.35)';
     const _btn = _isLight ? 'rgba(0,0,0,.08)' : 'rgba(255,255,255,.12)';
-    const _nanLogoL='<svg width="180" height="44" viewBox="0 0 280 70" fill="none"><g transform="translate(35,35)"><g transform="translate(15,-15) scale(0.0625)"><path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill="#4338CA"/><path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill="#4338CA"/></g><line x1="65" y1="-13" x2="65" y2="13" stroke="#111" stroke-width="5.5" stroke-linecap="round"/><line x1="65" y1="-13" x2="83" y2="13" stroke="#111" stroke-width="5.5" stroke-linecap="round"/><line x1="83" y1="-13" x2="83" y2="13" stroke="#111" stroke-width="5.5" stroke-linecap="round"/><line x1="91" y1="13" x2="100" y2="-13" stroke="#111" stroke-width="5.5" stroke-linecap="round"/><line x1="109" y1="13" x2="100" y2="-13" stroke="#111" stroke-width="5.5" stroke-linecap="round"/><line x1="94" y1="3" x2="106" y2="3" stroke="#111" stroke-width="5.5" stroke-linecap="round"/><line x1="117" y1="-13" x2="117" y2="13" stroke="#111" stroke-width="5.5" stroke-linecap="round"/><line x1="117" y1="-13" x2="135" y2="13" stroke="#111" stroke-width="5.5" stroke-linecap="round"/><line x1="135" y1="-13" x2="135" y2="13" stroke="#111" stroke-width="5.5" stroke-linecap="round"/></g></svg>';
+    const _nanLogoL='<svg width="180" height="44" viewBox="0 0 280 70" fill="none"><g transform="translate(35,35)"><g transform="translate(15,-15) scale(0.0625)"><path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill="#2563EB"/><path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill="#2563EB"/></g><line x1="65" y1="-13" x2="65" y2="13" stroke="#111" stroke-width="5.5" stroke-linecap="round"/><line x1="65" y1="-13" x2="83" y2="13" stroke="#111" stroke-width="5.5" stroke-linecap="round"/><line x1="83" y1="-13" x2="83" y2="13" stroke="#111" stroke-width="5.5" stroke-linecap="round"/><line x1="91" y1="13" x2="100" y2="-13" stroke="#111" stroke-width="5.5" stroke-linecap="round"/><line x1="109" y1="13" x2="100" y2="-13" stroke="#111" stroke-width="5.5" stroke-linecap="round"/><line x1="94" y1="3" x2="106" y2="3" stroke="#111" stroke-width="5.5" stroke-linecap="round"/><line x1="117" y1="-13" x2="117" y2="13" stroke="#111" stroke-width="5.5" stroke-linecap="round"/><line x1="117" y1="-13" x2="135" y2="13" stroke="#111" stroke-width="5.5" stroke-linecap="round"/><line x1="135" y1="-13" x2="135" y2="13" stroke="#111" stroke-width="5.5" stroke-linecap="round"/></g></svg>';
     const _nanLogoD=_nanLogoL.replace(/stroke="#111"/g,'stroke="#fff"');
     const _nanLogo=_isLight?_nanLogoL:_nanLogoD;
     const _goBack='<button onclick="window.location.href=String.fromCharCode(47)" style="background:none;border:1px solid '+_btn+';border-radius:10px;color:'+_txt3+';padding:9px 20px;font-size:.8rem;cursor:pointer;">← Go back</button>';
-    document.body.insertAdjacentHTML('beforeend','<div id="connectLoader" style="position:fixed;inset:0;background:'+_bg+';display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;"><div style="margin-bottom:20px;">'+_nanLogo+'</div><div style="font-size:1rem;font-weight:600;color:'+_txt2+';margin-bottom:6px;">Connecting wallet…</div><div style="font-size:.825rem;color:'+_txt3+';margin-bottom:28px;">Check your wallet for a request</div><div style="display:flex;gap:7px;margin-bottom:32px;"><div style="width:8px;height:8px;border-radius:50%;background:#4338CA;animation:dotBounce 1.2s ease-in-out infinite;"></div><div style="width:8px;height:8px;border-radius:50%;background:#9333ea;animation:dotBounce 1.2s ease-in-out infinite .2s;"></div><div style="width:8px;height:8px;border-radius:50%;background:#60A5FA;animation:dotBounce 1.2s ease-in-out infinite .4s;"></div></div>'+_goBack+'<style>@keyframes dotBounce{0%,100%{transform:translateY(0);opacity:.3;}50%{transform:translateY(-10px);opacity:1;}}</style></div>');
+    document.body.insertAdjacentHTML('beforeend','<div id="connectLoader" style="position:fixed;inset:0;background:'+_bg+';display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;"><div style="margin-bottom:20px;">'+_nanLogo+'</div><div style="font-size:1rem;font-weight:600;color:'+_txt2+';margin-bottom:6px;">Connecting wallet…</div><div style="font-size:.825rem;color:'+_txt3+';margin-bottom:28px;">Check your wallet for a request</div><div style="display:flex;gap:7px;margin-bottom:32px;"><div style="width:8px;height:8px;border-radius:50%;background:#2563EB;animation:dotBounce 1.2s ease-in-out infinite;"></div><div style="width:8px;height:8px;border-radius:50%;background:#9333ea;animation:dotBounce 1.2s ease-in-out infinite .2s;"></div><div style="width:8px;height:8px;border-radius:50%;background:#60A5FA;animation:dotBounce 1.2s ease-in-out infinite .4s;"></div></div>'+_goBack+'<style>@keyframes dotBounce{0%,100%{transform:translateY(0);opacity:.3;}50%{transform:translateY(-10px);opacity:1;}}</style></div>');
       (async function(){try{
         if(typeof connectSpecific==='function') await connectSpecific(_ct);
         var l=document.getElementById('connectLoader'); if(l)l.remove();
@@ -8889,9 +8889,9 @@ function setPRToken(token,el){
     b.style.border='1.5px solid rgba(255,255,255,.08)';
     b.style.color='rgba(255,255,255,.4)';
   });
-  el.style.background='rgba(67,56,202,.12)';
-  el.style.border='1.5px solid rgba(67,56,202,.4)';
-  el.style.color='#3B82F6';
+  el.style.background='rgba(37,99,235,.12)';
+  el.style.border='1.5px solid rgba(37,99,235,.4)';
+  el.style.color='#2563EB';
   document.getElementById('prTokenLabel').textContent=token;
   updatePRPreview();
 }
@@ -9045,7 +9045,7 @@ async function _loadPRUnifiedBalance(){
         if(emptyEl)emptyEl.style.display='block';
       }else{
         chainsEl.innerHTML=entries.map(([chain,amount])=>`
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:rgba(67,56,202,.05);border:1px solid rgba(67,56,202,.12);border-radius:9px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:rgba(37,99,235,.05);border:1px solid rgba(37,99,235,.12);border-radius:9px;">
             <span style="font-size:.78rem;color:var(--text2);">${chain.replace(/_/g,' ')}</span>
             <span style="font-size:.78rem;font-weight:700;color:var(--accent3);">${parseFloat(amount).toFixed(2)} USDC</span>
           </div>`).join('');
@@ -9077,7 +9077,7 @@ function renderPaymentRequests(){
   if(elPaidMonth)elPaidMonth.textContent=paidThisMonth.toFixed(2);
   if(elRev)elRev.textContent=totalRevenue.toFixed(2);
   if(!paymentRequests.length){
-    list.innerHTML='<div style="text-align:center;padding:32px 16px;"><div style="font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:5px;">No requests yet</div><div style="font-size:.78rem;color:var(--text3);margin-bottom:16px;">Create one to start getting paid</div><button onclick="goPage(\'payreq-new\')" style="background:#4338CA;border:none;border-radius:10px;color:#EEF2FF;font-family:\'Inter\',sans-serif;font-weight:700;font-size:.82rem;padding:10px 20px;cursor:pointer;">+ Create First Request</button></div>';
+    list.innerHTML='<div style="text-align:center;padding:32px 16px;"><div style="font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:5px;">No requests yet</div><div style="font-size:.78rem;color:var(--text3);margin-bottom:16px;">Create one to start getting paid</div><button onclick="goPage(\'payreq-new\')" style="background:#2563EB;border:none;border-radius:10px;color:#EEF2FF;font-family:\'Inter\',sans-serif;font-weight:700;font-size:.82rem;padding:10px 20px;cursor:pointer;">+ Create First Request</button></div>';
     return;
   }
   list.innerHTML=paymentRequests.map(pr=>{
@@ -9086,7 +9086,7 @@ function renderPaymentRequests(){
     const statusColor=status==='paid'?'var(--success)':status==='expired'?'var(--warning)':'var(--accent3)';
     const statusLabel=status==='paid'?'Paid':status==='expired'?'Expired':'Pending';
     const amtText=pr.amount?parseFloat(pr.amount).toFixed(2)+' '+pr.token:'Open, '+pr.token;
-    return `<div onclick="viewPaymentRequest('${pr.id}')" style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--border);cursor:pointer;" onmouseover="this.style.background='rgba(59,130,246,.04)'" onmouseout="this.style.background=''"><div style="display:flex;align-items:center;gap:10px;"><div style="width:36px;height:36px;border-radius:10px;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4338CA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg></div><div><div style="font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:2px;">${pr.label}</div><div style="font-size:.72rem;color:var(--text3);">${new Date(pr.createdAt).toLocaleDateString()}</div></div></div><div style="text-align:right;"><div style="font-size:.88rem;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace;">${amtText}</div><div style="font-size:.68rem;font-weight:600;color:${statusColor};">${statusLabel}</div></div></div>`;
+    return `<div onclick="viewPaymentRequest('${pr.id}')" style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--border);cursor:pointer;" onmouseover="this.style.background='rgba(37,99,235,.04)'" onmouseout="this.style.background=''"><div style="display:flex;align-items:center;gap:10px;"><div style="width:36px;height:36px;border-radius:10px;background:rgba(37,99,235,.1);border:1px solid rgba(37,99,235,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg></div><div><div style="font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:2px;">${pr.label}</div><div style="font-size:.72rem;color:var(--text3);">${new Date(pr.createdAt).toLocaleDateString()}</div></div></div><div style="text-align:right;"><div style="font-size:.88rem;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace;">${amtText}</div><div style="font-size:.68rem;font-weight:600;color:${statusColor};">${statusLabel}</div></div></div>`;
   }).join('');
 }
 
@@ -9098,11 +9098,11 @@ function prSwitchDashTab(tab){
   const analyticsBtn = document.getElementById('prTabAnalytics');
   if (tab === 'activity') {
     activityPane.style.display = 'block'; analyticsPane.style.display = 'none';
-    activityBtn.style.background = 'linear-gradient(135deg,#4338CA,#3B82F6)'; activityBtn.style.color = '#fff';
+    activityBtn.style.background = 'linear-gradient(135deg,#2563EB,#2563EB)'; activityBtn.style.color = '#fff';
     analyticsBtn.style.background = 'transparent'; analyticsBtn.style.color = 'var(--text2)';
   } else {
     activityPane.style.display = 'none'; analyticsPane.style.display = 'block';
-    analyticsBtn.style.background = 'linear-gradient(135deg,#4338CA,#3B82F6)'; analyticsBtn.style.color = '#fff';
+    analyticsBtn.style.background = 'linear-gradient(135deg,#2563EB,#2563EB)'; analyticsBtn.style.color = '#fff';
     activityBtn.style.background = 'transparent'; activityBtn.style.color = 'var(--text2)';
     renderPRAnalytics();
   }
@@ -9195,9 +9195,9 @@ function downloadInvoiceReceipt(pr){
   canvas.width = 600; canvas.height = 420;
   const ctx = canvas.getContext('2d');
   ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,600,420);
-  ctx.strokeStyle = 'rgba(67,56,202,.3)'; ctx.lineWidth = 1.5;
+  ctx.strokeStyle = 'rgba(37,99,235,.3)'; ctx.lineWidth = 1.5;
   ctx.strokeRect(10,10,580,400);
-  ctx.fillStyle = '#4338CA'; ctx.font = 'bold 22px sans-serif';
+  ctx.fillStyle = '#2563EB'; ctx.font = 'bold 22px sans-serif';
   ctx.textAlign = 'left'; ctx.fillText(pr.businessName || 'Invoice', 30, 50);
   ctx.fillStyle = '#6B7280'; ctx.font = '12px sans-serif';
   ctx.fillText('Billed to, ' + pr.customerName, 30, 74);
@@ -9210,7 +9210,7 @@ function downloadInvoiceReceipt(pr){
   ctx.fillText(String(pr.qty), 380, 162);
   ctx.fillText(pr.unitPrice.toFixed(2) + ' ' + pr.token, 460, 162);
   ctx.strokeStyle = '#E5E7EB'; ctx.beginPath(); ctx.moveTo(30,190); ctx.lineTo(570,190); ctx.stroke();
-  ctx.font = 'bold 18px sans-serif'; ctx.fillStyle = '#4338CA'; ctx.textAlign = 'right';
+  ctx.font = 'bold 18px sans-serif'; ctx.fillStyle = '#2563EB'; ctx.textAlign = 'right';
   ctx.fillText('Total, ' + pr.amount.toFixed(2) + ' ' + pr.token, 570, 224);
   if (pr.dueDate) { ctx.font = '12px sans-serif'; ctx.fillStyle = '#6B7280'; ctx.fillText('Due ' + pr.dueDate, 570, 246); }
   const link = document.createElement('a');
@@ -9556,7 +9556,7 @@ async function loadAdminStats(){
         const recEl=document.getElementById('statRecentWallets');
         const wallets=d.recentWallets||[];
         recEl.innerHTML=wallets.length===0?'<div style="font-size:.75rem;color:#666;">No activity yet</div>':
-          wallets.map(a=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#1a1a1a;border:1px solid #1a1a1a;border-radius:10px;margin-bottom:4px;"><div style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#4338CA;display:inline-block;"></span><span style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:#ccc;">${a.slice(0,8)}…${a.slice(-6)}</span></div><a href="https://testnet.arcscan.app/address/${a}" target="_blank" style="font-size:.6rem;color:#3B82F6;text-decoration:none;">View ↗</a></div>`).join('');
+          wallets.map(a=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#1a1a1a;border:1px solid #1a1a1a;border-radius:10px;margin-bottom:4px;"><div style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#2563EB;display:inline-block;"></span><span style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:#ccc;">${a.slice(0,8)}…${a.slice(-6)}</span></div><a href="https://testnet.arcscan.app/address/${a}" target="_blank" style="font-size:.6rem;color:#2563EB;text-decoration:none;">View ↗</a></div>`).join('');
         document.getElementById('adminLastRefresh').textContent=new Date().toLocaleTimeString()+(d.cached?' (cached)':'');
         loading.style.display='none';
         statsEl.style.display='block';
@@ -9794,7 +9794,7 @@ async function loadAdminStats(){
 
     function renderWalletList(pairs, formatVal){
       if(!pairs.length)return'<div style="font-size:.75rem;color:#666;">No activity yet</div>';
-      return pairs.map(([a,v])=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#1a1a1a;border:1px solid #1a1a1a;border-radius:10px;margin-bottom:4px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:#ccc;">${a.slice(0,8)}…${a.slice(-6)}</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:.65rem;color:#4338CA;font-weight:700;">${formatVal(v)}</span><a href="https://testnet.arcscan.app/address/${a}" target="_blank" style="font-size:.6rem;color:#3B82F6;text-decoration:none;">View ↗</a></div></div>`).join('');
+      return pairs.map(([a,v])=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#1a1a1a;border:1px solid #1a1a1a;border-radius:10px;margin-bottom:4px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:#ccc;">${a.slice(0,8)}…${a.slice(-6)}</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:.65rem;color:#2563EB;font-weight:700;">${formatVal(v)}</span><a href="https://testnet.arcscan.app/address/${a}" target="_blank" style="font-size:.6rem;color:#2563EB;text-decoration:none;">View ↗</a></div></div>`).join('');
     }
 
     const swapEl=document.getElementById('statTopSwap');if(swapEl)swapEl.innerHTML=renderWalletList(topSwap,v=>v+' txns');
@@ -9816,7 +9816,7 @@ async function loadAdminStats(){
     const recEl=document.getElementById('statRecentWallets');
     const top=[...recent.entries()].sort((a,b)=>b[1]-a[1]).slice(0,8);
     recEl.innerHTML=top.length===0?'<div style="font-size:.75rem;color:#666;">No activity yet</div>':
-      top.map(([a])=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#1a1a1a;border:1px solid #1a1a1a;border-radius:10px;margin-bottom:4px;"><div style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#4338CA;display:inline-block;"></span><span style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:#ccc;">${a.slice(0,8)}…${a.slice(-6)}</span></div><a href="https://testnet.arcscan.app/address/${a}" target="_blank" style="font-size:.6rem;color:#3B82F6;text-decoration:none;">View ↗</a></div>`).join('');
+      top.map(([a])=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#1a1a1a;border:1px solid #1a1a1a;border-radius:10px;margin-bottom:4px;"><div style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#2563EB;display:inline-block;"></span><span style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:#ccc;">${a.slice(0,8)}…${a.slice(-6)}</span></div><a href="https://testnet.arcscan.app/address/${a}" target="_blank" style="font-size:.6rem;color:#2563EB;text-decoration:none;">View ↗</a></div>`).join('');
 
     document.getElementById('adminLastRefresh').textContent=new Date().toLocaleTimeString()+' · all-time';
     loading.style.display='none';
@@ -9825,7 +9825,7 @@ async function loadAdminStats(){
 
   }catch(err){
     console.error('Admin error:',err);
-    loading.innerHTML=`<div style="font-size:.78rem;color:#3B82F6;text-align:center;padding:20px;"><div style="margin-bottom:8px;">⚠️ ${err.message}</div><div style="font-size:.7rem;color:#666;margin-bottom:14px;">Make sure you are on nanarc.xyz</div><button onclick="loadAdminStats()" style="background:#1a1a1a;border:1px solid #1a1a1a;border-radius:8px;color:#60A5FA;padding:8px 16px;cursor:pointer;">↻ Retry</button></div>`;
+    loading.innerHTML=`<div style="font-size:.78rem;color:#2563EB;text-align:center;padding:20px;"><div style="margin-bottom:8px;">⚠️ ${err.message}</div><div style="font-size:.7rem;color:#666;margin-bottom:14px;">Make sure you are on nanarc.xyz</div><button onclick="loadAdminStats()" style="background:#1a1a1a;border:1px solid #1a1a1a;border-radius:8px;color:#60A5FA;padding:8px 16px;cursor:pointer;">↻ Retry</button></div>`;
   }
 }
 
@@ -9845,9 +9845,9 @@ async function loadAdminPoolStats(){
     const statusEl=document.getElementById('adminSeedStatus');
     if(statusEl){
       if(u<10||e<10){
-        statusEl.innerHTML='<span style="color:#3B82F6;">⚠️ Swap pool low — MetaMask swaps may fail. Tap Seed Pool.</span>';
+        statusEl.innerHTML='<span style="color:#2563EB;">⚠️ Swap pool low — MetaMask swaps may fail. Tap Seed Pool.</span>';
       } else {
-        statusEl.innerHTML='<span style="color:#4338CA;">✓ Swap pool healthy.</span>';
+        statusEl.innerHTML='<span style="color:#2563EB;">✓ Swap pool healthy.</span>';
       }
     }
 
@@ -9863,18 +9863,18 @@ async function loadAdminPoolStats(){
     const lendEl=document.getElementById('adminLendStats');
     if(lendEl){
       const util=ts>0?((tb/ts)*100).toFixed(1):0;
-      const color=avail<10?'#3B82F6':avail<100?'#3B82F6':'#4338CA';
+      const color=avail<10?'#2563EB':avail<100?'#2563EB':'#2563EB';
       lendEl.innerHTML=`
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px;">
-          <div style="background:rgba(67,56,202,.06);border:1px solid rgba(67,56,202,.18);border-radius:10px;padding:10px;">
+          <div style="background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.18);border-radius:10px;padding:10px;">
             <div style="font-size:.6rem;color:var(--text3);margin-bottom:3px;">TOTAL SUPPLIED</div>
-            <div style="font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:700;color:#4338CA;">${ts.toFixed(2)}</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:700;color:#2563EB;">${ts.toFixed(2)}</div>
           </div>
-          <div style="background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.18);border-radius:10px;padding:10px;">
+          <div style="background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.18);border-radius:10px;padding:10px;">
             <div style="font-size:.6rem;color:var(--text3);margin-bottom:3px;">TOTAL BORROWED</div>
-            <div style="font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:700;color:#3B82F6;">${tb.toFixed(2)}</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:700;color:#2563EB;">${tb.toFixed(2)}</div>
           </div>
-          <div style="background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.18);border-radius:10px;padding:10px;">
+          <div style="background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.18);border-radius:10px;padding:10px;">
             <div style="font-size:.6rem;color:var(--text3);margin-bottom:3px;">AVAILABLE</div>
             <div style="font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:700;color:${color};">${avail.toFixed(2)}</div>
           </div>
@@ -9896,7 +9896,7 @@ async function adminWithdrawPool(){
     const u=parseFloat(ethers.formatUnits(uLiq,6));
     const e=parseFloat(ethers.formatUnits(eLiq,6));
     if(u<=0&&e<=0){toast('Pool is already empty','error',3000);btn.disabled=false;btn.textContent='Withdraw All';return;}
-    if(statusEl)statusEl.innerHTML='<span style="color:#3B82F6;">Withdrawing '+u.toFixed(2)+' USDC + '+e.toFixed(2)+' EURC…</span>';
+    if(statusEl)statusEl.innerHTML='<span style="color:#2563EB;">Withdrawing '+u.toFixed(2)+' USDC + '+e.toFixed(2)+' EURC…</span>';
     const tx=await swapC.withdrawLiquidity(uLiq,eLiq,arcGasOpts());
     await tx.wait(1);
     toast('✓ Withdrew '+u.toFixed(2)+' USDC + '+e.toFixed(2)+' EURC from pool','success',6000);
@@ -9953,15 +9953,15 @@ async function adminGatewayWithdraw(){
 
     if(data.success){
       toast('✓ Withdrew '+amount.toFixed(6)+' USDC to '+dest, 'success', 6000);
-      if(statusEl) statusEl.innerHTML = '<span style="color:#4338CA;">Mint tx: '+data.mintTxHash.slice(0,10)+'…'+data.mintTxHash.slice(-8)+'</span>';
+      if(statusEl) statusEl.innerHTML = '<span style="color:#2563EB;">Mint tx: '+data.mintTxHash.slice(0,10)+'…'+data.mintTxHash.slice(-8)+'</span>';
       document.getElementById('adminWdAmount').value = '';
     } else {
       toast('Withdraw failed: '+(data.error||'Unknown error').slice(0,100), 'error', 6000);
-      if(statusEl) statusEl.innerHTML = '<span style="color:#3B82F6;">'+(data.error||'Unknown error').slice(0,150)+'</span>';
+      if(statusEl) statusEl.innerHTML = '<span style="color:#2563EB;">'+(data.error||'Unknown error').slice(0,150)+'</span>';
     }
   }catch(err){
     toast('Withdraw request failed: '+err.message.slice(0,100), 'error', 6000);
-    if(statusEl) statusEl.innerHTML = '<span style="color:#3B82F6;">Connection error — '+err.message.slice(0,100)+'</span>';
+    if(statusEl) statusEl.innerHTML = '<span style="color:#2563EB;">Connection error — '+err.message.slice(0,100)+'</span>';
   }finally{
     btn.disabled = false;
     btn.textContent = 'Withdraw';
@@ -9975,8 +9975,8 @@ function setAdminLiqToken(token, el) {
   ['both','usdc','eurc'].forEach(t => {
     const btn = document.getElementById('adminLiqOpt'+t.charAt(0).toUpperCase()+t.slice(1));
     if(btn){
-      btn.style.borderColor = t===token ? 'rgba(67,56,202,.5)' : 'var(--border)';
-      btn.style.background  = t===token ? 'rgba(67,56,202,.1)' : 'none';
+      btn.style.borderColor = t===token ? 'rgba(37,99,235,.5)' : 'var(--border)';
+      btn.style.background  = t===token ? 'rgba(37,99,235,.1)' : 'none';
       btn.style.color       = t===token ? 'var(--text)' : 'var(--text2)';
     }
   });
@@ -10047,14 +10047,14 @@ async function adminSeedPool(){
     if(addUsdc) added.push(uInput.toFixed(2)+' USDC');
     if(addEurc) added.push(eInput.toFixed(2)+' EURC');
     toast('✓ Added '+added.join(' + ')+' to pool','success',6000);
-    statusEl.innerHTML='<span style="color:#3B82F6;">✓ Added '+added.join(' + ')+'</span>';
+    statusEl.innerHTML='<span style="color:#2563EB;">✓ Added '+added.join(' + ')+'</span>';
     // Clear inputs
     if(document.getElementById('adminSeedUSDC')) document.getElementById('adminSeedUSDC').value='';
     if(document.getElementById('adminSeedEURC')) document.getElementById('adminSeedEURC').value='';
     await loadAdminPoolStats();
   }catch(err){
     toast('Failed: '+err.message.slice(0,100),'error',6000);
-    statusEl.innerHTML='<span style="color:#3B82F6;">'+err.message.slice(0,80)+'</span>';
+    statusEl.innerHTML='<span style="color:#2563EB;">'+err.message.slice(0,80)+'</span>';
   }finally{
     btn.disabled=false; btn.textContent='＋ Add Liquidity';
   }
@@ -10075,7 +10075,7 @@ function injectMobileWelcome(){
   el.id = 'mobileWelcome';
   el.onclick = () => handleSecretTap();
   el.style.cssText = 'display:none;align-items:center;gap:10px;cursor:pointer;';
-  el.innerHTML = '<div style="width:38px;height:38px;border-radius:10px;background:#4338CA;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;color:#fff;flex-shrink:0;">'+initial+'</div><div><div style="font-size:.72rem;color:var(--text2);line-height:1;margin-bottom:3px;font-weight:500;">Welcome back</div><div id="mobileWelcomeName" style="font-size:1rem;font-weight:700;color:var(--text);line-height:1.2;">'+name+'</div></div>';
+  el.innerHTML = '<div style="width:38px;height:38px;border-radius:10px;background:#2563EB;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;color:#fff;flex-shrink:0;">'+initial+'</div><div><div style="font-size:.72rem;color:var(--text2);line-height:1;margin-bottom:3px;font-weight:500;">Welcome back</div><div id="mobileWelcomeName" style="font-size:1rem;font-weight:700;color:var(--text);line-height:1.2;">'+name+'</div></div>';
   const tapZone = document.getElementById('secretTapZone');
   if(tapZone) brand.insertBefore(el, tapZone);
   else brand.prepend(el);
@@ -10478,7 +10478,7 @@ function renderQRStyled(elementId, text) {
       correctLevel: QRCode.CorrectLevel.M,
     });
     // Add purple ring via CSS class
-    el.style.cssText = 'padding:12px;background:#fff;border-radius:20px;box-shadow:0 8px 32px rgba(67,56,202,.2),0 0 0 1px rgba(67,56,202,.15);display:inline-block;';
+    el.style.cssText = 'padding:12px;background:#fff;border-radius:20px;box-shadow:0 8px 32px rgba(37,99,235,.2),0 0 0 1px rgba(37,99,235,.15);display:inline-block;';
   } catch(e) {
     console.log('[QR]', e.message);
   }
@@ -10763,18 +10763,18 @@ function generateAgentReceipt(details){
 
   // Purple glow top
   const glow = ctx.createRadialGradient(W/2,0,0,W/2,0,200);
-  glow.addColorStop(0,'rgba(67,56,202,0.3)'); glow.addColorStop(1,'transparent');
+  glow.addColorStop(0,'rgba(37,99,235,0.3)'); glow.addColorStop(1,'transparent');
   ctx.fillStyle = glow; ctx.fillRect(0,0,W,200);
 
   // Border
-  ctx.strokeStyle='rgba(67,56,202,0.4)'; ctx.lineWidth=1.5;
+  ctx.strokeStyle='rgba(37,99,235,0.4)'; ctx.lineWidth=1.5;
   ctx.beginPath(); ctx.roundRect(10,10,W-20,H-20,16); ctx.stroke();
 
   // Logo N
   ctx.save();
   ctx.translate(193.8,28);
   ctx.scale(0.1,0.1);
-  ctx.fillStyle='#4338CA';
+  ctx.fillStyle='#2563EB';
   ctx.fill(new Path2D('M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z'));
   ctx.fill(new Path2D('M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z'));
   ctx.restore();
@@ -10786,7 +10786,7 @@ function generateAgentReceipt(details){
   ctx.fillText('TRANSACTION RECEIPT',W/2,120);
 
   // Divider
-  ctx.strokeStyle='rgba(67,56,202,0.3)'; ctx.lineWidth=1;
+  ctx.strokeStyle='rgba(37,99,235,0.3)'; ctx.lineWidth=1;
   ctx.beginPath(); ctx.moveTo(30,134); ctx.lineTo(W-30,134); ctx.stroke();
 
   // Receipt rows
@@ -10827,13 +10827,13 @@ function generateAgentReceipt(details){
 
   // Bottom divider
   y += 4;
-  ctx.strokeStyle='rgba(67,56,202,0.3)'; ctx.lineWidth=1;
+  ctx.strokeStyle='rgba(37,99,235,0.3)'; ctx.lineWidth=1;
   ctx.beginPath(); ctx.moveTo(30,y); ctx.lineTo(W-30,y); ctx.stroke();
 
   // Footer
   ctx.fillStyle='rgba(196,181,253,0.5)'; ctx.font='11px Inter,sans-serif'; ctx.textAlign='center';
   ctx.fillText('nanarc.xyz · Powered by Circle & Arc Network', W/2, y+18);
-  ctx.fillStyle='rgba(67,56,202,0.6)'; ctx.font='10px Inter,sans-serif';
+  ctx.fillStyle='rgba(37,99,235,0.6)'; ctx.font='10px Inter,sans-serif';
   ctx.fillText('This receipt was generated automatically by NAN AI', W/2, y+34);
 
   // Convert to image and show in chat
@@ -10846,7 +10846,7 @@ function generateAgentReceipt(details){
     msgDiv.style.cssText='display:flex;flex-direction:column;align-items:flex-start;gap:8px;';
     const img = document.createElement('img');
     img.src = dataUrl;
-    img.style.cssText='width:100%;max-width:380px;border-radius:14px;border:1px solid rgba(67,56,202,0.3);box-shadow:0 4px 20px rgba(67,56,202,0.2);';
+    img.style.cssText='width:100%;max-width:380px;border-radius:14px;border:1px solid rgba(37,99,235,0.3);box-shadow:0 4px 20px rgba(37,99,235,0.2);';
     img.alt='Transaction Receipt';
     msgDiv.appendChild(img);
 
@@ -10857,12 +10857,12 @@ function generateAgentReceipt(details){
     const dlBtn = document.createElement('a');
     dlBtn.href=dataUrl; dlBtn.download=`nan-receipt-${Date.now()}.png`;
     dlBtn.textContent='⬇ Download';
-    dlBtn.style.cssText='padding:7px 14px;border-radius:10px;background:#4338CA;color:#fff;font-size:.82rem;font-weight:700;cursor:pointer;text-decoration:none;';
+    dlBtn.style.cssText='padding:7px 14px;border-radius:10px;background:#2563EB;color:#fff;font-size:.82rem;font-weight:700;cursor:pointer;text-decoration:none;';
     btns.appendChild(dlBtn);
 
     const shareBtn = document.createElement('button');
     shareBtn.textContent='📤 Share';
-    shareBtn.style.cssText='padding:7px 14px;border-radius:10px;background:rgba(67,56,202,.1);border:1px solid rgba(67,56,202,.3);color:#4338CA;font-size:.82rem;font-weight:700;cursor:pointer;';
+    shareBtn.style.cssText='padding:7px 14px;border-radius:10px;background:rgba(37,99,235,.1);border:1px solid rgba(37,99,235,.3);color:#2563EB;font-size:.82rem;font-weight:700;cursor:pointer;';
     shareBtn.onclick=async()=>{
       try{
         const blob = await(await fetch(dataUrl)).blob();
@@ -11040,10 +11040,10 @@ function showAgentReconnectPrompt(){
   if(existing) return;
   const banner = document.createElement('div');
   banner.id = 'agentReconnectBanner';
-  banner.style.cssText = 'background:rgba(67,56,202,.12);border:1px solid rgba(67,56,202,.3);border-radius:10px;padding:10px 14px;margin:8px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px;';
+  banner.style.cssText = 'background:rgba(37,99,235,.12);border:1px solid rgba(37,99,235,.3);border-radius:10px;padding:10px 14px;margin:8px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px;';
   banner.innerHTML = `
     <span style="font-size:.8rem;color:var(--text2);">⚡ Agent session expired</span>
-    <button onclick="reconnectAgentFromBanner()" style="padding:6px 14px;border-radius:8px;background:#4338CA;border:none;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;">Reconnect</button>
+    <button onclick="reconnectAgentFromBanner()" style="padding:6px 14px;border-radius:8px;background:#2563EB;border:none;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;">Reconnect</button>
   `;
   // Insert at top of agent messages
   const msgs = document.getElementById('agentMessages');
@@ -11157,8 +11157,8 @@ function agentPageRefresh() {
 
   if (connected) {
     if (status) status.textContent = 'Connected \u00b7 Arc Testnet';
-    if (badge)  { badge.textContent = 'Active'; badge.style.cssText = 'font-size:.72rem;padding:3px 9px;border-radius:100px;background:rgba(67,56,202,.12);border:1px solid rgba(67,56,202,.3);color:#4ade80;font-weight:600;'; }
-    if (addr)   addr.innerHTML = '<span style="color:var(--text2);font-family:monospace;">Agent Wallet: ' + agentWalletAddr.slice(0,6)+'...'+agentWalletAddr.slice(-4) + '</span><button onclick="navigator.clipboard.writeText(\''+agentWalletAddr+'\').then(()=>{this.textContent=\'✓\';setTimeout(()=>this.textContent=\'Copy\',1500)})" style="padding:2px 8px;border-radius:6px;background:rgba(67,56,202,.1);border:1px solid rgba(67,56,202,.2);color:#4338CA;font-size:.7rem;font-weight:600;cursor:pointer;">Copy</button>';
+    if (badge)  { badge.textContent = 'Active'; badge.style.cssText = 'font-size:.72rem;padding:3px 9px;border-radius:100px;background:rgba(37,99,235,.12);border:1px solid rgba(37,99,235,.3);color:#4ade80;font-weight:600;'; }
+    if (addr)   addr.innerHTML = '<span style="color:var(--text2);font-family:monospace;">Agent Wallet: ' + agentWalletAddr.slice(0,6)+'...'+agentWalletAddr.slice(-4) + '</span><button onclick="navigator.clipboard.writeText(\''+agentWalletAddr+'\').then(()=>{this.textContent=\'✓\';setTimeout(()=>this.textContent=\'Copy\',1500)})" style="padding:2px 8px;border-radius:6px;background:rgba(37,99,235,.1);border:1px solid rgba(37,99,235,.2);color:#2563EB;font-size:.7rem;font-weight:600;cursor:pointer;">Copy</button>';
     const dot = document.getElementById('aiBtnDot');
     const dotD = document.getElementById('aiBtnDesktopDot');
     if(dot) dot.style.display='block';
@@ -11428,7 +11428,7 @@ async function agentConfirmedSend(to, amount, token) {
           if(last){
             const btn = document.createElement('button');
             btn.textContent = '🧾 Generate Receipt';
-            btn.style.cssText = 'margin-top:8px;padding:7px 16px;border-radius:10px;background:rgba(67,56,202,.1);border:1px solid rgba(67,56,202,.3);color:#4338CA;font-size:.82rem;font-weight:700;cursor:pointer;display:block;';
+            btn.style.cssText = 'margin-top:8px;padding:7px 16px;border-radius:10px;background:rgba(37,99,235,.1);border:1px solid rgba(37,99,235,.3);color:#2563EB;font-size:.82rem;font-weight:700;cursor:pointer;display:block;';
             btn.onclick = ()=>{ btn.remove(); generateAgentReceipt({type:'Agent Send',description:`Sent ${amount} ${token||'USDC'} to ${to.slice(0,10)}...`,usdcCost:amount,txId:d.txId||d.txHash||d.transactionId}); };
             last.appendChild(btn);
           }
@@ -11456,7 +11456,7 @@ async function agentConfirmedSend(to, amount, token) {
         if(last){
           const btn = document.createElement('button');
           btn.textContent = '🧾 Generate Receipt';
-          btn.style.cssText = 'margin-top:8px;padding:7px 16px;border-radius:10px;background:rgba(67,56,202,.1);border:1px solid rgba(67,56,202,.3);color:#4338CA;font-size:.82rem;font-weight:700;cursor:pointer;display:block;';
+          btn.style.cssText = 'margin-top:8px;padding:7px 16px;border-radius:10px;background:rgba(37,99,235,.1);border:1px solid rgba(37,99,235,.3);color:#2563EB;font-size:.82rem;font-weight:700;cursor:pointer;display:block;';
           btn.onclick = ()=>{ btn.remove(); generateAgentReceipt({type:'Agent Send',description:`Sent ${amount} ${token||'USDC'} to ${to.slice(0,10)}...`,usdcCost:amount,txId:d.txHash||d.transactionId}); };
           last.appendChild(btn);
         }
@@ -11502,13 +11502,13 @@ function agentSend() {
   if (document.getElementById(id)) { document.getElementById(id).remove(); return; }
   const el = document.createElement('div');
   el.id = id;
-  el.style.cssText = 'background:var(--surface);border:1px solid rgba(67,56,202,.25);border-radius:14px;padding:14px;margin-bottom:12px;';
+  el.style.cssText = 'background:var(--surface);border:1px solid rgba(37,99,235,.25);border-radius:14px;padding:14px;margin-bottom:12px;';
   el.innerHTML = '<div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:10px;">Send from Agent Wallet</div>'
     + '<input id="agentSendTo" placeholder="Recipient address or .arc name" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:.85rem;font-family:Inter,sans-serif;box-sizing:border-box;margin-bottom:8px;"/>'
     + '<input id="agentSendAmt" placeholder="Amount (USDC)" type="number" min="0" step="any" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:.85rem;font-family:Inter,sans-serif;box-sizing:border-box;margin-bottom:8px;"/>'
     + '<select id="agentSendToken" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:.85rem;margin-bottom:10px;box-sizing:border-box;"><option>USDC</option><option>EURC</option></select>'
     + '<div style="display:flex;gap:8px;">'
-    + '<button onclick="(function(){var to=document.getElementById(\'agentSendTo\').value.trim();var amt=document.getElementById(\'agentSendAmt\').value;var tok=document.getElementById(\'agentSendToken\').value;if(!to){agentShowResult(\'Enter recipient\');return;}if(!amt||isNaN(amt)||parseFloat(amt)<=0){agentShowResult(\'Enter valid amount\');return;}document.getElementById(\'agentPanelSend\').remove();agentConfirmedSend(to,parseFloat(amt),tok);})()" style="flex:1;padding:11px;border-radius:10px;background:#4338CA;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;">Send</button>'
+    + '<button onclick="(function(){var to=document.getElementById(\'agentSendTo\').value.trim();var amt=document.getElementById(\'agentSendAmt\').value;var tok=document.getElementById(\'agentSendToken\').value;if(!to){agentShowResult(\'Enter recipient\');return;}if(!amt||isNaN(amt)||parseFloat(amt)<=0){agentShowResult(\'Enter valid amount\');return;}document.getElementById(\'agentPanelSend\').remove();agentConfirmedSend(to,parseFloat(amt),tok);})()" style="flex:1;padding:11px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;">Send</button>'
     + '<button onclick="document.getElementById(\'agentPanelSend\').remove()" style="padding:11px 16px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;">Cancel</button>'
     + '</div>';
   const grid = document.querySelector('[onclick="agentFund()"]')?.closest('[style*="grid-template-columns"]');
@@ -11523,7 +11523,7 @@ async function agentHistory() {
   if (document.getElementById(id)) { document.getElementById(id).remove(); return; }
   const el = document.createElement('div');
   el.id = id;
-  el.style.cssText = 'background:var(--surface);border:1px solid rgba(67,56,202,.25);border-radius:14px;padding:14px;margin-bottom:12px;';
+  el.style.cssText = 'background:var(--surface);border:1px solid rgba(37,99,235,.25);border-radius:14px;padding:14px;margin-bottom:12px;';
   el.innerHTML = `<div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:10px;">Recent Transactions</div><div id="agentHistoryList" style="font-size:.82rem;color:var(--text3);line-height:1.8;">Loading...</div><button onclick="document.getElementById('agentPanelHistory').remove()" style="margin-top:10px;width:100%;padding:11px 16px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;">Close</button>`;
   const grid = document.querySelector('[onclick="agentFund()"]')?.closest('[style*="grid-template-columns"]');
   if (grid) grid.parentElement.insertBefore(el, grid);
@@ -11533,7 +11533,7 @@ async function agentHistory() {
     const listEl = document.getElementById('agentHistoryList');
     if (!listEl) return;
     if (d.transactions?.length) {
-      listEl.innerHTML = d.transactions.slice(0, 10).map(t => `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);"><div><span style="font-size:.78rem;font-weight:700;color:var(--text);text-transform:capitalize;">${t.type||'tx'}</span><span style="font-size:.75rem;color:var(--text3);margin-left:6px;">${(t.createDate||t.ts||'').slice(0,10)}</span></div><span style="font-size:.82rem;font-weight:700;color:#4338CA;">${t.amount||''} ${t.token||'USDC'}</span></div>`).join('');
+      listEl.innerHTML = d.transactions.slice(0, 10).map(t => `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);"><div><span style="font-size:.78rem;font-weight:700;color:var(--text);text-transform:capitalize;">${t.type||'tx'}</span><span style="font-size:.75rem;color:var(--text3);margin-left:6px;">${(t.createDate||t.ts||'').slice(0,10)}</span></div><span style="font-size:.82rem;font-weight:700;color:#2563EB;">${t.amount||''} ${t.token||'USDC'}</span></div>`).join('');
     } else {
       listEl.textContent = 'No transactions yet.';
     }
@@ -11546,7 +11546,7 @@ async function agentSetSpendingLimit() {
   if (document.getElementById(id)) { document.getElementById(id).remove(); return; }
   const el = document.createElement('div');
   el.id = id;
-  el.style.cssText = 'background:var(--surface);border:1px solid rgba(67,56,202,.25);border-radius:14px;padding:14px;margin-bottom:12px;';
+  el.style.cssText = 'background:var(--surface);border:1px solid rgba(37,99,235,.25);border-radius:14px;padding:14px;margin-bottom:12px;';
 
   // Load existing policy from Railway
   var existingPolicy = null;
@@ -11564,10 +11564,10 @@ async function agentSetSpendingLimit() {
   var dailyVal   = existingPolicy?.daily   ?? 50;
   var weeklyVal  = existingPolicy?.weekly  ?? '';
   var spendInfo  = existingSpend
-    ? '<div style="font-size:.75rem;color:var(--text3);margin-bottom:10px;padding:8px 10px;background:rgba(67,56,202,.06);border-radius:8px;">Today: <b>$'+existingSpend.today.toFixed(2)+'</b> · This week: <b>$'+existingSpend.week.toFixed(2)+'</b></div>'
+    ? '<div style="font-size:.75rem;color:var(--text3);margin-bottom:10px;padding:8px 10px;background:rgba(37,99,235,.06);border-radius:8px;">Today: <b>$'+existingSpend.today.toFixed(2)+'</b> · This week: <b>$'+existingSpend.week.toFixed(2)+'</b></div>'
     : '';
   var policyBadge = existingPolicy
-    ? '<div style="font-size:.73rem;color:#4338CA;margin-bottom:8px;">Active policy: $'+existingPolicy.perTx+' per tx · $'+existingPolicy.daily+'/day'+(existingPolicy.weekly?(' · $'+existingPolicy.weekly+'/wk'):'' )+'</div>'
+    ? '<div style="font-size:.73rem;color:#2563EB;margin-bottom:8px;">Active policy: $'+existingPolicy.perTx+' per tx · $'+existingPolicy.daily+'/day'+(existingPolicy.weekly?(' · $'+existingPolicy.weekly+'/wk'):'' )+'</div>'
     : '<div style="font-size:.73rem;color:var(--text3);margin-bottom:8px;">No policy set — all transfers unlimited</div>';
 
   el.innerHTML = `
@@ -11597,7 +11597,7 @@ async function agentSetSpendingLimit() {
             localStorage.setItem('nan_agent_policy_'+agentWalletAddr,JSON.stringify(d.policy));
           } else { agentShowResult('❌ '+(d.error||'Failed')); }
         }).catch(e=>agentShowResult('❌ '+e.message));
-      })()" style="flex:1;padding:11px;border-radius:10px;background:#4338CA;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;">Set Policy</button>
+      })()" style="flex:1;padding:11px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;">Set Policy</button>
       <button onclick="(function(){
         if(!confirm('Remove all spending limits?')) return;
         document.getElementById('agentPanelLimits').remove();
@@ -11647,7 +11647,7 @@ function agentDiscover() {
   if (document.getElementById(id)) { document.getElementById(id).remove(); return; }
   const el = document.createElement('div');
   el.id = id;
-  el.style.cssText = 'background:var(--surface);border:1px solid rgba(67,56,202,.25);border-radius:14px;padding:14px;margin-bottom:12px;';
+  el.style.cssText = 'background:var(--surface);border:1px solid rgba(37,99,235,.25);border-radius:14px;padding:14px;margin-bottom:12px;';
 
   const nanServicesHtml = NAN_X402_SERVICES.map(s => `
     <div style="display:flex;align-items:center;justify-content:space-between;padding:10px;background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:6px;">
@@ -11658,7 +11658,7 @@ function agentDiscover() {
           <div style="font-size:.72rem;color:var(--text3);">${s.desc}</div>
         </div>
       </div>
-      <button onclick="agentQuickPay('${s.url}','${s.name}')" style="padding:5px 10px;border-radius:8px;background:#4338CA;border:none;color:#fff;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap;">⚡ ${s.price}</button>
+      <button onclick="agentQuickPay('${s.url}','${s.name}')" style="padding:5px 10px;border-radius:8px;background:#2563EB;border:none;color:#fff;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap;">⚡ ${s.price}</button>
     </div>
   `).join('');
 
@@ -11669,7 +11669,7 @@ function agentDiscover() {
     <div style="font-size:.7rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin:10px 0 8px;">Search Circle Marketplace</div>
     <div style="display:flex;gap:8px;margin-bottom:8px;">
       <input id="agentMarketQuery" placeholder="Search (financial, AI...)" style="flex:1;padding:9px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.82rem;box-sizing:border-box;" value="financial"/>
-      <button onclick="agentSearchMarket()" style="padding:9px 14px;border-radius:10px;background:#4338CA;border:none;color:#fff;font-size:.82rem;font-weight:700;cursor:pointer;">Search</button>
+      <button onclick="agentSearchMarket()" style="padding:9px 14px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.82rem;font-weight:700;cursor:pointer;">Search</button>
     </div>
     <div id="agentMarketList" style="font-size:.82rem;max-height:150px;overflow-y:auto;color:var(--text3);"></div>
     <button onclick="document.getElementById('agentPanelMarket').remove()" style="margin-top:10px;width:100%;padding:10px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.82rem;cursor:pointer;">Close</button>
@@ -11718,7 +11718,7 @@ async function agentSearchMarket() {
       }
     }
   } catch(e) {
-    if(list) list.innerHTML = '<span style="color:#4338CA;font-size:.82rem;">Error: ' + e.message + '</span>';
+    if(list) list.innerHTML = '<span style="color:#2563EB;font-size:.82rem;">Error: ' + e.message + '</span>';
   }
 }
 
@@ -11727,9 +11727,9 @@ function agentPayService() {
   if (document.getElementById(id)) { document.getElementById(id).remove(); return; }
   const el = document.createElement('div');
   el.id = id;
-  el.style.cssText = 'background:var(--surface);border:1px solid rgba(67,56,202,.25);border-radius:14px;padding:14px;margin-bottom:12px;';
+  el.style.cssText = 'background:var(--surface);border:1px solid rgba(37,99,235,.25);border-radius:14px;padding:14px;margin-bottom:12px;';
   const NAN_X402 = 'https://nan-production.up.railway.app/api/x402/ngn-rate';
-  el.innerHTML = `<div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:4px;">Pay x402 Service</div><div style="font-size:.72rem;color:var(--text3);margin-bottom:10px;">Pay any x402-compatible API with USDC nanopayments</div><input id="agentPayUrl" placeholder="Service URL (https://...)" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-family:'Inter var','Inter',sans-serif;box-sizing:border-box;margin-bottom:6px;" value="${NAN_X402}"/><div style="font-size:.72rem;color:#4338CA;margin-bottom:8px;padding:6px 10px;background:rgba(67,56,202,.06);border-radius:8px;border:1px solid rgba(67,56,202,.15);">⚡ NAN NGN/USD Rate — $0.001 USDC per call · Arc Testnet</div><div style="display:flex;gap:8px;margin-bottom:10px;"><input id="agentPayAmt" placeholder="Amount" type="number" min="0" step="any" style="flex:1;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-family:'Inter var','Inter',sans-serif;box-sizing:border-box;" value="0.001"/><div style="padding:10px 14px;border-radius:10px;background:rgba(67,56,202,.08);border:1px solid rgba(67,56,202,.2);color:#4338CA;font-size:.82rem;font-weight:700;display:flex;align-items:center;">USDC</div></div><div style="display:flex;gap:8px;"><button onclick="(function(){const url=document.getElementById('agentPayUrl').value.trim();const amt=document.getElementById('agentPayAmt').value;if(!url.startsWith('http')){agentShowResult('Enter a valid URL');return;}document.getElementById('agentPanelPay').remove();agentShowResult('⏳ Paying...');fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'pay-service',address:agentWalletAddr||'0xd83498B62d2ab0650A4Edfc7929c96804aA75F77',url,chain:'ARC-TESTNET',maxAmount:String(amt)})}).then(r=>r.json()).then(d=>{if(d.success&&d.result&&d.result.data){const r=d.result.data;agentShowResult('Paid $'+amt+' USDC | '+r.pair+': '+r.rate+' | Source: '+r.source);}else{agentShowResult(d.success?'✅ Paid!':'❌ '+(d.error||'Payment failed'));}}).catch(e=>agentShowResult('❌ '+e.message));})()" style="flex:1;padding:11px;border-radius:10px;background:#4338CA;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;">Pay Now</button><button onclick="document.getElementById('agentPanelPay').remove()" style="padding:11px 16px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;">Cancel</button></div>`;
+  el.innerHTML = `<div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:4px;">Pay x402 Service</div><div style="font-size:.72rem;color:var(--text3);margin-bottom:10px;">Pay any x402-compatible API with USDC nanopayments</div><input id="agentPayUrl" placeholder="Service URL (https://...)" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-family:'Inter var','Inter',sans-serif;box-sizing:border-box;margin-bottom:6px;" value="${NAN_X402}"/><div style="font-size:.72rem;color:#2563EB;margin-bottom:8px;padding:6px 10px;background:rgba(37,99,235,.06);border-radius:8px;border:1px solid rgba(37,99,235,.15);">⚡ NAN NGN/USD Rate — $0.001 USDC per call · Arc Testnet</div><div style="display:flex;gap:8px;margin-bottom:10px;"><input id="agentPayAmt" placeholder="Amount" type="number" min="0" step="any" style="flex:1;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-family:'Inter var','Inter',sans-serif;box-sizing:border-box;" value="0.001"/><div style="padding:10px 14px;border-radius:10px;background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.2);color:#2563EB;font-size:.82rem;font-weight:700;display:flex;align-items:center;">USDC</div></div><div style="display:flex;gap:8px;"><button onclick="(function(){const url=document.getElementById('agentPayUrl').value.trim();const amt=document.getElementById('agentPayAmt').value;if(!url.startsWith('http')){agentShowResult('Enter a valid URL');return;}document.getElementById('agentPanelPay').remove();agentShowResult('⏳ Paying...');fetch(AGENT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'pay-service',address:agentWalletAddr||'0xd83498B62d2ab0650A4Edfc7929c96804aA75F77',url,chain:'ARC-TESTNET',maxAmount:String(amt)})}).then(r=>r.json()).then(d=>{if(d.success&&d.result&&d.result.data){const r=d.result.data;agentShowResult('Paid $'+amt+' USDC | '+r.pair+': '+r.rate+' | Source: '+r.source);}else{agentShowResult(d.success?'✅ Paid!':'❌ '+(d.error||'Payment failed'));}}).catch(e=>agentShowResult('❌ '+e.message));})()" style="flex:1;padding:11px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;">Pay Now</button><button onclick="document.getElementById('agentPanelPay').remove()" style="padding:11px 16px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;">Cancel</button></div>`;
   const grid = document.querySelector('[onclick="agentFund()"]')?.closest('[style*="grid-template-columns"]');
   if (grid) grid.parentElement.insertBefore(el, grid);
   document.getElementById('agentPayUrl')?.focus();
@@ -11747,7 +11747,7 @@ function agentA2AHub() {
   if (!agentWalletAddr) { agentShowResult('⚠️ Connect agent wallet first'); return; }
   const el = document.createElement('div');
   el.id = id;
-  el.style.cssText = 'background:var(--surface);border:1px solid rgba(67,56,202,.25);border-radius:14px;padding:14px;margin-bottom:12px;';
+  el.style.cssText = 'background:var(--surface);border:1px solid rgba(37,99,235,.25);border-radius:14px;padding:14px;margin-bottom:12px;';
   el.innerHTML = `
     <div style="font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:2px;">🤝 Agent Pay+</div>
     <div style="font-size:.7rem;color:var(--text3);margin-bottom:10px;">Trust tiers · Escrow · Recurring · Invoices · Netting</div>
@@ -11765,7 +11765,7 @@ function _a2aRenderTabs() {
   const tabs = [['trust','Trust'],['escrow','Escrow'],['recurring','Recurring'],['invoices','Invoices'],['net','Netting']];
   const c = document.getElementById('a2aTabs');
   if (!c) return;
-  c.innerHTML = tabs.map(([k,label]) => `<button onclick="agentA2ASwitchTab('${k}')" id="a2atab_${k}" style="flex-shrink:0;padding:6px 12px;border-radius:20px;border:0.5px solid ${_a2aTab===k?'#4338CA':'var(--border)'};background:${_a2aTab===k?'#4338CA':'transparent'};color:${_a2aTab===k?'#fff':'var(--text3)'};font-size:.75rem;font-weight:600;cursor:pointer;white-space:nowrap;">${label}</button>`).join('');
+  c.innerHTML = tabs.map(([k,label]) => `<button onclick="agentA2ASwitchTab('${k}')" id="a2atab_${k}" style="flex-shrink:0;padding:6px 12px;border-radius:20px;border:0.5px solid ${_a2aTab===k?'#2563EB':'var(--border)'};background:${_a2aTab===k?'#2563EB':'transparent'};color:${_a2aTab===k?'#fff':'var(--text3)'};font-size:.75rem;font-weight:600;cursor:pointer;white-space:nowrap;">${label}</button>`).join('');
 }
 
 function agentA2ASwitchTab(tab) {
@@ -11806,7 +11806,7 @@ function _a2aRenderTrust(c) {
   c.innerHTML = `
     <div style="font-size:.72rem;color:var(--text3);margin-bottom:8px;">Check the trust tier and auto-approve cap for a counterparty. New relationships start at $5 auto-approve; the cap grows $20 per 3 successful payments, up to $500.</div>
     ${_a2aAddrInput('a2aTrustAddr')}
-    <button onclick="_a2aCheckTrust()" style="width:100%;padding:9px;border-radius:10px;background:#4338CA;border:none;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;margin-bottom:8px;">Check Trust</button>
+    <button onclick="_a2aCheckTrust()" style="width:100%;padding:9px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;margin-bottom:8px;">Check Trust</button>
     <div id="a2aTrustResult"></div>
   `;
 }
@@ -11814,27 +11814,27 @@ async function _a2aCheckTrust() {
   const raw = document.getElementById('a2aTrustAddr')?.value;
   const out = document.getElementById('a2aTrustResult');
   const addr = await _a2aResolveAddr(raw);
-  if (!addr) { out.innerHTML = '<div style="color:#4338CA;font-size:.78rem;">Could not resolve address</div>'; return; }
+  if (!addr) { out.innerHTML = '<div style="color:#2563EB;font-size:.78rem;">Could not resolve address</div>'; return; }
   out.innerHTML = '<div style="color:var(--text3);font-size:.78rem;">Checking...</div>';
   try {
     const r = await fetch(AGENT_WALLETS_API, {method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({action:'trust', userAddress:userAddr, agentWalletAddress:agentWalletAddr, counterpartyAddress:addr})});
     const d = await r.json();
-    if (!d.success) { out.innerHTML = `<div style="color:#4338CA;font-size:.78rem;">${d.error||'Failed'}</div>`; return; }
+    if (!d.success) { out.innerHTML = `<div style="color:#2563EB;font-size:.78rem;">${d.error||'Failed'}</div>`; return; }
     out.innerHTML = `<div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;">
       <div style="font-size:.72rem;color:var(--text3);margin-bottom:4px;">Auto-approve cap</div>
-      <div style="font-size:1.4rem;font-weight:800;color:#4338CA;margin-bottom:8px;">$${d.autoApproveCap}</div>
+      <div style="font-size:1.4rem;font-weight:800;color:#2563EB;margin-bottom:8px;">$${d.autoApproveCap}</div>
       <div style="font-size:.78rem;color:var(--text);">✅ ${d.trust.successCount} successful payment${d.trust.successCount===1?'':'s'} · $${d.trust.totalVolume.toFixed(2)} total volume</div>
       ${d.trust.successCount===0?'<div style="font-size:.72rem;color:var(--text3);margin-top:4px;">No history yet — capped at the new-counterparty limit.</div>':''}
     </div>`;
-  } catch(e) { out.innerHTML = `<div style="color:#4338CA;font-size:.78rem;">${e.message}</div>`; }
+  } catch(e) { out.innerHTML = `<div style="color:#2563EB;font-size:.78rem;">${e.message}</div>`; }
 }
 
 // ── ESCROW ─────────────────────────────────────────────────────────────────
 function _a2aRenderEscrow(c) {
   c.innerHTML = `
     <div style="display:flex;gap:6px;margin-bottom:8px;">
-      <button onclick="_a2aEscrowMode('create')" id="a2aEscBtnCreate" style="flex:1;padding:7px;border-radius:8px;border:0.5px solid #4338CA;background:#4338CA;color:#fff;font-size:.74rem;font-weight:700;cursor:pointer;">+ New</button>
+      <button onclick="_a2aEscrowMode('create')" id="a2aEscBtnCreate" style="flex:1;padding:7px;border-radius:8px;border:0.5px solid #2563EB;background:#2563EB;color:#fff;font-size:.74rem;font-weight:700;cursor:pointer;">+ New</button>
       <button onclick="_a2aEscrowMode('sent')" id="a2aEscBtnSent" style="flex:1;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;color:var(--text3);font-size:.74rem;font-weight:700;cursor:pointer;">Sent</button>
       <button onclick="_a2aEscrowMode('received')" id="a2aEscBtnReceived" style="flex:1;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;color:var(--text3);font-size:.74rem;font-weight:700;cursor:pointer;">Received</button>
     </div>
@@ -11845,7 +11845,7 @@ function _a2aRenderEscrow(c) {
 function _a2aEscrowMode(mode) {
   ['create','sent','received'].forEach(m => {
     const b = document.getElementById('a2aEscBtn'+m.charAt(0).toUpperCase()+m.slice(1));
-    if (b) { b.style.background = m===mode?'#4338CA':'transparent'; b.style.color = m===mode?'#fff':'var(--text3)'; b.style.borderColor = m===mode?'#4338CA':'var(--border)'; }
+    if (b) { b.style.background = m===mode?'#2563EB':'transparent'; b.style.color = m===mode?'#fff':'var(--text3)'; b.style.borderColor = m===mode?'#2563EB':'var(--border)'; }
   });
   const body = document.getElementById('a2aEscrowBody');
   if (mode === 'create') {
@@ -11854,7 +11854,7 @@ function _a2aEscrowMode(mode) {
       ${_a2aAmtInput('a2aEscAmt')}
       <input id="a2aEscTask" placeholder="Task description" style="width:100%;padding:9px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.8rem;box-sizing:border-box;margin-bottom:8px;"/>
       <div style="font-size:.68rem;color:var(--text3);margin-bottom:8px;">Funds stay in your wallet, locked until you release. Recipient must attest completion first.</div>
-      <button onclick="_a2aEscrowCreate()" style="width:100%;padding:9px;border-radius:10px;background:#4338CA;border:none;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;">Create Escrow</button>
+      <button onclick="_a2aEscrowCreate()" style="width:100%;padding:9px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;">Create Escrow</button>
       <div id="a2aEscCreateResult" style="margin-top:8px;"></div>
     `;
   } else {
@@ -11868,17 +11868,17 @@ async function _a2aEscrowCreate() {
   const task = document.getElementById('a2aEscTask')?.value;
   const out = document.getElementById('a2aEscCreateResult');
   const to = await _a2aResolveAddr(toRaw);
-  if (!to || !amt) { out.innerHTML = '<div style="color:#4338CA;font-size:.78rem;">Enter a valid recipient and amount</div>'; return; }
+  if (!to || !amt) { out.innerHTML = '<div style="color:#2563EB;font-size:.78rem;">Enter a valid recipient and amount</div>'; return; }
   out.innerHTML = '<div style="color:var(--text3);font-size:.78rem;">Creating...</div>';
   try {
     const r = await fetch(AGENT_WALLETS_API, {method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({action:'escrow-create', userAddress:userAddr, agentWalletAddress:agentWalletAddr, toAgentAddress:to, amount:amt, task})});
     const d = await r.json();
     out.innerHTML = d.success
-      ? `<div style="color:#4338CA;font-size:.78rem;">✅ Escrow created — ${amt} USDC locked, awaiting attestation</div>`
-      : `<div style="color:#4338CA;font-size:.78rem;">${d.error||'Failed'}</div>`;
+      ? `<div style="color:#2563EB;font-size:.78rem;">✅ Escrow created — ${amt} USDC locked, awaiting attestation</div>`
+      : `<div style="color:#2563EB;font-size:.78rem;">${d.error||'Failed'}</div>`;
     if (d.success) { document.getElementById('a2aEscTo').value=''; document.getElementById('a2aEscAmt').value=''; document.getElementById('a2aEscTask').value=''; }
-  } catch(e) { out.innerHTML = `<div style="color:#4338CA;font-size:.78rem;">${e.message}</div>`; }
+  } catch(e) { out.innerHTML = `<div style="color:#2563EB;font-size:.78rem;">${e.message}</div>`; }
 }
 async function _a2aEscrowList(direction) {
   const body = document.getElementById('a2aEscrowBody');
@@ -11895,14 +11895,14 @@ async function _a2aEscrowList(direction) {
         </div>
         <div style="font-size:.7rem;color:var(--text3);margin-bottom:6px;">${e.task || 'No description'}</div>
         <div style="font-size:.68rem;font-family:monospace;color:var(--text3);margin-bottom:6px;">${direction==='sent'?'To':'From'}: ${(direction==='sent'?e.toWallet:e.fromWallet).slice(0,10)}...</div>
-        ${direction==='received' && e.status==='pending' ? `<button onclick="_a2aEscrowAttest('${e.id}')" style="width:100%;padding:7px;border-radius:8px;background:#4338CA;border:none;color:#fff;font-size:.74rem;font-weight:700;cursor:pointer;">Attest Completion</button>` : ''}
-        ${direction==='sent' && e.status==='attested' ? `<button onclick="_a2aEscrowRelease('${e.id}')" style="width:100%;padding:7px;border-radius:8px;background:#4338CA;border:none;color:#fff;font-size:.74rem;font-weight:700;cursor:pointer;">Release Funds</button>` : ''}
+        ${direction==='received' && e.status==='pending' ? `<button onclick="_a2aEscrowAttest('${e.id}')" style="width:100%;padding:7px;border-radius:8px;background:#2563EB;border:none;color:#fff;font-size:.74rem;font-weight:700;cursor:pointer;">Attest Completion</button>` : ''}
+        ${direction==='sent' && e.status==='attested' ? `<button onclick="_a2aEscrowRelease('${e.id}')" style="width:100%;padding:7px;border-radius:8px;background:#2563EB;border:none;color:#fff;font-size:.74rem;font-weight:700;cursor:pointer;">Release Funds</button>` : ''}
         ${direction==='sent' && e.status==='pending' ? `<button onclick="_a2aEscrowRefund('${e.id}')" style="width:100%;padding:7px;border-radius:8px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.74rem;cursor:pointer;">Cancel / Refund</button>` : ''}
       </div>
     `).join('');
-  } catch(e) { body.innerHTML = `<div style="color:#4338CA;font-size:.78rem;">${e.message}</div>`; }
+  } catch(e) { body.innerHTML = `<div style="color:#2563EB;font-size:.78rem;">${e.message}</div>`; }
 }
-function _a2aStatusColor(s) { return {pending:'#3B82F6',attested:'#4338CA',released:'#4338CA',refunded:'#6b7280'}[s] || '#6b7280'; }
+function _a2aStatusColor(s) { return {pending:'#2563EB',attested:'#2563EB',released:'#2563EB',refunded:'#6b7280'}[s] || '#6b7280'; }
 async function _a2aEscrowAttest(id) {
   await fetch(AGENT_WALLETS_API, {method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({action:'escrow-attest', userAddress:userAddr, escrowId:id})});
@@ -11935,7 +11935,7 @@ function _a2aRenderRecurring(c) {
     </select>
     <input id="a2aRecMinBal" type="number" min="0" step="any" placeholder="Skip run if recipient balance below (optional)" style="width:100%;padding:9px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.8rem;box-sizing:border-box;margin-bottom:6px;"/>
     <input id="a2aRecLabel" placeholder="Label (e.g. 'Weekly service fee')" style="width:100%;padding:9px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.8rem;box-sizing:border-box;margin-bottom:8px;"/>
-    <button onclick="_a2aRecurringCreate()" style="width:100%;padding:9px;border-radius:10px;background:#4338CA;border:none;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;margin-bottom:10px;">Create Schedule</button>
+    <button onclick="_a2aRecurringCreate()" style="width:100%;padding:9px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;margin-bottom:10px;">Create Schedule</button>
     <div style="font-size:.72rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Active Schedules</div>
     <div id="a2aRecList">Loading...</div>
   `;
@@ -11971,14 +11971,14 @@ async function _a2aRecurringList() {
       <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:6px;opacity:${s.active?1:.5};">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
           <span style="font-size:.85rem;font-weight:700;color:var(--text);">${s.amount} ${s.token} ${s.label?'· '+s.label:''}</span>
-          <span style="font-size:.68rem;color:${s.active?'#4338CA':'#6b7280'};font-weight:700;">${s.active?'ACTIVE':'CANCELLED'}</span>
+          <span style="font-size:.68rem;color:${s.active?'#2563EB':'#6b7280'};font-weight:700;">${s.active?'ACTIVE':'CANCELLED'}</span>
         </div>
         <div style="font-size:.68rem;font-family:monospace;color:var(--text3);margin-bottom:4px;">To: ${s.toWallet.slice(0,10)}... · every ${s.intervalSeconds>=86400?(s.intervalSeconds/86400)+'d':(s.intervalSeconds/3600)+'h'}</div>
         <div style="font-size:.68rem;color:var(--text3);margin-bottom:6px;">${s.runCount} run${s.runCount===1?'':'s'}${s.skipCount?', '+s.skipCount+' skipped':''}${s.condition?' · min-balance condition set':''}</div>
-        ${s.active ? `<button onclick="_a2aRecurringCancel('${s.id}')" style="width:100%;padding:6px;border-radius:8px;background:none;border:1px solid var(--border);color:#4338CA;font-size:.72rem;cursor:pointer;">Cancel</button>` : ''}
+        ${s.active ? `<button onclick="_a2aRecurringCancel('${s.id}')" style="width:100%;padding:6px;border-radius:8px;background:none;border:1px solid var(--border);color:#2563EB;font-size:.72rem;cursor:pointer;">Cancel</button>` : ''}
       </div>
     `).join('');
-  } catch(e) { list.innerHTML = `<div style="color:#4338CA;font-size:.78rem;">${e.message}</div>`; }
+  } catch(e) { list.innerHTML = `<div style="color:#2563EB;font-size:.78rem;">${e.message}</div>`; }
 }
 async function _a2aRecurringCancel(id) {
   await fetch(AGENT_WALLETS_API, {method:'POST',headers:{'Content-Type':'application/json'},
@@ -11990,7 +11990,7 @@ async function _a2aRecurringCancel(id) {
 function _a2aRenderInvoices(c) {
   c.innerHTML = `
     <div style="display:flex;gap:6px;margin-bottom:8px;">
-      <button onclick="_a2aInvMode('create')" id="a2aInvBtnCreate" style="flex:1;padding:7px;border-radius:8px;border:0.5px solid #4338CA;background:#4338CA;color:#fff;font-size:.74rem;font-weight:700;cursor:pointer;">Request</button>
+      <button onclick="_a2aInvMode('create')" id="a2aInvBtnCreate" style="flex:1;padding:7px;border-radius:8px;border:0.5px solid #2563EB;background:#2563EB;color:#fff;font-size:.74rem;font-weight:700;cursor:pointer;">Request</button>
       <button onclick="_a2aInvMode('incoming')" id="a2aInvBtnIncoming" style="flex:1;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;color:var(--text3);font-size:.74rem;font-weight:700;cursor:pointer;">Incoming</button>
       <button onclick="_a2aInvMode('outgoing')" id="a2aInvBtnOutgoing" style="flex:1;padding:7px;border-radius:8px;border:0.5px solid var(--border);background:transparent;color:var(--text3);font-size:.74rem;font-weight:700;cursor:pointer;">Outgoing</button>
     </div>
@@ -12001,7 +12001,7 @@ function _a2aRenderInvoices(c) {
 function _a2aInvMode(mode) {
   ['create','incoming','outgoing'].forEach(m => {
     const b = document.getElementById('a2aInvBtn'+m.charAt(0).toUpperCase()+m.slice(1));
-    if (b) { b.style.background = m===mode?'#4338CA':'transparent'; b.style.color = m===mode?'#fff':'var(--text3)'; b.style.borderColor = m===mode?'#4338CA':'var(--border)'; }
+    if (b) { b.style.background = m===mode?'#2563EB':'transparent'; b.style.color = m===mode?'#fff':'var(--text3)'; b.style.borderColor = m===mode?'#2563EB':'var(--border)'; }
   });
   const body = document.getElementById('a2aInvBody');
   if (mode === 'create') {
@@ -12010,7 +12010,7 @@ function _a2aInvMode(mode) {
       ${_a2aAddrInput('a2aInvFrom','Request from (.arc or 0x...)')}
       ${_a2aAmtInput('a2aInvAmt')}
       <input id="a2aInvReason" placeholder="Reason" style="width:100%;padding:9px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.8rem;box-sizing:border-box;margin-bottom:8px;"/>
-      <button onclick="_a2aInvoiceCreate()" style="width:100%;padding:9px;border-radius:10px;background:#4338CA;border:none;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;">Send Request</button>
+      <button onclick="_a2aInvoiceCreate()" style="width:100%;padding:9px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;">Send Request</button>
       <div id="a2aInvCreateResult" style="margin-top:8px;"></div>
     `;
   } else {
@@ -12024,18 +12024,18 @@ async function _a2aInvoiceCreate() {
   const reason = document.getElementById('a2aInvReason')?.value;
   const out = document.getElementById('a2aInvCreateResult');
   const from = await _a2aResolveAddr(fromRaw);
-  if (!from || !amt) { out.innerHTML = '<div style="color:#4338CA;font-size:.78rem;">Enter a valid payer address and amount</div>'; return; }
+  if (!from || !amt) { out.innerHTML = '<div style="color:#2563EB;font-size:.78rem;">Enter a valid payer address and amount</div>'; return; }
   out.innerHTML = '<div style="color:var(--text3);font-size:.78rem;">Sending...</div>';
   try {
     const r = await fetch(AGENT_WALLETS_API, {method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({action:'invoice-create', userAddress:userAddr, agentWalletAddress:agentWalletAddr, fromAgentAddress:from, amount:amt, reason})});
     const d = await r.json();
-    if (!d.success) { out.innerHTML = `<div style="color:#4338CA;font-size:.78rem;">${d.error||'Failed'}</div>`; return; }
+    if (!d.success) { out.innerHTML = `<div style="color:#2563EB;font-size:.78rem;">${d.error||'Failed'}</div>`; return; }
     out.innerHTML = d.autoEval?.autoHonored
-      ? `<div style="color:#4338CA;font-size:.78rem;">✅ Request sent — within their trust tier, likely to auto-honor</div>`
-      : `<div style="color:#3B82F6;font-size:.78rem;">⏳ Request sent — pending manual review (${d.autoEval?.reason||'not auto-evaluated'})</div>`;
+      ? `<div style="color:#2563EB;font-size:.78rem;">✅ Request sent — within their trust tier, likely to auto-honor</div>`
+      : `<div style="color:#2563EB;font-size:.78rem;">⏳ Request sent — pending manual review (${d.autoEval?.reason||'not auto-evaluated'})</div>`;
     document.getElementById('a2aInvFrom').value=''; document.getElementById('a2aInvAmt').value=''; document.getElementById('a2aInvReason').value='';
-  } catch(e) { out.innerHTML = `<div style="color:#4338CA;font-size:.78rem;">${e.message}</div>`; }
+  } catch(e) { out.innerHTML = `<div style="color:#2563EB;font-size:.78rem;">${e.message}</div>`; }
 }
 async function _a2aInvoiceList(direction) {
   const body = document.getElementById('a2aInvBody');
@@ -12054,12 +12054,12 @@ async function _a2aInvoiceList(direction) {
         <div style="font-size:.68rem;font-family:monospace;color:var(--text3);margin-bottom:6px;">${direction==='incoming'?'Requested by':'Requested from'}: ${(direction==='incoming'?inv.toWallet:inv.fromWallet).slice(0,10)}...</div>
         ${direction==='incoming' && inv.status==='pending' ? `
           <div style="display:flex;gap:6px;">
-            <button onclick="_a2aInvoiceRespond('${inv.id}',true)" style="flex:1;padding:7px;border-radius:8px;background:#4338CA;border:none;color:#fff;font-size:.74rem;font-weight:700;cursor:pointer;">Honor</button>
-            <button onclick="_a2aInvoiceRespond('${inv.id}',false)" style="flex:1;padding:7px;border-radius:8px;background:none;border:1px solid var(--border);color:#4338CA;font-size:.74rem;cursor:pointer;">Reject</button>
+            <button onclick="_a2aInvoiceRespond('${inv.id}',true)" style="flex:1;padding:7px;border-radius:8px;background:#2563EB;border:none;color:#fff;font-size:.74rem;font-weight:700;cursor:pointer;">Honor</button>
+            <button onclick="_a2aInvoiceRespond('${inv.id}',false)" style="flex:1;padding:7px;border-radius:8px;background:none;border:1px solid var(--border);color:#2563EB;font-size:.74rem;cursor:pointer;">Reject</button>
           </div>` : ''}
       </div>
     `).join('');
-  } catch(e) { body.innerHTML = `<div style="color:#4338CA;font-size:.78rem;">${e.message}</div>`; }
+  } catch(e) { body.innerHTML = `<div style="color:#2563EB;font-size:.78rem;">${e.message}</div>`; }
 }
 async function _a2aInvoiceRespond(id, honor) {
   const r = await fetch(AGENT_WALLETS_API, {method:'POST',headers:{'Content-Type':'application/json'},
@@ -12075,7 +12075,7 @@ function _a2aRenderNet(c) {
   c.innerHTML = `
     <div style="font-size:.72rem;color:var(--text3);margin-bottom:8px;">Track running obligations with a counterparty and settle only the net difference in one transfer, instead of paying on every interaction.</div>
     ${_a2aAddrInput('a2aNetAddr','Counterparty (.arc or 0x...)')}
-    <button onclick="_a2aNetCheck()" style="width:100%;padding:9px;border-radius:10px;background:#4338CA;border:none;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;margin-bottom:10px;">Check Ledger</button>
+    <button onclick="_a2aNetCheck()" style="width:100%;padding:9px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;margin-bottom:10px;">Check Ledger</button>
     <div id="a2aNetResult"></div>
   `;
 }
@@ -12083,28 +12083,28 @@ async function _a2aNetCheck() {
   const raw = document.getElementById('a2aNetAddr')?.value;
   const out = document.getElementById('a2aNetResult');
   const addr = await _a2aResolveAddr(raw);
-  if (!addr) { out.innerHTML = '<div style="color:#4338CA;font-size:.78rem;">Could not resolve address</div>'; return; }
+  if (!addr) { out.innerHTML = '<div style="color:#2563EB;font-size:.78rem;">Could not resolve address</div>'; return; }
   out.innerHTML = '<div style="color:var(--text3);font-size:.78rem;">Loading...</div>';
   try {
     const r = await fetch(AGENT_WALLETS_API, {method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({action:'net-status', userAddress:userAddr, agentWalletAddress:agentWalletAddr, counterpartyAddress:addr})});
     const d = await r.json();
-    if (!d.success) { out.innerHTML = `<div style="color:#4338CA;font-size:.78rem;">${d.error||'Failed'}</div>`; return; }
+    if (!d.success) { out.innerHTML = `<div style="color:#2563EB;font-size:.78rem;">${d.error||'Failed'}</div>`; return; }
     const net = d.currentNet;
     const iAmPayer = net.payer?.toLowerCase() === agentWalletAddr.toLowerCase();
     out.innerHTML = `
       <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;">
         ${net.amount === 0
-          ? '<div style="font-size:.85rem;color:#4338CA;font-weight:700;">✅ Ledger is balanced — nothing owed either way</div>'
+          ? '<div style="font-size:.85rem;color:#2563EB;font-weight:700;">✅ Ledger is balanced — nothing owed either way</div>'
           : `<div style="font-size:.78rem;color:var(--text3);margin-bottom:4px;">Net owed</div>
-             <div style="font-size:1.3rem;font-weight:800;color:${iAmPayer?'#4338CA':'#4338CA'};">${iAmPayer?'You owe':'They owe you'} $${net.amount.toFixed(2)}</div>`
+             <div style="font-size:1.3rem;font-weight:800;color:${iAmPayer?'#2563EB':'#2563EB'};">${iAmPayer?'You owe':'They owe you'} $${net.amount.toFixed(2)}</div>`
         }
         <div style="font-size:.68rem;color:var(--text3);margin-top:8px;">${d.ledger.entries.length} recorded entr${d.ledger.entries.length===1?'y':'ies'} since last settlement</div>
       </div>
-      ${net.amount > 0 && iAmPayer ? `<button onclick="_a2aNetSettle('${addr}')" style="width:100%;padding:9px;border-radius:10px;background:#4338CA;border:none;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;">Settle Now — Pay $${net.amount.toFixed(2)}</button>` : ''}
+      ${net.amount > 0 && iAmPayer ? `<button onclick="_a2aNetSettle('${addr}')" style="width:100%;padding:9px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;">Settle Now — Pay $${net.amount.toFixed(2)}</button>` : ''}
       ${net.amount > 0 && !iAmPayer ? '<div style="font-size:.72rem;color:var(--text3);text-align:center;">Waiting on the other side to settle</div>' : ''}
     `;
-  } catch(e) { out.innerHTML = `<div style="color:#4338CA;font-size:.78rem;">${e.message}</div>`; }
+  } catch(e) { out.innerHTML = `<div style="color:#2563EB;font-size:.78rem;">${e.message}</div>`; }
 }
 async function _a2aNetSettle(addr) {
   try {
