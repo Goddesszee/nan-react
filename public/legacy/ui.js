@@ -233,23 +233,23 @@ function updateTopbarPageInfo(page) {
     const bal = document.getElementById('homeBalAmt');
     if (bal && bal.textContent !== '—') {
       pillEl.textContent = '$' + bal.textContent;
-      pillEl.style.cssText = 'display:inline-block;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);color:var(--accent3);font-family:"JetBrains Mono",monospace;font-size:.58rem;padding:3px 9px;border-radius:100px;';
+      pillEl.style.cssText = 'display:inline-block;background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.2);color:var(--accent3);font-family:"JetBrains Mono",monospace;font-size:.58rem;padding:3px 9px;border-radius:100px;';
     }
   } else if (page === 'send') {
     const usdc = parseFloat(usdcBal)||0;
     const eurc = parseFloat(eurcBal)||0;
     const total = (usdc + eurc).toFixed(2);
     pillEl.textContent = 'Balance: ' + total + ' USDC';
-    pillEl.style.cssText = 'display:inline-block;background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.15);color:var(--accent3);font-family:"JetBrains Mono",monospace;font-size:.58rem;padding:3px 9px;border-radius:100px;';
+    pillEl.style.cssText = 'display:inline-block;background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.15);color:var(--accent3);font-family:"JetBrains Mono",monospace;font-size:.58rem;padding:3px 9px;border-radius:100px;';
   } else if (page === 'earn' || page === 'lend') {
     pillEl.textContent = 'APY 4.80%';
-    pillEl.style.cssText = 'display:inline-block;background:rgba(67,56,202,.06);border:1px solid rgba(67,56,202,.15);color:#4338CA;font-family:"JetBrains Mono",monospace;font-size:.58rem;padding:3px 9px;border-radius:100px;';
+    pillEl.style.cssText = 'display:inline-block;background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.15);color:#2563EB;font-family:"JetBrains Mono",monospace;font-size:.58rem;padding:3px 9px;border-radius:100px;';
   } else if (page === 'swap') {
     pillEl.textContent = 'USDC ↔ EURC';
-    pillEl.style.cssText = 'display:inline-block;background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.15);color:var(--accent3);font-family:"JetBrains Mono",monospace;font-size:.58rem;padding:3px 9px;border-radius:100px;';
+    pillEl.style.cssText = 'display:inline-block;background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.15);color:var(--accent3);font-family:"JetBrains Mono",monospace;font-size:.58rem;padding:3px 9px;border-radius:100px;';
   } else if (page === 'bridge') {
     pillEl.textContent = 'CCTP V2';
-    pillEl.style.cssText = 'display:inline-block;background:rgba(67,56,202,.06);border:1px solid rgba(67,56,202,.15);color:#60A5FA;font-family:"JetBrains Mono",monospace;font-size:.58rem;padding:3px 9px;border-radius:100px;';
+    pillEl.style.cssText = 'display:inline-block;background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.15);color:#60A5FA;font-family:"JetBrains Mono",monospace;font-size:.58rem;padding:3px 9px;border-radius:100px;';
     // Refresh gateway balance every time user opens bridge page
     if(typeof refreshGatewayBalance==='function') setTimeout(refreshGatewayBalance, 100);
     // Show/hide deposit section based on wallet type
@@ -257,12 +257,12 @@ function updateTopbarPageInfo(page) {
     if(depSec) depSec.style.display=(typeof isCircleWallet!=='undefined'&&isCircleWallet)?'block':'none';
   } else if (page === 'history') {
     pillEl.textContent = 'On-chain';
-    pillEl.style.cssText = 'display:inline-block;background:rgba(67,56,202,.06);border:1px solid rgba(67,56,202,.15);color:#4338CA;font-family:"JetBrains Mono",monospace;font-size:.58rem;padding:3px 9px;border-radius:100px;';
+    pillEl.style.cssText = 'display:inline-block;background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.15);color:#2563EB;font-family:"JetBrains Mono",monospace;font-size:.58rem;padding:3px 9px;border-radius:100px;';
   } else if (page === 'dashboard') {
     const bal = document.getElementById('dashTotalBal');
     if (bal && bal.textContent !== '$0.00') {
       pillEl.textContent = bal.textContent;
-      pillEl.style.cssText = 'display:inline-block;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);color:var(--accent3);font-family:"JetBrains Mono",monospace;font-size:.58rem;padding:3px 9px;border-radius:100px;';
+      pillEl.style.cssText = 'display:inline-block;background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.2);color:var(--accent3);font-family:"JetBrains Mono",monospace;font-size:.58rem;padding:3px 9px;border-radius:100px;';
     }
   }
 }
