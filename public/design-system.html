@@ -15,9 +15,9 @@
 
 :root{
   /* ---- Color ---- */
-  --nan-primary: #4338CA;
-  --nan-secondary: #3B82F6;
-  --nan-gradient: linear-gradient(135deg, #4338CA 0%, #4F46E5 50%, #3B82F6 100%);
+  --nan-primary: #2563EB;
+  --nan-secondary: #2563EB;
+  --nan-gradient: linear-gradient(135deg, #2563EB 0%, #2563EB 50%, #2563EB 100%);
   --nan-bg: #FFFFFF;
   --nan-bg-2: #F8FAFC;
   --nan-card: #FFFFFF;
@@ -52,8 +52,8 @@
   --nan-radius-card: 20px;
   --nan-shadow-sm: 0 1px 2px rgba(17,24,39,.05), 0 1px 3px rgba(17,24,39,.06);
   --nan-shadow-md: 0 4px 12px rgba(17,24,39,.06), 0 2px 4px rgba(17,24,39,.04);
-  --nan-shadow-lg: 0 12px 32px rgba(67,56,202,.12), 0 4px 8px rgba(17,24,39,.04);
-  --nan-shadow-focus: 0 0 0 4px rgba(67,56,202,.12);
+  --nan-shadow-lg: 0 12px 32px rgba(37,99,235,.12), 0 4px 8px rgba(17,24,39,.04);
+  --nan-shadow-focus: 0 0 0 4px rgba(37,99,235,.12);
 }
 
 *{box-sizing:border-box;}
@@ -66,7 +66,7 @@ body{
   line-height:1.5;
   -webkit-font-smoothing:antialiased;
 }
-::selection{background:rgba(67,56,202,.18);}
+::selection{background:rgba(37,99,235,.18);}
 :focus-visible{outline:2px solid var(--nan-primary);outline-offset:2px;border-radius:4px;}
 
 /* ---- Doc shell ---- */
@@ -166,10 +166,10 @@ body{
   transition:transform .15s,box-shadow .15s,background .15s;border:none;
 }
 .btn:active{transform:translateY(1px);}
-.btn-primary{background:var(--nan-gradient);color:#fff;box-shadow:0 4px 14px rgba(67,56,202,.32);}
-.btn-primary:hover{box-shadow:0 6px 20px rgba(67,56,202,.42);}
+.btn-primary{background:var(--nan-gradient);color:#fff;box-shadow:0 4px 14px rgba(37,99,235,.32);}
+.btn-primary:hover{box-shadow:0 6px 20px rgba(37,99,235,.42);}
 .btn-secondary{background:#fff;color:var(--nan-primary);border:1.5px solid var(--nan-primary);}
-.btn-secondary:hover{background:rgba(67,56,202,.05);}
+.btn-secondary:hover{background:rgba(37,99,235,.05);}
 .btn-ghost{background:none;color:var(--nan-primary);padding:0 8px;height:auto;}
 .btn-ghost:hover{color:#312399;}
 .btn-sm{height:38px;padding:0 16px;font-size:13px;border-radius:9px;}
@@ -183,7 +183,7 @@ body{
 }
 .nan-card:hover{box-shadow:var(--nan-shadow-lg);transform:translateY(-2px);}
 .nan-card-icon{
-  width:44px;height:44px;border-radius:12px;background:rgba(67,56,202,.08);color:var(--nan-primary);
+  width:44px;height:44px;border-radius:12px;background:rgba(37,99,235,.08);color:var(--nan-primary);
   display:flex;align-items:center;justify-content:center;margin-bottom:16px;
 }
 .nan-card h4{font-size:var(--nan-h3);font-weight:600;margin:0 0 6px;}
@@ -225,7 +225,7 @@ body{
 }
 .nan-table td{padding:16px 20px;font-size:var(--nan-body);border-bottom:1px solid var(--nan-border);}
 .nan-table tr:last-child td{border-bottom:none;}
-.nan-table tr:hover td{background:rgba(67,56,202,.02);}
+.nan-table tr:hover td{background:rgba(37,99,235,.02);}
 
 /* ---- Sidebar demo ---- */
 .sidebar-demo{
@@ -241,7 +241,7 @@ body{
 }
 .sb-item svg{flex-shrink:0;}
 .sb-item:hover{background:var(--nan-bg-2);color:var(--nan-text);}
-.sb-item.active{background:var(--nan-gradient);color:#fff;box-shadow:0 4px 12px rgba(67,56,202,.28);}
+.sb-item.active{background:var(--nan-gradient);color:#fff;box-shadow:0 4px 12px rgba(37,99,235,.28);}
 
 /* ---- States ---- */
 .state-box{
@@ -282,7 +282,7 @@ body{
 }
 .ex-quick-btn:hover{border-color:var(--nan-primary);transform:translateY(-2px);}
 .ex-quick-icon{
-  width:40px;height:40px;border-radius:11px;background:rgba(67,56,202,.08);color:var(--nan-primary);
+  width:40px;height:40px;border-radius:11px;background:rgba(37,99,235,.08);color:var(--nan-primary);
   display:flex;align-items:center;justify-content:center;margin:0 auto 10px;
 }
 .ex-quick-label{font-size:13px;font-weight:600;}
@@ -342,12 +342,11 @@ code.tok{
     <div class="doc-section-head">
       <div class="doc-eyebrow">Foundations</div>
       <h2 class="doc-h2">Color</h2>
-      <p class="doc-p">Indigo is Nan's trust signal — used sparingly, on the things that matter: primary actions, the active nav state, and money moving. Everything else stays quiet so indigo keeps its meaning.</p>
+      <p class="doc-p">Brand blue is Nan's trust signal — used sparingly, on the things that matter: primary actions, the active nav state, and money moving. Everything else stays quiet so the color keeps its meaning.</p>
     </div>
     <div class="swatch-grid">
-      <div class="swatch"><div class="swatch-color" style="background:#4338CA;"></div><div class="swatch-meta"><div class="swatch-name">Primary / Indigo</div><div class="swatch-hex">#4338CA</div></div></div>
-      <div class="swatch"><div class="swatch-color" style="background:#3B82F6;"></div><div class="swatch-meta"><div class="swatch-name">Secondary / Electric Blue</div><div class="swatch-hex">#3B82F6</div></div></div>
-      <div class="swatch"><div class="swatch-color" style="background:linear-gradient(135deg,#4338CA,#4F46E5,#3B82F6);"></div><div class="swatch-meta"><div class="swatch-name">Signature Gradient</div><div class="swatch-hex">#4338CA → #3B82F6</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#2563EB;"></div><div class="swatch-meta"><div class="swatch-name">Primary / Brand Blue</div><div class="swatch-hex">#2563EB</div></div></div>
+      <div class="swatch"><div class="swatch-color" style="background:linear-gradient(135deg,#2563EB,#2563EB,#2563EB);"></div><div class="swatch-meta"><div class="swatch-name">Brand Gradient (single-stop, ready for a 2nd stop later)</div><div class="swatch-hex">#2563EB</div></div></div>
       <div class="swatch"><div class="swatch-color" style="background:#111827;"></div><div class="swatch-meta"><div class="swatch-name">Text Primary</div><div class="swatch-hex">#111827</div></div></div>
       <div class="swatch"><div class="swatch-color" style="background:#6B7280;"></div><div class="swatch-meta"><div class="swatch-name">Text Secondary</div><div class="swatch-hex">#6B7280</div></div></div>
       <div class="swatch"><div class="swatch-color" style="background:#F8FAFC;border-bottom:1px solid #E5E7EB;"></div><div class="swatch-meta"><div class="swatch-name">Background</div><div class="swatch-hex">#F8FAFC</div></div></div>
@@ -397,7 +396,7 @@ code.tok{
     <div class="doc-section-head">
       <div class="doc-eyebrow">Foundations</div>
       <h2 class="doc-h2">Elevation</h2>
-      <p class="doc-p">Shadows are soft and indigo-tinted, never pure black — it reads as depth, not as a drop shadow bolted on.</p>
+      <p class="doc-p">Shadows are soft and brand-blue-tinted, never pure black — it reads as depth, not as a drop shadow bolted on.</p>
     </div>
     <div class="swatch-grid">
       <div style="background:#fff;border-radius:16px;padding:24px;box-shadow:var(--nan-shadow-sm);"><div class="swatch-name">Resting</div><div class="swatch-hex">shadow-sm</div></div>
@@ -470,7 +469,7 @@ code.tok{
     <div class="doc-section-head">
       <div class="doc-eyebrow">Components</div>
       <h2 class="doc-h2">Forms</h2>
-      <p class="doc-p">48px inputs, 1.5px borders, indigo focus ring. Errors state exactly what's wrong — never vague.</p>
+      <p class="doc-p">48px inputs, 1.5px borders, brand-blue focus ring. Errors state exactly what's wrong — never vague.</p>
     </div>
     <div class="form-demo">
       <div class="field">
@@ -512,7 +511,7 @@ code.tok{
     <div class="doc-section-head">
       <div class="doc-eyebrow">Components</div>
       <h2 class="doc-h2">Tables</h2>
-      <p class="doc-p">Used for payroll runs, transaction history, and invoice lists. Row hover uses a 2% indigo tint — enough to track your place, not enough to distract.</p>
+      <p class="doc-p">Used for payroll runs, transaction history, and invoice lists. Row hover uses a 2% brand-blue tint — enough to track your place, not enough to distract.</p>
     </div>
     <table class="nan-table">
       <thead><tr><th>Recipient</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
@@ -563,7 +562,7 @@ code.tok{
     </div>
     <div class="card-grid">
       <div class="state-box">
-        <div class="state-icon" style="background:rgba(67,56,202,.08);color:var(--nan-primary);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M12 11v4M10 13h4"/></svg></div>
+        <div class="state-icon" style="background:rgba(37,99,235,.08);color:var(--nan-primary);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M12 11v4M10 13h4"/></svg></div>
         <div class="state-title">No requests yet</div>
         <div class="state-desc">Create a payment request to start getting paid, in seconds.</div>
         <button class="btn btn-primary btn-sm">Create request</button>
