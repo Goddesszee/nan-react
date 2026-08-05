@@ -897,9 +897,9 @@ function updateSwapRateDisplay(){
   if(isCircleWallet){
     const time=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
     if(swapFlipped){
-      el.innerHTML=`1 EURC ≈ ${(1/FX).toFixed(4)} USDC &nbsp;·&nbsp; <span style="color:var(--success);font-size:.65rem;">● live ${time}</span>`;
+      el.innerHTML=`1 EURC ≈ ${(1/FX).toFixed(4)} USDC &nbsp;·&nbsp; <span style="color:var(--success);font-size:.75rem;">● live ${time}</span>`;
     }else{
-      el.innerHTML=`1 USDC ≈ ${FX.toFixed(4)} EURC &nbsp;·&nbsp; <span style="color:var(--success);font-size:.65rem;">● live ${time}</span>`;
+      el.innerHTML=`1 USDC ≈ ${FX.toFixed(4)} EURC &nbsp;·&nbsp; <span style="color:var(--success);font-size:.75rem;">● live ${time}</span>`;
     }
     return;
   }
@@ -912,13 +912,13 @@ function updateSwapRateDisplay(){
       c.quoteEURCtoUSDC(oneUnit).then(q=>{
         const rate=parseFloat(ethers.formatUnits(q[0],6));
         const time=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-        el.innerHTML=`1 EURC ≈ ${rate.toFixed(4)} USDC &nbsp;·&nbsp; <span style="color:var(--success);font-size:.65rem;">● pool ${time}</span>`;
+        el.innerHTML=`1 EURC ≈ ${rate.toFixed(4)} USDC &nbsp;·&nbsp; <span style="color:var(--success);font-size:.75rem;">● pool ${time}</span>`;
       }).catch(()=>{});
     }else{
       c.quoteUSDCtoEURC(oneUnit).then(q=>{
         const rate=parseFloat(ethers.formatUnits(q[0],6));
         const time=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-        el.innerHTML=`1 USDC ≈ ${rate.toFixed(4)} EURC &nbsp;·&nbsp; <span style="color:var(--success);font-size:.65rem;">● pool ${time}</span>`;
+        el.innerHTML=`1 USDC ≈ ${rate.toFixed(4)} EURC &nbsp;·&nbsp; <span style="color:var(--success);font-size:.75rem;">● pool ${time}</span>`;
       }).catch(()=>{});
     }
   }catch(e){}
@@ -1684,11 +1684,11 @@ function doList(){
   openBillModal('List Your Service', `
     <div style="display:flex;flex-direction:column;gap:3px;">
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:18px 18px 4px 4px;padding:14px 16px;">
-        <div style="font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">Service name</div>
+        <div style="font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">Service name</div>
         <input id="listServiceName" type="text" placeholder="e.g. Logo Design" style="width:100%;background:none;border:none;outline:none;font-size:1.15rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:14px 16px;">
-        <div style="font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">Price</div>
+        <div style="font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">Price</div>
         <div style="display:flex;align-items:center;gap:10px;">
           <input id="listAmount" type="number" min="0.000001" step="0.01" placeholder="0.00" style="flex:1;min-width:0;background:none;border:none;outline:none;font-size:1.8rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
           <select id="listToken" style="background:var(--bg);border:1px solid var(--border2);border-radius:100px;padding:6px 14px;color:var(--text);font-size:.9rem;font-weight:700;flex-shrink:0;outline:none;cursor:pointer;">
@@ -1698,7 +1698,7 @@ function doList(){
         </div>
       </div>
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:4px 4px 18px 18px;padding:14px 16px;margin-bottom:14px;">
-        <div style="font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">Description (optional)</div>
+        <div style="font-size:.75rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:6px;">Description (optional)</div>
         <input id="listNote" type="text" placeholder="What's this for?" style="width:100%;background:none;border:none;outline:none;font-size:.95rem;font-weight:500;color:var(--text);font-family:'Inter',sans-serif;box-sizing:border-box;"/>
       </div>
       <button onclick="submitListService()" id="listBtn" style="width:100%;background:#2563EB;border:none;border-radius:14px;color:#fff;padding:15px;font-size:1rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">Create Payment Link</button>
@@ -1792,7 +1792,7 @@ async function doAjo(){
   }
   openBillModal('Group Savings', `
     <div style="background:rgba(37,99,235,.08);border:0.5px solid rgba(37,99,235,.2);border-radius:18px;padding:16px 18px;margin-bottom:18px;">
-      <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#2563EB;margin-bottom:5px;">Savings circle</div>
+      <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#2563EB;margin-bottom:5px;">Savings circle</div>
       <div style="font-size:.95rem;font-weight:600;color:var(--text);line-height:1.4;">Pool money. Take turns. No bank needed.</div>
       <div style="font-size:.76rem;color:var(--text3);margin-top:5px;line-height:1.55;">Everyone puts in the same amount each round. One person gets the full pot per round, on-chain, automatic, no one can skip.</div>
     </div>
@@ -1854,10 +1854,10 @@ async function groupSavingsLoadTransparency(){
       <div class="pcard">
         <div style="font-weight:700;font-size:.95rem;margin-bottom:14px;">${g.label || 'Group #'+groupId}</div>
         <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;">
-          <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:12px 14px;"><div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;">Status</div><div style="font-weight:700;font-size:.9rem;margin-top:2px;">${statusLabel[sIdx]}</div></div>
-          <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:12px 14px;"><div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;">Members joined</div><div style="font-weight:700;font-size:.9rem;margin-top:2px;">${g.memberCount} of ${g.maxMembers}, ${completionRate} percent</div></div>
-          <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:12px 14px;"><div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;">Completed rounds</div><div style="font-weight:700;font-size:.9rem;margin-top:2px;">${completedRounds}</div></div>
-          <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:12px 14px;"><div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;">Successful payouts</div><div style="font-weight:700;font-size:.9rem;margin-top:2px;">${successfulPayouts}</div></div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:12px 14px;"><div style="font-size:.75rem;color:var(--text3);text-transform:uppercase;">Status</div><div style="font-weight:700;font-size:.9rem;margin-top:2px;">${statusLabel[sIdx]}</div></div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:12px 14px;"><div style="font-size:.75rem;color:var(--text3);text-transform:uppercase;">Members joined</div><div style="font-weight:700;font-size:.9rem;margin-top:2px;">${g.memberCount} of ${g.maxMembers}, ${completionRate} percent</div></div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:12px 14px;"><div style="font-size:.75rem;color:var(--text3);text-transform:uppercase;">Completed rounds</div><div style="font-weight:700;font-size:.9rem;margin-top:2px;">${completedRounds}</div></div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:12px 14px;"><div style="font-size:.75rem;color:var(--text3);text-transform:uppercase;">Successful payouts</div><div style="font-weight:700;font-size:.9rem;margin-top:2px;">${successfulPayouts}</div></div>
         </div>
         <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:8px;">Members, in payout order</div>
         ${members.map((m,i) => `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.82rem;"><span style="color:var(--text2);">${i+1}. ${m.slice(0,6)}...${m.slice(-4)}</span>${i < completedRounds ? '<span style="color:#22C55E;font-weight:700;">Paid out</span>' : ''}</div>`).join('')}
@@ -1897,7 +1897,7 @@ async function loadMyAjoGroups(){
     }
     const statusLabel = ['Open','Live','Done'];
     const statusColor = ['#2563EB','#2563EB','#666'];
-    let html = `<div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:10px;">Your groups</div>`;
+    let html = `<div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:10px;">Your groups</div>`;
     for(const id of myGroups){
       const g = await c.getGroup(id);
       const sIdx = Number(g.status);
@@ -1909,18 +1909,18 @@ async function loadMyAjoGroups(){
         progressPct = Math.round((Number(contrib)/Number(tot))*100);
         progressLabel = `Round ${Number(g.currentRound)+1} of ${Number(g.memberCount)} · ${Number(contrib)}/${Number(tot)} paid`;
       } else if(isDone){ progressPct=100; progressLabel='Complete'; }
-      const creatorTag = isCreator ? `<span style="font-size:.62rem;color:#2563EB;font-weight:700;margin-left:6px;">Admin</span>` : '';
+      const creatorTag = isCreator ? `<span style="font-size:.75rem;color:#2563EB;font-weight:700;margin-left:6px;">Admin</span>` : '';
       html += `
         <div onclick="showAjoGroup(${id})" style="background:var(--card);border:0.5px solid var(--border);border-radius:18px;padding:15px 16px;margin-bottom:10px;cursor:pointer;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
             <div style="font-size:.9rem;font-weight:600;color:var(--text);">${g.label||'Group #'+id}${creatorTag}</div>
-            <span style="font-size:.62rem;font-weight:700;padding:3px 9px;border-radius:20px;background:${statusColor[sIdx]}1a;color:${statusColor[sIdx]};">${statusLabel[sIdx]}</span>
+            <span style="font-size:.75rem;font-weight:700;padding:3px 9px;border-radius:20px;background:${statusColor[sIdx]}1a;color:${statusColor[sIdx]};">${statusLabel[sIdx]}</span>
           </div>
           <div style="font-size:.74rem;color:var(--text3);margin-bottom:10px;">${g.memberCount}/${g.maxMembers} members · ${ethers.formatUnits(g.contributionAmount,6)} USDC/round</div>
           ${progressPct>0?`<div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:5px;">
             <div style="height:100%;width:${progressPct}%;background:${isDone?'#2563EB':'#2563EB'};border-radius:2px;"></div>
           </div>`:''}
-          <div style="font-size:.68rem;color:var(--text3);margin-top:${progressPct>0?0:2}px;">${progressLabel}</div>
+          <div style="font-size:.75rem;color:var(--text3);margin-top:${progressPct>0?0:2}px;">${progressLabel}</div>
         </div>`;
     }
     el.innerHTML = html;
@@ -2064,7 +2064,7 @@ function _checkAjoDeepLink(){
     // Open Ajo modal with the code pre-filled
     openBillModal('Group Savings',`
       <div style="background:rgba(37,99,235,.08);border:0.5px solid rgba(37,99,235,.2);border-radius:18px;padding:16px 18px;margin-bottom:18px;">
-        <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#2563EB;margin-bottom:5px;">Savings circle</div>
+        <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#2563EB;margin-bottom:5px;">Savings circle</div>
         <div style="font-size:.95rem;font-weight:600;color:var(--text);line-height:1.4;">You've been invited to join a savings group.</div>
         <div style="font-size:.76rem;color:var(--text3);margin-top:5px;line-height:1.55;">Everyone puts in the same amount each round. One person gets the full pot — on-chain, automatic.</div>
       </div>
@@ -2088,7 +2088,7 @@ function showAjoGroupCode(groupId, label){
       <div style="font-size:.78rem;color:var(--text3);">Share this code so your members can join.</div>
     </div>
     <div style="background:rgba(37,99,235,.08);border:0.5px solid rgba(37,99,235,.25);border-radius:18px;padding:20px;margin-bottom:14px;text-align:center;">
-      <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#2563EB;margin-bottom:8px;">Invite code</div>
+      <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#2563EB;margin-bottom:8px;">Invite code</div>
       <div style="font-size:1.9rem;font-weight:800;color:#2563EB;letter-spacing:.06em;font-family:'DM Mono','Roboto Mono',monospace;">${displayCode}</div>
       <div style="font-size:.72rem;color:var(--text3);margin-top:8px;">Only you see this. Members enter this code to join.</div>
     </div>
@@ -2200,7 +2200,7 @@ async function showAjoGroup(groupId){
       inviteHtml=`
         <div style="background:rgba(37,99,235,.07);border:0.5px solid rgba(37,99,235,.2);border-radius:16px;padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;">
           <div>
-            <div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#2563EB;margin-bottom:3px;">Invite code</div>
+            <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#2563EB;margin-bottom:3px;">Invite code</div>
             <div style="font-size:1.2rem;font-weight:800;color:#2563EB;letter-spacing:.04em;font-family:'DM Mono','Roboto Mono',monospace;">${_dc}</div>
           </div>
           <div style="display:flex;flex-direction:column;gap:6px;">
@@ -2224,7 +2224,7 @@ async function showAjoGroup(groupId){
         const bg=paid?'rgba(37,99,235,.25)':'rgba(255,255,255,.07)';
         const col=paid?'#2563EB':'var(--text3)';
         const init=(members[i].slice(2,3)+members[i].slice(3,4)).toUpperCase();
-        avatarDots+=`<div style="width:30px;height:30px;border-radius:50%;background:${bg};border:1.5px solid var(--bg);display:flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:700;color:${col};margin-left:-6px;flex-shrink:0;">${init}</div>`;
+        avatarDots+=`<div style="width:30px;height:30px;border-radius:50%;background:${bg};border:1.5px solid var(--bg);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:${col};margin-left:-6px;flex-shrink:0;">${init}</div>`;
       }
       const roundBg=itsYourTurn?'rgba(37,99,235,.08)':'var(--surface)';
       const roundBorder=itsYourTurn?'rgba(37,99,235,.28)':'var(--border)';
@@ -2251,13 +2251,13 @@ async function showAjoGroup(groupId){
       const avatarCol=isThisRound?'#2563EB':isMe?'#2563EB':'var(--text3)';
       const init=(m.slice(2,3)+m.slice(3,4)).toUpperCase();
       const nameLabel=isMe?'You':m.slice(0,6)+'…'+m.slice(-4);
-      const adminTag=isCreatorMember?`<span style="font-size:.58rem;color:#2563EB;font-weight:700;margin-left:4px;">Admin</span>`:'';
+      const adminTag=isCreatorMember?`<span style="font-size:.75rem;color:#2563EB;font-weight:700;margin-left:4px;">Admin</span>`:'';
       let rightTag='';
-      if(isThisRound&&isActive) rightTag=`<span style="font-size:.65rem;color:#2563EB;font-weight:700;">← This round</span>`;
-      else if(isPastRound) rightTag=`<span style="font-size:.65rem;color:#000000;">Received ✓</span>`;
+      if(isThisRound&&isActive) rightTag=`<span style="font-size:.75rem;color:#2563EB;font-weight:700;">← This round</span>`;
+      else if(isPastRound) rightTag=`<span style="font-size:.75rem;color:#000000;">Received ✓</span>`;
       return `<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:0.5px solid rgba(255,255,255,.05);">
         <div style="width:20px;font-size:.7rem;color:#000000;text-align:right;flex-shrink:0;">${i+1}</div>
-        <div style="width:32px;height:32px;border-radius:50%;background:${avatarBg};display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;color:${avatarCol};flex-shrink:0;">${init}</div>
+        <div style="width:32px;height:32px;border-radius:50%;background:${avatarBg};display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:${avatarCol};flex-shrink:0;">${init}</div>
         <div style="flex:1;font-size:.82rem;color:${isMe||isThisRound?'var(--text)':'var(--text3)'};font-weight:${isMe||isThisRound?'600':'400'};">${nameLabel}${adminTag}</div>
         ${rightTag}
       </div>`;
@@ -2291,12 +2291,12 @@ async function showAjoGroup(groupId){
       <button onclick="doAjo()" style="background:none;border:none;color:var(--text3);font-size:.82rem;cursor:pointer;margin-bottom:16px;padding:0;">← Back</button>
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
         <div style="font-size:1.05rem;font-weight:700;color:var(--text);">${g.label||'Group #'+groupId}</div>
-        <span style="font-size:.62rem;font-weight:700;padding:3px 9px;border-radius:20px;background:${statusColor[sIdx]}1a;color:${statusColor[sIdx]};flex-shrink:0;margin-left:8px;">${statusLabel[sIdx]}</span>
+        <span style="font-size:.75rem;font-weight:700;padding:3px 9px;border-radius:20px;background:${statusColor[sIdx]}1a;color:${statusColor[sIdx]};flex-shrink:0;margin-left:8px;">${statusLabel[sIdx]}</span>
       </div>
       <div style="font-size:.74rem;color:var(--text3);margin-bottom:16px;">${g.memberCount}/${g.maxMembers} members · ${ethers.formatUnits(g.contributionAmount,6)} USDC/round</div>
       <div style="background:var(--card);border:0.5px solid var(--border);border-radius:20px;padding:16px;margin-bottom:12px;">
         ${inviteHtml}${roundHtml}
-        <div style="font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:8px;">Payout order</div>
+        <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:8px;">Payout order</div>
         <div style="border-radius:14px;overflow:hidden;">${memberRows}</div>
         ${actionHtml}
         <div id="ajoGroupStatus" style="font-size:.78rem;color:var(--text);margin-top:10px;"></div>
@@ -3144,12 +3144,12 @@ function showReceipt(){
               </div>
               <div>
                 <div style="font-size:.8rem;font-weight:800;color:#fff;letter-spacing:.06em;">NAN WALLET</div>
-                <div style="font-size:.65rem;color:#ffffff;letter-spacing:.1em;">ARC TESTNET</div>
+                <div style="font-size:.75rem;color:#ffffff;letter-spacing:.1em;">ARC TESTNET</div>
               </div>
             </div>
             <div style="text-align:right;">
-              <div style="font-size:.65rem;color:#ffffff;font-family:monospace;">${dateStr}</div>
-              <div style="font-size:.65rem;color:#ffffff;font-family:monospace;">${timeStr}</div>
+              <div style="font-size:.75rem;color:#ffffff;font-family:monospace;">${dateStr}</div>
+              <div style="font-size:.75rem;color:#ffffff;font-family:monospace;">${timeStr}</div>
             </div>
           </div>
           <!-- Big checkmark + amount -->
@@ -3186,7 +3186,7 @@ function showReceipt(){
 
           <!-- Powered by -->
           <div style="text-align:center;padding:10px;border-top:1px solid rgba(37,99,235,.15);margin-bottom:16px;">
-            <div style="font-size:.62rem;color:#6b21a8;letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px;">Powered by</div>
+            <div style="font-size:.75rem;color:#6b21a8;letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px;">Powered by</div>
             <div style="display:flex;align-items:center;justify-content:center;gap:8px;">
               <span style="font-size:.7rem;color:#2563EB;font-weight:600;">Circle USDC</span>
               <span style="color:#3b0764;">·</span>
@@ -3505,7 +3505,7 @@ function _applyQuote(q){
   const feeStr=q.fees?.length?' · Fee: '+q.fees.map(f=>f.amount+' '+f.token).join(', '):'';
   const t=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
   const el=document.getElementById('swapRate');
-  if(el)el.innerHTML=`1 ${q.tokenIn} ≈ ${parseFloat(q.rate).toFixed(4)} ${q.tokenOut}${feeStr} &nbsp;·&nbsp; <span style="color:var(--success);font-size:.65rem;">● App Kit ${t}</span>`;
+  if(el)el.innerHTML=`1 ${q.tokenIn} ≈ ${parseFloat(q.rate).toFixed(4)} ${q.tokenOut}${feeStr} &nbsp;·&nbsp; <span style="color:var(--success);font-size:.75rem;">● App Kit ${t}</span>`;
 }
 
 // ── cirBTC Lend/Borrow (NANLendingPool v2) ──────────────────────────────────
@@ -4185,12 +4185,12 @@ async function pollIrisAttestation(txHash, destChain) {
               <div style="font-size:.72rem;color:#000000;line-height:1.7;margin-bottom:10px;">
                 Your USDC is burned on Arc. To receive it on <strong style="color:#ccc;">${destName}</strong>, complete the mint using the attestation below.
               </div>
-              <div style="font-size:.68rem;font-family:'JetBrains Mono',monospace;color:#aaa;margin-bottom:6px;">MessageTransmitter on ${destName}:</div>
-              <div style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:#2563EB;background:#111;padding:6px 10px;border-radius:7px;margin-bottom:10px;word-break:break-all;">${transmitterAddr}</div>
-              <div style="font-size:.68rem;font-family:'JetBrains Mono',monospace;color:#aaa;margin-bottom:4px;">Message bytes:</div>
-              <div style="font-family:'JetBrains Mono',monospace;font-size:.58rem;color:#666;background:#111;padding:6px 10px;border-radius:7px;margin-bottom:6px;word-break:break-all;">${message}</div>
-              <div style="font-size:.68rem;font-family:'JetBrains Mono',monospace;color:#aaa;margin-bottom:4px;">Attestation:</div>
-              <div style="font-family:'JetBrains Mono',monospace;font-size:.58rem;color:#666;background:#111;padding:6px 10px;border-radius:7px;margin-bottom:12px;word-break:break-all;">${attestation}</div>
+              <div style="font-size:.75rem;font-family:'JetBrains Mono',monospace;color:#aaa;margin-bottom:6px;">MessageTransmitter on ${destName}:</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:.75rem;color:#2563EB;background:#111;padding:6px 10px;border-radius:7px;margin-bottom:10px;word-break:break-all;">${transmitterAddr}</div>
+              <div style="font-size:.75rem;font-family:'JetBrains Mono',monospace;color:#aaa;margin-bottom:4px;">Message bytes:</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:.75rem;color:#666;background:#111;padding:6px 10px;border-radius:7px;margin-bottom:6px;word-break:break-all;">${message}</div>
+              <div style="font-size:.75rem;font-family:'JetBrains Mono',monospace;color:#aaa;margin-bottom:4px;">Attestation:</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:.75rem;color:#666;background:#111;padding:6px 10px;border-radius:7px;margin-bottom:12px;word-break:break-all;">${attestation}</div>
               <div style="display:flex;gap:8px;flex-wrap:wrap;">
                 <button onclick="navigator.clipboard.writeText('${message}').then(()=>toast('Message copied','success',2000))" style="background:#222;border:1px solid #1a1a1a;border-radius:8px;color:#aaa;padding:6px 12px;font-size:.7rem;cursor:pointer;font-family:'Inter',sans-serif;">Copy Message</button>
                 <button onclick="navigator.clipboard.writeText('${attestation}').then(()=>toast('Attestation copied','success',2000))" style="background:#222;border:1px solid #1a1a1a;border-radius:8px;color:#aaa;padding:6px 12px;font-size:.7rem;cursor:pointer;font-family:'Inter',sans-serif;">Copy Attestation</button>
@@ -4510,12 +4510,12 @@ function renderHistory(){
   }
   function statusBadge(tx){
     const isSim=tx.hash?.startsWith('sim-');
-    if(isSim) return `<span style="font-size:.55rem;background:rgba(37,99,235,.1);color:#2563EB;border:1px solid rgba(37,99,235,.2);border-radius:100px;padding:2px 7px;">simulated</span>`;
+    if(isSim) return `<span style="font-size:.75rem;background:rgba(37,99,235,.1);color:#2563EB;border:1px solid rgba(37,99,235,.2);border-radius:100px;padding:2px 7px;">simulated</span>`;
     const isRealHash=tx.hash&&tx.hash.startsWith('0x')&&tx.hash.length===66;
     const st=(!isRealHash||tx.confirmed)?'confirmed':tx.failed?'failed':'pending';
     const map={confirmed:['rgba(37,99,235,.1)','#2563EB','rgba(37,99,235,.2)'],failed:['rgba(37,99,235,.1)','#60A5FA','rgba(37,99,235,.2)'],pending:['rgba(37,99,235,.08)','#2563EB','rgba(37,99,235,.15)']};
     const [bg,col,bd]=map[st];
-    return `<span style="font-size:.55rem;background:${bg};color:${col};border:1px solid ${bd};border-radius:100px;padding:2px 7px;font-weight:600;">${st}</span>`;
+    return `<span style="font-size:.75rem;background:${bg};color:${col};border:1px solid ${bd};border-radius:100px;padding:2px 7px;font-weight:600;">${st}</span>`;
   }
   function renderTxRow(tx){
     const isSim=tx.hash?.startsWith('sim-');
@@ -4529,15 +4529,15 @@ function renderHistory(){
     const isRealHash=tx.hash&&tx.hash.startsWith('0x')&&tx.hash.length===66;
     const href=isRealHash?`${ARC_EXP}/tx/${tx.hash}`:`${ARC_EXP}/address/${userAddr}`;
     const viewLink=!isSim?(isRealHash
-      ?`<a href="${href}" target="_blank" onclick="verifyTx('${tx.hash}',event)" style="font-size:.58rem;color:var(--accent3);text-decoration:none;">View ↗</a>`
-      :`<a href="${href}" target="_blank" style="font-size:.58rem;color:var(--accent3);text-decoration:none;">Wallet ↗</a>`):'';
+      ?`<a href="${href}" target="_blank" onclick="verifyTx('${tx.hash}',event)" style="font-size:.75rem;color:var(--accent3);text-decoration:none;">View ↗</a>`
+      :`<a href="${href}" target="_blank" style="font-size:.75rem;color:var(--accent3);text-decoration:none;">Wallet ↗</a>`):'';
     const ico=ICONS[type]||ICONS.out;
     return `<div style="display:flex;align-items:center;gap:12px;background:var(--card);border-bottom:1px solid var(--border);padding:13px 14px;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='rgba(37,99,235,.04)'" onmouseout="this.style.background='var(--card)'">
       <div style="width:38px;height:38px;border-radius:12px;background:${ICO_BG[type]||ICO_BG.out};border:1px solid ${ICO_BD[type]||ICO_BD.out};display:flex;align-items:center;justify-content:center;flex-shrink:0;">${ico}</div>
       <div style="flex:1;min-width:0;">
         <div style="font-size:.85rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${label}</div>
         <div style="display:flex;align-items:center;gap:6px;margin-top:3px;flex-wrap:wrap;">
-          <span style="font-size:.6rem;color:var(--text3);">${timeLabel(tx.ts)}</span>
+          <span style="font-size:.75rem;color:var(--text3);">${timeLabel(tx.ts)}</span>
           ${statusBadge(tx)}
         </div>
       </div>
@@ -4559,7 +4559,7 @@ function renderHistory(){
   let html='';
   Object.keys(groups).forEach(group=>{
     html+=`<div style="margin-bottom:8px;">
-      <div style="font-size:.58rem;color:var(--text3);letter-spacing:.14em;text-transform:uppercase;margin:10px 2px 6px;">${group}</div>
+      <div style="font-size:.75rem;color:var(--text3);letter-spacing:.14em;text-transform:uppercase;margin:10px 2px 6px;">${group}</div>
       <div style="border-radius:14px;overflow:hidden;border:1px solid var(--border);">${groups[group].map(renderTxRow).join('')}</div>
     </div>`;
   });
@@ -4724,10 +4724,10 @@ function renderBulkRecipients(){
   }
   el.innerHTML = bulkRecipients.map((r,i) => `
     <div style="display:flex;align-items:center;gap:7px;padding:9px 11px;background:var(--surface);border:1px solid var(--border);border-radius:11px;">
-      <div style="width:22px;height:22px;border-radius:50%;background:rgba(37,99,235,.15);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:var(--accent3);flex-shrink:0;">${i+1}</div>
+      <div style="width:22px;height:22px;border-radius:50%;background:rgba(37,99,235,.15);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:var(--accent3);flex-shrink:0;">${i+1}</div>
       <div style="flex:1;min-width:0;">
         ${r.name ? `<div style="font-size:.78rem;font-weight:600;color:var(--accent3);">${r.name}</div>` : ''}
-        <div style="font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.addr.slice(0,10)}…${r.addr.slice(-6)}</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.addr.slice(0,10)}…${r.addr.slice(-6)}</div>
       </div>
       <div style="display:flex;align-items:center;gap:5px;flex-shrink:0;">
         <input type="number" value="${r.amount}" min="0.01" step="0.01"
@@ -4865,7 +4865,7 @@ function renderPayrollHistory(){
         <span style="font-size:.78rem;font-weight:600;color:var(--text);">${new Date(h.date).toLocaleDateString()} · ${new Date(h.date).toLocaleTimeString()}</span>
         <span style="font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:700;color:var(--accent3);">${h.total} ${h.token}</span>
       </div>
-      <div style="font-size:.68rem;color:var(--text3);">${h.sent} sent · ${h.failed} failed · ${h.recipients.length} recipients</div>
+      <div style="font-size:.75rem;color:var(--text3);">${h.sent} sent · ${h.failed} failed · ${h.recipients.length} recipients</div>
     </div>`).join('');
 }
 
@@ -8340,9 +8340,9 @@ function renderMyArcNames(){
     <div class="arcname-row">
       <div>
         <div style="font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:600;color:var(--text);">${n.name}.arc</div>
-        <div style="font-size:.65rem;color:var(--text3);">Expires ${n.expires}</div>
+        <div style="font-size:.75rem;color:var(--text3);">Expires ${n.expires}</div>
       </div>
-      <span style="font-size:.65rem;padding:3px 8px;border-radius:4px;background:rgba(37,99,235,.08);color:var(--success);border:1px solid rgba(37,99,235,.2);">Active</span>
+      <span style="font-size:.75rem;padding:3px 8px;border-radius:4px;background:rgba(37,99,235,.08);color:var(--success);border:1px solid rgba(37,99,235,.2);">Active</span>
     </div>
   `).join('');
 }
@@ -8354,7 +8354,7 @@ function renderArcDirectory(){
     <div class="arcname-row" style="cursor:pointer;" onclick="prefillSend('${n.owner}')">
       <div>
         <div style="font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:600;color:var(--accent3);">${n.name}.arc</div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--text3);">${short(n.owner)}</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--text3);">${short(n.owner)}</div>
       </div>
       <button class="send-sm">Send</button>
     </div>
@@ -8516,7 +8516,7 @@ function calcNgnConvert(){
 function flipNgnConvert(){
   ngnFlipped=!ngnFlipped;
   const el=document.getElementById('ngnFromToken');
-  el.innerHTML=ngnFlipped?(ngnToToken==='USDC'?'<span class="tok-dot usdc-dot"></span>USDC ▾':'<span class="tok-dot eurc-dot"></span>EURC ▾'):'NGN NGN <span style="font-size:.65rem;color:var(--text3);margin-left:2px;">▾</span>';
+  el.innerHTML=ngnFlipped?(ngnToToken==='USDC'?'<span class="tok-dot usdc-dot"></span>USDC ▾':'<span class="tok-dot eurc-dot"></span>EURC ▾'):'NGN NGN <span style="font-size:.75rem;color:var(--text3);margin-left:2px;">▾</span>';
   document.getElementById('ngnConvertFrom').value='';
   document.getElementById('ngnConvertTo').value='';
   document.getElementById('ngnConvertBtn').textContent=ngnFlipped?ngnToToken+' → NGN':'NGN → '+ngnToToken;
@@ -8524,7 +8524,7 @@ function flipNgnConvert(){
 function toggleNgnToToken(){
   ngnToToken=ngnToToken==='USDC'?'EURC':'USDC';
   const el=document.getElementById('ngnToToken');
-  el.innerHTML=ngnToToken==='USDC'?'<span class="tok-dot usdc-dot"></span>USDC <span style="font-size:.65rem;color:var(--text3);">▾</span>':'<span class="tok-dot eurc-dot"></span>EURC <span style="font-size:.65rem;color:var(--text3);">▾</span>';
+  el.innerHTML=ngnToToken==='USDC'?'<span class="tok-dot usdc-dot"></span>USDC <span style="font-size:.75rem;color:var(--text3);">▾</span>':'<span class="tok-dot eurc-dot"></span>EURC <span style="font-size:.75rem;color:var(--text3);">▾</span>';
   document.getElementById('ngnRateDisplay').textContent='NGN'+(ngnToToken==='USDC'?NGN_USDC_RATE:NGN_EURC_RATE)+' = 1 '+ngnToToken;
   document.getElementById('ngnToBalLabel').textContent='Bal: '+(ngnToToken==='USDC'?parseFloat(usdcBal).toFixed(2):parseFloat(eurcBal).toFixed(2))+' '+ngnToToken;
   document.getElementById('ngnConvertBtn').textContent='Convert NGN → '+ngnToToken;
@@ -9086,7 +9086,7 @@ function renderPaymentRequests(){
     const statusColor=status==='paid'?'var(--success)':status==='expired'?'var(--warning)':'var(--accent3)';
     const statusLabel=status==='paid'?'Paid':status==='expired'?'Expired':'Pending';
     const amtText=pr.amount?parseFloat(pr.amount).toFixed(2)+' '+pr.token:'Open, '+pr.token;
-    return `<div onclick="viewPaymentRequest('${pr.id}')" style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--border);cursor:pointer;" onmouseover="this.style.background='rgba(37,99,235,.04)'" onmouseout="this.style.background=''"><div style="display:flex;align-items:center;gap:10px;"><div style="width:36px;height:36px;border-radius:10px;background:rgba(37,99,235,.1);border:1px solid rgba(37,99,235,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg></div><div><div style="font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:2px;">${pr.label}</div><div style="font-size:.72rem;color:var(--text3);">${new Date(pr.createdAt).toLocaleDateString()}</div></div></div><div style="text-align:right;"><div style="font-size:.88rem;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace;">${amtText}</div><div style="font-size:.68rem;font-weight:600;color:${statusColor};">${statusLabel}</div></div></div>`;
+    return `<div onclick="viewPaymentRequest('${pr.id}')" style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--border);cursor:pointer;" onmouseover="this.style.background='rgba(37,99,235,.04)'" onmouseout="this.style.background=''"><div style="display:flex;align-items:center;gap:10px;"><div style="width:36px;height:36px;border-radius:10px;background:rgba(37,99,235,.1);border:1px solid rgba(37,99,235,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg></div><div><div style="font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:2px;">${pr.label}</div><div style="font-size:.72rem;color:var(--text3);">${new Date(pr.createdAt).toLocaleDateString()}</div></div></div><div style="text-align:right;"><div style="font-size:.88rem;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace;">${amtText}</div><div style="font-size:.75rem;font-weight:600;color:${statusColor};">${statusLabel}</div></div></div>`;
   }).join('');
 }
 
@@ -9116,9 +9116,9 @@ function renderPRAnalytics(){
   const avgPaymentTimeLabel = avgPaymentTimeMs ? (avgPaymentTimeMs < 3600000 ? Math.round(avgPaymentTimeMs/60000)+' minutes' : Math.round(avgPaymentTimeMs/3600000)+' hours') : 'Not enough data';
   el.innerHTML = `
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
-      <div class="pcard" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 18px;"><div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;">Total revenue</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;margin-top:4px;">${totalRevenue.toFixed(2)}</div></div>
-      <div class="pcard" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 18px;"><div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;">Payments received</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;margin-top:4px;">${paidReqs.length}</div></div>
-      <div class="pcard" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 18px;"><div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;">Avg payment time</div><div style="font-size:1rem;font-weight:700;margin-top:4px;">${avgPaymentTimeLabel}</div></div>
+      <div class="pcard" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 18px;"><div style="font-size:.75rem;color:var(--text3);text-transform:uppercase;">Total revenue</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;margin-top:4px;">${totalRevenue.toFixed(2)}</div></div>
+      <div class="pcard" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 18px;"><div style="font-size:.75rem;color:var(--text3);text-transform:uppercase;">Payments received</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;margin-top:4px;">${paidReqs.length}</div></div>
+      <div class="pcard" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 18px;"><div style="font-size:.75rem;color:var(--text3);text-transform:uppercase;">Avg payment time</div><div style="font-size:1rem;font-weight:700;margin-top:4px;">${avgPaymentTimeLabel}</div></div>
     </div>`;
 }
 function openMostRecentRequestView(){
@@ -9556,7 +9556,7 @@ async function loadAdminStats(){
         const recEl=document.getElementById('statRecentWallets');
         const wallets=d.recentWallets||[];
         recEl.innerHTML=wallets.length===0?'<div style="font-size:.75rem;color:#666;">No activity yet</div>':
-          wallets.map(a=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#1a1a1a;border:1px solid #1a1a1a;border-radius:10px;margin-bottom:4px;"><div style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#2563EB;display:inline-block;"></span><span style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:#ccc;">${a.slice(0,8)}…${a.slice(-6)}</span></div><a href="https://testnet.arcscan.app/address/${a}" target="_blank" style="font-size:.6rem;color:#2563EB;text-decoration:none;">View ↗</a></div>`).join('');
+          wallets.map(a=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#1a1a1a;border:1px solid #1a1a1a;border-radius:10px;margin-bottom:4px;"><div style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#2563EB;display:inline-block;"></span><span style="font-family:'JetBrains Mono',monospace;font-size:.75rem;color:#ccc;">${a.slice(0,8)}…${a.slice(-6)}</span></div><a href="https://testnet.arcscan.app/address/${a}" target="_blank" style="font-size:.75rem;color:#2563EB;text-decoration:none;">View ↗</a></div>`).join('');
         document.getElementById('adminLastRefresh').textContent=new Date().toLocaleTimeString()+(d.cached?' (cached)':'');
         loading.style.display='none';
         statsEl.style.display='block';
@@ -9794,7 +9794,7 @@ async function loadAdminStats(){
 
     function renderWalletList(pairs, formatVal){
       if(!pairs.length)return'<div style="font-size:.75rem;color:#666;">No activity yet</div>';
-      return pairs.map(([a,v])=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#1a1a1a;border:1px solid #1a1a1a;border-radius:10px;margin-bottom:4px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:#ccc;">${a.slice(0,8)}…${a.slice(-6)}</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:.65rem;color:#2563EB;font-weight:700;">${formatVal(v)}</span><a href="https://testnet.arcscan.app/address/${a}" target="_blank" style="font-size:.6rem;color:#2563EB;text-decoration:none;">View ↗</a></div></div>`).join('');
+      return pairs.map(([a,v])=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#1a1a1a;border:1px solid #1a1a1a;border-radius:10px;margin-bottom:4px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-family:'JetBrains Mono',monospace;font-size:.75rem;color:#ccc;">${a.slice(0,8)}…${a.slice(-6)}</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:.75rem;color:#2563EB;font-weight:700;">${formatVal(v)}</span><a href="https://testnet.arcscan.app/address/${a}" target="_blank" style="font-size:.75rem;color:#2563EB;text-decoration:none;">View ↗</a></div></div>`).join('');
     }
 
     const swapEl=document.getElementById('statTopSwap');if(swapEl)swapEl.innerHTML=renderWalletList(topSwap,v=>v+' txns');
@@ -9816,7 +9816,7 @@ async function loadAdminStats(){
     const recEl=document.getElementById('statRecentWallets');
     const top=[...recent.entries()].sort((a,b)=>b[1]-a[1]).slice(0,8);
     recEl.innerHTML=top.length===0?'<div style="font-size:.75rem;color:#666;">No activity yet</div>':
-      top.map(([a])=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#1a1a1a;border:1px solid #1a1a1a;border-radius:10px;margin-bottom:4px;"><div style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#2563EB;display:inline-block;"></span><span style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:#ccc;">${a.slice(0,8)}…${a.slice(-6)}</span></div><a href="https://testnet.arcscan.app/address/${a}" target="_blank" style="font-size:.6rem;color:#2563EB;text-decoration:none;">View ↗</a></div>`).join('');
+      top.map(([a])=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#1a1a1a;border:1px solid #1a1a1a;border-radius:10px;margin-bottom:4px;"><div style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#2563EB;display:inline-block;"></span><span style="font-family:'JetBrains Mono',monospace;font-size:.75rem;color:#ccc;">${a.slice(0,8)}…${a.slice(-6)}</span></div><a href="https://testnet.arcscan.app/address/${a}" target="_blank" style="font-size:.75rem;color:#2563EB;text-decoration:none;">View ↗</a></div>`).join('');
 
     document.getElementById('adminLastRefresh').textContent=new Date().toLocaleTimeString()+' · all-time';
     loading.style.display='none';
@@ -9867,15 +9867,15 @@ async function loadAdminPoolStats(){
       lendEl.innerHTML=`
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px;">
           <div style="background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.18);border-radius:10px;padding:10px;">
-            <div style="font-size:.6rem;color:var(--text3);margin-bottom:3px;">TOTAL SUPPLIED</div>
+            <div style="font-size:.75rem;color:var(--text3);margin-bottom:3px;">TOTAL SUPPLIED</div>
             <div style="font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:700;color:#2563EB;">${ts.toFixed(2)}</div>
           </div>
           <div style="background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.18);border-radius:10px;padding:10px;">
-            <div style="font-size:.6rem;color:var(--text3);margin-bottom:3px;">TOTAL BORROWED</div>
+            <div style="font-size:.75rem;color:var(--text3);margin-bottom:3px;">TOTAL BORROWED</div>
             <div style="font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:700;color:#2563EB;">${tb.toFixed(2)}</div>
           </div>
           <div style="background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.18);border-radius:10px;padding:10px;">
-            <div style="font-size:.6rem;color:var(--text3);margin-bottom:3px;">AVAILABLE</div>
+            <div style="font-size:.75rem;color:var(--text3);margin-bottom:3px;">AVAILABLE</div>
             <div style="font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:700;color:${color};">${avail.toFixed(2)}</div>
           </div>
         </div>
@@ -11853,7 +11853,7 @@ function _a2aEscrowMode(mode) {
       ${_a2aAddrInput('a2aEscTo','Pay to (.arc or 0x...)')}
       ${_a2aAmtInput('a2aEscAmt')}
       <input id="a2aEscTask" placeholder="Task description" style="width:100%;padding:9px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.8rem;box-sizing:border-box;margin-bottom:8px;"/>
-      <div style="font-size:.68rem;color:var(--text3);margin-bottom:8px;">Funds stay in your wallet, locked until you release. Recipient must attest completion first.</div>
+      <div style="font-size:.75rem;color:var(--text3);margin-bottom:8px;">Funds stay in your wallet, locked until you release. Recipient must attest completion first.</div>
       <button onclick="_a2aEscrowCreate()" style="width:100%;padding:9px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;">Create Escrow</button>
       <div id="a2aEscCreateResult" style="margin-top:8px;"></div>
     `;
@@ -11891,10 +11891,10 @@ async function _a2aEscrowList(direction) {
       <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:6px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
           <span style="font-size:.85rem;font-weight:700;color:var(--text);">${e.amount} ${e.token}</span>
-          <span style="font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:10px;background:${_a2aStatusColor(e.status)}22;color:${_a2aStatusColor(e.status)};text-transform:uppercase;">${e.status}</span>
+          <span style="font-size:.75rem;font-weight:700;padding:2px 8px;border-radius:10px;background:${_a2aStatusColor(e.status)}22;color:${_a2aStatusColor(e.status)};text-transform:uppercase;">${e.status}</span>
         </div>
         <div style="font-size:.7rem;color:var(--text3);margin-bottom:6px;">${e.task || 'No description'}</div>
-        <div style="font-size:.68rem;font-family:monospace;color:var(--text3);margin-bottom:6px;">${direction==='sent'?'To':'From'}: ${(direction==='sent'?e.toWallet:e.fromWallet).slice(0,10)}...</div>
+        <div style="font-size:.75rem;font-family:monospace;color:var(--text3);margin-bottom:6px;">${direction==='sent'?'To':'From'}: ${(direction==='sent'?e.toWallet:e.fromWallet).slice(0,10)}...</div>
         ${direction==='received' && e.status==='pending' ? `<button onclick="_a2aEscrowAttest('${e.id}')" style="width:100%;padding:7px;border-radius:8px;background:#2563EB;border:none;color:#fff;font-size:.74rem;font-weight:700;cursor:pointer;">Attest Completion</button>` : ''}
         ${direction==='sent' && e.status==='attested' ? `<button onclick="_a2aEscrowRelease('${e.id}')" style="width:100%;padding:7px;border-radius:8px;background:#2563EB;border:none;color:#fff;font-size:.74rem;font-weight:700;cursor:pointer;">Release Funds</button>` : ''}
         ${direction==='sent' && e.status==='pending' ? `<button onclick="_a2aEscrowRefund('${e.id}')" style="width:100%;padding:7px;border-radius:8px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.74rem;cursor:pointer;">Cancel / Refund</button>` : ''}
@@ -11971,10 +11971,10 @@ async function _a2aRecurringList() {
       <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:6px;opacity:${s.active?1:.5};">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
           <span style="font-size:.85rem;font-weight:700;color:var(--text);">${s.amount} ${s.token} ${s.label?'· '+s.label:''}</span>
-          <span style="font-size:.68rem;color:${s.active?'#2563EB':'#6b7280'};font-weight:700;">${s.active?'ACTIVE':'CANCELLED'}</span>
+          <span style="font-size:.75rem;color:${s.active?'#2563EB':'#6b7280'};font-weight:700;">${s.active?'ACTIVE':'CANCELLED'}</span>
         </div>
-        <div style="font-size:.68rem;font-family:monospace;color:var(--text3);margin-bottom:4px;">To: ${s.toWallet.slice(0,10)}... · every ${s.intervalSeconds>=86400?(s.intervalSeconds/86400)+'d':(s.intervalSeconds/3600)+'h'}</div>
-        <div style="font-size:.68rem;color:var(--text3);margin-bottom:6px;">${s.runCount} run${s.runCount===1?'':'s'}${s.skipCount?', '+s.skipCount+' skipped':''}${s.condition?' · min-balance condition set':''}</div>
+        <div style="font-size:.75rem;font-family:monospace;color:var(--text3);margin-bottom:4px;">To: ${s.toWallet.slice(0,10)}... · every ${s.intervalSeconds>=86400?(s.intervalSeconds/86400)+'d':(s.intervalSeconds/3600)+'h'}</div>
+        <div style="font-size:.75rem;color:var(--text3);margin-bottom:6px;">${s.runCount} run${s.runCount===1?'':'s'}${s.skipCount?', '+s.skipCount+' skipped':''}${s.condition?' · min-balance condition set':''}</div>
         ${s.active ? `<button onclick="_a2aRecurringCancel('${s.id}')" style="width:100%;padding:6px;border-radius:8px;background:none;border:1px solid var(--border);color:#2563EB;font-size:.72rem;cursor:pointer;">Cancel</button>` : ''}
       </div>
     `).join('');
@@ -12006,7 +12006,7 @@ function _a2aInvMode(mode) {
   const body = document.getElementById('a2aInvBody');
   if (mode === 'create') {
     body.innerHTML = `
-      <div style="font-size:.68rem;color:var(--text3);margin-bottom:8px;">Request payment from another agent. If you're within their trust tier and spending policy, it may auto-honor immediately.</div>
+      <div style="font-size:.75rem;color:var(--text3);margin-bottom:8px;">Request payment from another agent. If you're within their trust tier and spending policy, it may auto-honor immediately.</div>
       ${_a2aAddrInput('a2aInvFrom','Request from (.arc or 0x...)')}
       ${_a2aAmtInput('a2aInvAmt')}
       <input id="a2aInvReason" placeholder="Reason" style="width:100%;padding:9px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.8rem;box-sizing:border-box;margin-bottom:8px;"/>
@@ -12048,10 +12048,10 @@ async function _a2aInvoiceList(direction) {
       <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:6px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
           <span style="font-size:.85rem;font-weight:700;color:var(--text);">${inv.amount} ${inv.token}</span>
-          <span style="font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:10px;background:${_a2aStatusColor(inv.status==='honored'?'released':inv.status==='pending'?'pending':'refunded')}22;color:${_a2aStatusColor(inv.status==='honored'?'released':inv.status==='pending'?'pending':'refunded')};text-transform:uppercase;">${inv.status}</span>
+          <span style="font-size:.75rem;font-weight:700;padding:2px 8px;border-radius:10px;background:${_a2aStatusColor(inv.status==='honored'?'released':inv.status==='pending'?'pending':'refunded')}22;color:${_a2aStatusColor(inv.status==='honored'?'released':inv.status==='pending'?'pending':'refunded')};text-transform:uppercase;">${inv.status}</span>
         </div>
         <div style="font-size:.7rem;color:var(--text3);margin-bottom:6px;">${inv.reason || 'No reason given'}</div>
-        <div style="font-size:.68rem;font-family:monospace;color:var(--text3);margin-bottom:6px;">${direction==='incoming'?'Requested by':'Requested from'}: ${(direction==='incoming'?inv.toWallet:inv.fromWallet).slice(0,10)}...</div>
+        <div style="font-size:.75rem;font-family:monospace;color:var(--text3);margin-bottom:6px;">${direction==='incoming'?'Requested by':'Requested from'}: ${(direction==='incoming'?inv.toWallet:inv.fromWallet).slice(0,10)}...</div>
         ${direction==='incoming' && inv.status==='pending' ? `
           <div style="display:flex;gap:6px;">
             <button onclick="_a2aInvoiceRespond('${inv.id}',true)" style="flex:1;padding:7px;border-radius:8px;background:#2563EB;border:none;color:#fff;font-size:.74rem;font-weight:700;cursor:pointer;">Honor</button>
@@ -12099,7 +12099,7 @@ async function _a2aNetCheck() {
           : `<div style="font-size:.78rem;color:var(--text3);margin-bottom:4px;">Net owed</div>
              <div style="font-size:1.3rem;font-weight:800;color:${iAmPayer?'#2563EB':'#2563EB'};">${iAmPayer?'You owe':'They owe you'} $${net.amount.toFixed(2)}</div>`
         }
-        <div style="font-size:.68rem;color:var(--text3);margin-top:8px;">${d.ledger.entries.length} recorded entr${d.ledger.entries.length===1?'y':'ies'} since last settlement</div>
+        <div style="font-size:.75rem;color:var(--text3);margin-top:8px;">${d.ledger.entries.length} recorded entr${d.ledger.entries.length===1?'y':'ies'} since last settlement</div>
       </div>
       ${net.amount > 0 && iAmPayer ? `<button onclick="_a2aNetSettle('${addr}')" style="width:100%;padding:9px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;">Settle Now — Pay $${net.amount.toFixed(2)}</button>` : ''}
       ${net.amount > 0 && !iAmPayer ? '<div style="font-size:.72rem;color:var(--text3);text-align:center;">Waiting on the other side to settle</div>' : ''}
