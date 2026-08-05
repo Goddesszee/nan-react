@@ -5515,7 +5515,7 @@ html[data-theme=light] .nan-hero-globe{
 .nan-sb-items{flex:1;display:flex;flex-direction:column;gap:4px;overflow-y:auto;}
 .nan-sb-item-row{
   display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:11px;
-  cursor:pointer;font-size:.87rem;font-weight:600;color:var(--text2);
+  cursor:pointer;font-size:15px;font-weight:500;color:var(--text2);font-family:'Inter',sans-serif;
   transition:background .15s,color .15s;
 }
 .nan-sb-item-row:hover{background:rgba(67,56,202,.08);color:var(--text);}
