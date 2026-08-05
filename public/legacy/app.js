@@ -2664,6 +2664,7 @@ async function refreshBalances(){
     if(homeBalAmt)homeBalAmt.textContent=isNaN(totalUsd)?'$0.00':'$'+totalUsd.toFixed(2);
     window._arcBaseBalance = isNaN(totalUsd)?0:totalUsd;
     try{if(typeof updateHomeWithAgentBalance==='function')updateHomeWithAgentBalance();}catch(e){}
+    try{if(typeof renderDashboard==='function')renderDashboard();}catch(e){}
     // Hide skeleton, show balance
     const _sk=document.getElementById('balSkelWrap');const _rw=document.getElementById('balRealWrap');
     if(_sk)_sk.style.display='none';if(_rw)_rw.style.display='block';
@@ -2695,6 +2696,104 @@ async function refreshBalances(){
   }finally{
     balancesLoading=false;
   }
+}
+
+// ═══════════════════════════════════════════
+// DASHBOARD — unified balance (USDC + EURC + cirBTC + CCTP-bridged chains)
+// ═══════════════════════════════════════════
+function renderDashboard(){
+  const stableFX = (typeof FX!=='undefined' && FX>0.8 && FX<1.2) ? FX : 0.9258;
+  const u = parseFloat(typeof usdcBal!=='undefined'?usdcBal:0)||0;
+  const e = parseFloat(typeof eurcBal!=='undefined'?eurcBal:0)||0;
+  const c = parseFloat(typeof cirbtcBal!=='undefined'?cirbtcBal:0)||0;
+  const BTC_PRICE = 100000; // same constant used on the Lend/Borrow page
+  const eUsd = e*(1/stableFX);
+  const cUsd = c*BTC_PRICE;
+
+  // Bridged (CCTP) balances on other chains — read the same cache the
+  // Multichain page writes to, so we don't duplicate RPC calls
+  const addr = (typeof userAddr!=='undefined'&&userAddr) || (typeof circleWalletAddress!=='undefined'&&circleWalletAddress) || '';
+  let mcCache = {};
+  try { mcCache = JSON.parse(localStorage.getItem('nan_mc_cache_'+addr) || '{}'); } catch(e) {}
+  let bridgedUsd = 0;
+  const bridgedRows = [];
+  if (typeof MC_CHAINS !== 'undefined') {
+    MC_CHAINS.forEach(function(chain){
+      if (chain.id === 'ARC') return; // Arc balance already counted via usdcBal above
+      const bal = mcCache[chain.id];
+      if (typeof bal === 'number') {
+        bridgedUsd += bal;
+        bridgedRows.push({ name: chain.name, bal: bal, color: chain.color });
+      }
+    });
+  }
+
+  const total = u + eUsd + cUsd + bridgedUsd;
+  const NGN_RATE = 1622;
+  const hide = localStorage.getItem('nan_dash_hide') === '1';
+
+  const totalEl = document.getElementById('dashTotalBal');
+  if (totalEl) totalEl.textContent = hide ? '••••••' : '$'+total.toFixed(2);
+  const ngnEl = document.getElementById('dashTotalNgn');
+  if (ngnEl) ngnEl.textContent = hide ? '≈ NGN••••' : '≈ NGN'+Math.round(total*NGN_RATE).toLocaleString();
+
+  const circumference = 439.8;
+  let offset = 0;
+  function setArc(id, value){
+    const el = document.getElementById(id);
+    if (!el) return;
+    const frac = total>0 ? value/total : 0;
+    const len = frac*circumference;
+    el.setAttribute('stroke-dasharray', len.toFixed(2)+' '+(circumference-len).toFixed(2));
+    el.setAttribute('stroke-dashoffset', (-offset).toFixed(2));
+    offset += len;
+  }
+  setArc('dashHoldUsdcArc', u);
+  setArc('dashHoldEurcArc', eUsd);
+  setArc('dashHoldCirbtcArc', cUsd);
+  setArc('dashHoldBridgedArc', bridgedUsd);
+
+  const holdTotalEl = document.getElementById('dashHoldTotal');
+  if (holdTotalEl) holdTotalEl.textContent = hide ? '••••' : '$'+total.toFixed(2);
+
+  const pct = function(v){ return total>0 ? Math.round((v/total)*100) : 0; };
+  const usdcText = document.getElementById('dashHoldUsdcText');
+  if (usdcText) usdcText.textContent = u.toFixed(2)+' · '+pct(u)+'%';
+  const eurcText = document.getElementById('dashHoldEurcText');
+  if (eurcText) eurcText.textContent = e.toFixed(2)+' · '+pct(eUsd)+'%';
+  const cirbtcText = document.getElementById('dashHoldCirbtcText');
+  if (cirbtcText) cirbtcText.textContent = c.toFixed(6)+' · '+pct(cUsd)+'%';
+  const bridgedText = document.getElementById('dashHoldBridgedText');
+  if (bridgedText) bridgedText.textContent = bridgedUsd.toFixed(2)+' · '+pct(bridgedUsd)+'%';
+
+  const listEl = document.getElementById('dashBridgedList');
+  if (listEl) {
+    if (bridgedRows.length === 0) {
+      listEl.innerHTML = '<div style="font-size:.82rem;color:var(--text3);padding:8px 0;">No bridged USDC found on other networks yet — click "Rescan networks" or visit the Multichain page.</div>';
+    } else {
+      listEl.innerHTML = bridgedRows.map(function(r){
+        return '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);">'+
+          '<div style="display:flex;align-items:center;gap:9px;"><span style="width:9px;height:9px;border-radius:50%;background:'+r.color+';"></span><span style="font-size:.85rem;color:var(--text);font-weight:600;">'+r.name+'</span></div>'+
+          '<span style="font-size:.85rem;color:var(--text2);font-weight:700;">'+r.bal.toFixed(2)+' USDC</span></div>';
+      }).join('');
+    }
+  }
+
+  // If the multichain cache is missing or stale (>60s), refresh it in the
+  // background and re-render once results land
+  if (addr && typeof _mcRefreshSilent === 'function') {
+    const ts = parseInt(localStorage.getItem('nan_mc_cache_ts_'+addr) || '0', 10);
+    if (Date.now() - ts > 60000) {
+      _mcRefreshSilent().then(function(){
+        if (window._currentPage === 'dashboard') renderDashboard();
+      });
+    }
+  }
+}
+function dashToggleBalVis(){
+  const cur = localStorage.getItem('nan_dash_hide') === '1';
+  localStorage.setItem('nan_dash_hide', cur ? '0' : '1');
+  renderDashboard();
 }
 
 // ═══════════════════════════════════════════

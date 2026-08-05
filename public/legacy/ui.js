@@ -50,6 +50,7 @@ function goPage(name) {
     market:     'page-market',
     'agent-wallet': 'page-agent-wallet',
     'agent-ai':     'page-agent-ai',
+    dashboard:      'page-dashboard',
   };
 
   const navMap = {
@@ -73,6 +74,7 @@ function goPage(name) {
     'supplier-agent': 'nav-supplier',
     marketplace: 'nav-marketplace',
     gigs: 'nav-gigs',
+    dashboard: 'nav-home',
   };
 
   const pageId = pageMap[name] || ('page-' + name);
@@ -92,6 +94,7 @@ function goPage(name) {
     more: 'dnav-more', arcname: 'dnav-more', bulk: 'dnav-more',
     naira: 'dnav-more', payreq: 'dnav-more', 'payreq-new': 'dnav-more',
     'agent-wallet': 'dnav-more',
+    dashboard: 'dnav-home',
   };
   document.querySelectorAll('#desktopNav .dnav-btn').forEach(b => b.classList.remove('active'));
   const dnavId = desktopNavMap[name] || 'dnav-more';
@@ -121,6 +124,7 @@ function goPage(name) {
   if (name === 'swap') { refreshBalances(); if(typeof fetchLiveFX==='function') fetchLiveFX(); }
   if (name === 'bulk') { renderBulkRecipients(); updateBulkSummary(); if(typeof renderPayrollGroups==='function') renderPayrollGroups(); if(typeof payrollSwitchTab==='function') payrollSwitchTab('dashboard'); }
   if (name === 'home') updateHomeScreen();
+  if (name === 'dashboard') { refreshBalances(); if(typeof renderDashboard==='function') renderDashboard(); }
   if (name === 'payreq') renderPaymentRequests();
   if (name === 'multichain') { if(typeof mcRefresh==='function') setTimeout(mcRefresh, 100); }
   if (name === 'payreq-new') initNewPRForm();
@@ -213,6 +217,7 @@ function updateTopbarPageInfo(page) {
     bulk:'Payroll', payreq:'Pay Requests',
     explore:'Explore',
     groupsavings:'Group Savings',
+    dashboard:'Dashboard',
   };
 
   nameEl.textContent = labels[page] || page.charAt(0).toUpperCase()+page.slice(1);
@@ -253,6 +258,12 @@ function updateTopbarPageInfo(page) {
   } else if (page === 'history') {
     pillEl.textContent = 'On-chain';
     pillEl.style.cssText = 'display:inline-block;background:rgba(67,56,202,.06);border:1px solid rgba(67,56,202,.15);color:#4338CA;font-family:"JetBrains Mono",monospace;font-size:.58rem;padding:3px 9px;border-radius:100px;';
+  } else if (page === 'dashboard') {
+    const bal = document.getElementById('dashTotalBal');
+    if (bal && bal.textContent !== '$0.00') {
+      pillEl.textContent = bal.textContent;
+      pillEl.style.cssText = 'display:inline-block;background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);color:var(--accent3);font-family:"JetBrains Mono",monospace;font-size:.58rem;padding:3px 9px;border-radius:100px;';
+    }
   }
 }
 
