@@ -12256,3 +12256,147 @@ function nanUpdateAgentHoldings(){
   if(eurcText) eurcText.textContent = eurc.toFixed(2) + ' · ' + (eurcPct*100).toFixed(1) + '%';
   if(totalEl) totalEl.textContent = '$' + total.toFixed(2);
 }
+
+// ═══════════════════════════════════════════
+// SUPPORT CHAT: AI-first with human handoff
+// ═══════════════════════════════════════════
+let supportSession = null;
+let supportPollTimer = null;
+
+function toggleSupportPanel(){
+  const panel = document.getElementById('supportPanel');
+  if(!panel) return;
+  const opening = panel.style.display === 'none' || !panel.style.display;
+  panel.style.display = opening ? 'block' : 'none';
+  if(opening){
+    ensureSupportSession();
+    setTimeout(()=>document.getElementById('supportInput')?.focus(), 150);
+  } else {
+    clearInterval(supportPollTimer);
+  }
+}
+
+async function ensureSupportSession(){
+  const savedId = localStorage.getItem('nan_support_ticket');
+  if(savedId){
+    try{
+      const r = await fetch(`${API_BASE}/api/support`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'get-session', ticketId: savedId })
+      });
+      const d = await r.json();
+      if(d.session && d.session.mode !== 'closed'){
+        supportSession = d.session;
+        renderSupportMessages();
+        startSupportPolling();
+        return;
+      }
+    }catch(e){}
+  }
+  // Start a fresh ticket
+  try{
+    const r = await fetch(`${API_BASE}/api/support`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'create-session', userAddress: userAddr || null })
+    });
+    const d = await r.json();
+    if(d.ticketId){
+      supportSession = d.session;
+      localStorage.setItem('nan_support_ticket', d.ticketId);
+      const label = document.getElementById('supportTicketLabel');
+      if(label) label.textContent = `Ticket ${d.ticketId}`;
+      supportMsg('ai', "Hi! I'm NAN Support AI. Ask me anything about your wallet, or tap \"Talk to a human\" any time.");
+      startSupportPolling();
+    }
+  }catch(e){
+    supportMsg('ai', "Couldn't start a support chat right now. Check your connection and try again.");
+  }
+}
+
+function startSupportPolling(){
+  clearInterval(supportPollTimer);
+  supportPollTimer = setInterval(async ()=>{
+    if(!supportSession) return;
+    try{
+      const r = await fetch(`${API_BASE}/api/support`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'get-session', ticketId: supportSession.ticketId })
+      });
+      const d = await r.json();
+      if(d.session && d.session.messages.length !== supportSession.messages.length){
+        supportSession = d.session;
+        renderSupportMessages();
+      }
+    }catch(e){}
+  }, 4000);
+}
+
+function renderSupportMessages(){
+  const wrap = document.getElementById('supportMessages');
+  if(!wrap || !supportSession) return;
+  wrap.innerHTML = supportSession.messages.map(m=>{
+    const isUser = m.sender === 'user';
+    const label = m.sender === 'admin' ? 'NAN team' : m.sender === 'ai' ? 'NAN Support AI' : '';
+    return `<div style="align-self:${isUser?'flex-end':'flex-start'};max-width:82%;">
+      ${label ? `<div style="font-size:.68rem;font-weight:700;color:var(--text3);margin-bottom:3px;">${label}</div>` : ''}
+      <div style="background:${isUser?'#2563EB':'var(--surface)'};color:${isUser?'#fff':'var(--text)'};border:1px solid ${isUser?'transparent':'var(--border)'};border-radius:14px;padding:10px 13px;font-size:.88rem;line-height:1.45;white-space:pre-wrap;">${(m.text||'').replace(/</g,'&lt;')}</div>
+    </div>`;
+  }).join('');
+  wrap.scrollTop = wrap.scrollHeight;
+
+  const humanBtn = document.getElementById('supportHumanBtn');
+  if(humanBtn) humanBtn.style.display = (supportSession.mode === 'ai') ? 'block' : 'none';
+}
+
+function supportMsg(sender, text){
+  if(!supportSession) supportSession = { messages: [] };
+  supportSession.messages.push({ sender, text, ts: Date.now() });
+  renderSupportMessages();
+}
+
+async function sendSupportMsg(){
+  const input = document.getElementById('supportInput');
+  const text = input.value.trim();
+  if(!text || !supportSession) return;
+  input.value = '';
+  supportMsg('user', text);
+  try{
+    const r = await fetch(`${API_BASE}/api/support`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'message', ticketId: supportSession.ticketId, text })
+    });
+    const d = await r.json();
+    if(d.session){ supportSession = d.session; renderSupportMessages(); }
+  }catch(e){
+    supportMsg('ai', "Message didn't send. Check your connection and try again.");
+  }
+}
+
+async function requestSupportHuman(){
+  if(!supportSession) return;
+  try{
+    const r = await fetch(`${API_BASE}/api/support`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'request-human', ticketId: supportSession.ticketId })
+    });
+    const d = await r.json();
+    if(d.session){ supportSession = d.session; renderSupportMessages(); }
+    toast('A NAN team member has been notified. They will jump in here shortly.','info',4000);
+  }catch(e){}
+}
+
+async function emailSupportSummary(){
+  if(!supportSession) return;
+  const email = prompt('Send this conversation and your ticket number to which email?', supportSession.userEmail || '');
+  if(!email) return;
+  try{
+    const r = await fetch(`${API_BASE}/api/support`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'email-summary', ticketId: supportSession.ticketId, email })
+    });
+    const d = await r.json();
+    toast(d.success ? `Sent to ${email}, ticket ${supportSession.ticketId}` : 'Could not send. Try again', d.success?'success':'error', 4000);
+  }catch(e){
+    toast('Could not send — try again','error',3000);
+  }
+}
