@@ -10761,6 +10761,7 @@ var agentWalletAddr     = localStorage.getItem('nan_agent_addr') || null;
 var agentRequestId      = null;
 var agentPollTimer      = null;
 var agentWalletBalance  = null; // cached balance string e.g. "100 USDC"
+var agentWalletTotalUsd = 0; // cached USD total for the headline display
 var userEmail           = localStorage.getItem('nan_dynamic_email') || null; // logged-in user email
 
 // ── Email receipt helper ──────────────────────────────────────────────────────
@@ -10782,11 +10783,10 @@ setTimeout(startBackgroundCheckers, 8000);
 
 async function agentRefreshBalance(){
   var balEl = document.getElementById('agentBalDisplay');
-  if(balEl) balEl.textContent = '⏳';
+  if(balEl) balEl.textContent = '...';
   await fetchAgentBalance();
-  // fetchAgentBalance already updates agentBalDisplay with innerHTML — no need to overwrite
-  // But update text fallback if innerHTML was not set
-  if(balEl && balEl.textContent === '⏳') balEl.textContent = agentWalletBalance || '0.00 USDC';
+  // fetchAgentBalance already updates agentBalDisplay, this is just a fallback
+  if(balEl && balEl.textContent === '...') balEl.textContent = '$' + (agentWalletTotalUsd||0).toFixed(2);
 }
 
 function generateAgentReceipt(details){
@@ -10964,6 +10964,8 @@ async function fetchAgentBalance(){
         if(parseFloat(usdc)>0) parts.push('USDC: '+usdc);
         if(parseFloat(eurc)>0) parts.push('EURC: '+eurc);
         agentWalletBalance = parts.join(' · ') || '0.00 USDC';
+        var _stableFX = (typeof FX!=='undefined' && FX>0.8 && FX<1.2) ? FX : 0.9258;
+        agentWalletTotalUsd = parseFloat(usdc) + parseFloat(eurc)*(1/_stableFX);
       }
     } else {
       // CLI wallet — returns { balance: { data: { balances: [...] } } }
@@ -10975,11 +10977,17 @@ async function fetchAgentBalance(){
         d.balance.data.balances.forEach(b=>{const sym=b.token?.symbol;if(sym&&(!seen[sym]||b.token.isNative===false))seen[sym]=b;});
         const lines=Object.values(seen).filter(b=>parseFloat(b.amount)>0).map(b=>b.token.symbol+': '+parseFloat(b.amount).toFixed(2));
         agentWalletBalance = lines.join(' · ') || '0.00 USDC';
+        const _stableFX2 = (typeof FX!=='undefined' && FX>0.8 && FX<1.2) ? FX : 0.9258;
+        const usdcAmt = parseFloat(seen.USDC?.amount||0);
+        const eurcAmt = parseFloat(seen.EURC?.amount||0);
+        agentWalletTotalUsd = usdcAmt + eurcAmt*(1/_stableFX2);
       }
     }
     // Update UI
     var balEl = document.getElementById('agentBalDisplay');
-    if(balEl) balEl.textContent = agentWalletBalance || '0.00 USDC';
+    var breakdownEl = document.getElementById('agentBalBreakdown');
+    if(balEl) balEl.textContent = '$' + (agentWalletTotalUsd||0).toFixed(2);
+    if(breakdownEl) breakdownEl.textContent = agentWalletBalance || '0.00 USDC';
     updateHomeWithAgentBalance();
   } catch(e){ console.log('[agent] fetchAgentBalance error:', e.message); }
 }
@@ -11031,6 +11039,7 @@ async function checkAgentSession(){
         agentWalletAddr = d.wallet.walletAddress;
         window.agentWalletAddr = agentWalletAddr;
         agentWalletBalance = d.balance ? `${d.balance.USDC} USDC` : '0 USDC';
+        agentWalletTotalUsd = d.balance ? parseFloat(d.balance.USDC||0) : 0;
         localStorage.setItem('nan_agent_wallet_'+userAddr, JSON.stringify(d.wallet));
         localStorage.setItem('nan_agent_addr', agentWalletAddr); // write global for init
         agentPageRefresh();
@@ -11206,7 +11215,9 @@ function agentPageRefresh() {
     if(dot) dot.style.display='block';
     if(dotD) dotD.style.display='inline-block';
     var balEl = document.getElementById('agentBalDisplay');
-    if(balEl) balEl.textContent = agentWalletBalance || '—';
+    var breakdownEl = document.getElementById('agentBalBreakdown');
+    if(balEl) balEl.textContent = '$' + (agentWalletTotalUsd||0).toFixed(2);
+    if(breakdownEl) breakdownEl.textContent = agentWalletBalance || '0.00 USDC';
     if(typeof nanUpdateAgentHoldings === 'function') nanUpdateAgentHoldings();
   } else {
     if (status) status.textContent = 'Not connected';
@@ -11261,6 +11272,7 @@ async function agentLoginInit() {
         agentWalletAddr = d.wallet.walletAddress;
         window.agentWalletAddr = agentWalletAddr;
         agentWalletBalance = d.balance ? `${d.balance.USDC} USDC` : '0 USDC';
+        agentWalletTotalUsd = d.balance ? parseFloat(d.balance.USDC||0) : 0;
         localStorage.setItem('nan_agent_wallet_'+userAddr, JSON.stringify(d.wallet));
         localStorage.setItem('nan_agent_addr', agentWalletAddr);
         agentPageRefresh();
@@ -12226,14 +12238,17 @@ function nanSidebarOpenProfile(){
 function nanToggleAgentBalVisibility(){
   const el = document.getElementById('agentBalDisplay');
   const btn = document.getElementById('agentBalEyeBtn');
+  const breakdownEl = document.getElementById('agentBalBreakdown');
   if(!el || !btn) return;
   if(el.dataset.hidden === '1'){
     el.textContent = el.dataset.realText || agentWalletBalance || '—';
     el.dataset.hidden = '0';
+    if(breakdownEl) breakdownEl.style.display = '';
   } else {
     el.dataset.realText = el.textContent;
     el.textContent = '••••••';
     el.dataset.hidden = '1';
+    if(breakdownEl) breakdownEl.style.display = 'none';
   }
 }
 

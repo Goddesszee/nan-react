@@ -966,15 +966,18 @@ html,body{background-color:var(--bg);}
 <div id="agentConnectedSection" style="display:none;">
   <div style="padding:32px 24px 4px;">
     <div id="agentPageTitle" style="font-family:'Inter',sans-serif;font-size:2.1rem;font-weight:700;color:var(--text);letter-spacing:-.02em;">Agent Wallet</div>
-    <div style="font-family:'Inter',sans-serif;font-size:1rem;font-weight:500;color:var(--text2);margin-top:6px;">Manage your agent's balance, spending policy, and activity — all in one place.</div>
+    <div style="font-family:'Inter',sans-serif;font-size:1rem;font-weight:500;color:var(--text2);margin-top:6px;">Manage your agent's balance, spending policy, and activity, all in one place.</div>
   </div>
-  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap;padding:24px 24px 28px;">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:28px 32px;margin:20px 24px 28px;box-sizing:border-box;">
     <div>
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-        <span style="font-size:12px;color:var(--text3);">Total balance</span>
-        <button id="agentBalEyeBtn" onclick="nanToggleAgentBalVisibility()" style="background:none;border:none;cursor:pointer;font-size:.8rem;opacity:.6;padding:0;" title="Hide/show balance">&#128065;&#65039;</button>
+      <div style="display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.04em;">
+        Agent Wallet Balance
+        <button id="agentBalEyeBtn" onclick="nanToggleAgentBalVisibility()" style="background:none;border:none;cursor:pointer;padding:0;display:flex;color:var(--text3);" title="Hide/show balance">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
       </div>
-      <div id="agentBalDisplay" style="font-size:3rem;font-weight:700;color:var(--text);letter-spacing:-.02em;">&#x2014;</div>
+      <div id="agentBalDisplay" style="font-family:'Inter',sans-serif;font-size:2.6rem;font-weight:800;color:var(--text);margin-top:6px;letter-spacing:-.02em;">$0.00</div>
+      <div id="agentBalBreakdown" style="font-size:.8rem;color:var(--text3);margin-top:4px;"></div>
     </div>
     <div style="display:flex;gap:10px;flex-shrink:0;position:relative;">
       <button id="agentDepositBtn" onclick="nanToggleAgentDepositDropdown(event)" style="background:linear-gradient(135deg,#2563EB 0%,#2563EB 50%,#2563EB 100%);border:none;border-radius:12px;color:#fff;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;height:48px;padding:0 22px;cursor:pointer;white-space:nowrap;box-shadow:0 4px 14px rgba(37,99,235,.32);">&#8595; Deposit</button>
@@ -5251,15 +5254,8 @@ function nanUpdateProfileLabel(){
 function nanUpdateSidebarWalletLabel(){
   var lbl = document.querySelector('#nanSidebar .nan-sb-wallet-btn .nan-sb-label');
   if (!lbl) return;
-  var agentConnected = typeof agentWalletAddr !== 'undefined' && !!agentWalletAddr;
   var mainConnected = typeof userAddr !== 'undefined' && !!userAddr;
-  if (agentConnected) {
-    lbl.textContent = agentWalletAddr.slice(0,6) + '...' + agentWalletAddr.slice(-4);
-  } else if (mainConnected) {
-    lbl.textContent = userAddr.slice(0,6) + '...' + userAddr.slice(-4);
-  } else {
-    lbl.textContent = 'Wallet';
-  }
+  lbl.textContent = mainConnected ? (userAddr.slice(0,6) + '...' + userAddr.slice(-4)) : 'Wallet';
 }
 document.addEventListener('DOMContentLoaded', nanUpdateProfileLabel);
 
