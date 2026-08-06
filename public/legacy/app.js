@@ -1337,6 +1337,7 @@ async function onConnected(isEmail=false, isDev=false){
   initLendUI();
   // Move aiBtn and agentPanel to body so overflow:hidden on page divs cannot clip them
   _ensureAIButton();
+  _ensureSupportButton();
   // navFaucetBtn hidden - now in Settings dropdown
   setTimeout(attachAIListeners,100);
   startOrderEngine();
@@ -9425,7 +9426,7 @@ function deletePR(){
 
 
 // ══ NAN ADMIN DASHBOARD ══
-var _secretTaps=0,_secretTimer=null,_adminUnlocked=false;
+var _secretTaps=0,_secretTimer=null,_adminUnlocked=false,_adminPw=null;
 
 function handleSecretTap(){
   _secretTaps++;
@@ -9444,6 +9445,8 @@ function openAdmin(){
 function closeAdmin(){
   document.getElementById('adminOverlay').style.display='none';
   _adminUnlocked=false;
+  _adminPw=null;
+  clearInterval(_supportTicketsPollTimer);
 }
 async function checkAdminPw(){
   const pw = document.getElementById('adminPwInput').value.trim();
@@ -9457,9 +9460,11 @@ async function checkAdminPw(){
     const data = await res.json();
     if(data.success){
       _adminUnlocked=true;
+      _adminPw=pw;
       document.getElementById('adminAuth').style.display='none';
       document.getElementById('adminDash').style.display='block';
       loadAdminStats();
+      loadSupportTickets();
     } else {
       const errEl=document.getElementById('adminPwErr');
       errEl.textContent='Incorrect password';
@@ -12260,6 +12265,12 @@ function nanUpdateAgentHoldings(){
 // ═══════════════════════════════════════════
 // SUPPORT CHAT: AI-first with human handoff
 // ═══════════════════════════════════════════
+function _ensureSupportButton(){
+  const btn = document.getElementById('supportBtn');
+  const panel = document.getElementById('supportPanel');
+  if(btn && btn.parentElement !== document.body) document.body.appendChild(btn);
+  if(panel && panel.parentElement !== document.body) document.body.appendChild(panel);
+}
 let supportSession = null;
 let supportPollTimer = null;
 
@@ -12397,6 +12408,102 @@ async function emailSupportSummary(){
     const d = await r.json();
     toast(d.success ? `Sent to ${email}, ticket ${supportSession.ticketId}` : 'Could not send. Try again', d.success?'success':'error', 4000);
   }catch(e){
-    toast('Could not send — try again','error',3000);
+    toast('Could not send. Try again','error',3000);
+  }
+}
+
+// ── Admin: Support Tickets panel ────────────────────────────────────────────
+let _supportTicketsPollTimer = null;
+let _adminOpenTicketId = null;
+
+async function loadSupportTickets(){
+  if(!_adminUnlocked || !_adminPw) return;
+  try{
+    const r = await fetch(`${API_BASE}/api/support`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'list-open', adminPassword: _adminPw })
+    });
+    const d = await r.json();
+    renderSupportTicketsList(d.tickets || []);
+  }catch(e){}
+  clearInterval(_supportTicketsPollTimer);
+  _supportTicketsPollTimer = setInterval(loadSupportTickets, 8000);
+}
+
+function renderSupportTicketsList(tickets){
+  const list = document.getElementById('adminTicketsList');
+  const empty = document.getElementById('adminTicketsEmpty');
+  if(!list) return;
+  if(tickets.length === 0){
+    list.innerHTML = '';
+    if(empty) empty.style.display = 'block';
+    return;
+  }
+  if(empty) empty.style.display = 'none';
+  list.innerHTML = tickets.map(t=>{
+    const needsHuman = t.mode === 'human_pending';
+    const last = t.messages[t.messages.length-1];
+    return `<div onclick="openAdminTicket('${t.ticketId}')" style="cursor:pointer;background:${needsHuman?'rgba(37,99,235,.1)':'var(--surface)'};border:1px solid ${needsHuman?'rgba(37,99,235,.35)':'var(--border)'};border-radius:14px;padding:14px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <div style="font-size:.85rem;font-weight:700;color:var(--text);">${t.ticketId}</div>
+        <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:${needsHuman?'#2563EB':'var(--text3)'};">${needsHuman?'Needs a human':t.mode.replace('_',' ')}</div>
+      </div>
+      <div style="font-size:.78rem;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${last ? (last.sender+': '+last.text) : 'No messages yet'}</div>
+    </div>`;
+  }).join('');
+}
+
+let _adminTicketPollTimer = null;
+async function openAdminTicket(ticketId){
+  _adminOpenTicketId = ticketId;
+  document.getElementById('adminTicketOverlay').style.display = 'block';
+  document.getElementById('adminTicketTitle').textContent = ticketId;
+  await refreshAdminTicket();
+  clearInterval(_adminTicketPollTimer);
+  _adminTicketPollTimer = setInterval(refreshAdminTicket, 4000);
+}
+function closeAdminTicket(){
+  document.getElementById('adminTicketOverlay').style.display = 'none';
+  _adminOpenTicketId = null;
+  clearInterval(_adminTicketPollTimer);
+}
+async function refreshAdminTicket(){
+  if(!_adminOpenTicketId) return;
+  try{
+    const r = await fetch(`${API_BASE}/api/support`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'get-session', ticketId: _adminOpenTicketId })
+    });
+    const d = await r.json();
+    if(!d.session) return;
+    const sub = document.getElementById('adminTicketSub');
+    if(sub) sub.textContent = d.session.userAddress || d.session.userEmail || 'Anonymous user';
+    const wrap = document.getElementById('adminTicketMessages');
+    wrap.innerHTML = d.session.messages.map(m=>{
+      const fromAdmin = m.sender === 'admin';
+      const label = m.sender === 'admin' ? 'You' : m.sender === 'ai' ? 'NAN Support AI' : 'User';
+      return `<div style="align-self:${fromAdmin?'flex-end':'flex-start'};max-width:82%;">
+        <div style="font-size:.68rem;font-weight:700;color:var(--text3);margin-bottom:3px;">${label}</div>
+        <div style="background:${fromAdmin?'#2563EB':'var(--surface)'};color:${fromAdmin?'#fff':'var(--text)'};border:1px solid ${fromAdmin?'transparent':'var(--border)'};border-radius:14px;padding:10px 13px;font-size:.88rem;line-height:1.45;white-space:pre-wrap;">${(m.text||'').replace(/</g,'&lt;')}</div>
+      </div>`;
+    }).join('');
+    wrap.scrollTop = wrap.scrollHeight;
+  }catch(e){}
+}
+async function sendAdminReply(){
+  const input = document.getElementById('adminReplyInput');
+  const text = input.value.trim();
+  if(!text || !_adminOpenTicketId || !_adminPw) return;
+  input.value = '';
+  try{
+    const r = await fetch(`${API_BASE}/api/support`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'admin-reply', ticketId: _adminOpenTicketId, text, adminPassword: _adminPw })
+    });
+    const d = await r.json();
+    if(d.session) await refreshAdminTicket();
+    loadSupportTickets();
+  }catch(e){
+    toast('Reply did not send. Try again','error',3000);
   }
 }
