@@ -386,13 +386,13 @@ html,body{background-color:var(--bg);}
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <span class="nan-sb-label">Research</span>
     </div>
-    <div class="nan-sb-item-row" data-sbpage="career-agent" onclick="goPage('career-agent');setTimeout(function(){if(typeof careerOpenFeature==='function')careerOpenFeature('coach');},150)">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg>
-      <span class="nan-sb-label">Interview Coach</span>
-    </div>
     <div class="nan-sb-item-row" data-sbpage="career-agent" onclick="goPage('career-agent')">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
       <span class="nan-sb-label">Career agent</span>
+    </div>
+    <div class="nan-sb-item-row" data-sbpage="career-agent" onclick="goPage('career-agent');setTimeout(function(){if(typeof careerOpenFeature==='function')careerOpenFeature('coach');},150)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg>
+      <span class="nan-sb-label">Interview Coach</span>
     </div>
 
     <div class="nan-sb-divider"></div>
@@ -1553,15 +1553,19 @@ html,body{background-color:var(--bg);}
       #page-career-agent [style*="border-radius:16px;padding:18px 20px"]:hover { box-shadow:0 6px 18px rgba(37,99,235,.08); transform:translateY(-1px); }
       #page-career-agent [style*="border-radius:14px;padding:14px 16px"] { box-shadow:0 1px 2px rgba(0,0,0,.03); }
     </style>
-    <div style="padding:20px;width:100%;box-sizing:border-box;">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+    <div style="padding:20px;width:100%;box-sizing:border-box;position:relative;">
+      <button id="careerNotifBell" onclick="careerOpenFeature('notifications')" style="position:absolute;top:20px;right:20px;width:40px;height:40px;border-radius:50%;background:var(--card);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 1px 2px rgba(0,0,0,.04);z-index:5;">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span id="careerNotifDot" style="display:none;position:absolute;top:6px;right:7px;width:8px;height:8px;border-radius:50%;background:#e24b4a;border:2px solid var(--card);"></span>
+      </button>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;padding-right:52px;">
         <div style="width:34px;height:34px;border-radius:10px;background:#2563EB;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
         <div style="font-size:2.25rem;font-weight:800;color:#2563EB;letter-spacing:-.02em;">Career agent</div>
       </div>
-      <div style="font-size:.85rem;color:var(--text2);margin-bottom:18px;font-weight:700;">Find a job as a candidate, post a job as an employer, or browse what's been posted.</div>
+      <div style="font-size:.85rem;color:var(--text2);margin-bottom:18px;font-weight:800;">Find a job as a candidate, post a job as an employer, or browse what's been posted.</div>
 
       <div id="careerLandingView">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;flex-wrap:wrap;">
           <div style="display:flex;gap:6px;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:4px;box-shadow:0 1px 2px rgba(0,0,0,.04);">
             <button id="careerModeFind" class="ctab active" onclick="careerOpenFeature('find')">Discover</button>
             <button id="careerModePost" class="ctab" onclick="careerOpenFeature('post')">Post a job</button>
@@ -1573,10 +1577,6 @@ html,body{background-color:var(--bg);}
             <button id="careerModeCoach" class="ctab" onclick="careerOpenFeature('coach')">Interview coach</button>
             <button id="careerModeMessages" class="ctab" onclick="careerOpenFeature('messages')">Messages</button>
           </div>
-          <button id="careerNotifBell" onclick="careerOpenFeature('notifications')" style="position:relative;width:40px;height:40px;border-radius:50%;background:var(--card);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 1px 2px rgba(0,0,0,.04);">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-            <span id="careerNotifDot" style="display:none;position:absolute;top:6px;right:7px;width:8px;height:8px;border-radius:50%;background:#e24b4a;border:2px solid var(--card);"></span>
-          </button>
         </div>
         <div id="careerWelcomeBanner" style="background:#f0e6ff;border-top:5px solid #2563EB;border-radius:18px;padding:28px 32px;color:#111;margin-bottom:20px;box-shadow:0 4px 20px rgba(37,99,235,.08);position:relative;overflow:hidden;">
           <div style="position:absolute;top:-30px;right:-30px;width:140px;height:140px;border-radius:50%;background:rgba(37,99,235,.08);"></div>
