@@ -54,15 +54,6 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
   const accentL  = '#2563EB'
   const brandGradient = 'linear-gradient(135deg, #2563EB 0%, #2563EB 50%, #2563EB 100%)'
 
-  // sample ticker feed, agent to agent nanopayments
-  const tickerRows = [
-    { from:'agent_9180', to:'agent_2247', amt:'$0.0004' },
-    { from:'agent_5521', to:'agent_1090', amt:'$0.0012' },
-    { from:'agent_3387', to:'agent_8842', amt:'$0.0002' },
-    { from:'agent_7710', to:'agent_4405', amt:'$0.0031' },
-    { from:'agent_1123', to:'agent_6690', amt:'$0.0008' },
-  ]
-
   // OTP send
   // Open the connect panel and scroll straight to the email input
   function openConnect() {
@@ -142,7 +133,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
     <div style={{ background:bg, color:text, fontFamily:'Inter,sans-serif', minHeight:'100vh', overflowX:'hidden' }}>
 
       {/* NAV */}
-      <nav style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'26px 48px', maxWidth:1400, margin:'0 auto', borderBottom:`1px solid ${border}` }}>
+      <nav style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'20px 48px', maxWidth:1400, margin:'0 auto', borderBottom:`1px solid ${border}` }}>
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
           <div style={{ width:30, height:30, borderRadius:'50%', background:brandGradient, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
             <svg viewBox="0 0 324 480" width="12" height="18"><path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill="#fff"/><path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill="#fff"/></svg>
@@ -163,34 +154,20 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
       </nav>
 
       {/* HERO */}
-      <section style={{ minHeight:'auto', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center', padding:'48px 24px 60px' }}>
+      <section style={{ minHeight:'auto', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center', padding:'32px 24px 44px' }}>
 
-        <div style={{ display:'inline-flex', alignItems:'center', gap:9, fontSize:'.72rem', fontWeight:600, letterSpacing:'.12em', textTransform:'uppercase', color:accentL, background:'rgba(37,99,235,.1)', border:'1px solid rgba(37,99,235,.28)', padding:'8px 18px', borderRadius:100, marginBottom:28 }}>
+        <div style={{ display:'inline-flex', alignItems:'center', gap:9, fontSize:'.72rem', fontWeight:600, letterSpacing:'.12em', textTransform:'uppercase', color:accentL, background:'rgba(37,99,235,.1)', border:'1px solid rgba(37,99,235,.28)', padding:'8px 18px', borderRadius:100, marginBottom:20 }}>
           <span style={{ width:6, height:6, borderRadius:'50%', background:accentL, animation:'pulseDot 1.6s ease-in-out infinite' }}/>
           Live on Arc Testnet
         </div>
 
-        <h1 style={{ fontFamily:'Inter,sans-serif', fontSize:'clamp(2.6rem,8vw,5.6rem)', fontWeight:800, lineHeight:1.02, letterSpacing:'-.035em', margin:'0 0 18px' }}>
+        <h1 style={{ fontFamily:'Inter,sans-serif', fontSize:'clamp(2.3rem,6.5vw,4.6rem)', fontWeight:800, lineHeight:1.04, letterSpacing:'-.035em', margin:'0 0 16px' }}>
           The intelligent payment layer<br/>for the <span style={{ color:accentL }}>stablecoin economy.</span>
         </h1>
 
-        <p style={{ fontSize:'clamp(1rem,1.7vw,1.2rem)', color:text2, lineHeight:1.6, maxWidth:560, margin:'0 0 32px' }}>
+        <p style={{ fontSize:'clamp(1rem,1.7vw,1.15rem)', color:text2, lineHeight:1.55, maxWidth:560, margin:'0 0 28px' }}>
           Nan connects people, businesses, and AI agents through secure stablecoin payments and intelligent financial automation.
         </p>
-
-        <div style={{ width:'100%', maxWidth:640, margin:'0 0 40px', background:card, border:`1px solid ${border}`, borderRadius:16, overflow:'hidden', position:'relative' }}>
-          <div style={{ position:'absolute', top:0, left:0, background:accent, color:'#fff', fontFamily:'Space Mono,monospace', fontSize:'.62rem', fontWeight:700, letterSpacing:'.08em', padding:'5px 12px', borderRadius:'0 0 8px 0', zIndex:2 }}>
-            AGENT PAYMENTS · LIVE
-          </div>
-          <div style={{ display:'flex', whiteSpace:'nowrap', animation:'tickerScroll 22s linear infinite', padding:'26px 0 12px' }}>
-            {[...tickerRows, ...tickerRows].map((row, i) => (
-              <span key={i} style={{ fontFamily:'Space Mono,monospace', fontSize:'.8rem', color:text2, padding:'0 24px', borderRight:`1px solid ${border}`, display:'inline-flex', alignItems:'center', gap:7 }}>
-                <span style={{ width:6, height:6, borderRadius:'50%', background:accentL, flexShrink:0 }}/>
-                {row.from} → {row.to} <b style={{ color:text }}>{row.amt}</b> USDC
-              </span>
-            ))}
-          </div>
-        </div>
 
         <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:16, width:'100%', maxWidth:400 }}>
 
