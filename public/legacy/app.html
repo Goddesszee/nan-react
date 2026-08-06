@@ -373,7 +373,7 @@ html,body{background-color:var(--bg);}
     </div>
     <div class="nan-sb-item-row" id="sb-career" data-sbpage="career-agent" onclick="goPage('career-agent')">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/></svg>
-      <span class="nan-sb-label">Careers</span>
+      <span class="nan-sb-label">Career agent</span>
     </div>
     <div class="nan-sb-item-row" data-sbpage="bulk" onclick="goPage('bulk')">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/><polyline points="17 8 21 12 17 16"/></svg>
@@ -385,10 +385,6 @@ html,body{background-color:var(--bg);}
     <div class="nan-sb-item-row" id="sb-explore" data-sbpage="explore" onclick="goPage('explore')">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <span class="nan-sb-label">Research</span>
-    </div>
-    <div class="nan-sb-item-row" data-sbpage="career-agent" onclick="goPage('career-agent')">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
-      <span class="nan-sb-label">Career agent</span>
     </div>
     <div class="nan-sb-item-row" data-sbpage="career-agent" onclick="goPage('career-agent');setTimeout(function(){if(typeof careerOpenFeature==='function')careerOpenFeature('coach');},150)">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg>
@@ -1548,6 +1544,8 @@ html,body{background-color:var(--bg);}
       #page-career-agent #careerWelcomeBanner button, #page-career-agent #careerWelcomeBanner button *
       { color: #fff !important; }
       #page-career-agent .ctab { padding:9px 16px;border-radius:10px;font-size:.82rem;font-weight:700;border:none;background:transparent;color:var(--text2) !important;cursor:pointer; }
+      #page-career-agent #careerBackFromCv { color:#2563EB !important; background:rgba(37,99,235,.12) !important; }
+      [data-theme=light] #page-career-agent #careerBackFromCv { color:#2563EB !important; background:rgba(37,99,235,.08) !important; }
       #page-career-agent .ctab.active { background:#2563EB;color:#fff !important; }
       #page-career-agent [style*="border-radius:16px;padding:18px 20px"] { box-shadow:0 1px 3px rgba(0,0,0,.04); transition:box-shadow .2s,transform .15s; }
       #page-career-agent [style*="border-radius:16px;padding:18px 20px"]:hover { box-shadow:0 6px 18px rgba(37,99,235,.08); transform:translateY(-1px); }
@@ -1590,7 +1588,7 @@ html,body{background-color:var(--bg);}
         </div>
       </div>
 
-      <div id="careerBackFromCv" onclick="careerBackToLanding();" style="display:none;font-size:.85rem;color:#2563EB;font-weight:700;cursor:pointer;margin-bottom:16px;padding:8px 14px;background:#f0e6ff;border-radius:8px;width:fit-content;">← Back to Career agent</div>
+      <div id="careerBackFromCv" onclick="careerBackToLanding();" style="display:none;font-size:.85rem;font-weight:700;cursor:pointer;margin-bottom:16px;padding:8px 14px;border-radius:8px;width:fit-content;">← Back to Career agent</div>
 
       <div id="careerFindPane" style="display:none;">
       <div id="careerStep1">
