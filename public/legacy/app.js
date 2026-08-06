@@ -680,6 +680,42 @@ function initTheme(){
   const btn=document.getElementById('themeToggle');
   if(btn) btn.classList.toggle('is-light',s==='light');
 }
+
+// ── Settings page (desktop sidebar): theme + notifications only ────────────
+function syncSettingsSwitches(){
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const themeSwitch = document.getElementById('settingsThemeSwitch');
+  const themeKnob = document.getElementById('settingsThemeKnob');
+  if(themeSwitch && themeKnob){
+    themeSwitch.style.background = isDark ? '#2563EB' : 'var(--surface)';
+    themeKnob.style.left = isDark ? '22px' : '2px';
+  }
+  const notifOn = ('Notification' in window) && Notification.permission === 'granted';
+  const notifSwitch = document.getElementById('settingsNotifSwitch');
+  const notifKnob = document.getElementById('settingsNotifKnob');
+  if(notifSwitch && notifKnob){
+    notifSwitch.style.background = notifOn ? '#2563EB' : 'var(--surface)';
+    notifKnob.style.left = notifOn ? '22px' : '2px';
+  }
+}
+async function toggleNotificationsSetting(){
+  const notifOn = ('Notification' in window) && Notification.permission === 'granted';
+  if(!notifOn){
+    await enablePushNotifications();
+  } else {
+    try{
+      if('serviceWorker' in navigator){
+        const reg = await navigator.serviceWorker.ready;
+        const sub = await reg.pushManager.getSubscription();
+        if(sub) await sub.unsubscribe();
+      }
+      toast('Notifications turned off','info',3000);
+    }catch(e){
+      toast('Could not turn off notifications','error',3000);
+    }
+  }
+  syncSettingsSwitches();
+}
 function updateTopBar(connected){
   const bar=document.getElementById('globalTopBar');
   const btn=document.getElementById('connectTopBtn');

@@ -396,7 +396,7 @@ html,body{background-color:var(--bg);}
     </div>
 
     <div class="nan-sb-divider"></div>
-    <div class="nan-sb-item-row" data-sbpage="more" onclick="goPage('more')">
+    <div class="nan-sb-item-row" data-sbpage="settings" onclick="goPage('settings')">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2Z"/><circle cx="12" cy="12" r="3"/></svg>
       <span class="nan-sb-label">Settings</span>
     </div>
@@ -1482,6 +1482,35 @@ html,body{background-color:var(--bg);}
     </div>
 
     </div><!-- end more unified card -->
+  </div>
+
+  <!-- ══ SETTINGS PAGE (desktop sidebar): theme + notifications only ══ -->
+  <div class="page" id="page-settings">
+    <div style="max-width:520px;margin:0 auto;">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;padding:22px;">
+        <div style="font-size:1.4rem;font-weight:700;color:var(--text);margin-bottom:20px;">Settings</div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 4px;border-bottom:1px solid var(--border);">
+          <div>
+            <div style="font-size:1rem;font-weight:600;color:var(--text);">Theme</div>
+            <div style="font-size:.85rem;color:var(--text3);margin-top:2px;">Switch between light and dark mode</div>
+          </div>
+          <div id="settingsThemeSwitch" onclick="toggleTheme();syncSettingsSwitches();" style="width:46px;height:26px;border-radius:100px;background:var(--surface);border:1px solid var(--border);position:relative;cursor:pointer;flex-shrink:0;transition:background .2s;">
+            <div id="settingsThemeKnob" style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:left .2s;"></div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 4px;">
+          <div>
+            <div style="font-size:1rem;font-weight:600;color:var(--text);">Notifications</div>
+            <div style="font-size:.85rem;color:var(--text3);margin-top:2px;">Get alerts for payments, gigs, and payroll</div>
+          </div>
+          <div id="settingsNotifSwitch" onclick="toggleNotificationsSetting()" style="width:46px;height:26px;border-radius:100px;background:var(--surface);border:1px solid var(--border);position:relative;cursor:pointer;flex-shrink:0;transition:background .2s;">
+            <div id="settingsNotifKnob" style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:left .2s;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- ══ CAREER AGENT PAGE ══ -->
@@ -6858,6 +6887,7 @@ function nanSbSetActive(page){
   if (typeof _orig === 'function'){
     window.goPage = function(p){
       nanSbSetActive(p);
+      if(p === 'settings' && typeof syncSettingsSwitches === 'function') setTimeout(syncSettingsSwitches, 50);
       return _orig.apply(this, arguments);
     };
   }
