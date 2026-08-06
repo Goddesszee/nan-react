@@ -152,7 +152,7 @@ body::after{display:none;}
 .home-bal-card::before{display:none;}
 .home-bal-lbl{font-family:'Inter var','Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:#ffffff;letter-spacing:.18em;text-transform:uppercase;margin-bottom:6px;}
 .home-bal-num{font-size:2.8rem;font-weight:700;letter-spacing:-1.5px;line-height:1;color:#f0f0f0;margin-bottom:4px;}
-.home-bal-ngn{font-family:'Inter var','Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:rgba(196,181,253,0.5);margin-bottom:12px;}
+.home-bal-ngn{font-family:'Inter var','Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:rgba(147,197,253,0.5);margin-bottom:12px;}
 .home-tok-row{display:flex;gap:6px;margin-top:2px;}
 .tok{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:100px;padding:4px 10px;font-family:'Inter var','Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:.95rem;font-weight:500;color:#ffffff;}
 .tok-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
@@ -178,7 +178,7 @@ body::after{display:none;}
 .naira-wide-icon{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,rgba(255,255,255,.06),rgba(255,255,255,.06));border:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;color:var(--text2);flex-shrink:0;}
 .naira-wide-text{flex:1;}
 .naira-wide-title{font-size:1rem;font-weight:700;color:var(--text);margin-bottom:2px;}
-.naira-wide-sub{font-size:1rem;color:rgba(196,181,253,.5);}
+.naira-wide-sub{font-size:1rem;color:rgba(147,197,253,.5);}
 .naira-wide-arrow{font-size:1.1rem;color:#ffffff;}
 
 /* Home assets section */
@@ -1847,8 +1847,8 @@ a:hover{color:var(--text);}
   /* Keep home balance card styled */
   .home-bal-card,
   .bal-card{
-    background: linear-gradient(135deg,rgba(139,92,246,.18),rgba(37,99,235,.12)) !important;
-    border: 1px solid rgba(139,92,246,.3) !important;
+    background: linear-gradient(135deg,rgba(37,99,235,.18),rgba(37,99,235,.12)) !important;
+    border: 1px solid rgba(37,99,235,.3) !important;
     border-radius: 18px !important;
     box-shadow: 0 8px 32px rgba(0,0,0,.3) !important;
   }
@@ -1922,7 +1922,7 @@ a:hover{color:var(--text);}
 
 /* == NAIRA BALANCE VISIBILITY FIX == */
 #homeBalNgn {
-  color: rgba(225,210,255,1) !important;
+  color: rgba(191,219,254,1) !important;
   opacity: 1 !important;
   font-weight: 500 !important;
 }
@@ -2676,7 +2676,7 @@ a:hover{color:var(--text);}
   }
   /* Balance card background section */
   [data-theme="light"] #page-home [style*="background:var(--card)"][style*="padding:22px"]{
-    background:linear-gradient(135deg,#2563EB,#9333ea) !important;
+    background:linear-gradient(135deg,#2563EB,#1D4ED8) !important;
   }
   [data-theme="light"] #page-home [style*="background:var(--card)"][style*="padding:22px"] *{
     color:#fff !important;
@@ -3336,9 +3336,9 @@ a:hover{color:var(--text);}
     min-height: unset !important;
   }
 
-  /* ── Balance card: gradient purple ── */
+  /* Balance card: solid blue gradient */
   .home-bal-card {
-    background: linear-gradient(135deg,#2563EB 0%,#2563EB 50%,#9333ea 100%) !important;
+    background: linear-gradient(135deg,#2563EB 0%,#2563EB 50%,#1D4ED8 100%) !important;
     border-radius: 20px !important;
     border: none !important;
   }
@@ -5124,13 +5124,13 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
 }
 
 .nan-aur-wrap{max-width:760px;margin:0 auto;padding:64px 24px 60px;text-align:center;}
-.nan-aur-badge{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:#e9d5ff;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-radius:100px;padding:7px 16px;margin-bottom:26px;}
-.nan-aur-h1{font-size:clamp(30px,5.4vw,54px);font-weight:600;line-height:1.1;letter-spacing:-.03em;margin-bottom:20px;background:linear-gradient(180deg,#ffffff 0%,#b9a5e8 100%);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.nan-aur-badge{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:#93c5fd;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-radius:100px;padding:7px 16px;margin-bottom:26px;}
+.nan-aur-h1{font-size:clamp(30px,5.4vw,54px);font-weight:600;line-height:1.1;letter-spacing:-.03em;margin-bottom:20px;background:linear-gradient(180deg,#ffffff 0%,#93c5fd 100%);-webkit-background-clip:text;background-clip:text;color:transparent;}
 .nan-aur-sub{font-size:16px;color:#ffffff;line-height:1.75;max-width:520px;margin:0 auto 32px;}
 .nan-aur-input{width:100%;max-width:360px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:14px 16px;color:#fff;font-size:14px;margin-bottom:12px;box-sizing:border-box;outline:none;font-family:inherit;}
 .nan-aur-input::placeholder{color:#ffffff;}
 .nan-aur-input:focus{border-color:rgba(37,99,235,.6);}
-.nan-aur-cta{background:linear-gradient(180deg,#8b3dff,#6d00e6);color:#fff;border:none;border-radius:14px;padding:16px 38px;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit;box-shadow:0 12px 40px rgba(37,99,235,.5),inset 0 1px 0 rgba(255,255,255,.25);transition:transform .15s,box-shadow .2s;}
+.nan-aur-cta{background:linear-gradient(180deg,#2563EB,#1D4ED8);color:#fff;border:none;border-radius:14px;padding:16px 38px;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit;box-shadow:0 12px 40px rgba(37,99,235,.5),inset 0 1px 0 rgba(255,255,255,.25);transition:transform .15s,box-shadow .2s;}
 .nan-aur-cta:hover{transform:translateY(-1px);box-shadow:0 16px 48px rgba(37,99,235,.6),inset 0 1px 0 rgba(255,255,255,.3);}
 .nan-aur-note{font-size:12px;color:#ffffff;margin-top:16px;}
 .nan-aur-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;text-align:left;margin-top:56px;}
@@ -5139,7 +5139,7 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
 .nan-aur-ct{font-size:15px;color:#fff;margin-bottom:7px;font-weight:500;}
 .nan-aur-cd{font-size:13px;color:#ffffff;line-height:1.65;}
 
-[data-theme=light] .nan-aur-h1{background:linear-gradient(180deg,#1a1a1a 0%,#5b3ea8 100%);-webkit-background-clip:text;background-clip:text;}
+[data-theme=light] .nan-aur-h1{background:linear-gradient(180deg,#1a1a1a 0%,#2563EB 100%);-webkit-background-clip:text;background-clip:text;}
 [data-theme=light] .nan-aur-sub{color:#000000;}
 [data-theme=light] .nan-aur-badge{color:#2563EB;background:rgba(0,0,0,.04);border-color:#000000;}
 [data-theme=light] .nan-aur-input{background:rgba(0,0,0,.04);border-color:#000000;color:#111;}
@@ -5194,11 +5194,11 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
 #page-agent-wallet > div:first-child > div:first-child{display:none !important;}
 .nan-aur-wrap{padding-top:34px !important;}
 
-.nan-aur-tile{width:40px !important;height:40px !important;border-radius:12px !important;display:flex !important;align-items:center !important;justify-content:center !important;margin-bottom:14px !important;background:#f1ecff !important;color:#2563EB !important;box-shadow:none !important;}
+.nan-aur-tile{width:40px !important;height:40px !important;border-radius:12px !important;display:flex !important;align-items:center !important;justify-content:center !important;margin-bottom:14px !important;background:#dbeafe !important;color:#2563EB !important;box-shadow:none !important;}
 .nan-aur-tile svg{width:20px;height:20px;display:block;}
 [data-theme=dark] .nan-aur-tile,html:not([data-theme=light]) .nan-aur-tile{background:rgba(37,99,235,.18) !important;color:#2563EB !important;}
 
-.nan-aur-card{background:linear-gradient(#ffffff,#ffffff) padding-box,linear-gradient(160deg,rgba(139,61,255,.5),rgba(37,99,235,.1) 55%,rgba(139,61,255,.28)) border-box !important;border:1px solid transparent !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;border-radius:18px !important;padding:20px !important;box-shadow:0 10px 30px rgba(37,99,235,.12) !important;transition:transform .18s ease,box-shadow .22s ease !important;}
+.nan-aur-card{background:linear-gradient(#ffffff,#ffffff) padding-box,linear-gradient(160deg,rgba(37,99,235,.5),rgba(37,99,235,.1) 55%,rgba(37,99,235,.28)) border-box !important;border:1px solid transparent !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;border-radius:18px !important;padding:20px !important;box-shadow:0 10px 30px rgba(37,99,235,.12) !important;transition:transform .18s ease,box-shadow .22s ease !important;}
 .nan-aur-card:hover{transform:translateY(-3px) !important;box-shadow:0 18px 44px rgba(37,99,235,.2) !important;}
 [data-theme=dark] .nan-aur-card,html:not([data-theme=light]) .nan-aur-card{background:linear-gradient(#131318,#131318) padding-box,linear-gradient(160deg,rgba(37,99,235,.55),rgba(37,99,235,.12) 55%,rgba(37,99,235,.28)) border-box !important;box-shadow:0 12px 34px rgba(0,0,0,.5) !important;}
 
@@ -5228,7 +5228,7 @@ html[data-theme=light] .nan-aur-h1{color:#111111 !important;}
 html .nan-aur-sub{color:#ffffff !important;font-size:13.5px !important;line-height:1.6 !important;max-width:450px !important;margin-bottom:20px !important;}
 html[data-theme=light] .nan-aur-sub{color:#000000 !important;}
 html .nan-aur-cta{background:#2563EB !important;color:#ffffff !important;font-size:12.5px !important;font-weight:700 !important;padding:12px 24px !important;border-radius:6px !important;box-shadow:none !important;}
-html .nan-aur-cta:hover{background:#8b3dff !important;transform:none !important;}
+html .nan-aur-cta:hover{background:#1D4ED8 !important;transform:none !important;}
 html .nan-aur-note{color:#ffffff !important;font-size:11px !important;margin-top:10px !important;}
 html[data-theme=light] .nan-aur-note{color:#000000 !important;}
 
@@ -5451,7 +5451,7 @@ html[data-theme=light] .nan-hero-docs-btn{border-color:rgba(0,0,0,.18);}
 .nan-hero-globe{
   width:340px !important;height:340px !important;min-width:340px !important;min-height:340px !important;max-width:340px !important;max-height:340px !important;
   flex-shrink:0 !important;border-radius:50% !important;position:absolute !important;right:-40px !important;top:50% !important;transform:translateY(-50%) !important;overflow:hidden !important;
-  background:radial-gradient(circle at 32% 28%,#3a2266 0%,#1a1030 45%,#0b0b14 75%) !important;
+  background:radial-gradient(circle at 32% 28%,#1e3a8a 0%,#0f1f42 45%,#0b0b14 75%) !important;
   box-shadow:0 0 90px rgba(37,99,235,.3) inset,0 0 60px rgba(37,99,235,.2),0 12px 40px rgba(37,99,235,.15) !important;
   border:1px solid rgba(37,99,235,.28) !important;
 }
