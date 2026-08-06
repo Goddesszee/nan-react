@@ -5306,34 +5306,17 @@ function _navRenderWalletMenu(){
   if (connected) {
     var addr = agentWalletAddr;
     var short = addr.slice(0,6) + '...' + addr.slice(-4);
-    var hasName = typeof arcNames !== 'undefined' && arcNames.some(function(n){ return n.owner === userAddr; });
-    var claimNudge = hasName ? '' :
-      '<button onclick="event.stopPropagation();closeCenteredMenus();document.getElementById(\'navWalletMenu\').style.display=\'none\';navShowWelcomeModal();" style="width:100%;text-align:left;background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.25);color:#2563EB;padding:9px 10px;border-radius:8px;font-size:.78rem;font-weight:700;cursor:pointer;margin-bottom:10px;">✦ Claim your .arc name</button>';
     navMenu.innerHTML =
-      claimNudge +
       '<div style="font-size:.75rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Agent Wallet</div>' +
       '<div style="font-family:monospace;font-size:.78rem;color:var(--text2);margin-bottom:10px;">' + short + '</div>' +
-      '<button id="navAgentCopyBtn" onclick="event.stopPropagation();navAgentWalletCopy();" style="display:flex;align-items:center;gap:8px;width:100%;padding:9px 10px;background:none;border:none;border-radius:8px;cursor:pointer;font-size:.82rem;color:var(--text1);" onmouseover="this.style.background=\'rgba(37,99,235,.1)\'" onmouseout="this.style.background=\'none\'">Copy Address</button>' +
-      '<div style="height:1px;background:var(--border);margin:4px 0;"></div>' +
-      '<button onclick="event.stopPropagation();navMenuAgentDisconnect();" style="display:flex;align-items:center;gap:8px;width:100%;padding:9px 10px;background:none;border:none;border-radius:8px;cursor:pointer;font-size:.82rem;color:#2563EB;" onmouseover="this.style.background=\'rgba(248,113,113,.1)\'" onmouseout="this.style.background=\'none\'">Disconnect</button>' +
-      '<button onclick="event.stopPropagation();navMenuSwitchAccount();" style="display:flex;align-items:center;gap:8px;width:100%;padding:9px 10px;background:none;border:none;border-radius:8px;cursor:pointer;font-size:.78rem;color:var(--text2);" onmouseover="this.style.background=\'rgba(37,99,235,.1)\'" onmouseout="this.style.background=\'none\'">Log in as a different user</button>';
+      '<button onclick="event.stopPropagation();navMenuAgentDisconnect();" style="width:100%;background:none;border:1px solid var(--border);color:#2563EB;padding:9px;border-radius:8px;font-size:.82rem;font-weight:700;cursor:pointer;" onmouseover="this.style.background=\'rgba(37,99,235,.08)\'" onmouseout="this.style.background=\'none\'">Disconnect</button>';
     return;
   }
   var hasMainWallet = typeof userAddr !== 'undefined' && !!userAddr;
   if (hasMainWallet) {
-    var mShort = userAddr.slice(0,6) + '...' + userAddr.slice(-4);
     navMenu.innerHTML =
-      '<div style="font-size:.72rem;color:var(--text3);margin-bottom:10px;">Set up your Agent Wallet — linked to your connected wallet, takes a few seconds.</div>' +
-      '<button onclick="event.stopPropagation();navMenuAgentConnect();" style="width:100%;background:#2563EB;border:none;color:#fff;padding:9px;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;margin-bottom:10px;">Connect Agent Wallet</button>' +
-      '<div style="height:1px;background:var(--border);margin:8px 0;"></div>' +
-      '<div id="navMainWalletChip" onclick="event.stopPropagation();navToggleMainWalletActions();" style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:.76rem;color:var(--text2);background:var(--card);">' +
-        '<span style="font-family:monospace;">' + mShort + '</span>' +
-        '<span style="color:var(--text3);">Connected wallet ▾</span>' +
-      '</div>' +
-      '<div id="navMainWalletActions" style="display:none;margin-top:6px;">' +
-        '<button onclick="event.stopPropagation();navMainWalletCopy();" style="display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;background:none;border:none;border-radius:8px;cursor:pointer;font-size:.78rem;color:var(--text1);" onmouseover="this.style.background=\'rgba(37,99,235,.1)\'" onmouseout="this.style.background=\'none\'">Copy Address</button>' +
-        '<button onclick="event.stopPropagation();navMainWalletDisconnect();" style="display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;background:none;border:none;border-radius:8px;cursor:pointer;font-size:.78rem;color:#2563EB;" onmouseover="this.style.background=\'rgba(248,113,113,.1)\'" onmouseout="this.style.background=\'none\'">Disconnect</button>' +
-      '</div>';
+      '<div style="font-size:.72rem;color:var(--text3);margin-bottom:10px;">Set up your Agent Wallet, linked to your connected wallet, takes a few seconds.</div>' +
+      '<button onclick="event.stopPropagation();navMenuAgentConnect();" style="width:100%;background:#2563EB;border:none;color:#fff;padding:9px;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;">Connect Agent Wallet</button>';
     return;
   }
   navMenu.innerHTML =
