@@ -5595,3 +5595,105 @@ body.nan-sidebar-collapsed #page-agent-wallet{padding-left:72px !important;}
 [data-theme="light"] #navWalletMenu button[onclick*="navMenuAgentDisconnect"],
 [data-theme="light"] #navWalletMenu button[onclick*="navMainWalletDisconnect"] { color: #2563EB !important; }
 [data-theme="light"] #navWalletMenu button[onclick*="navShowWelcomeModal"] { color: #2563EB !important; }
+
+/* ══════════════════════════════════════════════════════════════════
+   PREMIUM BOTTOM NAV — OPay-inspired redesign, final override.
+   Placed at end of file + #bottomNav ID scoping so it wins over the
+   ~40 accumulated legacy .nav-btn rules earlier in this file.
+   ══════════════════════════════════════════════════════════════════ */
+#bottomNav.bottom-nav{
+  background:var(--nav-bg) !important;
+  backdrop-filter:blur(24px) !important;
+  -webkit-backdrop-filter:blur(24px) !important;
+  border-top:1px solid var(--border) !important;
+  box-shadow:0 -6px 24px rgba(0,0,0,.18) !important;
+}
+#bottomNav .nav-pill-wrap{
+  display:flex !important;
+  max-width:none !important;
+  width:100% !important;
+  margin:0 !important;
+  background:transparent !important;
+  border:none !important;
+  border-radius:0 !important;
+  padding:2px 0 0 !important;
+  gap:0 !important;
+}
+#bottomNav .nav-btn{
+  flex:1 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:5px !important;
+  padding:8px 2px 6px !important;
+  border:none !important;
+  background:transparent !important;
+  color:var(--text3) !important;
+  font-family:'Inter',sans-serif !important;
+  font-size:.66rem !important;
+  font-weight:600 !important;
+  text-transform:none !important;
+  letter-spacing:0 !important;
+  border-radius:0 !important;
+  position:relative !important;
+  opacity:.62 !important;
+  transition:color .18s ease,opacity .18s ease,transform .15s ease !important;
+}
+#bottomNav .nav-btn .ni{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  transition:transform .18s ease !important;
+}
+#bottomNav .nav-btn .ni svg{
+  width:23px !important;
+  height:23px !important;
+  stroke-width:1.8 !important;
+  transition:stroke-width .18s ease !important;
+}
+#bottomNav .nav-btn.active{
+  color:#2563EB !important;
+  background:transparent !important;
+  border-color:transparent !important;
+  box-shadow:none !important;
+  opacity:1 !important;
+}
+#bottomNav .nav-btn.active .ni{
+  transform:translateY(-1px) !important;
+}
+#bottomNav .nav-btn.active .ni svg{
+  stroke-width:2.4 !important;
+  filter:none !important;
+}
+#bottomNav .nav-btn.active::before{
+  content:'' !important;
+  position:absolute !important;
+  top:0 !important;
+  left:50% !important;
+  transform:translateX(-50%) !important;
+  width:20px !important;
+  height:3px !important;
+  border-radius:0 0 4px 4px !important;
+  background:#2563EB !important;
+}
+#bottomNav .nav-btn:active{
+  transform:scale(.94) !important;
+}
+
+[data-theme="light"] #bottomNav.bottom-nav{
+  background:var(--nav-bg) !important;
+  border-top:1px solid rgba(37,99,235,.12) !important;
+  box-shadow:0 -6px 20px rgba(0,0,0,.06) !important;
+}
+[data-theme="light"] #bottomNav .nav-btn{
+  color:rgba(0,0,0,.5) !important;
+}
+[data-theme="light"] #bottomNav .nav-btn.active{
+  color:#2563EB !important;
+}
+
+@media(max-width:360px){
+  #bottomNav .nav-btn{font-size:.6rem !important;}
+  #bottomNav .nav-btn .ni svg{width:21px !important;height:21px !important;}
+}
