@@ -1543,7 +1543,8 @@ html,body{background-color:var(--bg);}
       { color: #111 !important; }
       #page-career-agent #careerWelcomeBanner button, #page-career-agent #careerWelcomeBanner button *
       { color: #fff !important; }
-      #page-career-agent .ctab { padding:9px 16px;border-radius:10px;font-size:.82rem;font-weight:700;border:none;background:transparent;color:var(--text2) !important;cursor:pointer; }
+      #page-career-agent .ctab { padding:9px 16px;border-radius:10px;font-size:.82rem;font-weight:700;border:none;background:transparent;color:rgba(255,255,255,.78) !important;cursor:pointer; }
+      [data-theme=light] #page-career-agent .ctab { color:rgba(0,0,0,.68) !important; }
       #page-career-agent #careerBackFromCv { color:#2563EB !important; background:rgba(37,99,235,.12) !important; }
       [data-theme=light] #page-career-agent #careerBackFromCv { color:#2563EB !important; background:rgba(37,99,235,.08) !important; }
       #page-career-agent .ctab.active { background:#2563EB;color:#fff !important; }
@@ -4034,7 +4035,8 @@ html,body{background-color:var(--bg);}
 
 <div class="page" id="page-cashinout">
     <style>
-      #page-cashinout .ctab { padding:9px 16px;border-radius:100px;font-size:.82rem;font-weight:700;border:none;background:transparent;color:var(--text2) !important;cursor:pointer; }
+      #page-cashinout .ctab { padding:9px 16px;border-radius:100px;font-size:.82rem;font-weight:700;border:none;background:transparent;color:rgba(255,255,255,.78) !important;cursor:pointer; }
+      [data-theme=light] #page-cashinout .ctab { color:rgba(0,0,0,.68) !important; }
       #page-cashinout .ctab.active { background:#2563EB;color:#fff !important; }
       #page-cashinout .pcard { background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,.04); }
       #page-cashinout .fx-ticker{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;}
@@ -5847,6 +5849,13 @@ window.addEventListener('load', function() {
 
 
 
+<!-- Mobile only: hide floating AI/Support FABs — moved into the side drawer instead. Desktop untouched. -->
+<style>
+  @media(max-width:768px){
+    #aiBtn, #supportBtn { display:none !important; }
+  }
+</style>
+
 <!-- ══ AI Button ══ -->
 <button id="aiBtn" style="position:fixed;bottom:84px;right:14px;z-index:10000;width:48px;height:48px;border-radius:14px;background:#2563EB;border:2px solid rgba(147,197,253,.2);color:#EEF2FF;font-size:1rem;cursor:pointer;box-shadow:0 4px 24px rgba(37,99,235,.55),0 0 0 1px rgba(37,99,235,.3);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1px;transition:all .2s;touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none;">
   <span id="aiBtnDot" style="display:none;position:absolute;top:3px;right:3px;width:10px;height:10px;border-radius:50%;background:#2563EB;border:2px solid #2563EB;"></span>
@@ -6713,6 +6722,8 @@ function nanToggleFaucet(btn){
 
       <button class="nan-drow" onclick="toggleTheme();nanCloseDrawer();"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></span><span class="nan-drow-lbl">Appearance</span></button>
       <button class="nan-drow" onclick="nanCloseDrawer();toggleNotifPanel(event)"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></span><span class="nan-drow-lbl">Notifications</span><span id="nanDrawerNotifBadge" style="display:none;width:8px;height:8px;border-radius:50%;background:#2563EB;margin-left:auto;flex-shrink:0;"></span></button>
+      <button class="nan-drow" onclick="nanCloseDrawer();if(typeof toggleAgent==='function')toggleAgent();"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18 9l-4.1 1.4L12 15l-1.9-4.6L6 9l4.1-1.4z"/><path d="M19 15l.9 2.2L22 18l-2.1.8L19 21l-.9-2.2L16 18l2.1-.8z"/></svg></span><span class="nan-drow-lbl">AI Assistant</span></button>
+      <button class="nan-drow" onclick="nanCloseDrawer();if(typeof toggleSupportPanel==='function')toggleSupportPanel();"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg></span><span class="nan-drow-lbl">Support</span></button>
     </div>
     <div style="padding:12px 20px 28px;border-top:1px solid rgba(255,255,255,.05);">
       <button class="nan-drow" onclick="nanCloseDrawer();disconnect()" style="width:100%;padding:10px 0;"><span class="nan-drow-ic" style="background:rgba(37,99,235,.07);border-color:rgba(37,99,235,.14);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="rgba(37,99,235,.7)" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span><span class="nan-drow-lbl" style="color:rgba(37,99,235,.7);">Disconnect</span></button>
