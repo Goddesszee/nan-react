@@ -390,9 +390,9 @@ html,body{background-color:var(--bg);}
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg>
       <span class="nan-sb-label">Interview Coach</span>
     </div>
-    <div class="nan-sb-item-row" data-sbpage="career-agent" onclick="goPage('career-agent');setTimeout(function(){if(typeof careerOpenFeature==='function')careerOpenFeature('find');if(typeof careerSwitchTab==='function')careerSwitchTab('generate');},150)">
+    <div class="nan-sb-item-row" data-sbpage="career-agent" onclick="goPage('career-agent')">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
-      <span class="nan-sb-label">Resume Builder</span>
+      <span class="nan-sb-label">Career agent</span>
     </div>
 
     <div class="nan-sb-divider"></div>
@@ -1558,20 +1558,20 @@ html,body{background-color:var(--bg);}
         <div style="width:34px;height:34px;border-radius:10px;background:#2563EB;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
         <div style="font-size:2.25rem;font-weight:800;color:#2563EB;letter-spacing:-.02em;">Career agent</div>
       </div>
-      <div style="font-size:.85rem;color:var(--text2);margin-bottom:18px;">Find a job as a candidate, post a job as an employer, or browse what's been posted.</div>
+      <div style="font-size:.85rem;color:var(--text2);margin-bottom:18px;font-weight:700;">Find a job as a candidate, post a job as an employer, or browse what's been posted.</div>
 
       <div id="careerLandingView">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap;">
           <div style="display:flex;gap:6px;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:4px;box-shadow:0 1px 2px rgba(0,0,0,.04);">
-            <button id="careerModeFind" class="ctab active" onclick="careerOpenFeature('find')">🔍 Discover</button>
-            <button id="careerModePost" class="ctab" onclick="careerOpenFeature('post')">➕ Post a job</button>
-            <button id="careerModeBrowse" class="ctab" onclick="careerOpenFeature('browse')">📋 Browse jobs</button>
-            <button id="careerModeMyjobs" class="ctab" onclick="careerOpenFeature('myjobs')">💼 My jobs</button>
-            <button id="careerModeApplications" class="ctab" onclick="careerOpenFeature('applications')">📨 My applications</button>
-            <button id="careerModeSaved" class="ctab" onclick="careerOpenFeature('saved')">♡ Saved jobs</button>
-            <button id="careerModeProfile" class="ctab" onclick="careerOpenFeature('profile')">👤 Career profile</button>
-            <button id="careerModeCoach" class="ctab" onclick="careerOpenFeature('coach')">🎯 Interview coach</button>
-            <button id="careerModeMessages" class="ctab" onclick="careerOpenFeature('messages')">💬 Messages</button>
+            <button id="careerModeFind" class="ctab active" onclick="careerOpenFeature('find')">Discover</button>
+            <button id="careerModePost" class="ctab" onclick="careerOpenFeature('post')">Post a job</button>
+            <button id="careerModeBrowse" class="ctab" onclick="careerOpenFeature('browse')">Browse jobs</button>
+            <button id="careerModeMyjobs" class="ctab" onclick="careerOpenFeature('myjobs')">My jobs</button>
+            <button id="careerModeApplications" class="ctab" onclick="careerOpenFeature('applications')">My applications</button>
+            <button id="careerModeSaved" class="ctab" onclick="careerOpenFeature('saved')">Saved jobs</button>
+            <button id="careerModeProfile" class="ctab" onclick="careerOpenFeature('profile')">Career profile</button>
+            <button id="careerModeCoach" class="ctab" onclick="careerOpenFeature('coach')">Interview coach</button>
+            <button id="careerModeMessages" class="ctab" onclick="careerOpenFeature('messages')">Messages</button>
           </div>
           <button id="careerNotifBell" onclick="careerOpenFeature('notifications')" style="position:relative;width:40px;height:40px;border-radius:50%;background:var(--card);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 1px 2px rgba(0,0,0,.04);">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
