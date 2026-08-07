@@ -499,8 +499,8 @@ html,body{background-color:var(--bg);}
       </div>
       <!-- Faucet pill removed from top nav — moved into the pre-login hero -->
       <button id="nan-history-btn" onclick="goPage('history')" title="History" class="nan-hidden-btn" style="display:none;background:transparent;border:1px solid var(--border);border-radius:100px;width:34px;height:34px;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);flex-shrink:0;transition:all .2s;" onmouseover="this.style.borderColor='rgba(37,99,235,.4)';this.style.color='#2563EB'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text2)'"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></button>
-      <!-- Hidden original buttons - kept for JS compatibility -->
-      <button id="nanNotifBtn" onclick="toggleNotifPanel(event)" title="Notifications" aria-label="Notifications" style="display:none;">
+      <!-- Notification bell -->
+      <button id="nanNotifBtn" onclick="toggleNotifPanel(event)" title="Notifications" aria-label="Notifications" style="background:transparent;border:1px solid var(--border);border-radius:100px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2);flex-shrink:0;position:relative;transition:all .2s;" onmouseover="this.style.borderColor='rgba(37,99,235,.4)';this.style.color='#2563EB'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text2)'">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <span id="nanNotifBadge"></span>
       </button>
@@ -4077,11 +4077,17 @@ html,body{background-color:var(--bg);}
           <div id="cioRateUsdcEurc" class="fx-pair"><span class="sym">USDC to EURC</span><span class="rate">Loading</span></div>
         </div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
-          <div class="pcard"><div style="font-size:.75rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;">USDC balance</div><div id="cioBalUsdc" style="font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700;margin-top:4px;">0.00</div></div>
-          <div class="pcard"><div style="font-size:.75rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;">EURC balance</div><div id="cioBalEurc" style="font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700;margin-top:4px;">0.00</div></div>
-          <div class="pcard" style="background:rgba(37,99,235,.06);border-color:rgba(37,99,235,.2);"><div style="font-size:.75rem;color:#2563EB;text-transform:uppercase;letter-spacing:.05em;">Naira balance</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700;margin-top:4px;color:#2563EB;">Not yet supported</div></div>
+          <div class="pcard"><div style="display:flex;align-items:center;justify-content:space-between;"><div><div style="font-size:.75rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;">USDC balance</div><div id="cioBalUsdc" style="font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700;margin-top:4px;">0.00</div><div style="font-size:.72rem;color:var(--text3);margin-top:2px;">$<span id="cioBalUsdcUsd">0.00</span> USD</div></div><div style="width:38px;height:38px;border-radius:50%;background:rgba(37,99,235,.1);display:flex;align-items:center;justify-content:center;color:#2563EB;font-weight:700;flex-shrink:0;">$</div></div></div>
+          <div class="pcard"><div style="display:flex;align-items:center;justify-content:space-between;"><div><div style="font-size:.75rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;">EURC balance</div><div id="cioBalEurc" style="font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700;margin-top:4px;">0.00</div><div style="font-size:.72rem;color:var(--text3);margin-top:2px;">&euro;<span id="cioBalEurcEur">0.00</span> EUR</div></div><div style="width:38px;height:38px;border-radius:50%;background:rgba(37,99,235,.1);display:flex;align-items:center;justify-content:center;color:#2563EB;font-weight:700;flex-shrink:0;">&euro;</div></div></div>
+          <div class="pcard" style="background:rgba(37,99,235,.06);border-color:rgba(37,99,235,.2);"><div style="display:flex;align-items:center;justify-content:space-between;"><div><div style="font-size:.75rem;color:#2563EB;text-transform:uppercase;letter-spacing:.05em;">Naira balance</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700;margin-top:4px;color:#2563EB;">Not yet supported</div></div><div style="width:38px;height:38px;border-radius:50%;background:rgba(34,197,94,.12);display:flex;align-items:center;justify-content:center;color:var(--success);font-weight:700;flex-shrink:0;">&#8358;</div></div></div>
         </div>
-        <h3 style="font-size:.9rem;margin-bottom:10px;">Recent activity</h3>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <h3 style="font-size:.9rem;margin:0;">Recent Transactions</h3>
+          <span onclick="goPage('history')" style="font-size:.8rem;font-weight:700;color:#2563EB;cursor:pointer;display:flex;align-items:center;gap:5px;">View all transactions <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+        <div id="cioOverviewRecentHead" style="display:none;grid-template-columns:2fr 1.2fr 1fr 1.3fr auto;gap:12px;padding:0 16px 8px;font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;">
+          <span>Type</span><span>Amount</span><span>Status</span><span>Date</span><span></span>
+        </div>
         <div id="cioOverviewRecent" style="font-size:.85rem;color:var(--text3);">Loading</div>
       </div>
 

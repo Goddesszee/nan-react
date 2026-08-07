@@ -5173,9 +5173,13 @@ async function cioLoadRates(){
 function cioLoadOverview(){
   document.getElementById('cioBalUsdc').textContent = (parseFloat(usdcBal||0)).toFixed(2);
   document.getElementById('cioBalEurc').textContent = (parseFloat(eurcBal||0)).toFixed(2);
+  const usdEl = document.getElementById('cioBalUsdcUsd'); if(usdEl) usdEl.textContent = (parseFloat(usdcBal||0)).toFixed(2);
+  const eurEl = document.getElementById('cioBalEurcEur'); if(eurEl) eurEl.textContent = (parseFloat(eurcBal||0)).toFixed(2);
   cioFetchTransactions().then(txs => {
     const el = document.getElementById('cioOverviewRecent');
-    if(!txs.length){ el.innerHTML = '<div style="text-align:center;padding:32px 20px;border:2px dashed var(--border);border-radius:14px;color:var(--text3);">No deposit or withdrawal activity yet.</div>'; return; }
+    const head = document.getElementById('cioOverviewRecentHead');
+    if(!txs.length){ if(head) head.style.display='none'; el.innerHTML = '<div style="text-align:center;padding:32px 20px;border:2px dashed var(--border);border-radius:14px;color:var(--text3);">No deposit or withdrawal activity yet.</div>'; return; }
+    if(head) head.style.display='grid';
     el.innerHTML = txs.slice(0,5).map(cioTxRow).join('');
   });
 }
@@ -5196,15 +5200,20 @@ function cioStatusBadge(status){
 function cioTxRow(tx){
   const isCashin = tx.type === 'cashin';
   const amountText = isCashin ? tx.nairaAmount.toFixed(2)+' NGN' : tx.stablecoinAmount.toFixed(2)+' '+tx.fromToken;
-  return `<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border:1px solid var(--border);border-radius:12px;margin-bottom:8px;background:var(--card);">
-    <div>
-      <div style="font-weight:700;font-size:.86rem;color:var(--text);">${isCashin ? 'Deposit' : 'Withdrawal'}, ${amountText}</div>
-      <div style="font-size:.74rem;color:var(--text3);">${new Date(tx.createdAt).toLocaleString()}</div>
+  const iconBg = isCashin ? 'rgba(34,197,94,.12)' : 'rgba(37,99,235,.1)';
+  const iconColor = isCashin ? 'var(--success)' : '#2563EB';
+  return `<div style="display:grid;grid-template-columns:2fr 1.2fr 1fr 1.3fr auto;gap:12px;align-items:center;padding:12px 16px;border:1px solid var(--border);border-radius:12px;margin-bottom:8px;background:var(--card);">
+    <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+      <div style="width:32px;height:32px;border-radius:50%;background:${iconBg};color:${iconColor};display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;flex-shrink:0;">${isCashin?'&#8595;':'&#8593;'}</div>
+      <div style="min-width:0;">
+        <div style="font-weight:700;font-size:.86rem;color:var(--text);">${isCashin ? 'Deposit' : 'Withdrawal'}</div>
+        <div style="font-size:.72rem;color:var(--text3);">${isCashin ? 'Bank transfer' : 'Converted to Naira'}</div>
+      </div>
     </div>
-    <div style="display:flex;align-items:center;gap:10px;">
-      ${cioStatusBadge(tx.status)}
-      <span onclick="cioDownloadReceipt('${tx.id}')" style="font-size:.76rem;color:#2563EB;font-weight:700;cursor:pointer;">Receipt</span>
-    </div>
+    <div style="font-size:.85rem;font-weight:700;color:var(--text);">${amountText}</div>
+    <div>${cioStatusBadge(tx.status)}</div>
+    <div style="font-size:.78rem;color:var(--text3);">${new Date(tx.createdAt).toLocaleDateString(undefined,{day:'2-digit',month:'short',year:'numeric'})}</div>
+    <span onclick="cioDownloadReceipt('${tx.id}')" style="font-size:.76rem;color:#2563EB;font-weight:700;cursor:pointer;white-space:nowrap;">Receipt</span>
   </div>`;
 }
 
