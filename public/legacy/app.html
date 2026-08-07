@@ -5237,7 +5237,7 @@ function _navCenterAndShow(el, closeBtnId){
   el.style.display = 'block';
 }
 
-// ── Pill label: solid purple always. Shows claimed arc name once you have one ──
+// ── Pill label: solid blue always. Shows a real welcome greeting ──
 function nanUpdateProfileLabel(){
   var labelEl = document.getElementById('nanProfileLabel');
   var pill = document.getElementById('nanProfilePill');
@@ -5246,7 +5246,7 @@ function nanUpdateProfileLabel(){
   var mine = connected && typeof arcNames !== 'undefined'
     ? arcNames.find(function(n){ return n.owner === userAddr; })
     : null;
-  labelEl.textContent = mine ? (mine.name + '.arc') : 'Agent Wallet';
+  labelEl.textContent = connected ? (mine ? ('Welcome back, ' + mine.name) : 'Welcome back') : 'Profile';
   pill.style.background = '#2563EB';
   pill.style.border = 'none';
   labelEl.style.color = '#fff';

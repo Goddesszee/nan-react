@@ -841,22 +841,10 @@ function nanHasArcName(){
   return typeof arcNames!=='undefined' && typeof userAddr!=='undefined' && !!userAddr
     && arcNames.some(n=>n.owner===userAddr);
 }
-function nanUpdateProfileLabel(){
-  const labelEl=document.getElementById('nanProfileLabel');
-  const pill=document.getElementById('nanProfilePill');
-  if(!labelEl||!pill) return;
-  const connected=typeof userAddr!=='undefined'&&!!userAddr;
-  if(!connected){
-    labelEl.textContent='Profile';
-    pill.style.background='var(--surface)';pill.style.border='1px solid var(--border)';
-    labelEl.style.color='var(--text)';labelEl.style.fontWeight='600';
-    return;
-  }
-  const mine=(typeof arcNames!=='undefined'?arcNames:[]).find(n=>n.owner===userAddr);
-  labelEl.textContent = mine ? ('Welcome back, '+mine.name) : 'Welcome back';
-  pill.style.background='#2563EB';pill.style.border='none';
-  labelEl.style.color='#fff';labelEl.style.fontWeight='700';
-}
+// NOTE: nanUpdateProfileLabel() intentionally lives in app.html's inline
+// "Nav restructure" script block (loaded after this file), not here — a
+// duplicate definition here would silently be overridden by that later one
+// (same happened before this comment was added; don't reintroduce it).
 function nanUpdateProfileWalletRows(){
   const disconnectRow=document.getElementById('nanProfileDisconnect');
   const connectRow=document.getElementById('nanProfileConnect');
