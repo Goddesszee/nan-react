@@ -3073,9 +3073,9 @@ a:hover{color:var(--text);}
     background:rgba(37,99,235,.04) !important;
     border-color:rgba(37,99,235,.12) !important;
   }
-  [data-theme="dark"] #page-bridge [style*="background:var(--card)"][style*="border-radius:22px"]{
-    background:rgba(37,99,235,.04) !important;
-    border-color:rgba(37,99,235,.12) !important;
+  [data-theme="dark"] #page-bridge [style*="background:var(--card)"][style*="border-radius:20px"]{
+    background:rgba(37,99,235,.06) !important;
+    border-color:rgba(37,99,235,.18) !important;
   }
   [data-theme="dark"] #page-swap #fromToken,
   [data-theme="dark"] #page-swap #toToken{
@@ -3825,24 +3825,8 @@ input[style*="background: none"] {
 
 
 
-/* ── Desktop bridge: two-column layout ── */
-@media (min-width: 769px) {
-  #page-bridge > * {
-    max-width: 700px !important;
-  }
-  /* Gateway card full width */
-  #page-bridge .card:first-of-type {
-    max-width: 700px !important;
-  }
-  /* Right column (amount + button) sits beside gateway in a mini grid */
-  #bridgeRightCol {
-    display: contents;
-  }
-  /* Stack FROM↓TO + AMOUNT side by side */
-  #page-bridge > div > div:not([id]) {
-    max-width: 700px !important;
-  }
-}
+/* Legacy two-column bridge layout removed — Bridge now uses the same
+   single unified-card structure as Swap, no special desktop overrides needed. */
 
 
 .home-bal-chips{flex-wrap:wrap !important;max-width:200px !important;justify-content:flex-end !important;}
@@ -4906,7 +4890,6 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
 
 
   /* ── Bridge page ── */
-  #page-bridge { padding: 0 !important; }
   #page-bridge .chain-dropdown-btn {
     font-size: .85rem !important;
     padding: 10px 12px !important;
@@ -4951,9 +4934,8 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
   }
 
 
-  /* ── Strip unified card wrapper on mobile for market/bridge/agent ── */
+  /* ── Strip unified card wrapper on mobile for market/agent (Bridge now matches Swap, keeps its card) ── */
   #page-market > div[style*="background:var(--card)"],
-  #page-bridge > div[style*="background:var(--card)"],
   #page-agent-wallet > div[style*="background:var(--card)"] {
     background: transparent !important;
     border: none !important;
@@ -4975,19 +4957,7 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
 /* end @media(max-width:767px) */
 
 @media(min-width:769px){
-  /* ── Desktop: restore card on bridge ── */
-  html body #page-bridge > div:first-child {
-    background: var(--card) !important;
-    border: 1px solid var(--border) !important;
-    border-radius: 22px !important;
-    overflow: hidden !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-    max-width: 600px !important;
-    width: 100% !important;
-    flex-shrink: 0 !important;
-    box-sizing: border-box !important;
-  }
+  /* ── Desktop: Bridge card now matches Swap's card exactly — no override needed. ── */
 
   /* ── Desktop: no boxed card on market page (full-width colorful redesign) ── */
   html body #page-market > div:first-child {
