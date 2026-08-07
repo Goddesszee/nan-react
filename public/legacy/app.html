@@ -3780,39 +3780,33 @@ html,body{background-color:var(--bg);}
     </div><!-- end swap unified card -->
   <!-- ══ BRIDGE PAGE ══ -->
   <div class="page" id="page-bridge">
-<div style="background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;max-width:460px !important;">
-  <div style="padding:0;">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;overflow:hidden;padding:14px;max-width:460px !important;">
 
     <!-- hidden span for JS -->
     <span id="bridgeAvailBal" style="display:none;"></span>
 
-    <!-- ── Page header ── -->
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 16px 14px;border-bottom:1px solid var(--border);">
-      <div>
-        <div style="font-size:1.1rem;font-weight:700;color:var(--text);letter-spacing:-.02em;">Bridge</div>
-        <div style="font-size:.7rem;color:var(--text3);font-weight:600;margin-top:2px;letter-spacing:.04em;">CCTP V2 · Circle</div>
-      </div>
-      <button onclick="refreshGatewayBalance()" style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:6px 12px;color:var(--text2);font-size:.75rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">↻ Refresh</button>
+    <!-- Compact header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <span style="font-size:1.05rem;font-weight:700;color:var(--text);letter-spacing:-.02em;">Bridge</span>
+      <button onclick="refreshGatewayBalance()" title="Refresh" style="background:none;border:none;color:var(--text3);font-size:1.05rem;cursor:pointer;padding:4px;line-height:1;">↻</button>
     </div>
 
-    <!-- ── Gateway balance strip (compact) ── -->
-    <div style="margin:10px 16px 0;padding:9px 0;display:flex;align-items:center;gap:10px;">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
-      <div style="font-size:.75rem;font-weight:700;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;">Gateway</div>
-      <div id="gatewayTotal" style="font-size:.9rem;font-weight:800;color:var(--text);letter-spacing:-.02em;margin-left:auto;">—</div>
+    <!-- Gateway balance — single line, Swap-rate-bar style -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;">
+      <span style="font-size:.85rem;color:var(--text2);font-weight:600;">Gateway balance</span>
+      <span id="gatewayTotal" style="font-size:.95rem;font-weight:800;color:var(--text);letter-spacing:-.02em;">—</span>
     </div>
 
-    <!-- ── Per-chain balances ── -->
-    <div id="gatewayChains" style="display:flex;flex-wrap:wrap;gap:6px;padding:8px 16px 4px;">
+    <!-- Per-chain balances (kept for JS compat, hidden to reduce clutter) -->
+    <div id="gatewayChains" style="display:none;flex-wrap:wrap;gap:6px;margin-bottom:6px;">
       <div style="font-size:.7rem;color:var(--text3);padding:4px;">Loading…</div>
     </div>
 
-    <!-- ── Deposit to Gateway (moved up) ── -->
-    <div id="gatewayDepositSection" style="display:none;margin:10px 16px 12px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:10px 12px 8px;">
-      <div style="font-size:.9rem;font-weight:500;color:var(--text);margin-bottom:8px;">Deposit to Gateway</div>
+    <!-- Deposit to Gateway — inline row, no separate boxed card -->
+    <div id="gatewayDepositSection" style="display:none;margin-bottom:10px;">
       <div style="display:flex;gap:8px;">
-        <input id="gatewayDepositAmt" type="number" inputmode="decimal" min="1" step="1" placeholder="Min 1 USDC"
-          style="flex:1;background:none;border:1px solid var(--border2);border-radius:100px;padding:10px 16px;color:var(--text);font-family:'Inter',sans-serif;font-size:15px;outline:none;"/>
+        <input id="gatewayDepositAmt" type="number" inputmode="decimal" min="1" step="1" placeholder="Deposit USDC to Gateway"
+          style="flex:1;background:var(--card);border:1px solid var(--border2);border-radius:100px;padding:10px 16px;color:var(--text);font-family:'Inter',sans-serif;font-size:14px;outline:none;"/>
         <button onclick="depositToGateway()" style="background:#2563EB;border:none;border-radius:100px;color:#fff;font-size:.85rem;font-weight:700;padding:10px 16px;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;box-shadow:0 4px 14px rgba(37,99,235,.35);flex-shrink:0;">Deposit →</button>
       </div>
     </div>
@@ -3867,7 +3861,7 @@ html,body{background-color:var(--bg);}
     </div>
 
     <!-- Send to different address toggle -->
-    <div style="margin:0 16px 12px;border:1px solid var(--border);border-radius:12px;">
+    <div style="margin:0 0 10px;border:1px solid var(--border);border-radius:12px;">
       <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 13px;">
         <div style="font-size:.82rem;color:var(--text);font-weight:500;">Different address?</div>
         <label style="position:relative;width:38px;height:20px;cursor:pointer;flex-shrink:0;">
@@ -3887,7 +3881,7 @@ html,body{background-color:var(--bg);}
     </div>
 
     <!-- ── Summary ── -->
-    <div id="bridgeSummary" style="display:none;margin:0 16px 12px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;">
+    <div id="bridgeSummary" style="display:none;margin:0 0 10px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;">
       <div style="display:flex;justify-content:space-between;font-size:.85rem;padding:3px 0;"><span style="color:var(--text3);">Network</span><span style="color:var(--text);font-weight:600;" id="bridgeSumChain">—</span></div>
       <div style="display:flex;justify-content:space-between;font-size:.85rem;padding:3px 0;"><span style="color:var(--text3);">Recipient</span><span style="color:var(--text);font-weight:600;" id="bridgeSumAddr">Your wallet</span></div>
       <div style="height:1px;background:var(--surface);margin:7px 0;"></div>
@@ -3897,12 +3891,10 @@ html,body{background-color:var(--bg);}
     </div>
 
     <!-- ── Bridge button ── -->
-    <div style="padding:0 16px 16px;">
-      <button class="btn" id="bridgeBtn" onclick="doBridge()" style="width:100%;height:52px;font-size:1rem;font-weight:700;border-radius:16px;">Bridge USDC →</button>
-    </div>
+    <button class="btn" id="bridgeBtn" onclick="doBridge()" style="width:100%;height:52px;font-size:1rem;font-weight:700;border-radius:16px;">Bridge USDC →</button>
 
     <!-- Status card (JS compat) -->
-    <div class="card" id="bridgeStatusCard" style="display:none;margin:0 16px 16px;">
+    <div class="card" id="bridgeStatusCard" style="display:none;margin:12px 0 0;">
       <div class="card-title"><div class="cticon">⟳</div>Bridge Status</div>
       <div id="bridgeStatusContent">
         <div id="attestStatus" style="font-family:'Inter',sans-serif;font-size:.85rem;color:var(--text);line-height:1.6;"></div>
