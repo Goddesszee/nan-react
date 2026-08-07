@@ -4368,9 +4368,6 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
 ══════════════════════════════════════════════════════════════ */
 @media(max-width:767px){
 
-  /* ── Google Fonts ── */
-  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&display=swap');
-
   /* ─────────────────────────────────────────
      THEME TOKENS (mobile overrides)
   ───────────────────────────────────────── */
@@ -4557,7 +4554,7 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
   }
   /* Balance amount — no double $ */
   #homeBalAmt {
-    font-family: 'Syne','Inter',sans-serif !important;
+    font-family: 'Inter',sans-serif !important;
     font-size: 2.8rem !important;
     font-weight: 800 !important;
     letter-spacing: -2px !important;
