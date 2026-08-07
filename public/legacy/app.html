@@ -489,7 +489,7 @@ html,body{background-color:var(--bg);}
       <div id="nanProfilePill" onclick="navToggleAgentWalletMenu(event,this)" style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 10px 4px 4px;border-radius:100px;border:none;background:#2563EB;position:relative;flex-shrink:0;">
         <div style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px;flex-shrink:0;" id="nanProfileAvatar">?</div>
         <span id="nanProfileLabel" style="font-size:13px;font-weight:700;color:#fff;">Agent Wallet</span>
-        <span id="nanProfileNotifDot" style="display:none;position:absolute;top:-2px;right:-2px;width:9px;height:9px;border-radius:50%;background:#e24b4a;border:2px solid var(--card);"></span>
+        <span id="nanProfileNotifDot" style="display:none;position:absolute;top:-2px;right:-2px;width:9px;height:9px;border-radius:50%;background:var(--danger);border:2px solid var(--card);"></span>
         <div id="nanProfileMenu" style="display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:6px;min-width:220px;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.25);">
           <div onclick="event.stopPropagation();goPage('arcname');nanToggleProfileMenu()" style="padding:9px 12px;font-size:.85rem;cursor:pointer;border-radius:8px;" onmouseover="this.style.background='rgba(37,99,235,.1)'" onmouseout="this.style.background='none'">Claim your .arc name</div>
           <div onclick="event.stopPropagation();toggleNotifPanel(event);nanToggleProfileMenu()" style="padding:9px 12px;font-size:.85rem;cursor:pointer;border-radius:8px;" onmouseover="this.style.background='rgba(37,99,235,.1)'" onmouseout="this.style.background='none'">Notifications</div>
@@ -1150,7 +1150,7 @@ html,body{background-color:var(--bg);}
           <circle id="dashHoldUsdcArc" cx="90" cy="90" r="70" fill="none" stroke="#2775ca" stroke-width="18" stroke-dasharray="0 439.8" stroke-linecap="round"/>
           <circle id="dashHoldEurcArc" cx="90" cy="90" r="70" fill="none" stroke="#2563EB" stroke-width="18" stroke-dasharray="0 439.8" stroke-linecap="round"/>
           <circle id="dashHoldCirbtcArc" cx="90" cy="90" r="70" fill="none" stroke="#F59E0B" stroke-width="18" stroke-dasharray="0 439.8" stroke-linecap="round"/>
-          <circle id="dashHoldBridgedArc" cx="90" cy="90" r="70" fill="none" stroke="#8B5CF6" stroke-width="18" stroke-dasharray="0 439.8" stroke-linecap="round"/>
+          <circle id="dashHoldBridgedArc" cx="90" cy="90" r="70" fill="none" stroke="#60A5FA" stroke-width="18" stroke-dasharray="0 439.8" stroke-linecap="round"/>
         </svg>
         <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
           <div style="font-size:.7rem;color:var(--text3);">Total</div>
@@ -1171,7 +1171,7 @@ html,body{background-color:var(--bg);}
           <span id="dashHoldCirbtcText" style="font-size:.85rem;color:var(--text2);font-weight:700;">0.000000 · 0%</span>
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;">
-          <div style="display:flex;align-items:center;gap:9px;"><span style="width:9px;height:9px;border-radius:50%;background:#8B5CF6;"></span><span style="font-size:.85rem;color:var(--text);font-weight:600;">Bridged (other chains)</span></div>
+          <div style="display:flex;align-items:center;gap:9px;"><span style="width:9px;height:9px;border-radius:50%;background:#60A5FA;"></span><span style="font-size:.85rem;color:var(--text);font-weight:600;">Bridged (other chains)</span></div>
           <span id="dashHoldBridgedText" style="font-size:.85rem;color:var(--text2);font-weight:700;">0.00 · 0%</span>
         </div>
       </div>
@@ -1572,7 +1572,7 @@ html,body{background-color:var(--bg);}
     <div style="padding:20px;width:100%;box-sizing:border-box;position:relative;">
       <button id="careerNotifBell" onclick="careerOpenFeature('notifications')" style="position:absolute;top:20px;right:20px;width:40px;height:40px;border-radius:50%;background:var(--card);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 1px 2px rgba(0,0,0,.04);z-index:5;">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-        <span id="careerNotifDot" style="display:none;position:absolute;top:6px;right:7px;width:8px;height:8px;border-radius:50%;background:#e24b4a;border:2px solid var(--card);"></span>
+        <span id="careerNotifDot" style="display:none;position:absolute;top:6px;right:7px;width:8px;height:8px;border-radius:50%;background:var(--danger);border:2px solid var(--card);"></span>
       </button>
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;padding-right:52px;">
         <div style="width:34px;height:34px;border-radius:10px;background:#2563EB;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
@@ -1594,7 +1594,7 @@ html,body{background-color:var(--bg);}
             <button id="careerModeMessages" class="ctab" onclick="careerOpenFeature('messages')">Messages</button>
           </div>
         </div>
-        <div id="careerWelcomeBanner" style="background:#f0e6ff;border-top:5px solid #2563EB;border-radius:18px;padding:28px 32px;color:#111;margin-bottom:20px;box-shadow:0 4px 20px rgba(37,99,235,.08);position:relative;overflow:hidden;">
+        <div id="careerWelcomeBanner" style="background:#EEF2FF;border-top:5px solid #2563EB;border-radius:18px;padding:28px 32px;color:#111;margin-bottom:20px;box-shadow:0 4px 20px rgba(37,99,235,.08);position:relative;overflow:hidden;">
           <div style="position:absolute;top:-30px;right:-30px;width:140px;height:140px;border-radius:50%;background:rgba(37,99,235,.08);"></div>
           <div style="font-size:1.4rem;font-weight:800;margin-bottom:14px;color:#111;position:relative;">Land a better job faster!</div>
           <div style="font-size:.95rem;font-weight:700;margin-bottom:6px;color:#111;position:relative;">👋 Welcome, <span id="careerWelcomeName">there</span>!</div>
@@ -1977,7 +1977,7 @@ html,body{background-color:var(--bg);}
         </div>
         <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#2563EB;font-size:1rem;margin-top:8px;">${j.salary} ${j.currency}</div>
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">
-          <span style="display:inline-flex;font-size:.75rem;font-weight:700;padding:3px 9px;border-radius:100px;${j.employerVerified ? 'background:rgba(22,163,74,.1);color:#16a34a;' : 'background:rgba(37,99,235,.1);color:#2563EB;'}">${j.employerVerified ? '✓ Verified Employer' : 'Community Listing'}</span>
+          <span style="display:inline-flex;font-size:.75rem;font-weight:700;padding:3px 9px;border-radius:100px;${j.employerVerified ? 'background:rgba(34,197,94,.1);color:var(--success);' : 'background:rgba(37,99,235,.1);color:#2563EB;'}">${j.employerVerified ? '✓ Verified Employer' : 'Community Listing'}</span>
           ${j.category ? `<span style="display:inline-flex;font-size:.75rem;font-weight:700;padding:3px 9px;border-radius:100px;background:var(--bg);color:var(--text3);border:1px solid var(--border);">${j.category}</span>` : ''}
         </div>
         ${j.employmentType || j.experienceLevel ? `<div style="font-size:.72rem;color:var(--text3);margin-top:8px;">${j.employmentType||''}${j.employmentType&&j.experienceLevel?' · ':''}${j.experienceLevel||''}${j.numOpenings>1?' · '+j.numOpenings+' openings':''}</div>` : ''}
@@ -2084,7 +2084,7 @@ html,body{background-color:var(--bg);}
         <div style="border:1px solid var(--border);border-radius:16px;padding:18px 20px;margin-bottom:12px;background:var(--card);">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
             <div style="font-weight:700;color:var(--text);font-size:.95rem;">${j.title}</div>
-            <span style="font-size:.75rem;font-weight:700;padding:4px 10px;border-radius:100px;background:${j.status==='open'?'rgba(22,163,74,.1)':'rgba(0,0,0,.06)'};color:${j.status==='open'?'#16a34a':'var(--text3)'};white-space:nowrap;">${j.status}</span>
+            <span style="font-size:.75rem;font-weight:700;padding:4px 10px;border-radius:100px;background:${j.status==='open'?'rgba(34,197,94,.1)':'rgba(0,0,0,.06)'};color:${j.status==='open'?'var(--success)':'var(--text3)'};white-space:nowrap;">${j.status}</span>
           </div>
           <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#2563EB;font-size:1rem;margin-top:8px;">${j.salary} ${j.currency}</div>
           <div style="font-size:.82rem;color:var(--text2);margin:10px 0;line-height:1.5;">${j.description||''}</div>
@@ -2092,7 +2092,7 @@ html,body{background-color:var(--bg);}
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);">
             <button onclick="careerToggleApplicants('${j.id}')" style="width:auto;padding:9px 16px;border-radius:8px;font-weight:700;font-size:12px;background:#2563EB;color:#fff;border:none;cursor:pointer;">View applicants</button>
             <button onclick="careerToggleEditForm('${j.id}')" style="width:auto;padding:9px 16px;border-radius:8px;font-weight:700;font-size:12px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;">Edit</button>
-            <button onclick="careerDeleteJob('${j.id}')" style="width:auto;padding:9px 16px;border-radius:8px;font-weight:700;font-size:12px;background:transparent;border:1px solid rgba(226,75,74,.4);color:#e24b4a;cursor:pointer;">Delete</button>
+            <button onclick="careerDeleteJob('${j.id}')" style="width:auto;padding:9px 16px;border-radius:8px;font-weight:700;font-size:12px;background:transparent;border:1px solid rgba(239,68,68,.4);color:var(--danger);cursor:pointer;">Delete</button>
           </div>
           <div id="careerEditForm_${j.id}" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
             <input id="careerEditTitle_${j.id}" value="${(j.title||'').replace(/"/g,'&quot;')}" placeholder="Title" style="width:100%;max-width:400px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
@@ -2317,7 +2317,7 @@ html,body{background-color:var(--bg);}
             </div>
             <div style="font-size:.84rem;color:var(--text2);margin-top:10px;line-height:1.5;">${j.reason||''}</div>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);gap:8px;flex-wrap:wrap;">
-              <span style="font-size:.7rem;font-weight:700;padding:4px 10px;border-radius:100px;${j.employerPosted ? 'background:rgba(34,197,94,.12);color:#16a34a;' : j.verified ? 'background:rgba(37,99,235,.1);color:#2563EB;' : 'background:rgba(217,119,6,.1);color:#d97706;'}">${j.employerPosted ? '✓ Community Listing' : j.verified ? '✓ Verified Employer' : '⚠ Unverified, confirm before applying'}</span>
+              <span style="font-size:.7rem;font-weight:700;padding:4px 10px;border-radius:100px;${j.employerPosted ? 'background:rgba(34,197,94,.12);color:var(--success);' : j.verified ? 'background:rgba(37,99,235,.1);color:#2563EB;' : 'background:rgba(217,119,6,.1);color:#F59E0B;'}">${j.employerPosted ? '✓ Community Listing' : j.verified ? '✓ Verified Employer' : '⚠ Unverified, confirm before applying'}</span>
               <span style="display:flex;gap:12px;align-items:center;">
                 ${!j.employerPosted ? `<span onclick="careerShowCompanyProfile(${i},'${(j.company||'').replace(/'/g,"\\'")}','${(j.title||'').replace(/'/g,"\\'")}')" style="font-size:.78rem;color:var(--text3);cursor:pointer;text-decoration:underline;">Company profile</span>` : ''}
                 ${j.url ? `<a href="${j.url}" target="_blank" style="font-size:.78rem;color:var(--accent3);font-weight:700;">View listing →</a>` : ''}
@@ -2350,7 +2350,7 @@ html,body{background-color:var(--bg);}
         return `<div style="border:1px solid var(--border);border-radius:16px;padding:18px 20px;margin-bottom:12px;background:var(--card);">
           <div style="display:flex;justify-content:space-between;align-items:center;">
             <div style="font-weight:700;color:var(--text);font-size:.92rem;">${a.jobTitle||'Job'}</div>
-            <span style="font-size:.75rem;font-weight:700;padding:4px 10px;border-radius:100px;background:${a.status==='hired'?'rgba(22,163,74,.1)':a.status==='rejected'?'rgba(226,75,74,.1)':'rgba(37,99,235,.1)'};color:${a.status==='hired'?'#16a34a':a.status==='rejected'?'#e24b4a':'#2563EB'};">${CAREER_STATUS_LABELS[a.status]||a.status}</span>
+            <span style="font-size:.75rem;font-weight:700;padding:4px 10px;border-radius:100px;background:${a.status==='hired'?'rgba(34,197,94,.1)':a.status==='rejected'?'rgba(239,68,68,.1)':'rgba(37,99,235,.1)'};color:${a.status==='hired'?'var(--success)':a.status==='rejected'?'var(--danger)':'#2563EB'};">${CAREER_STATUS_LABELS[a.status]||a.status}</span>
           </div>
           ${!isEnd ? `<div style="display:flex;gap:4px;margin:14px 0 4px;">
             ${CAREER_STATUS_STEPS.map((s,i) => `<div style="flex:1;height:5px;border-radius:100px;background:${i<=curIdx?'#2563EB':'var(--border)'};"></div>`).join('')}
@@ -3027,7 +3027,7 @@ html,body{background-color:var(--bg);}
       if(d.status === 'pending'){
         gateEl.innerHTML = `<div style="font-size:.85rem;color:#2563EB;">Your verification request is pending review. Check back soon.</div>`;
       } else if(d.status === 'rejected'){
-        gateEl.innerHTML = `<div style="font-size:.85rem;color:#e24b4a;margin-bottom:10px;">Your last verification request wasn't approved. Submit a new one below.</div>` + vlVerifyFormHtml();
+        gateEl.innerHTML = `<div style="font-size:.85rem;color:var(--danger);margin-bottom:10px;">Your last verification request wasn't approved. Submit a new one below.</div>` + vlVerifyFormHtml();
       } else {
         gateEl.innerHTML = `<div style="font-size:.85rem;color:var(--text2);margin-bottom:10px;">Marketplace requires identity verification before you can list items (reviewed by the NAN team — not automated).</div>` + vlVerifyFormHtml();
       }
@@ -3123,9 +3123,9 @@ html,body{background-color:var(--bg);}
       catch { /* skip unreadable file */ }
     }
     const prev = document.getElementById('mktNewImagesPreview');
-    prev.innerHTML = mktNewImages.map((src,i) => `<div style="position:relative;"><img src="${src}" style="width:64px;height:64px;object-fit:cover;border-radius:8px;"/><span onclick="mktRemoveNewImage(${i})" style="position:absolute;top:-6px;right:-6px;background:#e24b4a;color:#fff;border-radius:50%;width:18px;height:18px;font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;">&times;</span></div>`).join('');
+    prev.innerHTML = mktNewImages.map((src,i) => `<div style="position:relative;"><img src="${src}" style="width:64px;height:64px;object-fit:cover;border-radius:8px;"/><span onclick="mktRemoveNewImage(${i})" style="position:absolute;top:-6px;right:-6px;background:var(--danger);color:#fff;border-radius:50%;width:18px;height:18px;font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;">&times;</span></div>`).join('');
   }
-  function mktRemoveNewImage(i){ mktNewImages.splice(i,1); const prev = document.getElementById('mktNewImagesPreview'); prev.innerHTML = mktNewImages.map((src,idx) => `<div style="position:relative;"><img src="${src}" style="width:64px;height:64px;object-fit:cover;border-radius:8px;"/><span onclick="mktRemoveNewImage(${idx})" style="position:absolute;top:-6px;right:-6px;background:#e24b4a;color:#fff;border-radius:50%;width:18px;height:18px;font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;">&times;</span></div>`).join(''); }
+  function mktRemoveNewImage(i){ mktNewImages.splice(i,1); const prev = document.getElementById('mktNewImagesPreview'); prev.innerHTML = mktNewImages.map((src,idx) => `<div style="position:relative;"><img src="${src}" style="width:64px;height:64px;object-fit:cover;border-radius:8px;"/><span onclick="mktRemoveNewImage(${idx})" style="position:absolute;top:-6px;right:-6px;background:var(--danger);color:#fff;border-radius:50%;width:18px;height:18px;font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;">&times;</span></div>`).join(''); }
   async function mktCreateListing(){
     if(!mktRequireWallet()) return;
     const title = document.getElementById('mktNewTitle').value.trim();
@@ -3157,7 +3157,7 @@ html,body{background-color:var(--bg);}
     const curIdx = steps.indexOf(o.status);
     const fillPct = isDisputed ? 0 : (curIdx <= 0 ? 0 : (curIdx / (steps.length - 1)) * 100);
     const tracker = isDisputed
-      ? `<div style="margin:14px 0;padding:10px 14px;border-radius:10px;background:rgba(226,75,74,.1);color:#e24b4a;font-size:.78rem;font-weight:700;">⚠ Disputed — locked until manually resolved</div>`
+      ? `<div style="margin:14px 0;padding:10px 14px;border-radius:10px;background:rgba(239,68,68,.1);color:var(--danger);font-size:.78rem;font-weight:700;">⚠ Disputed — locked until manually resolved</div>`
       : `<div style="display:flex;align-items:center;position:relative;margin:16px 0 6px;">
           <div style="position:absolute;top:11px;left:12px;right:12px;height:2px;background:var(--border);"></div>
           <div style="position:absolute;top:11px;left:12px;height:2px;background:#2563EB;width:${fillPct}%;transition:width .3s;"></div>
@@ -3175,7 +3175,7 @@ html,body{background-color:var(--bg);}
       ${tracker}
       <div style="display:flex;gap:12px;margin-top:10px;align-items:center;padding-top:12px;border-top:1px solid var(--border);">
         ${action}
-        ${disputable ? `<span onclick="mktDispute('${o.id}')" style="font-size:.78rem;color:#e24b4a;cursor:pointer;">Dispute</span>` : ''}
+        ${disputable ? `<span onclick="mktDispute('${o.id}')" style="font-size:.78rem;color:var(--danger);cursor:pointer;">Dispute</span>` : ''}
       </div>
       <div id="mktReviewForm-${o.id}" style="display:none;margin-top:10px;padding-top:10px;border-top:0.5px solid var(--border);"></div>
     </div>`;
@@ -3528,7 +3528,7 @@ html,body{background-color:var(--bg);}
     try { gigSubImages[taskId] = await mktCompressImage(file); }
     catch { return; }
     const prev = document.getElementById('gigSubPhotoPreview_'+taskId);
-    prev.innerHTML = `<div style="position:relative;display:inline-block;"><img src="${gigSubImages[taskId]}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;"/><span onclick="gigRemoveSubPhoto('${taskId}')" style="position:absolute;top:-6px;right:-6px;background:#e24b4a;color:#fff;border-radius:50%;width:18px;height:18px;font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;">&times;</span></div>`;
+    prev.innerHTML = `<div style="position:relative;display:inline-block;"><img src="${gigSubImages[taskId]}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;"/><span onclick="gigRemoveSubPhoto('${taskId}')" style="position:absolute;top:-6px;right:-6px;background:var(--danger);color:#fff;border-radius:50%;width:18px;height:18px;font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;">&times;</span></div>`;
   }
   function gigRemoveSubPhoto(taskId){
     delete gigSubImages[taskId];
@@ -3579,14 +3579,14 @@ html,body{background-color:var(--bg);}
       <div style="border:1px solid var(--border);border-radius:16px;padding:18px 20px;margin-bottom:12px;background:var(--card);">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
           <div style="font-weight:700;color:var(--text);font-size:.98rem;">${t.title}</div>
-          <span style="font-size:.7rem;font-weight:700;padding:4px 10px;border-radius:100px;background:${t.status==='open' ? 'rgba(22,163,74,.1)' : 'rgba(0,0,0,.06)'};color:${t.status==='open' ? '#16a34a' : 'var(--text3)'};white-space:nowrap;">${t.status==='open' ? 'Open' : 'Completed'}</span>
+          <span style="font-size:.7rem;font-weight:700;padding:4px 10px;border-radius:100px;background:${t.status==='open' ? 'rgba(34,197,94,.1)' : 'rgba(0,0,0,.06)'};color:${t.status==='open' ? 'var(--success)' : 'var(--text3)'};white-space:nowrap;">${t.status==='open' ? 'Open' : 'Completed'}</span>
         </div>
         <div style="font-size:.84rem;color:var(--text2);margin-top:8px;">Budget: <b style="color:#2563EB;">$${t.budget}</b>${t.negotiable ? ' (negotiable)' : ''}</div>
         ${t.status === 'open' ? `
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);">
             <button class="btn" onclick="gigToggleSubmissions('${t.id}','${(t.title||'').replace(/'/g,"\\'")}')" style="width:auto;padding:9px 18px;border-radius:10px;font-weight:700;font-size:13px;">View submissions</button>
             <button onclick="gigToggleEditForm('${t.id}')" style="width:auto;padding:9px 16px;border-radius:10px;font-weight:700;font-size:13px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;">Edit</button>
-            <button onclick="gigDeleteTask('${t.id}')" style="width:auto;padding:9px 16px;border-radius:10px;font-weight:700;font-size:13px;background:transparent;border:1px solid rgba(226,75,74,.4);color:#e24b4a;cursor:pointer;">Delete</button>
+            <button onclick="gigDeleteTask('${t.id}')" style="width:auto;padding:9px 16px;border-radius:10px;font-weight:700;font-size:13px;background:transparent;border:1px solid rgba(239,68,68,.4);color:var(--danger);cursor:pointer;">Delete</button>
           </div>
           <div id="gigEditForm_${t.id}" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
             <input id="gigEditTitle_${t.id}" value="${(t.title||'').replace(/"/g,'&quot;')}" placeholder="Title" style="width:100%;max-width:400px;padding:10px 12px;margin-bottom:8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
@@ -3657,7 +3657,7 @@ html,body{background-color:var(--bg);}
             <button class="btn" onclick="gigAcceptSubmission('${s.id}','${taskId}')" style="width:auto;padding:8px 18px;border-radius:8px;font-weight:700;font-size:12px;">Accept &amp; Pay</button>
           </div>
           <div id="gigAcceptStatus_${s.id}" style="font-size:.75rem;color:var(--text3);margin-top:6px;"></div>` :
-          s.status === 'accepted' ? `<div style="font-size:.78rem;font-weight:700;color:#16a34a;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">✓ Accepted, paid $${s.finalAmount} ${s.currency||'USDC'}</div>
+          s.status === 'accepted' ? `<div style="font-size:.78rem;font-weight:700;color:var(--success);margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">✓ Accepted, paid $${s.finalAmount} ${s.currency||'USDC'}</div>
           <button onclick="gigGenerateReceipt('${(taskTitle||'').replace(/'/g,"\\'")}','${s.finalAmount}','${s.txHash||''}','${s.freelancerAddress}','paid_by_me','${s.currency||'USDC'}')" style="width:auto;padding:6px 14px;border-radius:8px;font-weight:700;font-size:12px;margin-top:6px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;">Generate receipt</button>` :
           `<div style="font-size:.78rem;color:var(--text3);margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">Not selected</div>`}
       </div>`).join('');
@@ -3704,7 +3704,7 @@ html,body{background-color:var(--bg);}
           <div style="font-size:.88rem;color:var(--text);line-height:1.5;">${s.description}</div>
           <div style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:#2563EB;white-space:nowrap;font-size:.95rem;">$${s.proposedPrice}</div>
         </div>
-        ${s.status === 'accepted' ? `<div style="font-size:.8rem;font-weight:700;color:#16a34a;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">✓ Accepted, paid $${s.finalAmount} ${s.currency||'USDC'}</div>
+        ${s.status === 'accepted' ? `<div style="font-size:.8rem;font-weight:700;color:var(--success);margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">✓ Accepted, paid $${s.finalAmount} ${s.currency||'USDC'}</div>
           <button onclick="gigGenerateReceipt('${(s.taskTitle||'').replace(/'/g,"\\'")}','${s.finalAmount}','${s.txHash||''}','${s.requesterAddress||''}','paid_to_me','${s.currency||'USDC'}')" style="width:auto;padding:6px 14px;border-radius:8px;font-weight:700;font-size:12px;margin-top:6px;background:transparent;border:1px solid var(--border);color:var(--text2);cursor:pointer;">Generate receipt</button>` :
           s.status === 'not_selected' ? `<div style="font-size:.8rem;color:var(--text3);margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">Not selected</div>` :
           `<div style="font-size:.8rem;color:#2563EB;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">Awaiting review</div>`}
@@ -4048,7 +4048,7 @@ html,body{background-color:var(--bg);}
       #page-cashinout .pcard { background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,.04); }
       #page-cashinout .fx-ticker{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;}
       #page-cashinout .fx-lbl{display:flex;align-items:center;gap:8px;font-size:.7rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;}
-      #page-cashinout .fx-dot{width:7px;height:7px;border-radius:50%;background:#16a34a;animation:cioFxPulse 1.6s ease-in-out infinite;}
+      #page-cashinout .fx-dot{width:7px;height:7px;border-radius:50%;background:var(--success);animation:cioFxPulse 1.6s ease-in-out infinite;}
       @keyframes cioFxPulse{0%,100%{opacity:1;}50%{opacity:.35;}}
       #page-cashinout .fx-pair{display:flex;align-items:center;gap:8px;}
       #page-cashinout .fx-pair .sym{font-size:.78rem;color:var(--text3);}

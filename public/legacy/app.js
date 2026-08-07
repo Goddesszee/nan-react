@@ -5189,7 +5189,7 @@ async function cioFetchTransactions(){
   }catch(e){ return []; }
 }
 function cioStatusBadge(status){
-  const colors = { pending:['rgba(217,119,6,.1)','#d97706'], processing:['rgba(37,99,235,.1)','#2563EB'], completed:['rgba(22,163,74,.1)','#16a34a'], failed:['rgba(220,38,38,.1)','#dc2626'] };
+  const colors = { pending:['rgba(217,119,6,.1)','#F59E0B'], processing:['rgba(37,99,235,.1)','#2563EB'], completed:['rgba(34,197,94,.1)','var(--success)'], failed:['rgba(220,38,38,.1)','#dc2626'] };
   const c = colors[status] || colors.pending;
   return `<span style="font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:100px;background:${c[0]};color:${c[1]};text-transform:capitalize;">${status}</span>`;
 }
@@ -5325,7 +5325,7 @@ async function cioLoadBanks(){
         <div style="font-size:.78rem;color:var(--text3);">${a.accountName}, ${a.accountNumber}</div>
       </div>
       <div style="display:flex;align-items:center;gap:10px;">
-        ${a.isDefault ? '<span style="font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:100px;background:rgba(22,163,74,.1);color:#16a34a;">Default</span>' : `<span onclick="cioSetDefaultBank('${a.id}')" style="font-size:.76rem;color:#2563EB;font-weight:700;cursor:pointer;">Set default</span>`}
+        ${a.isDefault ? '<span style="font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:100px;background:rgba(34,197,94,.1);color:var(--success);">Default</span>' : `<span onclick="cioSetDefaultBank('${a.id}')" style="font-size:.76rem;color:#2563EB;font-weight:700;cursor:pointer;">Set default</span>`}
         <span onclick="cioDeleteBank('${a.id}')" style="font-size:.76rem;color:#dc2626;font-weight:700;cursor:pointer;">Remove</span>
       </div>
     </div>`).join('');
@@ -5469,8 +5469,8 @@ function payrollRenderEmployees(){
       <td style="padding:10px 14px;color:var(--text2);">${e.position||'—'}</td>
       <td style="padding:10px 14px;color:var(--text2);">${e.department||'—'}</td>
       <td style="padding:10px 14px;color:var(--text2);">${e.salary ? '$'+e.salary+' '+e.currency : '—'}</td>
-      <td style="padding:10px 14px;"><span style="font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:100px;background:rgba(22,163,74,.1);color:#16a34a;">${e.status}</span></td>
-      <td style="padding:10px 14px;"><span onclick="payrollDeleteEmployee('${e.id}')" style="color:#e24b4a;font-size:.76rem;font-weight:700;cursor:pointer;">Remove</span></td>
+      <td style="padding:10px 14px;"><span style="font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:100px;background:rgba(34,197,94,.1);color:var(--success);">${e.status}</span></td>
+      <td style="padding:10px 14px;"><span onclick="payrollDeleteEmployee('${e.id}')" style="color:var(--danger);font-size:.76rem;font-weight:700;cursor:pointer;">Remove</span></td>
     </tr>`).join('')}
   </table>`;
 }
@@ -5564,7 +5564,7 @@ async function payrollLoadReports(){
         </div>
         <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;">
           <h4 style="font-size:.9rem;font-weight:700;margin-bottom:14px;">Payment success rate</h4>
-          <div style="font-family:'JetBrains Mono',monospace;font-size:2rem;font-weight:700;color:#16a34a;">${d.successRate !== null ? d.successRate.toFixed(1)+'%' : '—'}</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:2rem;font-weight:700;color:var(--success);">${d.successRate !== null ? d.successRate.toFixed(1)+'%' : '—'}</div>
           <div style="font-size:.78rem;color:var(--text3);margin-top:10px;">Total spent: $${d.totalSpent.toFixed(2)} across ${d.totalRuns} run${d.totalRuns!==1?'s':''}</div>
         </div>
       </div>`;
