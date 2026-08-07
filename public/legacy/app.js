@@ -846,15 +846,16 @@ function nanUpdateProfileLabel(){
   const pill=document.getElementById('nanProfilePill');
   if(!labelEl||!pill) return;
   const connected=typeof userAddr!=='undefined'&&!!userAddr;
-  const showClaim=connected&&!nanHasArcName();
-  labelEl.textContent=showClaim?'Claim your .arc name':'Profile';
-  if(showClaim){
-    pill.style.background='#2563EB';pill.style.border='none';
-    labelEl.style.color='#fff';labelEl.style.fontWeight='700';
-  }else{
+  if(!connected){
+    labelEl.textContent='Profile';
     pill.style.background='var(--surface)';pill.style.border='1px solid var(--border)';
     labelEl.style.color='var(--text)';labelEl.style.fontWeight='600';
+    return;
   }
+  const mine=(typeof arcNames!=='undefined'?arcNames:[]).find(n=>n.owner===userAddr);
+  labelEl.textContent = mine ? ('Welcome back, '+mine.name) : 'Welcome back';
+  pill.style.background='#2563EB';pill.style.border='none';
+  labelEl.style.color='#fff';labelEl.style.fontWeight='700';
 }
 function nanUpdateProfileWalletRows(){
   const disconnectRow=document.getElementById('nanProfileDisconnect');
@@ -1370,6 +1371,7 @@ async function onConnected(isEmail=false, isDev=false){
   refreshBalances().catch(e=>console.log('[balance refresh]',e.message));
   setTimeout(()=>refreshBalances().catch(()=>{}), 1500);
   loadTxHistory();arcNames=JSON.parse(localStorage.getItem('nan_arcnames_'+userAddr)||'[]');
+  if(typeof nanUpdateProfileLabel==='function') nanUpdateProfileLabel();
   setTimeout(()=>loadOnChainHistory(),2000);
   renderQR(userAddr);
   renderHistory();
