@@ -1288,6 +1288,10 @@ function loadCachedBalances(){
   if(swapFromBal) swapFromBal.textContent = swapFlipped ? eFmt : uFmt;
   if(swapToBal)   swapToBal.textContent   = swapFlipped ? uFmt : eFmt;
 
+  // Bridge page
+  const bridgeAvailBal2 = document.getElementById('bridgeAvailBal2');
+  if(bridgeAvailBal2) bridgeAvailBal2.textContent = uFmt;
+
   // Send available
   updateSendAvailable();
 
