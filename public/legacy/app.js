@@ -5183,9 +5183,9 @@ async function cioFetchTransactions(){
   }catch(e){ return []; }
 }
 function cioStatusBadge(status){
-  const colors = { pending:['rgba(217,119,6,.1)','#F59E0B'], processing:['rgba(37,99,235,.1)','#2563EB'], completed:['rgba(34,197,94,.1)','var(--success)'], failed:['rgba(220,38,38,.1)','#dc2626'] };
+  const colors = { pending:['rgba(217,119,6,.1)','#F59E0B','&#8987;'], processing:['rgba(37,99,235,.1)','#2563EB','&#8635;'], completed:['rgba(34,197,94,.1)','var(--success)','&#10003;'], failed:['rgba(220,38,38,.1)','#dc2626','&#10005;'] };
   const c = colors[status] || colors.pending;
-  return `<span style="font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:100px;background:${c[0]};color:${c[1]};text-transform:capitalize;">${status}</span>`;
+  return `<span style="display:inline-flex;align-items:center;gap:4px;font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:100px;background:${c[0]};color:${c[1]};text-transform:capitalize;">${c[2]} ${status}</span>`;
 }
 function cioTxRow(tx){
   const isCashin = tx.type === 'cashin';
@@ -5203,7 +5203,7 @@ function cioTxRow(tx){
     <div style="font-size:.85rem;font-weight:700;color:var(--text);">${amountText}</div>
     <div>${cioStatusBadge(tx.status)}</div>
     <div style="font-size:.78rem;color:var(--text3);">${new Date(tx.createdAt).toLocaleDateString(undefined,{day:'2-digit',month:'short',year:'numeric'})}</div>
-    <span onclick="cioDownloadReceipt('${tx.id}')" style="font-size:.76rem;color:#2563EB;font-weight:700;cursor:pointer;white-space:nowrap;">Receipt</span>
+    <span onclick="cioDownloadReceipt('${tx.id}')" title="Download receipt" style="color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;flex-shrink:0;" onmouseover="this.style.background='rgba(37,99,235,.08)'" onmouseout="this.style.background='none'"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></span>
   </div>`;
 }
 
