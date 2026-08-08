@@ -5070,6 +5070,9 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
   padding:0 !important;
   background:transparent !important;
 }
+[data-theme="light"] #page-agent-wallet{
+  background:#ffffff !important;
+}
 #page-agent-wallet > *{
   max-width:none !important;
   padding-left:0 !important;
