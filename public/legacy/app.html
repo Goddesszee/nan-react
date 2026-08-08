@@ -4052,6 +4052,7 @@ html,body{background-color:var(--bg);}
       #page-cashinout .fx-pair{display:flex;align-items:center;gap:8px;}
       #page-cashinout .fx-pair .sym{font-size:.78rem;color:var(--text3);}
       #page-cashinout .fx-pair .rate{font-family:'Inter',sans-serif;font-size:.95rem;font-weight:700;color:var(--text);}
+      #page-cashinout > div{padding-left:40px !important;padding-right:40px !important;}
     </style>
     <div style="width:100%;max-width:100%;margin:0;padding:0 40px;box-sizing:border-box;">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
@@ -4070,17 +4071,6 @@ html,body{background-color:var(--bg);}
       </div>
 
       <div id="cioOverviewPane">
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.04);">
-          <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;margin-bottom:10px;">
-            <div class="fx-lbl"><span class="fx-dot"></span>Live rates</div>
-            <div id="cioRateUsdc" class="fx-pair"><span class="sym">USDC to NGN</span><span class="rate">Loading</span></div>
-            <div id="cioRateEurc" class="fx-pair"><span class="sym">EURC to NGN</span><span class="rate">Loading</span></div>
-          </div>
-          <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
-            <div class="fx-lbl"><span class="fx-dot"></span>USDC to EURC</div>
-            <div id="cioRateUsdcEurc" class="fx-pair"><span class="rate">Loading</span></div>
-          </div>
-        </div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;">
           <div class="pcard"><div style="display:flex;align-items:center;justify-content:space-between;"><div><div style="font-size:.75rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;">USDC balance</div><div id="cioBalUsdc" style="font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700;margin-top:4px;">0.00</div><div style="font-size:.72rem;color:var(--text3);margin-top:2px;">$<span id="cioBalUsdcUsd">0.00</span> USD</div></div><div style="width:38px;height:38px;border-radius:50%;background:rgba(37,99,235,.1);display:flex;align-items:center;justify-content:center;color:#2563EB;font-weight:700;flex-shrink:0;">$</div></div></div>
           <div class="pcard"><div style="display:flex;align-items:center;justify-content:space-between;"><div><div style="font-size:.75rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;">EURC balance</div><div id="cioBalEurc" style="font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700;margin-top:4px;">0.00</div><div style="font-size:.72rem;color:var(--text3);margin-top:2px;">&euro;<span id="cioBalEurcEur">0.00</span> EUR</div></div><div style="width:38px;height:38px;border-radius:50%;background:rgba(37,99,235,.1);display:flex;align-items:center;justify-content:center;color:#2563EB;font-weight:700;flex-shrink:0;">&euro;</div></div></div>
