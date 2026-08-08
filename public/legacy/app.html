@@ -4090,7 +4090,7 @@ html,body{background-color:var(--bg);}
       </div>
       <div style="font-size:.85rem;color:var(--text2);margin-bottom:18px;">Pool money with people you trust. Take turns. Fully on-chain, no one can skip a round.</div>
 
-      <div style="background:#2563EB;border-radius:24px;padding:32px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap;">
+      <div style="background:#2563EB;border-radius:24px;padding:32px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap;box-shadow:0 10px 30px rgba(37,99,235,.22);">
         <div style="flex:1;min-width:260px;">
           <div style="font-size:1.6rem;font-weight:800;margin-bottom:8px;color:#fff;">Save together, transparently</div>
           <div style="font-size:.88rem;color:rgba(255,255,255,.85);max-width:380px;margin:0 0 20px;">Community savings, powered by stablecoins. No stress, no excuses, everyone gets paid.</div>
@@ -4139,13 +4139,30 @@ html,body{background-color:var(--bg);}
         <div id="gsTransparencyResults"></div>
       </div>
 
-      <div style="display:flex;align-items:flex-start;gap:0;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 20px;margin-top:20px;flex-wrap:wrap;">
-        <div style="font-size:.85rem;font-weight:700;color:var(--text);width:110px;flex-shrink:0;">How it works</div>
-        <div style="flex:1;display:flex;gap:24px;flex-wrap:wrap;">
-          <div style="display:flex;align-items:flex-start;gap:8px;min-width:130px;"><span style="width:20px;height:20px;border-radius:50%;background:rgba(37,99,235,.12);color:#2563EB;font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</span><div><div style="font-size:.8rem;font-weight:700;color:var(--text);">Create or join</div><div style="font-size:.72rem;color:var(--text3);">Start or join a trusted circle</div></div></div>
-          <div style="display:flex;align-items:flex-start;gap:8px;min-width:130px;"><span style="width:20px;height:20px;border-radius:50%;background:rgba(37,99,235,.12);color:#2563EB;font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</span><div><div style="font-size:.8rem;font-weight:700;color:var(--text);">Fund the pool</div><div style="font-size:.72rem;color:var(--text3);">Everyone contributes</div></div></div>
-          <div style="display:flex;align-items:flex-start;gap:8px;min-width:130px;"><span style="width:20px;height:20px;border-radius:50%;background:rgba(37,99,235,.12);color:#2563EB;font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</span><div><div style="font-size:.8rem;font-weight:700;color:var(--text);">Take turns</div><div style="font-size:.72rem;color:var(--text3);">Each member gets paid</div></div></div>
-          <div style="display:flex;align-items:flex-start;gap:8px;min-width:130px;"><span style="width:20px;height:20px;border-radius:50%;background:rgba(37,99,235,.12);color:#2563EB;font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</span><div><div style="font-size:.8rem;font-weight:700;color:var(--text);">Repeat</div><div style="font-size:.72rem;color:var(--text3);">Until the goal is met</div></div></div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px 28px;margin-top:20px;">
+        <div style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:22px;">How it works</div>
+        <div style="display:flex;align-items:flex-start;position:relative;">
+          <div style="position:absolute;top:16px;left:40px;right:40px;height:1px;background:var(--border);"></div>
+          <div style="flex:1;text-align:center;position:relative;">
+            <div style="width:32px;height:32px;border-radius:50%;background:#2563EB;color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:.78rem;font-weight:700;">1</div>
+            <div style="font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:2px;">Create or join</div>
+            <div style="font-size:.72rem;color:var(--text3);">Start or join a trusted circle</div>
+          </div>
+          <div style="flex:1;text-align:center;position:relative;">
+            <div style="width:32px;height:32px;border-radius:50%;background:#2563EB;color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:.78rem;font-weight:700;">2</div>
+            <div style="font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:2px;">Fund the pool</div>
+            <div style="font-size:.72rem;color:var(--text3);">Everyone contributes</div>
+          </div>
+          <div style="flex:1;text-align:center;position:relative;">
+            <div style="width:32px;height:32px;border-radius:50%;background:rgba(37,99,235,.1);color:#2563EB;border:1px solid rgba(37,99,235,.25);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:.78rem;font-weight:700;">3</div>
+            <div style="font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:2px;">Take turns</div>
+            <div style="font-size:.72rem;color:var(--text3);">Each member gets paid</div>
+          </div>
+          <div style="flex:1;text-align:center;position:relative;">
+            <div style="width:32px;height:32px;border-radius:50%;background:rgba(37,99,235,.1);color:#2563EB;border:1px solid rgba(37,99,235,.25);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:.78rem;font-weight:700;">4</div>
+            <div style="font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:2px;">Repeat</div>
+            <div style="font-size:.72rem;color:var(--text3);">Until the goal is met</div>
+          </div>
         </div>
       </div>
     </div>

@@ -1936,7 +1936,14 @@ async function loadMyAjoGroups(){
       if(member) myGroups.push(id);
     }
     if(myGroups.length === 0){
-      el.innerHTML = `<div style="text-align:center;padding:28px 0 10px;"><div style="font-size:.85rem;color:var(--text3);line-height:1.6;">No groups yet.<br>Start one or ask a friend for their group code.</div></div>`;
+      el.innerHTML = `<div style="text-align:center;padding:44px 24px;">
+        <div style="width:52px;height:52px;border-radius:50%;background:rgba(37,99,235,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        </div>
+        <div style="font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:6px;">Start your first circle</div>
+        <div style="font-size:.85rem;color:var(--text3);margin-bottom:20px;">Pool money with people you trust, or join one with a code.</div>
+        <button onclick="groupSavingsSwitchTab('create')" style="background:#2563EB;border:none;border-radius:12px;color:#fff;font-family:'Inter',sans-serif;font-weight:700;font-size:.85rem;padding:11px 20px;cursor:pointer;">+ Create a circle</button>
+      </div>`;
       return;
     }
     const statusLabel = ['Open','Live','Done'];
