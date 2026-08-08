@@ -11871,6 +11871,72 @@ async function activityLoad(){
   }
 }
 
+// ── Nanopayments (x402) ───────────────────────────────────────────────────
+const LEAKAGE_URL = 'https://leakage-subscription-audit-production.up.railway.app/api/analyze';
+function nanopayShowResult(html){
+  const el = document.getElementById('nanopayResult');
+  if(el) el.innerHTML = html;
+}
+function nanopaySpinner(){
+  nanopayShowResult('<div style="text-align:center;padding:32px 16px;"><span class="spinner"></span></div>');
+}
+function nanopayFormatResult(d, url){
+  if(!d.success){
+    return `<div style="border:1px solid rgba(220,38,38,.25);background:rgba(220,38,38,.06);border-radius:12px;padding:14px;">
+      <div style="font-size:.8rem;font-weight:700;color:var(--danger);margin-bottom:4px;">Payment failed</div>
+      <div style="font-size:.78rem;color:var(--text2);">${(d.error||'Unknown error').slice(0,200)}</div>
+    </div>`;
+  }
+  const pretty = JSON.stringify(d.result, null, 2);
+  return `<div style="border:1px solid rgba(34,197,94,.25);background:rgba(34,197,94,.06);border-radius:12px;padding:14px;margin-bottom:10px;">
+    <div style="font-size:.8rem;font-weight:700;color:var(--success);margin-bottom:2px;">✓ Paid &amp; called</div>
+    <div style="font-size:.72rem;color:var(--text3);font-family:'JetBrains Mono',monospace;word-break:break-all;">${url}</div>
+  </div>
+  <div style="font-size:.72rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Response (status ${d.status||'—'})</div>
+  <pre style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:.75rem;color:var(--text2);overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-family:'JetBrains Mono',monospace;max-height:280px;overflow-y:auto;">${pretty}</pre>`;
+}
+async function nanopayQuickPay(){
+  const btn = document.getElementById('nanopayQuickBtn');
+  const statusEl = document.getElementById('nanopayStatus');
+  if(!agentWalletAddr){ if(statusEl) statusEl.textContent = 'Connect your agent wallet first.'; return; }
+  if(btn){ btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Paying…'; }
+  nanopaySpinner();
+  try{
+    const r = await fetch(AGENT_API, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'pay-service', userAddress: userAddr, address: agentWalletAddr, url: LEAKAGE_URL, method:'GET', chain:'ARC-TESTNET' })
+    });
+    const d = await r.json();
+    nanopayShowResult(nanopayFormatResult(d, LEAKAGE_URL));
+    if(statusEl) statusEl.textContent = '';
+  }catch(err){
+    nanopayShowResult(`<div style="color:var(--danger);font-size:.8rem;padding:16px 0;text-align:center;">${err.message.slice(0,150)}</div>`);
+  }
+  if(btn){ btn.disabled = false; btn.textContent = 'Pay & call'; }
+}
+async function nanopayCustomPay(){
+  const url = document.getElementById('nanopayUrlInput')?.value.trim();
+  const method = document.getElementById('nanopayMethodInput')?.value || 'GET';
+  const btn = document.getElementById('nanopayCustomBtn');
+  const statusEl = document.getElementById('nanopayStatus');
+  if(!agentWalletAddr){ if(statusEl) statusEl.textContent = 'Connect your agent wallet first.'; return; }
+  if(!url){ if(statusEl) statusEl.textContent = 'Enter a service URL.'; return; }
+  if(btn){ btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Paying…'; }
+  if(statusEl) statusEl.textContent = '';
+  nanopaySpinner();
+  try{
+    const r = await fetch(AGENT_API, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'pay-service', userAddress: userAddr, address: agentWalletAddr, url, method, chain:'ARC-TESTNET' })
+    });
+    const d = await r.json();
+    nanopayShowResult(nanopayFormatResult(d, url));
+  }catch(err){
+    nanopayShowResult(`<div style="color:var(--danger);font-size:.8rem;padding:16px 0;text-align:center;">${err.message.slice(0,150)}</div>`);
+  }
+  if(btn){ btn.disabled = false; btn.textContent = 'Pay & call'; }
+}
+
 function agentPageRefresh() {
   const connected = !!agentWalletAddr;
   const s = (id, show) => {

@@ -56,6 +56,7 @@ function goPage(name) {
     'agent-send': 'page-agent-send',
     'agent-trust': 'page-agent-trust',
     'agent-activity': 'page-agent-activity',
+    'agent-nanopay': 'page-agent-nanopay',
     dashboard:      'page-dashboard',
   };
 
@@ -82,6 +83,7 @@ function goPage(name) {
     'agent-send': 'nav-agent',
     'agent-trust': 'nav-agent',
     'agent-activity': 'nav-agent',
+    'agent-nanopay': 'nav-agent',
     'career-agent': 'nav-career',
     'supplier-agent': 'nav-supplier',
     marketplace: 'nav-marketplace',
@@ -112,6 +114,7 @@ function goPage(name) {
     'agent-send': 'dnav-more',
     'agent-trust': 'dnav-more',
     'agent-activity': 'dnav-more',
+    'agent-nanopay': 'dnav-more',
     dashboard: 'dnav-home',
   };
   document.querySelectorAll('#desktopNav .dnav-btn').forEach(b => b.classList.remove('active'));
@@ -242,6 +245,7 @@ function updateTopbarPageInfo(page) {
     'agent-send': 'Agent-to-Agent',
     'agent-trust': 'Trusted Contacts',
     'agent-activity': 'Activity Log',
+    'agent-nanopay': 'Nanopayments',
   };
 
   nameEl.textContent = labels[page] || page.charAt(0).toUpperCase()+page.slice(1);
