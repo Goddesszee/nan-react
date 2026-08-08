@@ -50,6 +50,9 @@ function goPage(name) {
     market:     'page-market',
     'agent-wallet': 'page-agent-wallet',
     'agent-ai':     'page-agent-ai',
+    'agent-escrow': 'page-agent-escrow',
+    'agent-recurring': 'page-agent-recurring',
+    'agent-invoice': 'page-agent-invoice',
     dashboard:      'page-dashboard',
   };
 
@@ -70,6 +73,9 @@ function goPage(name) {
     multichain:  'nav-more',
     market:      'nav-more',
     'agent-wallet': 'nav-agent',
+    'agent-escrow': 'nav-agent',
+    'agent-recurring': 'nav-agent',
+    'agent-invoice': 'nav-agent',
     'career-agent': 'nav-career',
     'supplier-agent': 'nav-supplier',
     marketplace: 'nav-marketplace',
@@ -94,6 +100,9 @@ function goPage(name) {
     more: 'dnav-more', arcname: 'dnav-more', bulk: 'dnav-more',
     naira: 'dnav-more', payreq: 'dnav-more', 'payreq-new': 'dnav-more',
     'agent-wallet': 'dnav-more',
+    'agent-escrow': 'dnav-more',
+    'agent-recurring': 'dnav-more',
+    'agent-invoice': 'dnav-more',
     dashboard: 'dnav-home',
   };
   document.querySelectorAll('#desktopNav .dnav-btn').forEach(b => b.classList.remove('active'));
@@ -218,6 +227,9 @@ function updateTopbarPageInfo(page) {
     explore:'Explore',
     groupsavings:'Group Savings',
     dashboard:'Dashboard',
+    'agent-escrow': 'Escrow',
+    'agent-recurring': 'Recurring Payments',
+    'agent-invoice': 'Invoicing',
   };
 
   nameEl.textContent = labels[page] || page.charAt(0).toUpperCase()+page.slice(1);
