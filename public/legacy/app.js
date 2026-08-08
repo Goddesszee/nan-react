@@ -12569,8 +12569,20 @@ async function requestSupportHuman(){
 
 async function emailSupportSummary(){
   if(!supportSession) return;
-  const email = prompt('Send this conversation and your ticket number to which email?', supportSession.userEmail || '');
+  const modal = document.getElementById('supportEmailModal');
+  const input = document.getElementById('supportEmailInput');
+  if(modal && input){
+    input.value = supportSession.userEmail || '';
+    modal.style.display = 'flex';
+    setTimeout(()=>input.focus(), 50);
+  }
+}
+async function confirmEmailSupportSummary(){
+  const input = document.getElementById('supportEmailInput');
+  const email = input?.value.trim();
+  const modal = document.getElementById('supportEmailModal');
   if(!email) return;
+  if(modal) modal.style.display = 'none';
   try{
     const r = await fetch(`${API_BASE}/api/support`, {
       method:'POST', headers:{'Content-Type':'application/json'},

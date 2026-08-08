@@ -5515,6 +5515,7 @@ body.nan-sidebar-collapsed .page,
 body.nan-sidebar-collapsed #globalTopBar,
 body.nan-sidebar-collapsed #agentLoginSection{padding-left:72px !important;}
 body.nan-sidebar-collapsed #page-agent-wallet{padding-left:72px !important;}
+body.nan-sidebar-collapsed #supportPanel{left:72px !important;}
 
 /* Fixes the CSS-grid blowout/cutoff bug on the feature-card tab rows (Career/Marketplace/Gigs)
    now that the page is narrower due to the sidebar taking up space */
@@ -5523,6 +5524,7 @@ body.nan-sidebar-collapsed #page-agent-wallet{padding-left:72px !important;}
 @media(max-width:900px){
   #nanSidebar{display:none;}
   .page,#globalTopBar,#agentLoginSection,#page-agent-wallet{padding-left:0 !important;}
+  #supportPanel{left:0 !important;}
 }
 
 /* Old floating theme toggle + old top-nav Wallet dropdown are both redundant now
