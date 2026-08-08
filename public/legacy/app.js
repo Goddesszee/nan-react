@@ -9049,6 +9049,22 @@ function viewPaymentRequest(id){
   const pr=paymentRequests.find(p=>p.id===id);
   if(!pr)return;
   activePRId=id;
+  const invCard=document.getElementById('prInvoiceCard');
+  if(pr.isInvoice && invCard){
+    invCard.style.display='block';
+    document.getElementById('prInvNumber').textContent='INV-'+(pr.onChainId||pr.id).toString().slice(-8).toUpperCase();
+    document.getElementById('prInvFrom').textContent=pr.businessName||'—';
+    document.getElementById('prInvTo').textContent=pr.customerName||'—';
+    document.getElementById('prInvDate').textContent=new Date(pr.createdAt).toLocaleDateString();
+    const dueWrap=document.getElementById('prInvDueWrap');
+    if(pr.dueDate){ dueWrap.style.display='inline'; document.getElementById('prInvDue').textContent=pr.dueDate; }
+    else{ dueWrap.style.display='none'; }
+    document.getElementById('prInvItem').textContent=pr.itemDesc||'—';
+    document.getElementById('prInvQtyPrice').textContent=(pr.qty||1)+' \u00d7 '+(pr.unitPrice||0).toFixed(2)+' '+pr.token;
+    document.getElementById('prInvTotal').textContent=parseFloat(pr.amount||0).toFixed(2)+' '+pr.token;
+  } else if(invCard){
+    invCard.style.display='none';
+  }
   document.getElementById('prViewTitle').textContent=pr.label;
   document.getElementById('prViewStatus').textContent=pr.status==='paid'?'✓ Paid':pr.status==='expired'?'⚠ Expired':'⏳ Pending';
   document.getElementById('prViewStatus').style.color=pr.status==='paid'?'var(--success)':pr.status==='expired'?'var(--warning)':'var(--text3)';
@@ -9254,28 +9270,40 @@ async function submitInvoice(){
   }
 }
 function downloadInvoiceReceipt(pr){
+  if(!pr) return;
   const canvas = document.createElement('canvas');
-  canvas.width = 600; canvas.height = 420;
+  canvas.width = 600; canvas.height = 460;
   const ctx = canvas.getContext('2d');
-  ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,600,420);
+  ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,600,460);
   ctx.strokeStyle = 'rgba(37,99,235,.3)'; ctx.lineWidth = 1.5;
-  ctx.strokeRect(10,10,580,400);
-  ctx.fillStyle = '#2563EB'; ctx.font = 'bold 22px sans-serif';
-  ctx.textAlign = 'left'; ctx.fillText(pr.businessName || 'Invoice', 30, 50);
+  ctx.strokeRect(10,10,580,440);
+  // NAN wordmark (brand header, top-left)
+  ctx.fillStyle = '#2563EB'; ctx.font = 'bold 16px sans-serif'; ctx.textAlign = 'left';
+  ctx.fillText('NAN', 30, 42);
+  ctx.fillStyle = '#0d1b2e'; ctx.font = 'bold 14px sans-serif'; ctx.textAlign = 'right';
+  ctx.fillText('INVOICE', 570, 38);
+  ctx.fillStyle = '#9CA3AF'; ctx.font = '10px sans-serif';
+  ctx.fillText('INV-'+(pr.onChainId||pr.id).toString().slice(-8).toUpperCase(), 570, 52);
+  ctx.strokeStyle = 'rgba(37,99,235,.2)'; ctx.beginPath(); ctx.moveTo(30,62); ctx.lineTo(570,62); ctx.stroke();
+  // Business / customer
+  ctx.fillStyle = '#111827'; ctx.font = 'bold 20px sans-serif'; ctx.textAlign = 'left';
+  ctx.fillText(pr.businessName || 'Invoice', 30, 96);
   ctx.fillStyle = '#6B7280'; ctx.font = '12px sans-serif';
-  ctx.fillText('Billed to, ' + pr.customerName, 30, 74);
-  ctx.fillText(new Date(pr.createdAt).toLocaleDateString(), 30, 92);
-  ctx.strokeStyle = '#E5E7EB'; ctx.beginPath(); ctx.moveTo(30,110); ctx.lineTo(570,110); ctx.stroke();
+  ctx.fillText('Billed to, ' + pr.customerName, 30, 120);
+  ctx.fillText(new Date(pr.createdAt).toLocaleDateString(), 30, 138);
+  ctx.strokeStyle = '#E5E7EB'; ctx.beginPath(); ctx.moveTo(30,156); ctx.lineTo(570,156); ctx.stroke();
   ctx.fillStyle = '#111827'; ctx.font = 'bold 13px sans-serif';
-  ctx.fillText('Item', 30, 136); ctx.fillText('Qty', 380, 136); ctx.fillText('Unit price', 460, 136);
+  ctx.fillText('Item', 30, 182); ctx.fillText('Qty', 380, 182); ctx.fillText('Unit price', 460, 182);
   ctx.font = '13px sans-serif'; ctx.fillStyle = '#374151';
-  ctx.fillText(String(pr.itemDesc).slice(0,40), 30, 162);
-  ctx.fillText(String(pr.qty), 380, 162);
-  ctx.fillText(pr.unitPrice.toFixed(2) + ' ' + pr.token, 460, 162);
-  ctx.strokeStyle = '#E5E7EB'; ctx.beginPath(); ctx.moveTo(30,190); ctx.lineTo(570,190); ctx.stroke();
+  ctx.fillText(String(pr.itemDesc).slice(0,40), 30, 208);
+  ctx.fillText(String(pr.qty), 380, 208);
+  ctx.fillText(pr.unitPrice.toFixed(2) + ' ' + pr.token, 460, 208);
+  ctx.strokeStyle = '#E5E7EB'; ctx.beginPath(); ctx.moveTo(30,236); ctx.lineTo(570,236); ctx.stroke();
   ctx.font = 'bold 18px sans-serif'; ctx.fillStyle = '#2563EB'; ctx.textAlign = 'right';
-  ctx.fillText('Total, ' + pr.amount.toFixed(2) + ' ' + pr.token, 570, 224);
-  if (pr.dueDate) { ctx.font = '12px sans-serif'; ctx.fillStyle = '#6B7280'; ctx.fillText('Due ' + pr.dueDate, 570, 246); }
+  ctx.fillText('Total, ' + pr.amount.toFixed(2) + ' ' + pr.token, 570, 270);
+  if (pr.dueDate) { ctx.font = '12px sans-serif'; ctx.fillStyle = '#6B7280'; ctx.fillText('Due ' + pr.dueDate, 570, 292); }
+  ctx.fillStyle = '#9CA3AF'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+  ctx.fillText('Generated with NAN — nanarc.xyz', 300, 436);
   const link = document.createElement('a');
   link.download = 'invoice-' + pr.id + '.png';
   link.href = canvas.toDataURL('image/png');
