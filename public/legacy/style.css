@@ -4908,13 +4908,10 @@ a:hover { text-decoration: underline !important; color: var(--accent4) !importan
     width: 100% !important;
     box-shadow: 0 6px 24px rgba(37,99,235,.4) !important;
   }
-  /* Chain pills in gateway section */
+  /* Chain pills in gateway section — intentionally hidden per request, was
+     being force-shown by this !important rule despite inline display:none */
   #gatewayChains {
-    display: flex !important;
-    flex-wrap: wrap !important;
-    flex-direction: row !important;
-    gap: 6px !important;
-    padding: 0 16px 14px !important;
+    display: none !important;
   }
   #gatewayChains > div {
     background: rgba(255,255,255,.04) !important;
