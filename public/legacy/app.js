@@ -8892,6 +8892,19 @@ function buildPRLink(pr){
   return base+'?'+p.toString();
 }
 
+function prSetStatusPill(status){
+  const el=document.getElementById('prViewStatus');
+  if(!el) return;
+  const map={
+    paid:['Paid','rgba(34,197,94,.1)','var(--success)'],
+    expired:['Expired','rgba(217,119,6,.1)','#F59E0B'],
+    pending:['Pending','rgba(37,99,235,.1)','#2563EB']
+  };
+  const [label,bg,color]=map[status]||map.pending;
+  el.textContent=label;
+  el.style.background=bg;
+  el.style.color=color;
+}
 function openPayFromURL(){
   const p=new URLSearchParams(window.location.search);
   const payId=p.get('pay');
@@ -8908,9 +8921,8 @@ function openPayFromURL(){
   const pr={id:payId,onChainId:payId,to,token:tok,amount:amt,label:lbl,note,status:'pending',createdAt:Date.now()};
   activePRId=payId;
   document.getElementById('prViewTitle').textContent=lbl;
-  document.getElementById('prViewStatus').textContent='⏳ Pending';
-  document.getElementById('prViewStatus').style.color='var(--text3)';
-  document.getElementById('prViewAmt').textContent=amt?parseFloat(amt).toFixed(2)+' '+tok:'Open · '+tok;
+  prSetStatusPill('pending');
+  document.getElementById('prViewAmt').textContent=amt?parseFloat(amt).toFixed(2)+' '+tok:'Open \u00b7 '+tok;
   document.getElementById('prViewLabel2').textContent=lbl;
   document.getElementById('prViewFrom').textContent=to?short(to):'—';
   document.getElementById('prViewDate').textContent=new Date().toLocaleDateString();
@@ -9080,8 +9092,7 @@ function viewPaymentRequest(id){
     if(genericSections) genericSections.style.display='block';
   }
   document.getElementById('prViewTitle').textContent=pr.label;
-  document.getElementById('prViewStatus').textContent=pr.status==='paid'?'✓ Paid':pr.status==='expired'?'⚠ Expired':'⏳ Pending';
-  document.getElementById('prViewStatus').style.color=pr.status==='paid'?'var(--success)':pr.status==='expired'?'var(--warning)':'var(--text3)';
+  prSetStatusPill(pr.status);
   document.getElementById('prViewAmt').textContent=pr.amount?parseFloat(pr.amount).toFixed(2)+' '+pr.token:'Open · '+pr.token;
   document.getElementById('prViewLabel2').textContent=pr.label;
   document.getElementById('prViewFrom').textContent=short(pr.to);
@@ -9413,8 +9424,7 @@ function markPRAsPaid(){
   if(!pr)return;
   pr.status='paid';pr.paidAt=Date.now();
   savePaymentRequests();
-  document.getElementById('prViewStatus').textContent='✓ Paid';
-  document.getElementById('prViewStatus').style.color='var(--success)';
+  prSetStatusPill('paid');
   document.getElementById('prMarkPaidBtn').style.display='none';
   toast('✓ Marked as paid!','success',2500);
 }
