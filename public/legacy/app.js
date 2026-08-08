@@ -8930,48 +8930,59 @@ function openPayFromURL(){
 function setPRToken(token,el){
   currentPRToken=token;
   document.querySelectorAll('.pr-tok-btn').forEach(b=>{
-    b.style.background='rgba(255,255,255,.02)';
-    b.style.border='1.5px solid rgba(255,255,255,.08)';
-    b.style.color='rgba(255,255,255,.4)';
+    b.style.background='var(--bg)';
+    b.style.border='1.5px solid var(--border)';
   });
-  el.style.background='rgba(37,99,235,.12)';
-  el.style.border='1.5px solid rgba(37,99,235,.4)';
-  el.style.color='#2563EB';
+  el.style.background='rgba(37,99,235,.08)';
+  el.style.border='1.5px solid #2563EB';
   document.getElementById('prTokenLabel').textContent=token;
+  const icon=document.getElementById('prPrevIcon');
+  if(icon){
+    if(token==='EURC'){ icon.style.background='#00A478'; icon.textContent='€'; }
+    else{ icon.style.background='#2775CA'; icon.textContent='$'; }
+  }
   updatePRPreview();
 }
 function setPRExpiry(hours,el){
   currentPRExpiry=hours;
   document.querySelectorAll('#prExpiryGrid .topt').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
+  const label=hours===0?'Never':hours===24?'24 hours':hours===168?'7 days':'30 days';
+  const prevEl=document.getElementById('prPreviewExpiry');
+  if(prevEl) prevEl.textContent=label;
 }
 function updatePRPreview(){
   const amt=document.getElementById('prAmount').value;
   const label=document.getElementById('prLabel').value.trim();
+  const note=document.getElementById('prNote')?.value.trim()||'';
   const btn=document.getElementById('prCreateBtn');
-  const wrap=document.getElementById('prPreviewWrap');
-  if(label){
-    wrap.style.display='block';
-    document.getElementById('prPreviewAmt').textContent=amt?parseFloat(amt).toFixed(2)+' '+currentPRToken:'Open amount · '+currentPRToken;
-    document.getElementById('prPreviewLabel').textContent=label;
-    document.getElementById('prPreviewAddr').textContent=userAddr?short(userAddr):'—';
-    btn.disabled=false;btn.style.opacity='1';btn.style.cursor='pointer';
-  }else{
-    wrap.style.display='none';
-    btn.disabled=true;btn.style.opacity='.4';btn.style.cursor='not-allowed';
+  const amtNum=parseFloat(amt)||0;
+  const usdEq='\u2248 $'+amtNum.toFixed(2)+' USD';
+  const amtLabel=document.getElementById('prAmountUsdEq'); if(amtLabel) amtLabel.textContent=usdEq;
+  const prevUsdEq=document.getElementById('prPrevUsdEq'); if(prevUsdEq) prevUsdEq.textContent=usdEq;
+  const prevAmt=document.getElementById('prPreviewAmt');
+  if(prevAmt) prevAmt.textContent=amt?parseFloat(amt).toFixed(2)+' '+currentPRToken:'0.00 '+currentPRToken;
+  const prevLabel=document.getElementById('prPreviewLabel'); if(prevLabel) prevLabel.textContent=label||'\u2014';
+  const prevNote=document.getElementById('prPreviewNote'); if(prevNote) prevNote.textContent=note||'\u2014';
+  const prevAddr=document.getElementById('prPreviewAddr'); if(prevAddr) prevAddr.textContent=userAddr?short(userAddr):'\u2014';
+  if(btn){
+    if(label){ btn.disabled=false;btn.style.opacity='1';btn.style.cursor='pointer'; }
+    else{ btn.disabled=true;btn.style.opacity='.4';btn.style.cursor='not-allowed'; }
   }
 }
 function initNewPRForm(){
   document.getElementById('prAmount').value='';
   document.getElementById('prLabel').value='';
   document.getElementById('prNote').value='';
+  const emailEl=document.getElementById('prEmail'); if(emailEl) emailEl.value='';
   currentPRToken='USDC';currentPRExpiry=0;
-  document.querySelectorAll('#page-payreq-new .topt').forEach(b=>b.classList.remove('active'));
-  document.getElementById('pr-usdc').classList.add('active');
+  setPRToken('USDC',document.getElementById('pr-usdc'));
+  document.querySelectorAll('#prExpiryGrid .topt').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('#prExpiryGrid .topt')[0].classList.add('active');
   document.getElementById('prTokenLabel').textContent='USDC';
-  document.getElementById('prPreviewWrap').style.display='none';
-  const _pcb=document.getElementById('prCreateBtn');_pcb.disabled=true;_pcb.style.opacity='.4';_pcb.innerHTML='Create &amp; Share Link';
+  const prevExpiry=document.getElementById('prPreviewExpiry'); if(prevExpiry) prevExpiry.textContent='Never';
+  updatePRPreview();
+  const _pcb=document.getElementById('prCreateBtn');_pcb.disabled=true;_pcb.style.opacity='.4';_pcb.innerHTML='Create Request';
 }
 async function createPaymentRequest(){
   const label=document.getElementById('prLabel').value.trim();
@@ -9035,12 +9046,12 @@ async function createPaymentRequest(){
     const link=buildPRLink(pr);
     _mobileCopy(link,()=>{});
     toast('✓ Created! Link copied — share it to get paid','success',4000);
-    btn.innerHTML='Create &amp; Share Link';btn.disabled=false;btn.style.opacity='1';
+    btn.innerHTML='Create Request';btn.disabled=false;btn.style.opacity='1';
     try{viewPaymentRequest(pr.id);}catch(e){console.warn('viewPR err:',e.message);}
   }catch(err){
     console.error('[createPaymentRequest] error:', err);
     toast('Create failed: '+err.message.slice(0,150),'error',7000);
-    btn.innerHTML='Create & Share Link';btn.disabled=false;
+    btn.innerHTML='Create Request';btn.disabled=false;
   }
 }
 function viewPaymentRequest(id){
