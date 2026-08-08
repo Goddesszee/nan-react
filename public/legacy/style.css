@@ -1169,6 +1169,7 @@ a:hover{color:var(--text);}
     animation:none !important;isolation:auto !important;transform:none !important;
   }
   .page.active{display:flex !important;}
+  #page-agent-ai{padding-top:14px !important;padding-bottom:0 !important;}
   #page-swap{padding-top:14px !important;padding-bottom:20px !important;}
   #page-bridge{padding-top:14px !important;padding-bottom:20px !important;}
   #page-cashinout{padding-bottom:20px !important;}
