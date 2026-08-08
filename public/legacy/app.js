@@ -855,14 +855,16 @@ function nanUpdateProfileWalletRows(){
 }
 document.addEventListener('DOMContentLoaded', ()=>{ nanUpdateProfileLabel(); nanUpdateProfileWalletRows(); });
 document.addEventListener('click',nanCloseAll);
-// Sync notif badge into settings menu
+// Sync notif badge into settings menu + sidebar
 setInterval(()=>{
   const src=document.getElementById('nanNotifBadge');
   const dst=document.getElementById('nanSettingsNotifBadge');
-  if(!src||!dst)return;
+  const sb=document.getElementById('nanSidebarNotifBadge');
+  if(!src)return;
   const c=src.textContent.trim();
-  if(c&&c!=='0'){dst.textContent=c;dst.style.display='inline';}
-  else{dst.style.display='none';}
+  const has=c&&c!=='0';
+  if(dst){ if(has){dst.textContent=c;dst.style.display='inline';} else{dst.style.display='none';} }
+  if(sb){ sb.style.display = has ? 'block' : 'none'; }
 },2000);
 
 // ═══════════════════════════════════════════
