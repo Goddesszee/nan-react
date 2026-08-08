@@ -379,13 +379,11 @@ html,body{background-color:var(--bg);}
       <span class="nan-sb-label">Payroll</span>
     </div>
 
-    <div class="nan-sb-divider"></div>
-    <div class="nan-sb-section-label"><span class="nan-sb-label">AI</span></div>
-    <div class="nan-sb-item-row" id="sb-explore" data-sbpage="explore" onclick="goPage('explore')">
+    <div class="nan-sb-item-row" id="sb-explore" data-sbpage="explore" onclick="goPage('explore')" style="display:none;">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <span class="nan-sb-label">Research</span>
     </div>
-    <div class="nan-sb-item-row" data-sbpage="career-agent" onclick="goPage('career-agent');setTimeout(function(){if(typeof careerOpenFeature==='function')careerOpenFeature('coach');},150)">
+    <div class="nan-sb-item-row" data-sbpage="career-agent" onclick="goPage('career-agent');setTimeout(function(){if(typeof careerOpenFeature==='function')careerOpenFeature('coach');},150)" style="display:none;">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg>
       <span class="nan-sb-label">Interview Coach</span>
     </div>
@@ -4659,7 +4657,7 @@ html,body{background-color:var(--bg);}
   </div><!-- end page-bulk -->
   <!-- ══ HISTORY PAGE ══ -->
   <div class="page" id="page-history">
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;padding:20px;max-width:460px !important;">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:22px;padding:20px;width:100%;max-width:100%;box-sizing:border-box;">
 
     <button class="back-btn" onclick="goBack()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg> Back</button>
     <!-- Header -->
@@ -6837,7 +6835,7 @@ function nanToggleFaucet(btn){
     <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:10px 0;">
       <div style="font-size:12px;font-weight:700;color:#ffffff;letter-spacing:.12em;text-transform:uppercase;padding:10px 20px 5px;">Main</div>
       <button class="nan-drow" id="drow-career" onclick="nanCloseDrawer();goPage('career-agent')" style="display:none;"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></span><span class="nan-drow-lbl">Career agent</span></button>
-      <button class="nan-drow" id="drow-explore" onclick="nanCloseDrawer();goPage('explore')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span><span class="nan-drow-lbl">Explore</span></button>
+      <button class="nan-drow" id="drow-explore" onclick="nanCloseDrawer();goPage('explore')" style="display:none;"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span><span class="nan-drow-lbl">Explore</span></button>
       <button class="nan-drow" id="drow-supplier" onclick="nanCloseDrawer();goPage('supplier-agent')" style="display:none;"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 9h1M9 13h1M14 9h1M14 13h1"/></svg></span><span class="nan-drow-lbl">Real Estate Marketplace</span></button>
       <button class="nan-drow" id="drow-marketplace" onclick="nanCloseDrawer();goPage('marketplace')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9M3 9v10a1 1 0 001 1h16a1 1 0 001-1V9M3 9h18M9 13a2 2 0 11-4 0M19 13a2 2 0 11-4 0"/></svg></span><span class="nan-drow-lbl">Marketplace</span></button>
       <button class="nan-drow" id="drow-payreq" onclick="nanCloseDrawer();goPage('payreq')"><span class="nan-drow-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M12 11v4M10 13h4"/></svg></span><span class="nan-drow-lbl">Pay Requests</span></button>
