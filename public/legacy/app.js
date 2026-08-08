@@ -1335,7 +1335,7 @@ async function onConnected(isEmail=false, isDev=false){
     p.style.display='none';
   });
   document.getElementById('bottomNav').classList.add('show');
-  showPage('agent-wallet');
+  showPage('dashboard');
   updateTopBar(true);
   if(typeof updateDesktopNav === 'function') updateDesktopNav();
   // Mobile UI enhancements
