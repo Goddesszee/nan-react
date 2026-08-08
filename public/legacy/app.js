@@ -9107,6 +9107,7 @@ async function _loadPRUnifiedBalance(){
 function renderPaymentRequests(){
   loadPaymentRequests();
   const list=document.getElementById('payreqList');
+  const head=document.getElementById('payreqListHead');
   if(!list)return;
   const pending=paymentRequests.filter(p=>p.status==='pending'&&!(p.expiresAt&&Date.now()>p.expiresAt)).length;
   const now=new Date();
@@ -9122,16 +9123,33 @@ function renderPaymentRequests(){
   if(elPaidMonth)elPaidMonth.textContent=paidThisMonth.toFixed(2);
   if(elRev)elRev.textContent=totalRevenue.toFixed(2);
   if(!paymentRequests.length){
+    if(head)head.style.display='none';
     list.innerHTML='<div style="text-align:center;padding:32px 16px;"><div style="font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:5px;">No requests yet</div><div style="font-size:.78rem;color:var(--text3);margin-bottom:16px;">Create one to start getting paid</div><button onclick="goPage(\'payreq-new\')" style="background:#2563EB;border:none;border-radius:10px;color:#EEF2FF;font-family:\'Inter\',sans-serif;font-weight:700;font-size:.82rem;padding:10px 20px;cursor:pointer;">+ Create First Request</button></div>';
     return;
   }
+  if(head)head.style.display='grid';
   list.innerHTML=paymentRequests.map(pr=>{
     const isExpired=pr.expiresAt&&Date.now()>pr.expiresAt&&pr.status==='pending';
     const status=isExpired?'expired':pr.status;
-    const statusColor=status==='paid'?'var(--success)':status==='expired'?'var(--warning)':'var(--accent3)';
+    const badgeBg=status==='paid'?'rgba(34,197,94,.1)':status==='expired'?'rgba(217,119,6,.1)':'rgba(37,99,235,.1)';
+    const badgeColor=status==='paid'?'var(--success)':status==='expired'?'#F59E0B':'#2563EB';
     const statusLabel=status==='paid'?'Paid':status==='expired'?'Expired':'Pending';
     const amtText=pr.amount?parseFloat(pr.amount).toFixed(2)+' '+pr.token:'Open, '+pr.token;
-    return `<div onclick="viewPaymentRequest('${pr.id}')" style="display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--border);cursor:pointer;" onmouseover="this.style.background='rgba(37,99,235,.04)'" onmouseout="this.style.background=''"><div style="display:flex;align-items:center;gap:10px;"><div style="width:36px;height:36px;border-radius:10px;background:rgba(37,99,235,.1);border:1px solid rgba(37,99,235,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg></div><div><div style="font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:2px;">${pr.label}</div><div style="font-size:.72rem;color:var(--text3);">${new Date(pr.createdAt).toLocaleDateString()}</div></div></div><div style="text-align:right;"><div style="font-size:.88rem;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace;">${amtText}</div><div style="font-size:.75rem;font-weight:600;color:${statusColor};">${statusLabel}</div></div></div>`;
+    return `<div onclick="viewPaymentRequest('${pr.id}')" style="display:grid;grid-template-columns:2fr 1.2fr 1fr 1.3fr auto;gap:12px;align-items:center;padding:13px 16px;border-bottom:1px solid var(--border);cursor:pointer;" onmouseover="this.style.background='rgba(37,99,235,.04)'" onmouseout="this.style.background=''">
+      <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(37,99,235,.1);border:1px solid rgba(37,99,235,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg></div>
+        <div style="min-width:0;">
+          <div style="font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:2px;">${pr.label}</div>
+          <div style="font-size:.72rem;color:var(--text3);">${pr.linkId?'Link Request':'Request'}</div>
+        </div>
+      </div>
+      <div style="font-size:.85rem;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace;">${amtText}</div>
+      <div><span style="display:inline-flex;align-items:center;font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:100px;background:${badgeBg};color:${badgeColor};">${statusLabel}</span></div>
+      <div style="font-size:.78rem;color:var(--text3);">${new Date(pr.createdAt).toLocaleDateString(undefined,{day:'2-digit',month:'short',year:'numeric'})}</div>
+      <span style="color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;width:24px;height:24px;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>
+      </span>
+    </div>`;
   }).join('');
 }
 
