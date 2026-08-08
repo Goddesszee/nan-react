@@ -11451,6 +11451,126 @@ async function escrowRefund(escrowId){
     escrowLoadList();
   }catch(err){ toast(err.message.slice(0,120), 'error', 4000); }
 }
+
+// ── Recurring payments ───────────────────────────────────────────────────
+let recurIntervalSeconds = 86400;
+function recurSetInterval(seconds, el){
+  recurIntervalSeconds = seconds;
+  document.querySelectorAll('#page-agent-recurring .ibtn').forEach(b => b.classList.remove('active'));
+  if(el) el.classList.add('active');
+}
+function recurFormatInterval(seconds){
+  if(seconds < 3600) return Math.round(seconds/60) + ' min';
+  if(seconds < 86400) return Math.round(seconds/3600) + 'h';
+  if(seconds < 604800) return Math.round(seconds/86400) + 'd';
+  if(seconds < 2592000) return Math.round(seconds/604800) + 'w';
+  return Math.round(seconds/2592000) + 'mo';
+}
+function recurFormatNextRun(ts){
+  if(!ts) return '—';
+  const diffMs = ts - Date.now();
+  if(diffMs <= 0) return 'Due now';
+  const mins = Math.round(diffMs/60000);
+  if(mins < 60) return 'In ' + mins + 'm';
+  const hrs = Math.round(diffMs/3600000);
+  if(hrs < 24) return 'In ' + hrs + 'h';
+  return 'In ' + Math.round(diffMs/86400000) + 'd';
+}
+async function recurLoadList(){
+  const el = document.getElementById('recurList');
+  if(!el) return;
+  if(!agentWalletAddr){
+    el.innerHTML = '<div style="text-align:center;padding:32px 16px;font-size:.85rem;color:var(--text3);">Connect your agent wallet to see schedules.</div>';
+    return;
+  }
+  el.innerHTML = '<div style="text-align:center;padding:24px 0;"><span class="spinner"></span></div>';
+  try{
+    const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'recurring-list', agentWalletAddress: agentWalletAddr })
+    });
+    const d = await r.json();
+    const schedules = d.success ? (d.schedules||[]) : [];
+    if(!schedules.length){
+      el.innerHTML = '<div style="text-align:center;padding:32px 16px;"><div style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:4px;">No schedules yet</div><div style="font-size:.78rem;color:var(--text3);">Set one up on the left — it runs on its own from there.</div></div>';
+      return;
+    }
+    el.innerHTML = schedules.map(s => {
+      const statusPill = s.active
+        ? '<span style="font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:100px;background:rgba(34,197,94,.1);color:var(--success);">Active</span>'
+        : '<span style="font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:100px;background:rgba(107,114,128,.12);color:var(--text3);">Cancelled</span>';
+      return `<div style="border:1px solid var(--border);border-radius:12px;padding:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;gap:8px;">
+          <div style="min-width:0;">
+            <div style="font-size:.85rem;font-weight:700;color:var(--text);">${s.amount.toFixed(2)} ${s.token} &middot; every ${recurFormatInterval(s.intervalSeconds)}</div>
+            <div style="font-size:.75rem;color:var(--text3);font-family:'JetBrains Mono',monospace;">To ${short(s.toWallet)}</div>
+          </div>
+          ${statusPill}
+        </div>
+        ${s.label ? `<div style="font-size:.78rem;color:var(--text2);margin-bottom:8px;">${s.label}</div>` : ''}
+        <div style="display:flex;justify-content:space-between;font-size:.75rem;color:var(--text3);margin-bottom:${s.active?'10px':'0'};">
+          <span>${s.runCount||0} run${s.runCount===1?'':'s'}</span>
+          <span>${s.active ? recurFormatNextRun(s.nextRunAt) : 'Stopped'}</span>
+        </div>
+        ${s.active ? `<button onclick="recurCancel('${s.id}')" style="width:100%;padding:8px;border-radius:9px;border:1px solid var(--border);background:none;color:var(--text2);font-family:'Inter',sans-serif;font-size:.75rem;font-weight:700;cursor:pointer;">Cancel schedule</button>` : ''}
+      </div>`;
+    }).join('');
+  }catch(err){
+    el.innerHTML = `<div style="text-align:center;padding:20px 0;color:var(--danger);font-size:.8rem;">${err.message.slice(0,120)}</div>`;
+  }
+}
+async function recurCreate(){
+  const toRaw = document.getElementById('recurToInput')?.value.trim();
+  const amount = parseFloat(document.getElementById('recurAmountInput')?.value);
+  const token = document.getElementById('recurTokenInput')?.value || 'USDC';
+  const label = document.getElementById('recurLabelInput')?.value.trim();
+  const statusEl = document.getElementById('recurCreateStatus');
+  const btn = document.getElementById('recurCreateBtn');
+  if(!agentWalletAddr){ if(statusEl) statusEl.textContent = 'Connect your agent wallet first.'; return; }
+  if(!toRaw){ if(statusEl) statusEl.textContent = 'Enter a recipient.'; return; }
+  if(!amount || amount<=0){ if(statusEl) statusEl.textContent = 'Enter a valid amount.'; return; }
+  if(btn){ btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Starting…'; }
+  if(statusEl) statusEl.textContent = '';
+  try{
+    let toAgentAddress = toRaw;
+    if(!/^0x[a-fA-F0-9]{40}$/.test(toRaw)){
+      const lr = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'lookup-by-arc', arcName: toRaw })
+      });
+      const ld = await lr.json();
+      if(!ld.success || (!ld.agentWalletAddress && !ld.mainAddress)) throw new Error(`Couldn't resolve "${toRaw}"`);
+      toAgentAddress = ld.agentWalletAddress || ld.mainAddress;
+    }
+    const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'recurring-create', agentWalletAddress: agentWalletAddr, toAgentAddress, amount, token, intervalSeconds: recurIntervalSeconds, label })
+    });
+    const d = await r.json();
+    if(!d.success) throw new Error(d.error || 'Could not start schedule');
+    toast('✓ Schedule started', 'success', 3000);
+    document.getElementById('recurToInput').value = '';
+    document.getElementById('recurAmountInput').value = '';
+    document.getElementById('recurLabelInput').value = '';
+    recurLoadList();
+  }catch(err){
+    if(statusEl) statusEl.textContent = err.message.slice(0,150);
+  }
+  if(btn){ btn.disabled = false; btn.textContent = 'Start schedule'; }
+}
+async function recurCancel(scheduleId){
+  try{
+    const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'recurring-cancel', scheduleId })
+    });
+    const d = await r.json();
+    if(!d.success) throw new Error(d.error || 'Could not cancel');
+    toast('Schedule cancelled', 'info', 3000);
+    recurLoadList();
+  }catch(err){ toast(err.message.slice(0,120), 'error', 4000); }
+}
+
 function agentPageRefresh() {
   const connected = !!agentWalletAddr;
   const s = (id, show) => {

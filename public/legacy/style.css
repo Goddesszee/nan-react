@@ -1257,7 +1257,8 @@ a:hover{color:var(--text);}
   #desktopNav{width:240px;}
   .page{left:0 !important;}
   .page > *{max-width:600px !important;}
-  #page-career-agent > *, #page-supplier-agent > *, #page-marketplace > *, #page-gigs > *, #page-cashinout > *, #page-payreq > *, #page-groupsavings > *, #page-payreq-new > *, #page-payreq-view > *, #page-bulk > *, #page-agent-ai > *, #page-agent-escrow > *, #page-history > * { max-width: 100% !important; }
+  #page-career-agent > *, #page-supplier-agent > *, #page-marketplace > *, #page-gigs > *, #page-cashinout > *, #page-payreq > *, #page-groupsavings > *, #page-payreq-new > *, #page-payreq-view > *, #page-bulk > *, #page-agent-ai > *, #page-agent-escrow > *, #page-history > *, #page-agent-recurring > * { max-width: 100% !important; }
+  #page-agent-recurring{padding-top:14px !important;}
   #page-history{padding-top:14px !important;}
   #page-agent-escrow{padding-top:14px !important;}
   .home-bal-num{font-size:3rem;}

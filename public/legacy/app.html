@@ -1091,7 +1091,7 @@ html,body{background-color:var(--bg);}
           <div style="font-size:.83rem;font-weight:700;color:var(--text);margin-top:8px;">Escrow</div>
           <div style="font-size:.72rem;color:var(--text3);margin-top:2px;">Hold funds until both sides confirm</div>
         </div>
-        <div onclick="nanAgentChatShortcut('Set up a recurring payment')" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;">
+        <div onclick="goPage('agent-recurring');recurLoadList();" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;">
           <div style="width:36px;height:36px;border-radius:50%;background:rgba(37,99,235,.1);display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg></div>
           <div style="font-size:.83rem;font-weight:700;color:var(--text);margin-top:8px;">Recurring payments</div>
           <div style="font-size:.72rem;color:var(--text3);margin-top:2px;">Set it once, it pays on schedule</div>
@@ -6047,6 +6047,73 @@ window.addEventListener('load', function() {
         </div>
         <div id="escrowList" style="display:flex;flex-direction:column;gap:10px;">
           <div style="text-align:center;padding:32px 16px;font-size:.85rem;color:var(--text3);">Connect your agent wallet to see escrows.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ AGENT RECURRING PAYMENTS PAGE ══ -->
+<div class="page" id="page-agent-recurring">
+  <style>
+    #page-agent-recurring .pcard { background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.04); }
+    #page-agent-recurring .rtab { padding:9px 14px;border-radius:100px;font-size:.82rem;font-weight:700;border:none;background:transparent;color:var(--text2);cursor:pointer;font-family:'Inter',sans-serif; }
+    #page-agent-recurring .rtab.active { background:#2563EB;color:#fff; }
+    #page-agent-recurring .ibtn.active { background:#2563EB;border-color:#2563EB;color:#fff; }
+    #page-agent-recurring > div{padding-left:40px !important;padding-right:40px !important;}
+  </style>
+  <div style="width:100%;max-width:100%;margin:0;padding:0 40px;box-sizing:border-box;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+      <button onclick="goPage('agent-wallet')" style="width:34px;height:34px;border-radius:10px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">&larr;</button>
+      <div style="width:34px;height:34px;border-radius:10px;background:#2563EB;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg></div>
+      <div style="font-size:1.5rem;font-weight:800;color:var(--text);letter-spacing:-.01em;">Recurring payments</div>
+    </div>
+    <div style="font-size:.8rem;color:var(--text2);margin:0 0 20px 88px;">Set it once, your agent pays on schedule. A cron job checks every 60 seconds for what's due.</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1.3fr;gap:16px;align-items:start;">
+
+      <!-- Create schedule -->
+      <div class="pcard">
+        <div style="font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:2px;">New schedule</div>
+        <div style="font-size:.75rem;color:var(--text3);margin-bottom:16px;">Your agent will send this automatically, no need to ask again.</div>
+
+        <div style="font-size:.72rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Pay to</div>
+        <input id="recurToInput" type="text" placeholder="Wallet address or .arc name" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;margin-bottom:12px;"/>
+
+        <div style="display:flex;gap:8px;margin-bottom:12px;">
+          <div style="flex:1;">
+            <div style="font-size:.72rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Amount</div>
+            <input id="recurAmountInput" type="text" inputmode="decimal" placeholder="0.00" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+          </div>
+          <div style="width:90px;">
+            <div style="font-size:.72rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Token</div>
+            <select id="recurTokenInput" style="width:100%;padding:10px 8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-weight:700;"><option>USDC</option><option>EURC</option></select>
+          </div>
+        </div>
+
+        <div style="font-size:.72rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Every</div>
+        <div style="display:flex;gap:5px;margin-bottom:12px;">
+          <button onclick="recurSetInterval(60,this)" class="ibtn" style="flex:1;padding:8px 4px;text-align:center;font-size:.78rem;">1 min</button>
+          <button onclick="recurSetInterval(3600,this)" class="ibtn" style="flex:1;padding:8px 4px;text-align:center;font-size:.78rem;">Hourly</button>
+          <button onclick="recurSetInterval(86400,this)" class="ibtn active" style="flex:1;padding:8px 4px;text-align:center;font-size:.78rem;">Daily</button>
+          <button onclick="recurSetInterval(604800,this)" class="ibtn" style="flex:1;padding:8px 4px;text-align:center;font-size:.78rem;">Weekly</button>
+          <button onclick="recurSetInterval(2592000,this)" class="ibtn" style="flex:1;padding:8px 4px;text-align:center;font-size:.78rem;">Monthly</button>
+        </div>
+        <div style="font-size:.7rem;color:var(--text3);margin-bottom:12px;">1 min is here for testing — watch it actually fire.</div>
+
+        <div style="font-size:.72rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Label</div>
+        <input id="recurLabelInput" type="text" placeholder="e.g. Weekly allowance, API subscription" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;margin-bottom:16px;"/>
+
+        <button id="recurCreateBtn" onclick="recurCreate()" class="btn" style="width:100%;">Start schedule</button>
+        <div id="recurCreateStatus" style="font-size:.75rem;color:var(--text3);margin-top:8px;"></div>
+      </div>
+
+      <!-- Schedule list -->
+      <div class="pcard">
+        <div style="font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:14px;">Your schedules</div>
+        <div id="recurList" style="display:flex;flex-direction:column;gap:10px;">
+          <div style="text-align:center;padding:32px 16px;font-size:.85rem;color:var(--text3);">Connect your agent wallet to see schedules.</div>
         </div>
       </div>
 
