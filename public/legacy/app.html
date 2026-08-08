@@ -5990,8 +5990,8 @@ window.addEventListener('load', function() {
 
 <!-- ══ NAN AI PAGE ══ -->
 <div class="page" id="page-agent-ai">
-  <div style="display:flex;flex-direction:column;height:calc(100vh - 80px);max-width:700px;margin:0 auto;background:var(--card);border:1px solid var(--border);border-radius:22px;overflow:hidden;">
-    <div style="padding:16px 18px 12px;border-bottom:1px solid rgba(37,99,235,.15);background:var(--card);flex-shrink:0;">
+  <div style="display:flex;flex-direction:column;height:calc(100vh - 80px);width:100%;max-width:100%;margin:0;background:transparent;overflow:hidden;padding:0 40px;box-sizing:border-box;">
+    <div style="padding:16px 18px 12px;border-bottom:1px solid rgba(37,99,235,.15);background:transparent;flex-shrink:0;">
       <div style="display:flex;align-items:center;justify-content:space-between;">
         <div style="display:flex;align-items:center;gap:10px;">
           <button onclick="goPage(window._prevPage||'home')" style="background:none;border:none;cursor:pointer;color:var(--text);padding:4px;">
@@ -6006,7 +6006,7 @@ window.addEventListener('load', function() {
       </div>
     </div>
     <div id="agentMessages" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;scrollbar-width:none;"></div>
-    <div style="padding:10px 14px 16px;border-top:1px solid rgba(37,99,235,.12);background:var(--card);flex-shrink:0;">
+    <div style="padding:10px 14px 16px;border-top:1px solid rgba(37,99,235,.12);background:transparent;flex-shrink:0;">
       <div style="display:flex;gap:6px;margin-bottom:9px;flex-wrap:wrap;" id="agentChips"></div>
       <div style="display:flex;gap:8px;align-items:center;">
         <input id="agentInput" placeholder="Ask anything or tap 🎤 to speak…" onkeydown="if(event.key==='Enter')sendAgentMsg()" style="flex:1;background:var(--surface);border:1px solid rgba(37,99,235,.25);border-radius:12px;padding:11px 14px;color:var(--text);font-size:16px;font-family:'Inter',sans-serif;outline:none;"/>
