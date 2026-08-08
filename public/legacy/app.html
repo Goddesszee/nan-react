@@ -4130,7 +4130,6 @@ html,body{background-color:var(--bg);}
 
       <div id="cioCashinPane" style="display:none;max-width:460px;margin:0 auto;">
         <div class="pcard" style="margin-bottom:16px;">
-          <div style="font-size:.78rem;color:var(--text2);margin-bottom:16px;">There is no licensed Naira payment processor connected yet, so a cash in request is created and tracked, but it will not automatically credit your wallet. This is stated here so the flow is never misleading.</div>
           <div style="margin-bottom:14px;">
             <div style="font-size:.8rem;font-weight:700;margin-bottom:6px;">Amount to deposit, Naira</div>
             <input id="cioCashinAmount" type="text" inputmode="decimal" placeholder="0.00" oninput="cioUpdateCashinPreview()" style="width:100%;padding:14px 16px;border-radius:12px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-family:'Inter',sans-serif;font-size:1.3rem;font-weight:700;"/>
@@ -4155,7 +4154,6 @@ html,body{background-color:var(--bg);}
 
       <div id="cioCashoutPane" style="display:none;max-width:460px;margin:0 auto;">
         <div class="pcard" style="margin-bottom:16px;">
-          <div style="font-size:.78rem;color:var(--text2);margin-bottom:16px;">There is no licensed Naira payment processor connected yet, so a cash out request is created and tracked, but funds are not automatically sent to your bank. This is stated here so the flow is never misleading.</div>
           <div style="margin-bottom:14px;">
             <div style="font-size:.8rem;font-weight:700;margin-bottom:6px;">Withdraw from</div>
             <select id="cioCashoutToken" onchange="cioUpdateCashoutPreview()" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-weight:700;">
