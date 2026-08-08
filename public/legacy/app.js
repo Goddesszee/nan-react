@@ -5138,7 +5138,7 @@ function cioSwitchTab(tab){
   if (tab === 'overview') cioLoadOverview();
   if (tab === 'banks') cioLoadBanks();
   if (tab === 'cashout') cioLoadBanksForCashout();
-  if (tab === 'swap') cioLoadBanksForSwap();
+  if (tab === 'swap') { cioLoadBanksForSwap(); cioUpdateSwapPreview(); }
   if (tab === 'history') cioLoadHistory();
 }
 
@@ -5283,6 +5283,8 @@ async function cioLoadBanksForSwap(){
 function cioUpdateSwapPreview(){
   const amt = parseFloat(document.getElementById('cioSwapAmount')?.value) || 0;
   const token = document.getElementById('cioSwapToken')?.value || 'USDC';
+  const balEl = document.getElementById('cioSwapFromBal');
+  if(balEl) balEl.textContent = (parseFloat((token === 'EURC' ? eurcBal : usdcBal) || 0)).toFixed(2);
   const rate = cioRatesCache ? (token === 'EURC' ? cioRatesCache.eurcToNgn : cioRatesCache.usdcToNgn) : null;
   const rateEl = document.getElementById('cioSwapRate');
   const estEl = document.getElementById('cioSwapEstimate');

@@ -4086,16 +4086,18 @@ html,body{background-color:var(--bg);}
         <div id="cioOverviewRecent" style="font-size:.85rem;color:var(--text3);">Loading</div>
       </div>
 
-      <div id="cioSwapPane" style="display:none;max-width:440px;">
+      <div id="cioSwapPane" style="display:none;max-width:460px;margin:0 auto;">
         <div class="fx-ticker">
           <div class="fx-lbl"><span class="fx-dot"></span>Live rates</div>
           <div id="cioRateUsdc4" class="fx-pair"><span class="sym">USDC to NGN</span><span class="rate">Loading</span></div>
           <div id="cioRateEurc4" class="fx-pair"><span class="sym">EURC to NGN</span><span class="rate">Loading</span></div>
         </div>
         <div class="pcard" style="margin-bottom:16px;">
-          <div style="font-size:.78rem;color:var(--text2);margin-bottom:16px;">Swap your stablecoins into a Naira withdrawal request at the live rate. This creates a real request tracked in your history, and stays pending until a licensed Naira payment processor settles it.</div>
           <div style="border:1px solid var(--border);border-radius:14px;padding:16px;background:var(--bg);margin-bottom:8px;">
-            <div style="font-size:.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">You pay</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+              <span style="font-size:.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;">You pay</span>
+              <span style="font-size:.78rem;color:var(--text3);">Bal: <span id="cioSwapFromBal">0.00</span></span>
+            </div>
             <div style="display:flex;align-items:center;justify-content:space-between;">
               <input id="cioSwapAmount" type="text" inputmode="decimal" placeholder="0.00" oninput="cioUpdateSwapPreview()" style="border:none;background:none;font-family:'Inter',sans-serif;font-size:1.4rem;font-weight:700;width:60%;outline:none;color:var(--text);"/>
               <select id="cioSwapToken" onchange="cioUpdateSwapPreview()" style="display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:100px;padding:8px 14px;font-weight:700;font-size:.88rem;color:var(--text);">
