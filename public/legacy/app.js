@@ -11309,6 +11309,148 @@ async function nanRefreshAgentLimits(){
     console.log('[agent] limits fetch error:', e.message);
   }
 }
+
+// ── Escrow ────────────────────────────────────────────────────────────────
+let escrowTab = 'sent';
+function escrowSwitchTab(tab){
+  escrowTab = tab;
+  const sentBtn = document.getElementById('escrowTabSent');
+  const recvBtn = document.getElementById('escrowTabReceived');
+  if(sentBtn) sentBtn.classList.toggle('active', tab==='sent');
+  if(recvBtn) recvBtn.classList.toggle('active', tab==='received');
+  escrowLoadList();
+}
+function escrowStatusPill(status){
+  const map = {
+    pending:  ['Pending','rgba(37,99,235,.1)','#2563EB'],
+    attested: ['Attested','rgba(245,158,11,.1)','#F59E0B'],
+    released: ['Released','rgba(34,197,94,.1)','var(--success)'],
+    refunded: ['Refunded','rgba(107,114,128,.12)','var(--text3)']
+  };
+  const [label,bg,color] = map[status] || map.pending;
+  return `<span style="font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:100px;background:${bg};color:${color};">${label}</span>`;
+}
+async function escrowLoadList(){
+  const el = document.getElementById('escrowList');
+  if(!el) return;
+  if(!agentWalletAddr){
+    el.innerHTML = '<div style="text-align:center;padding:32px 16px;font-size:.85rem;color:var(--text3);">Connect your agent wallet to see escrows.</div>';
+    return;
+  }
+  el.innerHTML = '<div style="text-align:center;padding:24px 0;"><span class="spinner"></span></div>';
+  try{
+    const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'escrow-list', agentWalletAddress: agentWalletAddr, direction: escrowTab })
+    });
+    const d = await r.json();
+    const escrows = d.success ? (d.escrows||[]) : [];
+    if(!escrows.length){
+      el.innerHTML = `<div style="text-align:center;padding:32px 16px;"><div style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:4px;">No ${escrowTab} escrows yet</div><div style="font-size:.78rem;color:var(--text3);">${escrowTab==='sent' ? 'Lock funds on the left to create one.' : 'Escrows sent to you will show up here.'}</div></div>`;
+      return;
+    }
+    el.innerHTML = escrows.map(e => {
+      const counterparty = escrowTab==='sent' ? e.toWallet : e.fromWallet;
+      let actions = '';
+      if(escrowTab==='received' && e.status==='pending'){
+        actions = `<button onclick="escrowAttest('${e.id}')" style="flex:1;padding:8px;border-radius:9px;border:1px solid rgba(37,99,235,.3);background:rgba(37,99,235,.08);color:#2563EB;font-family:'Inter',sans-serif;font-size:.75rem;font-weight:700;cursor:pointer;">Mark task complete</button>`;
+      } else if(escrowTab==='sent' && e.status==='attested'){
+        actions = `<button onclick="escrowRelease('${e.id}')" style="flex:1;padding:8px;border-radius:9px;border:none;background:#2563EB;color:#fff;font-family:'Inter',sans-serif;font-size:.75rem;font-weight:700;cursor:pointer;">Release funds</button>`;
+      }
+      if(escrowTab==='sent' && (e.status==='pending' || e.status==='attested')){
+        actions += `<button onclick="escrowRefund('${e.id}')" style="padding:8px 12px;border-radius:9px;border:1px solid var(--border);background:none;color:var(--text2);font-family:'Inter',sans-serif;font-size:.75rem;font-weight:700;cursor:pointer;">Cancel</button>`;
+      }
+      return `<div style="border:1px solid var(--border);border-radius:12px;padding:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px;">
+          <div style="min-width:0;">
+            <div style="font-size:.85rem;font-weight:700;color:var(--text);">${e.amount.toFixed(2)} ${e.token}</div>
+            <div style="font-size:.75rem;color:var(--text3);font-family:'JetBrains Mono',monospace;">${escrowTab==='sent'?'To':'From'} ${short(counterparty)}</div>
+          </div>
+          ${escrowStatusPill(e.status)}
+        </div>
+        ${e.task ? `<div style="font-size:.78rem;color:var(--text2);margin-bottom:10px;">${e.task}</div>` : ''}
+        ${actions ? `<div style="display:flex;gap:6px;">${actions}</div>` : ''}
+      </div>`;
+    }).join('');
+  }catch(err){
+    el.innerHTML = `<div style="text-align:center;padding:20px 0;color:var(--danger);font-size:.8rem;">${err.message.slice(0,120)}</div>`;
+  }
+}
+async function escrowCreate(){
+  const toRaw = document.getElementById('escrowToInput')?.value.trim();
+  const amount = parseFloat(document.getElementById('escrowAmountInput')?.value);
+  const token = document.getElementById('escrowTokenInput')?.value || 'USDC';
+  const task = document.getElementById('escrowTaskInput')?.value.trim();
+  const statusEl = document.getElementById('escrowCreateStatus');
+  const btn = document.getElementById('escrowCreateBtn');
+  if(!agentWalletAddr){ if(statusEl) statusEl.textContent = 'Connect your agent wallet first.'; return; }
+  if(!toRaw){ if(statusEl) statusEl.textContent = 'Enter a recipient.'; return; }
+  if(!amount || amount<=0){ if(statusEl) statusEl.textContent = 'Enter a valid amount.'; return; }
+  if(btn){ btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Locking…'; }
+  if(statusEl) statusEl.textContent = '';
+  try{
+    let toAgentAddress = toRaw;
+    if(!/^0x[a-fA-F0-9]{40}$/.test(toRaw)){
+      const lr = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'lookup-by-arc', arcName: toRaw })
+      });
+      const ld = await lr.json();
+      if(!ld.success || (!ld.agentWalletAddress && !ld.mainAddress)) throw new Error(`Couldn't resolve "${toRaw}"`);
+      toAgentAddress = ld.agentWalletAddress || ld.mainAddress;
+    }
+    const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'escrow-create', agentWalletAddress: agentWalletAddr, toAgentAddress, amount, token, task })
+    });
+    const d = await r.json();
+    if(!d.success) throw new Error(d.error || 'Could not create escrow');
+    toast('✓ Funds locked in escrow', 'success', 3000);
+    document.getElementById('escrowToInput').value = '';
+    document.getElementById('escrowAmountInput').value = '';
+    document.getElementById('escrowTaskInput').value = '';
+    escrowSwitchTab('sent');
+  }catch(err){
+    if(statusEl) statusEl.textContent = err.message.slice(0,150);
+  }
+  if(btn){ btn.disabled = false; btn.textContent = 'Lock funds in escrow'; }
+}
+async function escrowAttest(escrowId){
+  try{
+    const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'escrow-attest', escrowId })
+    });
+    const d = await r.json();
+    if(!d.success) throw new Error(d.error || 'Could not attest');
+    toast('✓ Marked complete — waiting on sender to release', 'success', 3500);
+    escrowLoadList();
+  }catch(err){ toast(err.message.slice(0,120), 'error', 4000); }
+}
+async function escrowRelease(escrowId){
+  try{
+    const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'escrow-release', escrowId })
+    });
+    const d = await r.json();
+    if(!d.success) throw new Error(d.error || 'Could not release');
+    toast('✓ Funds released', 'success', 3500);
+    escrowLoadList();
+  }catch(err){ toast(err.message.slice(0,120), 'error', 4000); }
+}
+async function escrowRefund(escrowId){
+  try{
+    const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'escrow-refund', escrowId })
+    });
+    const d = await r.json();
+    if(!d.success) throw new Error(d.error || 'Could not cancel');
+    toast('Escrow cancelled, funds unlocked', 'info', 3500);
+    escrowLoadList();
+  }catch(err){ toast(err.message.slice(0,120), 'error', 4000); }
+}
 function agentPageRefresh() {
   const connected = !!agentWalletAddr;
   const s = (id, show) => {
