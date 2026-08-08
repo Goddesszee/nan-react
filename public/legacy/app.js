@@ -11297,7 +11297,7 @@ async function nanRefreshAgentLimits(){
   try{
     const r=await fetch('https://nan-production.up.railway.app/api/agent-wallets',{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({action:'get-policy',walletAddress:agentWalletAddr}),
+      body:JSON.stringify({action:'get-policy', userAddress: userAddr,walletAddress:agentWalletAddr}),
       signal:AbortSignal.timeout(8000)
     });
     const d=await r.json();
@@ -11328,7 +11328,7 @@ async function nanSaveAgentLimits(){
   try{
     const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'set-policy', walletAddress: agentWalletAddr, perTx, daily, weekly })
+      body: JSON.stringify({ action:'set-policy', userAddress: userAddr, walletAddress: agentWalletAddr, perTx, daily, weekly })
     });
     const d = await r.json();
     if(!d.success) throw new Error(d.error || 'Could not save limits');
@@ -11345,7 +11345,7 @@ async function nanRemoveAgentLimits(){
   try{
     const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'clear-policy', walletAddress: agentWalletAddr })
+      body: JSON.stringify({ action:'clear-policy', userAddress: userAddr, walletAddress: agentWalletAddr })
     });
     const d = await r.json();
     if(!d.success) throw new Error(d.error || 'Could not remove limits');
@@ -11389,7 +11389,7 @@ async function escrowLoadList(){
   try{
     const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'escrow-list', agentWalletAddress: agentWalletAddr, direction: escrowTab })
+      body: JSON.stringify({ action:'escrow-list', userAddress: userAddr, agentWalletAddress: agentWalletAddr, direction: escrowTab })
     });
     const d = await r.json();
     const escrows = d.success ? (d.escrows||[]) : [];
@@ -11441,7 +11441,7 @@ async function escrowCreate(){
     if(!/^0x[a-fA-F0-9]{40}$/.test(toRaw)){
       const lr = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ action:'lookup-by-arc', arcName: toRaw })
+        body: JSON.stringify({ action:'lookup-by-arc', userAddress: userAddr, arcName: toRaw })
       });
       const ld = await lr.json();
       if(!ld.success || (!ld.agentWalletAddress && !ld.mainAddress)) throw new Error(`Couldn't resolve "${toRaw}"`);
@@ -11449,7 +11449,7 @@ async function escrowCreate(){
     }
     const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'escrow-create', agentWalletAddress: agentWalletAddr, toAgentAddress, amount, token, task })
+      body: JSON.stringify({ action:'escrow-create', userAddress: userAddr, agentWalletAddress: agentWalletAddr, toAgentAddress, amount, token, task })
     });
     const d = await r.json();
     if(!d.success) throw new Error(d.error || 'Could not create escrow');
@@ -11467,7 +11467,7 @@ async function escrowAttest(escrowId){
   try{
     const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'escrow-attest', escrowId })
+      body: JSON.stringify({ action:'escrow-attest', userAddress: userAddr, escrowId })
     });
     const d = await r.json();
     if(!d.success) throw new Error(d.error || 'Could not attest');
@@ -11479,7 +11479,7 @@ async function escrowRelease(escrowId){
   try{
     const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'escrow-release', escrowId })
+      body: JSON.stringify({ action:'escrow-release', userAddress: userAddr, escrowId })
     });
     const d = await r.json();
     if(!d.success) throw new Error(d.error || 'Could not release');
@@ -11491,7 +11491,7 @@ async function escrowRefund(escrowId){
   try{
     const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'escrow-refund', escrowId })
+      body: JSON.stringify({ action:'escrow-refund', userAddress: userAddr, escrowId })
     });
     const d = await r.json();
     if(!d.success) throw new Error(d.error || 'Could not cancel');
@@ -11544,7 +11544,7 @@ async function recurLoadList(){
   try{
     const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'recurring-list', agentWalletAddress: agentWalletAddr })
+      body: JSON.stringify({ action:'recurring-list', userAddress: userAddr, agentWalletAddress: agentWalletAddr })
     });
     const d = await r.json();
     const schedules = d.success ? (d.schedules||[]) : [];
@@ -11593,7 +11593,7 @@ async function recurCreate(){
     if(!/^0x[a-fA-F0-9]{40}$/.test(toRaw)){
       const lr = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ action:'lookup-by-arc', arcName: toRaw })
+        body: JSON.stringify({ action:'lookup-by-arc', userAddress: userAddr, arcName: toRaw })
       });
       const ld = await lr.json();
       if(!ld.success || (!ld.agentWalletAddress && !ld.mainAddress)) throw new Error(`Couldn't resolve "${toRaw}"`);
@@ -11601,7 +11601,7 @@ async function recurCreate(){
     }
     const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'recurring-create', agentWalletAddress: agentWalletAddr, toAgentAddress, amount, token, intervalSeconds: recurIntervalSeconds, label })
+      body: JSON.stringify({ action:'recurring-create', userAddress: userAddr, agentWalletAddress: agentWalletAddr, toAgentAddress, amount, token, intervalSeconds: recurIntervalSeconds, label })
     });
     const d = await r.json();
     if(!d.success) throw new Error(d.error || 'Could not start schedule');
@@ -11619,7 +11619,7 @@ async function recurCancel(scheduleId){
   try{
     const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'recurring-cancel', scheduleId })
+      body: JSON.stringify({ action:'recurring-cancel', userAddress: userAddr, scheduleId })
     });
     const d = await r.json();
     if(!d.success) throw new Error(d.error || 'Could not cancel');
@@ -11659,7 +11659,7 @@ async function invoiceLoadList(){
   try{
     const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'invoice-list', agentWalletAddress: agentWalletAddr, direction: invoiceTab })
+      body: JSON.stringify({ action:'invoice-list', userAddress: userAddr, agentWalletAddress: agentWalletAddr, direction: invoiceTab })
     });
     const d = await r.json();
     const invoices = d.success ? (d.invoices||[]) : [];
@@ -11707,7 +11707,7 @@ async function invoiceCreate(){
     if(!/^0x[a-fA-F0-9]{40}$/.test(fromRaw)){
       const lr = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ action:'lookup-by-arc', arcName: fromRaw })
+        body: JSON.stringify({ action:'lookup-by-arc', userAddress: userAddr, arcName: fromRaw })
       });
       const ld = await lr.json();
       if(!ld.success || (!ld.agentWalletAddress && !ld.mainAddress)) throw new Error(`Couldn't resolve "${fromRaw}"`);
@@ -11715,7 +11715,7 @@ async function invoiceCreate(){
     }
     const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'invoice-create', agentWalletAddress: agentWalletAddr, fromAgentAddress, amount, token, reason })
+      body: JSON.stringify({ action:'invoice-create', userAddress: userAddr, agentWalletAddress: agentWalletAddr, fromAgentAddress, amount, token, reason })
     });
     const d = await r.json();
     if(!d.success) throw new Error(d.error || 'Could not send invoice');
@@ -11734,7 +11734,7 @@ async function invoiceRespond(invoiceId, honor){
   try{
     const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'invoice-respond', invoiceId, honor })
+      body: JSON.stringify({ action:'invoice-respond', userAddress: userAddr, invoiceId, honor })
     });
     const d = await r.json();
     if(!d.success){
@@ -11765,7 +11765,7 @@ async function a2aSend(){
     } else {
       const lr = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ action:'lookup-by-arc', arcName: toRaw })
+        body: JSON.stringify({ action:'lookup-by-arc', userAddress: userAddr, arcName: toRaw })
       });
       const ld = await lr.json();
       if(!ld.success || (!ld.agentWalletAddress && !ld.mainAddress)) throw new Error(`Couldn't resolve "${toRaw}"`);
@@ -11774,7 +11774,7 @@ async function a2aSend(){
     }
     const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'a2a-transfer', agentWalletAddress: agentWalletAddr, toAgentAddress, toMainAddress, amount, token })
+      body: JSON.stringify({ action:'a2a-transfer', userAddress: userAddr, agentWalletAddress: agentWalletAddr, toAgentAddress, toMainAddress, amount, token })
     });
     const d = await r.json();
     if(!d.success){
@@ -11803,7 +11803,7 @@ async function trustCheck(){
     if(!/^0x[a-fA-F0-9]{40}$/.test(raw)){
       const lr = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ action:'lookup-by-arc', arcName: raw })
+        body: JSON.stringify({ action:'lookup-by-arc', userAddress: userAddr, arcName: raw })
       });
       const ld = await lr.json();
       if(!ld.success || (!ld.agentWalletAddress && !ld.mainAddress)) throw new Error(`Couldn't resolve "${raw}"`);
@@ -11811,7 +11811,7 @@ async function trustCheck(){
     }
     const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'trust', agentWalletAddress: agentWalletAddr, counterpartyAddress })
+      body: JSON.stringify({ action:'trust', userAddress: userAddr, agentWalletAddress: agentWalletAddr, counterpartyAddress })
     });
     const d = await r.json();
     if(!d.success) throw new Error(d.error || 'Could not check trust');
