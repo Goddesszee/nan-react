@@ -9050,8 +9050,10 @@ function viewPaymentRequest(id){
   if(!pr)return;
   activePRId=id;
   const invCard=document.getElementById('prInvoiceCard');
+  const genericSections=document.getElementById('prGenericSections');
   if(pr.isInvoice && invCard){
     invCard.style.display='block';
+    if(genericSections) genericSections.style.display='none';
     document.getElementById('prInvNumber').textContent='INV-'+(pr.onChainId||pr.id).toString().slice(-8).toUpperCase();
     document.getElementById('prInvFrom').textContent=pr.businessName||'—';
     document.getElementById('prInvTo').textContent=pr.customerName||'—';
@@ -9064,6 +9066,7 @@ function viewPaymentRequest(id){
     document.getElementById('prInvTotal').textContent=parseFloat(pr.amount||0).toFixed(2)+' '+pr.token;
   } else if(invCard){
     invCard.style.display='none';
+    if(genericSections) genericSections.style.display='block';
   }
   document.getElementById('prViewTitle').textContent=pr.label;
   document.getElementById('prViewStatus').textContent=pr.status==='paid'?'✓ Paid':pr.status==='expired'?'⚠ Expired':'⏳ Pending';
@@ -9338,8 +9341,10 @@ function copyPRLink(){
   const link=(_el2?.textContent||'').trim()||(_el2?.href||'').replace(/^javascript:/,'').trim();
   if(!link||link==='#')return;
   _doCopy(link, ()=>{
-    const btn=document.getElementById('prCopyBtn');
-    if(btn){const orig=btn.innerHTML;btn.innerHTML='✓ Copied!';setTimeout(()=>btn.innerHTML=orig,2000);}
+    ['prCopyBtn','prInvCopyBtn'].forEach(id=>{
+      const btn=document.getElementById(id);
+      if(btn){const orig=btn.innerHTML;btn.innerHTML='✓ Copied!';setTimeout(()=>btn.innerHTML=orig,2000);}
+    });
     toast('✓ Link copied!','success',2000);
   });
 }
