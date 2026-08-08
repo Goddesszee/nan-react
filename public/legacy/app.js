@@ -1005,6 +1005,17 @@ async function _doConnect(detectedWp, walletType){
     onArcNetwork=parseInt(chainHex,16)===ARC_CHAIN_ID;
     await onConnected(false);
     trackEvent('connect',{type:walletType});
+    // New self-custody wallets have zero native gas, so their very first
+    // on-chain action (e.g. registering an .arc name) can fail with no
+    // funds for gas. Silently top them up once per address, in the
+    // background, so they never hit that wall without knowing why.
+    try{
+      const faucetKey='nan_auto_faucet_'+userAddr;
+      if(!localStorage.getItem(faucetKey)){
+        localStorage.setItem(faucetKey,'1');
+        fetch('https://nan-production.up.railway.app/api/faucet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({address:userAddr})}).catch(()=>{});
+      }
+    }catch(e){}
   }catch(err){
     if(err.code===4001)toast('Connection cancelled','error');
     else toast((err?.message||'Connection failed').slice(0,120),'error');
