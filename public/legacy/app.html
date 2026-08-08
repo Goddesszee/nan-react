@@ -1096,7 +1096,7 @@ html,body{background-color:var(--bg);}
           <div style="font-size:.83rem;font-weight:700;color:var(--text);margin-top:8px;">Recurring payments</div>
           <div style="font-size:.72rem;color:var(--text3);margin-top:2px;">Set it once, it pays on schedule</div>
         </div>
-        <div onclick="nanAgentChatShortcut('Create an invoice for another agent')" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;">
+        <div onclick="goPage('agent-invoice');invoiceLoadList();" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;">
           <div style="width:36px;height:36px;border-radius:50%;background:rgba(37,99,235,.1);display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg></div>
           <div style="font-size:.83rem;font-weight:700;color:var(--text);margin-top:8px;">Invoicing</div>
           <div style="font-size:.72rem;color:var(--text3);margin-top:2px;">Create and respond between agents</div>
@@ -6047,6 +6047,65 @@ window.addEventListener('load', function() {
         </div>
         <div id="escrowList" style="display:flex;flex-direction:column;gap:10px;">
           <div style="text-align:center;padding:32px 16px;font-size:.85rem;color:var(--text3);">Connect your agent wallet to see escrows.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ AGENT INVOICE PAGE ══ -->
+<div class="page" id="page-agent-invoice">
+  <style>
+    #page-agent-invoice .pcard { background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.04); }
+    #page-agent-invoice .itab { padding:9px 0;border-radius:100px;font-size:.82rem;font-weight:700;border:none;background:transparent;color:var(--text2);cursor:pointer;font-family:'Inter',sans-serif; }
+    #page-agent-invoice .itab.active { background:#2563EB;color:#fff; }
+    #page-agent-invoice > div{padding-left:40px !important;padding-right:40px !important;}
+  </style>
+  <div style="width:100%;max-width:100%;margin:0;padding:0 40px;box-sizing:border-box;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+      <button onclick="goPage('agent-wallet')" style="width:34px;height:34px;border-radius:10px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">&larr;</button>
+      <div style="width:34px;height:34px;border-radius:10px;background:#2563EB;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg></div>
+      <div style="font-size:1.5rem;font-weight:800;color:var(--text);letter-spacing:-.01em;">Invoicing</div>
+    </div>
+    <div style="font-size:.8rem;color:var(--text2);margin:0 0 20px 88px;">Request payment from another agent. If you're within their trust tier and policy, it can honor automatically.</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1.3fr;gap:16px;align-items:start;">
+
+      <!-- Create invoice -->
+      <div class="pcard">
+        <div style="font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:2px;">New invoice</div>
+        <div style="font-size:.75rem;color:var(--text3);margin-bottom:16px;">Requests payment from another agent's wallet.</div>
+
+        <div style="font-size:.72rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Bill to</div>
+        <input id="invoiceFromInput" type="text" placeholder="Wallet address or .arc name" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;margin-bottom:12px;"/>
+
+        <div style="display:flex;gap:8px;margin-bottom:12px;">
+          <div style="flex:1;">
+            <div style="font-size:.72rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Amount</div>
+            <input id="invoiceAmountInput" type="text" inputmode="decimal" placeholder="0.00" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+          </div>
+          <div style="width:90px;">
+            <div style="font-size:.72rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Token</div>
+            <select id="invoiceTokenInput" style="width:100%;padding:10px 8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-weight:700;"><option>USDC</option><option>EURC</option></select>
+          </div>
+        </div>
+
+        <div style="font-size:.72rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Reason</div>
+        <input id="invoiceReasonInput" type="text" placeholder="e.g. API usage, week 32" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;margin-bottom:16px;"/>
+
+        <button id="invoiceCreateBtn" onclick="invoiceCreate()" class="btn" style="width:100%;">Send invoice</button>
+        <div id="invoiceCreateStatus" style="font-size:.75rem;color:var(--text3);margin-top:8px;"></div>
+      </div>
+
+      <!-- Invoice list -->
+      <div class="pcard">
+        <div style="display:flex;gap:6px;background:var(--bg);border:1px solid var(--border);border-radius:100px;padding:4px;margin-bottom:16px;max-width:220px;">
+          <button id="invoiceTabIncoming" class="itab active" onclick="invoiceSwitchTab('incoming')" style="flex:1;">Incoming</button>
+          <button id="invoiceTabOutgoing" class="itab" onclick="invoiceSwitchTab('outgoing')" style="flex:1;">Outgoing</button>
+        </div>
+        <div id="invoiceList" style="display:flex;flex-direction:column;gap:10px;">
+          <div style="text-align:center;padding:32px 16px;font-size:.85rem;color:var(--text3);">Connect your agent wallet to see invoices.</div>
         </div>
       </div>
 

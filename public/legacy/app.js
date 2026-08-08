@@ -11571,6 +11571,124 @@ async function recurCancel(scheduleId){
   }catch(err){ toast(err.message.slice(0,120), 'error', 4000); }
 }
 
+// ── Invoicing (agent-to-agent) ───────────────────────────────────────────
+let invoiceTab = 'incoming';
+function invoiceSwitchTab(tab){
+  invoiceTab = tab;
+  const inBtn = document.getElementById('invoiceTabIncoming');
+  const outBtn = document.getElementById('invoiceTabOutgoing');
+  if(inBtn) inBtn.classList.toggle('active', tab==='incoming');
+  if(outBtn) outBtn.classList.toggle('active', tab==='outgoing');
+  invoiceLoadList();
+}
+function invoiceStatusPill(status){
+  const map = {
+    pending:  ['Pending','rgba(37,99,235,.1)','#2563EB'],
+    honored:  ['Honored','rgba(34,197,94,.1)','var(--success)'],
+    rejected: ['Rejected','rgba(220,38,38,.1)','var(--danger)'],
+    expired:  ['Expired','rgba(107,114,128,.12)','var(--text3)']
+  };
+  const [label,bg,color] = map[status] || map.pending;
+  return `<span style="font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:100px;background:${bg};color:${color};">${label}</span>`;
+}
+async function invoiceLoadList(){
+  const el = document.getElementById('invoiceList');
+  if(!el) return;
+  if(!agentWalletAddr){
+    el.innerHTML = '<div style="text-align:center;padding:32px 16px;font-size:.85rem;color:var(--text3);">Connect your agent wallet to see invoices.</div>';
+    return;
+  }
+  el.innerHTML = '<div style="text-align:center;padding:24px 0;"><span class="spinner"></span></div>';
+  try{
+    const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'invoice-list', agentWalletAddress: agentWalletAddr, direction: invoiceTab })
+    });
+    const d = await r.json();
+    const invoices = d.success ? (d.invoices||[]) : [];
+    if(!invoices.length){
+      el.innerHTML = `<div style="text-align:center;padding:32px 16px;"><div style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:4px;">No ${invoiceTab} invoices</div><div style="font-size:.78rem;color:var(--text3);">${invoiceTab==='incoming' ? 'Invoices billed to you will show up here.' : 'Send one on the left to bill another agent.'}</div></div>`;
+      return;
+    }
+    el.innerHTML = invoices.map(inv => {
+      const counterparty = invoiceTab==='incoming' ? inv.toWallet : inv.fromWallet;
+      let actions = '';
+      if(invoiceTab==='incoming' && inv.status==='pending'){
+        actions = `<button onclick="invoiceRespond('${inv.id}',true)" style="flex:1;padding:8px;border-radius:9px;border:none;background:#2563EB;color:#fff;font-family:'Inter',sans-serif;font-size:.75rem;font-weight:700;cursor:pointer;">Pay</button>
+          <button onclick="invoiceRespond('${inv.id}',false)" style="padding:8px 12px;border-radius:9px;border:1px solid var(--border);background:none;color:var(--text2);font-family:'Inter',sans-serif;font-size:.75rem;font-weight:700;cursor:pointer;">Reject</button>`;
+      }
+      return `<div style="border:1px solid var(--border);border-radius:12px;padding:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;gap:8px;">
+          <div style="min-width:0;">
+            <div style="font-size:.85rem;font-weight:700;color:var(--text);">${inv.amount.toFixed(2)} ${inv.token}</div>
+            <div style="font-size:.75rem;color:var(--text3);font-family:'JetBrains Mono',monospace;">${invoiceTab==='incoming'?'Billed by':'Billed to'} ${short(counterparty)}</div>
+          </div>
+          ${invoiceStatusPill(inv.status)}
+        </div>
+        ${inv.reason ? `<div style="font-size:.78rem;color:var(--text2);margin-bottom:10px;">${inv.reason}</div>` : ''}
+        ${actions ? `<div style="display:flex;gap:6px;">${actions}</div>` : ''}
+      </div>`;
+    }).join('');
+  }catch(err){
+    el.innerHTML = `<div style="text-align:center;padding:20px 0;color:var(--danger);font-size:.8rem;">${err.message.slice(0,120)}</div>`;
+  }
+}
+async function invoiceCreate(){
+  const fromRaw = document.getElementById('invoiceFromInput')?.value.trim();
+  const amount = parseFloat(document.getElementById('invoiceAmountInput')?.value);
+  const token = document.getElementById('invoiceTokenInput')?.value || 'USDC';
+  const reason = document.getElementById('invoiceReasonInput')?.value.trim();
+  const statusEl = document.getElementById('invoiceCreateStatus');
+  const btn = document.getElementById('invoiceCreateBtn');
+  if(!agentWalletAddr){ if(statusEl) statusEl.textContent = 'Connect your agent wallet first.'; return; }
+  if(!fromRaw){ if(statusEl) statusEl.textContent = 'Enter who this is billed to.'; return; }
+  if(!amount || amount<=0){ if(statusEl) statusEl.textContent = 'Enter a valid amount.'; return; }
+  if(btn){ btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Sending…'; }
+  if(statusEl) statusEl.textContent = '';
+  try{
+    let fromAgentAddress = fromRaw;
+    if(!/^0x[a-fA-F0-9]{40}$/.test(fromRaw)){
+      const lr = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'lookup-by-arc', arcName: fromRaw })
+      });
+      const ld = await lr.json();
+      if(!ld.success || (!ld.agentWalletAddress && !ld.mainAddress)) throw new Error(`Couldn't resolve "${fromRaw}"`);
+      fromAgentAddress = ld.agentWalletAddress || ld.mainAddress;
+    }
+    const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'invoice-create', agentWalletAddress: agentWalletAddr, fromAgentAddress, amount, token, reason })
+    });
+    const d = await r.json();
+    if(!d.success) throw new Error(d.error || 'Could not send invoice');
+    const evalMsg = d.autoEval?.autoHonored ? ' — within their trust tier, likely to auto-honor' : '';
+    toast('✓ Invoice sent' + evalMsg, 'success', 4000);
+    document.getElementById('invoiceFromInput').value = '';
+    document.getElementById('invoiceAmountInput').value = '';
+    document.getElementById('invoiceReasonInput').value = '';
+    invoiceSwitchTab('outgoing');
+  }catch(err){
+    if(statusEl) statusEl.textContent = err.message.slice(0,150);
+  }
+  if(btn){ btn.disabled = false; btn.textContent = 'Send invoice'; }
+}
+async function invoiceRespond(invoiceId, honor){
+  try{
+    const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'invoice-respond', invoiceId, honor })
+    });
+    const d = await r.json();
+    if(!d.success){
+      if(d.policyViolation) throw new Error('Blocked by your spending policy: ' + d.error);
+      throw new Error(d.error || 'Could not respond');
+    }
+    toast(honor ? '✓ Invoice paid' : 'Invoice rejected', honor?'success':'info', 3500);
+    invoiceLoadList();
+  }catch(err){ toast(err.message.slice(0,150), 'error', 4500); }
+}
+
 function agentPageRefresh() {
   const connected = !!agentWalletAddr;
   const s = (id, show) => {
