@@ -972,7 +972,7 @@ html,body{background-color:var(--bg);}
     <div id="agentPageTitle" style="font-family:'Inter',sans-serif;font-size:2.1rem;font-weight:700;color:var(--text);letter-spacing:-.02em;">Agent Wallet</div>
     <div style="font-family:'Inter',sans-serif;font-size:1rem;font-weight:500;color:var(--text2);margin-top:6px;">Manage your agent's balance, spending policy, and activity, all in one place.</div>
   </div>
-  <div class="nan-bal-card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:28px 32px;margin:20px 24px 28px;box-sizing:border-box;">
+  <div class="nan-bal-card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px 32px;margin:20px 24px 28px;box-sizing:border-box;">
     <div>
       <div style="display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.04em;">
         Agent Wallet Balance
@@ -988,7 +988,7 @@ html,body{background-color:var(--bg);}
       <div id="agentDepositDropdown" style="display:none;position:absolute;top:calc(100% + 8px);left:0;width:280px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;box-shadow:0 8px 24px rgba(0,0,0,.3);z-index:999;box-sizing:border-box;">
         <div style="font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:6px;">Agent Wallet address</div>
         <div style="font-size:.75rem;color:var(--text3);margin-bottom:10px;line-height:1.4;">USDC / EURC on Arc Testnet only. This is your agent's own wallet, not your main connected wallet.</div>
-        <div style="display:flex;align-items:center;gap:6px;background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:8px 10px;">
+        <div style="display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:8px 10px;">
           <span id="agentDepositAddrText" style="font-family:monospace;font-size:.72rem;color:var(--text);word-break:break-all;flex:1;line-height:1.4;">&#8212;</span>
           <button onclick="nanCopyAgentDepositAddr()" id="agentDepositCopyBtn" style="flex-shrink:0;padding:5px 10px;border-radius:7px;background:#2563EB;border:none;color:#fff;font-size:.7rem;font-weight:700;cursor:pointer;">Copy</button>
         </div>
@@ -998,7 +998,7 @@ html,body{background-color:var(--bg);}
   </div>
 
   <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:16px;padding:0 24px 20px;" class="nan-dash-grid">
-    <div style="background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:24px;">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
         <div style="font-family:'Inter',sans-serif;font-size:1.1rem;font-weight:600;color:var(--text);">Portfolio Performance</div>
         <div style="display:flex;gap:4px;">
@@ -1018,7 +1018,7 @@ html,body{background-color:var(--bg);}
       <div id="agentPerfNote" style="font-size:.72rem;color:var(--text3);margin-top:10px;">No balance history recorded yet — this starts tracking real changes from today. Flat line reflects your current total, not a fabricated trend.</div>
     </div>
 
-    <div style="background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:24px;">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;">
       <div style="font-family:'Inter',sans-serif;font-size:1.1rem;font-weight:600;color:var(--text);margin-bottom:16px;">Portfolio Holdings</div>
       <div style="position:relative;width:180px;height:180px;margin:0 auto 20px;">
         <svg viewBox="0 0 180 180" style="width:100%;height:100%;transform:rotate(-90deg);">
@@ -1045,7 +1045,7 @@ html,body{background-color:var(--bg);}
   </div>
 
   <div style="padding:0 24px 20px;">
-    <div style="background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:24px;">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;flex-wrap:wrap;gap:4px 12px;">
         <span style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;">Your spending limits</span>
         <span style="font-size:11px;font-weight:700;color:#2563EB;background:rgba(37,99,235,.1);padding:3px 10px;border-radius:100px;">New</span>
@@ -1079,7 +1079,7 @@ html,body{background-color:var(--bg);}
   </div>
 
   <div style="padding:0 24px 20px;">
-    <div style="background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:24px;">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;">
       <span style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px;">What your agent can do</span>
       <div style="font-size:12px;color:var(--text3);margin-bottom:16px;">Tap any of these to open a prompt for your AI agent. Nothing here needs a separate form.</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
@@ -1118,7 +1118,7 @@ html,body{background-color:var(--bg);}
   </div>
 
   <div style="padding:0 24px 20px;">
-    <div style="background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:24px;">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;">
       <div class="nan-policy-head" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:4px 12px;">
         <span style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;">Spending policy</span>
         <span style="font-size:12px;color:var(--text3);">Per-call caps, enforced on every payment</span>
