@@ -11281,6 +11281,27 @@ function updateHomeWithAgentBalance(){
 }
 
 // ── Page state ───────────────────────────────────────────────────────────────
+async function nanRefreshAgentLimits(){
+  if(!agentWalletAddr) return;
+  const perTxEl=document.getElementById('agentLimitPerTx');
+  const dailyEl=document.getElementById('agentLimitDaily');
+  const weeklyEl=document.getElementById('agentLimitWeekly');
+  if(!perTxEl && !dailyEl && !weeklyEl) return;
+  try{
+    const r=await fetch('https://nan-production.up.railway.app/api/agent-wallets',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'get-policy',walletAddress:agentWalletAddr}),
+      signal:AbortSignal.timeout(8000)
+    });
+    const d=await r.json();
+    const p=d.success?d.policy:null;
+    if(perTxEl) perTxEl.textContent = p?.perTx!=null ? '$'+p.perTx : 'Not set';
+    if(dailyEl) dailyEl.textContent = p?.daily!=null ? '$'+p.daily : 'Not set';
+    if(weeklyEl) weeklyEl.textContent = p?.weekly!=null ? '$'+p.weekly : 'Not set';
+  }catch(e){
+    console.log('[agent] limits fetch error:', e.message);
+  }
+}
 function agentPageRefresh() {
   const connected = !!agentWalletAddr;
   const s = (id, show) => {
@@ -11309,6 +11330,7 @@ function agentPageRefresh() {
     if(balEl) balEl.textContent = '$' + (agentWalletTotalUsd||0).toFixed(2);
     if(breakdownEl) breakdownEl.textContent = agentWalletBalance || '0.00 USDC';
     if(typeof nanUpdateAgentHoldings === 'function') nanUpdateAgentHoldings();
+    if(typeof nanRefreshAgentLimits === 'function') nanRefreshAgentLimits();
   } else {
     if (status) status.textContent = 'Not connected';
     if (badge)  { badge.textContent = 'Offline'; badge.style.cssText = 'font-size:.72rem;padding:3px 9px;border-radius:100px;background:rgba(107,114,128,.1);border:1px solid var(--border);color:var(--text3);font-weight:600;'; }
