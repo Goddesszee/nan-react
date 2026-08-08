@@ -862,9 +862,11 @@ a:hover{color:var(--text);}
 [data-theme="light"] .wallet-opt{background:#ffffff!important;border-color:rgba(37,99,235,.12)!important;}
 [data-theme="light"] .wallet-opt:hover{background:#f5f5f5!important;border-color:rgba(37,99,235,.25)!important;}
 [data-theme="light"] #toast{background:#ffffff!important;border-color:rgba(37,99,235,.25)!important;color:#1a1a1a!important;}
-[data-theme="light"] #toast.success{border-color:rgba(37,99,235,.4)!important;color:#2563EB!important;}
-[data-theme="light"] #toast.error{border-color:rgba(37,99,235,.4)!important;color:#2563EB!important;}
-[data-theme="light"] #toast.info{border-color:rgba(37,99,235,.4)!important;color:#2563EB!important;}
+[data-theme="light"] #toast.success{border-color:rgba(37,99,235,.4)!important;}
+[data-theme="light"] #toast.error{border-color:rgba(37,99,235,.4)!important;}
+[data-theme="light"] #toast.info{border-color:rgba(37,99,235,.4)!important;}
+[data-theme="light"] #toastTitle{color:#1a1a1a!important;}
+[data-theme="light"] #toastMsg{color:#5a5a5a!important;}
 [data-theme="light"] .qr-frame{background:#fff!important;box-shadow:0 2px 12px rgba(37,99,235,.1)!important;}
 [data-theme="light"] .recv-addr{background:#ffffff!important;border-color:rgba(37,99,235,.15)!important;}
 [data-theme="light"] .chain-badge{background:#ffffff!important;border-color:rgba(37,99,235,.15)!important;}
