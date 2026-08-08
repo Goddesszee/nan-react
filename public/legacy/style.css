@@ -1167,6 +1167,9 @@ a:hover{color:var(--text);}
     animation:none !important;isolation:auto !important;transform:none !important;
   }
   .page.active{display:flex !important;}
+  #page-swap{padding-top:14px !important;padding-bottom:20px !important;}
+  #page-bridge{padding-top:14px !important;padding-bottom:20px !important;}
+  #page-cashinout{padding-bottom:20px !important;}
 
   /* Balance amount — must override .page > * font-size */
   #homeBalAmt { font-size: 2.8rem !important; font-weight: 800 !important; color: var(--text) !important; letter-spacing: -.05em !important; }

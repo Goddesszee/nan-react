@@ -4093,9 +4093,9 @@ html,body{background-color:var(--bg);}
       </div>
 
       <div id="cioSwapPane" style="display:none;max-width:460px;margin:0 auto;">
-        <div class="pcard" style="margin-bottom:16px;">
-          <div style="border:1px solid var(--border);border-radius:14px;padding:16px;background:var(--bg);margin-bottom:8px;">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div class="pcard" style="margin-bottom:10px;">
+          <div style="border:1px solid var(--border);border-radius:14px;padding:12px;background:var(--bg);margin-bottom:6px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
               <span style="font-size:.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;">You pay</span>
               <span style="font-size:.78rem;color:var(--text3);">Bal: <span id="cioSwapFromBal">0.00</span></span>
             </div>
@@ -4107,83 +4107,83 @@ html,body{background-color:var(--bg);}
               </select>
             </div>
           </div>
-          <div style="width:40px;height:40px;border-radius:12px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin:-8px auto;position:relative;z-index:2;color:#2563EB;">
+          <div style="width:34px;height:34px;border-radius:10px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin:-6px auto;position:relative;z-index:2;color:#2563EB;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3l4 4 4 4"/><path d="M21 7H3"/><path d="M7 21l-4-4-4-4"/><path d="M3 17h18"/></svg>
           </div>
-          <div style="border:1px solid var(--border);border-radius:14px;padding:16px;background:var(--bg);margin-bottom:14px;">
+          <div style="border:1px solid var(--border);border-radius:14px;padding:12px;background:var(--bg);margin-bottom:8px;">
             <div style="font-size:.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">You receive</div>
             <div style="display:flex;align-items:center;justify-content:space-between;">
               <input id="cioSwapReceive" type="text" placeholder="0.00" disabled style="border:none;background:none;font-family:'Inter',sans-serif;font-size:1.4rem;font-weight:700;width:60%;outline:none;color:var(--text);"/>
               <div style="display:flex;align-items:center;gap:8px;background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.2);border-radius:100px;padding:8px 14px;font-weight:700;font-size:.88rem;color:#2563EB;">NGN</div>
             </div>
           </div>
-          <div style="margin-bottom:14px;">
-            <div style="font-size:.8rem;font-weight:700;margin-bottom:6px;">Send to</div>
+          <div style="margin-bottom:8px;">
+            <div style="font-size:.8rem;font-weight:700;margin-bottom:4px;">Send to</div>
             <select id="cioSwapBank" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-weight:700;">
               <option value="">Loading bank accounts</option>
             </select>
           </div>
-          <div style="background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.2);border-radius:12px;padding:14px 16px;margin-bottom:14px;">
-            <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--text2);padding:5px 0;"><span>Rate</span><span id="cioSwapRate">Loading</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--text2);padding:5px 0;"><span>Network fee</span><span>0.00</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--text2);padding:5px 0;"><span>Service fee</span><span>0.00</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:.95rem;font-weight:700;color:var(--text);padding-top:10px;border-top:1px solid rgba(37,99,235,.2);"><span>Total received</span><span id="cioSwapEstimate">0.00 NGN</span></div>
+          <div style="background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.2);border-radius:12px;padding:10px 14px;margin-bottom:8px;">
+            <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--text2);padding:3px 0;"><span>Rate</span><span id="cioSwapRate">Loading</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--text2);padding:3px 0;"><span>Network fee</span><span>0.00</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--text2);padding:3px 0;"><span>Service fee</span><span>0.00</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.95rem;font-weight:700;color:var(--text);padding-top:6px;border-top:1px solid rgba(37,99,235,.2);"><span>Total received</span><span id="cioSwapEstimate">0.00 NGN</span></div>
           </div>
-          <button class="btn" onclick="cioSwapCreate()" style="width:100%;padding:15px;border-radius:12px;">Review swap</button>
+          <button class="btn" onclick="cioSwapCreate()" style="width:100%;padding:12px;border-radius:12px;">Review swap</button>
           <div id="cioSwapStatus" style="font-size:.78rem;color:var(--text3);margin-top:8px;"></div>
         </div>
       </div>
 
       <div id="cioCashinPane" style="display:none;max-width:460px;margin:0 auto;">
-        <div class="pcard" style="margin-bottom:16px;">
-          <div style="margin-bottom:14px;">
-            <div style="font-size:.8rem;font-weight:700;margin-bottom:6px;">Amount to deposit, Naira</div>
-            <input id="cioCashinAmount" type="text" inputmode="decimal" placeholder="0.00" oninput="cioUpdateCashinPreview()" style="width:100%;padding:14px 16px;border-radius:12px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-family:'Inter',sans-serif;font-size:1.3rem;font-weight:700;"/>
+        <div class="pcard" style="margin-bottom:10px;">
+          <div style="margin-bottom:8px;">
+            <div style="font-size:.8rem;font-weight:700;margin-bottom:4px;">Amount to deposit, Naira</div>
+            <input id="cioCashinAmount" type="text" inputmode="decimal" placeholder="0.00" oninput="cioUpdateCashinPreview()" style="width:100%;padding:11px 14px;border-radius:12px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-family:'Inter',sans-serif;font-size:1.3rem;font-weight:700;"/>
           </div>
-          <div style="margin-bottom:14px;">
-            <div style="font-size:.8rem;font-weight:700;margin-bottom:6px;">Convert to</div>
+          <div style="margin-bottom:8px;">
+            <div style="font-size:.8rem;font-weight:700;margin-bottom:4px;">Convert to</div>
             <select id="cioCashinToken" onchange="cioUpdateCashinPreview()" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-weight:700;">
               <option value="USDC">USDC</option>
               <option value="EURC">EURC</option>
             </select>
           </div>
-          <div style="background:var(--purple-tint, rgba(37,99,235,.06));border:1px solid rgba(37,99,235,.2);border-radius:12px;padding:14px 16px;margin-bottom:14px;">
-            <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--text2);padding:5px 0;"><span>Exchange rate</span><span id="cioCashinRate">Loading</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--text2);padding:5px 0;"><span>Conversion fee</span><span>0.00</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:.95rem;font-weight:700;color:var(--text);padding-top:10px;border-top:1px solid rgba(37,99,235,.2);"><span>Estimated to receive</span><span id="cioCashinEstimate">0.00</span></div>
+          <div style="background:var(--purple-tint, rgba(37,99,235,.06));border:1px solid rgba(37,99,235,.2);border-radius:12px;padding:10px 14px;margin-bottom:8px;">
+            <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--text2);padding:3px 0;"><span>Exchange rate</span><span id="cioCashinRate">Loading</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--text2);padding:3px 0;"><span>Conversion fee</span><span>0.00</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.95rem;font-weight:700;color:var(--text);padding-top:6px;border-top:1px solid rgba(37,99,235,.2);"><span>Estimated to receive</span><span id="cioCashinEstimate">0.00</span></div>
           </div>
-          <button class="btn" onclick="cioCreateCashin()" style="width:100%;padding:15px;border-radius:12px;">Create cash in request</button>
+          <button class="btn" onclick="cioCreateCashin()" style="width:100%;padding:12px;border-radius:12px;">Create cash in request</button>
           <div id="cioCashinStatus" style="font-size:.78rem;color:var(--text3);margin-top:8px;"></div>
         </div>
         <div id="cioCashinFlow" style="display:none;"></div>
       </div>
 
       <div id="cioCashoutPane" style="display:none;max-width:460px;margin:0 auto;">
-        <div class="pcard" style="margin-bottom:16px;">
-          <div style="margin-bottom:14px;">
-            <div style="font-size:.8rem;font-weight:700;margin-bottom:6px;">Withdraw from</div>
+        <div class="pcard" style="margin-bottom:10px;">
+          <div style="margin-bottom:8px;">
+            <div style="font-size:.8rem;font-weight:700;margin-bottom:4px;">Withdraw from</div>
             <select id="cioCashoutToken" onchange="cioUpdateCashoutPreview()" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-weight:700;">
               <option value="USDC">USDC</option>
               <option value="EURC">EURC</option>
             </select>
           </div>
-          <div style="margin-bottom:14px;">
-            <div style="font-size:.8rem;font-weight:700;margin-bottom:6px;">Amount to withdraw</div>
-            <input id="cioCashoutAmount" type="text" inputmode="decimal" placeholder="0.00" oninput="cioUpdateCashoutPreview()" style="width:100%;padding:14px 16px;border-radius:12px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-family:'Inter',sans-serif;font-size:1.3rem;font-weight:700;"/>
+          <div style="margin-bottom:8px;">
+            <div style="font-size:.8rem;font-weight:700;margin-bottom:4px;">Amount to withdraw</div>
+            <input id="cioCashoutAmount" type="text" inputmode="decimal" placeholder="0.00" oninput="cioUpdateCashoutPreview()" style="width:100%;padding:11px 14px;border-radius:12px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-family:'Inter',sans-serif;font-size:1.3rem;font-weight:700;"/>
           </div>
-          <div style="margin-bottom:14px;">
-            <div style="font-size:.8rem;font-weight:700;margin-bottom:6px;">Send to</div>
+          <div style="margin-bottom:8px;">
+            <div style="font-size:.8rem;font-weight:700;margin-bottom:4px;">Send to</div>
             <select id="cioCashoutBank" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-weight:700;">
               <option value="">Loading bank accounts</option>
             </select>
           </div>
-          <div style="background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.2);border-radius:12px;padding:14px 16px;margin-bottom:14px;">
-            <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--text2);padding:5px 0;"><span>Live exchange rate</span><span id="cioCashoutRate">Loading</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--text2);padding:5px 0;"><span>Transaction fee</span><span>0.00</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--text2);padding:5px 0;"><span>Processing time</span><span>Pending manual settlement</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:.95rem;font-weight:700;color:var(--text);padding-top:10px;border-top:1px solid rgba(37,99,235,.2);"><span>Estimated amount, Naira</span><span id="cioCashoutEstimate">0.00</span></div>
+          <div style="background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.2);border-radius:12px;padding:10px 14px;margin-bottom:8px;">
+            <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--text2);padding:3px 0;"><span>Live exchange rate</span><span id="cioCashoutRate">Loading</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--text2);padding:3px 0;"><span>Transaction fee</span><span>0.00</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--text2);padding:3px 0;"><span>Processing time</span><span>Pending manual settlement</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.95rem;font-weight:700;color:var(--text);padding-top:6px;border-top:1px solid rgba(37,99,235,.2);"><span>Estimated amount, Naira</span><span id="cioCashoutEstimate">0.00</span></div>
           </div>
-          <button class="btn" onclick="cioCreateCashout()" style="width:100%;padding:15px;border-radius:12px;">Review and create request</button>
+          <button class="btn" onclick="cioCreateCashout()" style="width:100%;padding:12px;border-radius:12px;">Review and create request</button>
           <div id="cioCashoutStatus" style="font-size:.78rem;color:var(--text3);margin-top:8px;"></div>
         </div>
       </div>
