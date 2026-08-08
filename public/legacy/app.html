@@ -4004,20 +4004,44 @@ html,body{background-color:var(--bg);}
       #page-groupsavings .gstab { padding:9px 16px;border-radius:100px;font-size:.82rem;font-weight:700;border:none;background:transparent;color:var(--text2) !important;cursor:pointer; }
       #page-groupsavings .gstab.active { background:linear-gradient(135deg,#2563EB,#2563EB);color:#fff !important; }
       #page-groupsavings .pcard { background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 20px;box-shadow:0 2px 8px rgba(0,0,0,.05); }
+      #page-groupsavings > div{padding-left:40px !important;padding-right:40px !important;}
+      #page-groupsavings{padding-top:14px !important;}
     </style>
-    <div style="max-width:640px;margin:0 auto;">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
-        <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#2563EB,#2563EB);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
-        <div style="font-size:2.25rem;font-weight:800;color:#2563EB;letter-spacing:-.02em;">Group Savings</div>
+    <div style="width:100%;max-width:100%;margin:0;padding:0 40px;box-sizing:border-box;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:12px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:34px;height:34px;border-radius:10px;background:#2563EB;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
+          <div style="font-size:2.25rem;font-weight:800;color:#2563EB;letter-spacing:-.02em;">Group Savings</div>
+        </div>
+        <button onclick="groupSavingsSwitchTab('create')" style="background:#2563EB;border:none;border-radius:12px;color:#fff;font-family:'Inter',sans-serif;font-weight:700;font-size:.85rem;padding:11px 18px;cursor:pointer;box-shadow:0 4px 12px rgba(37,99,235,.25);white-space:nowrap;">+ New Circle</button>
       </div>
       <div style="font-size:.85rem;color:var(--text2);margin-bottom:18px;">Pool money with people you trust. Take turns. Fully on-chain, no one can skip a round.</div>
 
-      <div style="background:linear-gradient(135deg,#2563EB,#2563EB);border-radius:24px;padding:40px 32px;margin-bottom:20px;color:#fff;text-align:center;">
-        <div style="font-size:1.7rem;font-weight:800;margin-bottom:10px;">Save together, transparently</div>
-        <div style="font-size:.9rem;opacity:.92;max-width:400px;margin:0 auto 22px;">Community savings, powered by stablecoins. No single person ever holds the pool.</div>
-        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
-          <button onclick="groupSavingsSwitchTab('create')" style="padding:13px 24px;border-radius:14px;font-weight:700;font-size:.88rem;border:none;background:#fff;color:#2563EB;cursor:pointer;">Create a Circle</button>
-          <button onclick="groupSavingsSwitchTab('join')" style="padding:13px 24px;border-radius:14px;font-weight:700;font-size:.88rem;border:1.5px solid rgba(255,255,255,.5);background:rgba(255,255,255,.12);color:#fff;cursor:pointer;">Browse Circles</button>
+      <div style="background:linear-gradient(135deg,#1a2b57,#12203f);border-radius:24px;padding:32px;margin-bottom:20px;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:260px;">
+          <div style="font-size:1.6rem;font-weight:800;margin-bottom:8px;">Save together, transparently</div>
+          <div style="font-size:.88rem;opacity:.8;max-width:380px;margin:0 0 20px;">Community savings, powered by stablecoins. No stress, no excuses, everyone gets paid.</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button onclick="groupSavingsSwitchTab('create')" style="padding:12px 22px;border-radius:12px;font-weight:700;font-size:.85rem;border:none;background:#fff;color:#1a2b57;cursor:pointer;">+ Create a Circle</button>
+            <button onclick="groupSavingsSwitchTab('join')" style="padding:12px 22px;border-radius:12px;font-weight:700;font-size:.85rem;border:1.5px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;">Browse Circles</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:28px;flex-wrap:wrap;">
+          <div style="text-align:center;">
+            <div style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
+            <div style="font-size:.78rem;font-weight:700;margin-bottom:2px;">Secure</div>
+            <div style="font-size:.68rem;opacity:.7;max-width:90px;">Smart contracts hold the funds</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <div style="font-size:.78rem;font-weight:700;margin-bottom:2px;">Transparent</div>
+            <div style="font-size:.68rem;opacity:.7;max-width:90px;">Everyone can see contributions &amp; turns</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg></div>
+            <div style="font-size:.78rem;font-weight:700;margin-bottom:2px;">Fair</div>
+            <div style="font-size:.68rem;opacity:.7;max-width:90px;">No one can skip, rules are enforced</div>
+          </div>
         </div>
       </div>
 
@@ -4040,6 +4064,16 @@ html,body{background-color:var(--bg);}
           <div style="font-size:.72rem;color:var(--text3);margin-top:8px;">Every field here is read directly from the deployed contract, nothing is stored separately.</div>
         </div>
         <div id="gsTransparencyResults"></div>
+      </div>
+
+      <div style="display:flex;align-items:flex-start;gap:0;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 20px;margin-top:20px;flex-wrap:wrap;">
+        <div style="font-size:.85rem;font-weight:700;color:var(--text);width:110px;flex-shrink:0;">How it works</div>
+        <div style="flex:1;display:flex;gap:24px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:flex-start;gap:8px;min-width:130px;"><span style="width:20px;height:20px;border-radius:50%;background:rgba(37,99,235,.12);color:#2563EB;font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</span><div><div style="font-size:.8rem;font-weight:700;color:var(--text);">Create or join</div><div style="font-size:.72rem;color:var(--text3);">Start or join a trusted circle</div></div></div>
+          <div style="display:flex;align-items:flex-start;gap:8px;min-width:130px;"><span style="width:20px;height:20px;border-radius:50%;background:rgba(37,99,235,.12);color:#2563EB;font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</span><div><div style="font-size:.8rem;font-weight:700;color:var(--text);">Fund the pool</div><div style="font-size:.72rem;color:var(--text3);">Everyone contributes</div></div></div>
+          <div style="display:flex;align-items:flex-start;gap:8px;min-width:130px;"><span style="width:20px;height:20px;border-radius:50%;background:rgba(37,99,235,.12);color:#2563EB;font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</span><div><div style="font-size:.8rem;font-weight:700;color:var(--text);">Take turns</div><div style="font-size:.72rem;color:var(--text3);">Each member gets paid</div></div></div>
+          <div style="display:flex;align-items:flex-start;gap:8px;min-width:130px;"><span style="width:20px;height:20px;border-radius:50%;background:rgba(37,99,235,.12);color:#2563EB;font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</span><div><div style="font-size:.8rem;font-weight:700;color:var(--text);">Repeat</div><div style="font-size:.72rem;color:var(--text3);">Until the goal is met</div></div></div>
+        </div>
       </div>
     </div>
   </div>
