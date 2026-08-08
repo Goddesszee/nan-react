@@ -1081,7 +1081,7 @@ html,body{background-color:var(--bg);}
       <span style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px;">What your agent can do</span>
       <div style="font-size:12px;color:var(--text3);margin-bottom:16px;">Tap any of these to open a prompt for your AI agent. Nothing here needs a separate form.</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
-        <div onclick="nanAgentChatShortcut('Send a payment to another agent')" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;">
+        <div onclick="goPage('agent-send');" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;">
           <div style="width:36px;height:36px;border-radius:50%;background:rgba(37,99,235,.1);display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg></div>
           <div style="font-size:.83rem;font-weight:700;color:var(--text);margin-top:8px;">Agent-to-agent</div>
           <div style="font-size:.72rem;color:var(--text3);margin-top:2px;">Pay another agent by .arc name</div>
@@ -1101,12 +1101,12 @@ html,body{background-color:var(--bg);}
           <div style="font-size:.83rem;font-weight:700;color:var(--text);margin-top:8px;">Invoicing</div>
           <div style="font-size:.72rem;color:var(--text3);margin-top:2px;">Create and respond between agents</div>
         </div>
-        <div onclick="nanAgentChatShortcut('Add a trusted contact my agent can pay without asking')" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;">
+        <div onclick="goPage('agent-trust');" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;">
           <div style="width:36px;height:36px;border-radius:50%;background:rgba(37,99,235,.1);display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
           <div style="font-size:.83rem;font-weight:700;color:var(--text);margin-top:8px;">Trusted contacts</div>
-          <div style="font-size:.72rem;color:var(--text3);margin-top:2px;">Whitelist agents to pay without asking</div>
+          <div style="font-size:.72rem;color:var(--text3);margin-top:2px;">Auto-earned limits, based on payment history</div>
         </div>
-        <div onclick="nanAgentChatShortcut('Show my agent wallet activity log')" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;">
+        <div onclick="goPage('agent-activity');activityLoad();" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;">
           <div style="width:36px;height:36px;border-radius:50%;background:rgba(37,99,235,.1);display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
           <div style="font-size:.83rem;font-weight:700;color:var(--text);margin-top:8px;">Activity log</div>
           <div style="font-size:.72rem;color:var(--text3);margin-top:2px;">Every transfer, in one place</div>
@@ -5994,6 +5994,95 @@ window.addEventListener('load', function() {
   </div>
 </div>
 
+
+<!-- ══ AGENT-TO-AGENT SEND PAGE ══ -->
+<div class="page" id="page-agent-send">
+  <style>
+    #page-agent-send .pcard { background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.04); }
+    #page-agent-send > div{padding-left:40px !important;padding-right:40px !important;}
+  </style>
+  <div style="width:100%;max-width:100%;margin:0;padding:0 40px;box-sizing:border-box;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+      <button onclick="goPage('agent-wallet')" style="width:34px;height:34px;border-radius:10px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">&larr;</button>
+      <div style="width:34px;height:34px;border-radius:10px;background:#2563EB;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg></div>
+      <div style="font-size:1.5rem;font-weight:800;color:var(--text);letter-spacing:-.01em;">Agent-to-agent</div>
+    </div>
+    <div style="font-size:.8rem;color:var(--text2);margin:0 0 20px 88px;">Pay another agent by wallet address or .arc name, straight from your agent wallet.</div>
+
+    <div style="max-width:420px;">
+      <div class="pcard">
+        <div style="font-size:.72rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Pay to</div>
+        <input id="a2aToInput" type="text" placeholder="Wallet address or .arc name" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;margin-bottom:12px;"/>
+
+        <div style="display:flex;gap:8px;margin-bottom:16px;">
+          <div style="flex:1;">
+            <div style="font-size:.72rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Amount</div>
+            <input id="a2aAmountInput" type="text" inputmode="decimal" placeholder="0.00" style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+          </div>
+          <div style="width:90px;">
+            <div style="font-size:.72rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Token</div>
+            <select id="a2aTokenInput" style="width:100%;padding:10px 8px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:.85rem;font-weight:700;"><option>USDC</option><option>EURC</option></select>
+          </div>
+        </div>
+
+        <button id="a2aSendBtn" onclick="a2aSend()" class="btn" style="width:100%;">Send</button>
+        <div id="a2aSendStatus" style="font-size:.75rem;color:var(--text3);margin-top:8px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TRUSTED CONTACTS PAGE ══ -->
+<div class="page" id="page-agent-trust">
+  <style>
+    #page-agent-trust .pcard { background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.04); }
+    #page-agent-trust > div{padding-left:40px !important;padding-right:40px !important;}
+  </style>
+  <div style="width:100%;max-width:100%;margin:0;padding:0 40px;box-sizing:border-box;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+      <button onclick="goPage('agent-wallet')" style="width:34px;height:34px;border-radius:10px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">&larr;</button>
+      <div style="width:34px;height:34px;border-radius:10px;background:#2563EB;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
+      <div style="font-size:1.5rem;font-weight:800;color:var(--text);letter-spacing:-.01em;">Trusted contacts</div>
+    </div>
+    <div style="font-size:.8rem;color:var(--text2);margin:0 0 20px 88px;">There's no list to manage — trust is earned automatically. Check any counterparty's current tier below.</div>
+
+    <div style="max-width:420px;">
+      <div class="pcard" style="margin-bottom:16px;">
+        <div style="font-size:.72rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Check trust level</div>
+        <div style="display:flex;gap:8px;">
+          <input id="trustCheckInput" type="text" placeholder="Wallet address or .arc name" onkeydown="if(event.key==='Enter')trustCheck()" style="flex:1;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+          <button onclick="trustCheck()" class="btn" style="width:auto;padding:10px 18px;">Check</button>
+        </div>
+      </div>
+      <div id="trustResult"></div>
+      <div style="font-size:.72rem;color:var(--text3);margin-top:14px;line-height:1.5;">New counterparties start at a $5 auto-approve cap. Every 3 successful payments raises it by $20, up to a $500 ceiling — trust alone never removes the safety rail entirely.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ACTIVITY LOG PAGE ══ -->
+<div class="page" id="page-agent-activity">
+  <style>
+    #page-agent-activity .pcard { background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.04); }
+    #page-agent-activity > div{padding-left:40px !important;padding-right:40px !important;}
+  </style>
+  <div style="width:100%;max-width:100%;margin:0;padding:0 40px;box-sizing:border-box;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+      <button onclick="goPage('agent-wallet')" style="width:34px;height:34px;border-radius:10px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">&larr;</button>
+      <div style="width:34px;height:34px;border-radius:10px;background:#2563EB;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+      <div style="font-size:1.5rem;font-weight:800;color:var(--text);letter-spacing:-.01em;">Activity log</div>
+    </div>
+    <div style="font-size:.8rem;color:var(--text2);margin:0 0 20px 88px;">Every transfer your agent wallet has made, pulled directly from Circle.</div>
+
+    <div style="max-width:640px;">
+      <div class="pcard">
+        <div id="activityList" style="display:flex;flex-direction:column;gap:10px;">
+          <div style="text-align:center;padding:32px 16px;font-size:.85rem;color:var(--text3);">Connect your wallet to see activity.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ══ AGENT ESCROW PAGE ══ -->
 <div class="page" id="page-agent-escrow">

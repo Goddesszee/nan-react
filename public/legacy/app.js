@@ -11689,6 +11689,131 @@ async function invoiceRespond(invoiceId, honor){
   }catch(err){ toast(err.message.slice(0,150), 'error', 4500); }
 }
 
+// ── Agent-to-agent direct send ───────────────────────────────────────────
+async function a2aSend(){
+  const toRaw = document.getElementById('a2aToInput')?.value.trim();
+  const amount = parseFloat(document.getElementById('a2aAmountInput')?.value);
+  const token = document.getElementById('a2aTokenInput')?.value || 'USDC';
+  const statusEl = document.getElementById('a2aSendStatus');
+  const btn = document.getElementById('a2aSendBtn');
+  if(!agentWalletAddr){ if(statusEl) statusEl.textContent = 'Connect your agent wallet first.'; return; }
+  if(!toRaw){ if(statusEl) statusEl.textContent = 'Enter a recipient.'; return; }
+  if(!amount || amount<=0){ if(statusEl) statusEl.textContent = 'Enter a valid amount.'; return; }
+  if(btn){ btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Sending…'; }
+  if(statusEl) statusEl.textContent = '';
+  try{
+    let toAgentAddress = null, toMainAddress = null;
+    if(/^0x[a-fA-F0-9]{40}$/.test(toRaw)){
+      toMainAddress = toRaw;
+    } else {
+      const lr = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'lookup-by-arc', arcName: toRaw })
+      });
+      const ld = await lr.json();
+      if(!ld.success || (!ld.agentWalletAddress && !ld.mainAddress)) throw new Error(`Couldn't resolve "${toRaw}"`);
+      toAgentAddress = ld.agentWalletAddress || null;
+      toMainAddress = ld.mainAddress || null;
+    }
+    const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'a2a-transfer', agentWalletAddress: agentWalletAddr, toAgentAddress, toMainAddress, amount, token })
+    });
+    const d = await r.json();
+    if(!d.success){
+      if(d.policyViolation) throw new Error(d.error + (d.tierCap ? ` (cap: $${d.tierCap})` : ''));
+      throw new Error(d.error || 'Send failed');
+    }
+    toast('✓ ' + (d.message || 'Sent'), 'success', 4000);
+    document.getElementById('a2aToInput').value = '';
+    document.getElementById('a2aAmountInput').value = '';
+  }catch(err){
+    if(statusEl) statusEl.textContent = err.message.slice(0,150);
+  }
+  if(btn){ btn.disabled = false; btn.textContent = 'Send'; }
+}
+
+// ── Trust check ───────────────────────────────────────────────────────────
+async function trustCheck(){
+  const raw = document.getElementById('trustCheckInput')?.value.trim();
+  const resultEl = document.getElementById('trustResult');
+  if(!resultEl) return;
+  if(!agentWalletAddr){ resultEl.innerHTML = '<div style="font-size:.8rem;color:var(--text3);">Connect your agent wallet first.</div>'; return; }
+  if(!raw){ return; }
+  resultEl.innerHTML = '<div style="text-align:center;padding:16px 0;"><span class="spinner"></span></div>';
+  try{
+    let counterpartyAddress = raw;
+    if(!/^0x[a-fA-F0-9]{40}$/.test(raw)){
+      const lr = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'lookup-by-arc', arcName: raw })
+      });
+      const ld = await lr.json();
+      if(!ld.success || (!ld.agentWalletAddress && !ld.mainAddress)) throw new Error(`Couldn't resolve "${raw}"`);
+      counterpartyAddress = ld.agentWalletAddress || ld.mainAddress;
+    }
+    const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'trust', agentWalletAddress: agentWalletAddr, counterpartyAddress })
+    });
+    const d = await r.json();
+    if(!d.success) throw new Error(d.error || 'Could not check trust');
+    const t = d.trust;
+    const isNew = t.successCount === 0;
+    resultEl.innerHTML = `<div class="pcard">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="font-size:.78rem;color:var(--text3);font-family:'JetBrains Mono',monospace;">${short(counterpartyAddress)}</div>
+        <span style="font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:100px;background:${isNew?'rgba(245,158,11,.1)':'rgba(34,197,94,.1)'};color:${isNew?'#F59E0B':'var(--success)'};">${isNew?'New':'Established'}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:.85rem;"><span style="color:var(--text2);">Auto-approve cap</span><span style="font-weight:700;color:#2563EB;">$${d.autoApproveCap}</span></div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:.85rem;"><span style="color:var(--text2);">Successful payments</span><span style="font-weight:700;color:var(--text);">${t.successCount}</span></div>
+      <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:.85rem;"><span style="color:var(--text2);">Total volume</span><span style="font-weight:700;color:var(--text);">$${t.totalVolume.toFixed(2)}</span></div>
+      ${t.firstSeen ? `<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:.85rem;"><span style="color:var(--text2);">First payment</span><span style="color:var(--text3);">${new Date(t.firstSeen).toLocaleDateString()}</span></div>` : ''}
+    </div>`;
+  }catch(err){
+    resultEl.innerHTML = `<div style="text-align:center;padding:16px 0;color:var(--danger);font-size:.8rem;">${err.message.slice(0,150)}</div>`;
+  }
+}
+
+// ── Activity log ──────────────────────────────────────────────────────────
+async function activityLoad(){
+  const el = document.getElementById('activityList');
+  if(!el) return;
+  if(!userAddr){
+    el.innerHTML = '<div style="text-align:center;padding:32px 16px;font-size:.85rem;color:var(--text3);">Connect your wallet to see activity.</div>';
+    return;
+  }
+  el.innerHTML = '<div style="text-align:center;padding:24px 0;"><span class="spinner"></span></div>';
+  try{
+    const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'history', userAddress: userAddr })
+    });
+    const d = await r.json();
+    if(!d.success) throw new Error(d.error || 'Could not load activity');
+    const txs = d.transactions || [];
+    if(!txs.length){
+      el.innerHTML = '<div style="text-align:center;padding:32px 16px;"><div style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:4px;">No activity yet</div><div style="font-size:.78rem;color:var(--text3);">Transfers your agent wallet makes will show up here.</div></div>';
+      return;
+    }
+    el.innerHTML = txs.map(tx => {
+      const amt = tx.amounts?.[0] || tx.amount || '0';
+      const token = tx.tokenId ? (tx.tokenSymbol || '') : (tx.token?.symbol || '');
+      const isOutbound = tx.transactionType === 'OUTBOUND';
+      const dateStr = tx.createDate ? new Date(tx.createDate).toLocaleDateString(undefined,{day:'2-digit',month:'short',year:'numeric'}) : '';
+      return `<div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);padding:12px 0;">
+        <div style="min-width:0;">
+          <div style="font-size:.85rem;font-weight:700;color:var(--text);">${isOutbound?'Sent':'Received'} ${token}</div>
+          <div style="font-size:.72rem;color:var(--text3);">${dateStr} &middot; ${tx.state||''}</div>
+        </div>
+        <div style="font-size:.85rem;font-weight:700;color:${isOutbound?'var(--text)':'var(--success)'};font-family:'JetBrains Mono',monospace;flex-shrink:0;">${isOutbound?'-':'+'}${amt}</div>
+      </div>`;
+    }).join('');
+  }catch(err){
+    el.innerHTML = `<div style="text-align:center;padding:20px 0;color:var(--danger);font-size:.8rem;">${err.message.slice(0,150)}</div>`;
+  }
+}
+
 function agentPageRefresh() {
   const connected = !!agentWalletAddr;
   const s = (id, show) => {

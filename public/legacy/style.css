@@ -1257,7 +1257,10 @@ a:hover{color:var(--text);}
   #desktopNav{width:240px;}
   .page{left:0 !important;}
   .page > *{max-width:600px !important;}
-  #page-career-agent > *, #page-supplier-agent > *, #page-marketplace > *, #page-gigs > *, #page-cashinout > *, #page-payreq > *, #page-groupsavings > *, #page-payreq-new > *, #page-payreq-view > *, #page-bulk > *, #page-agent-ai > *, #page-agent-escrow > *, #page-history > *, #page-agent-recurring > *, #page-agent-invoice > * { max-width: 100% !important; }
+  #page-career-agent > *, #page-supplier-agent > *, #page-marketplace > *, #page-gigs > *, #page-cashinout > *, #page-payreq > *, #page-groupsavings > *, #page-payreq-new > *, #page-payreq-view > *, #page-bulk > *, #page-agent-ai > *, #page-agent-escrow > *, #page-history > *, #page-agent-recurring > *, #page-agent-invoice > *, #page-agent-send > *, #page-agent-trust > *, #page-agent-activity > * { max-width: 100% !important; }
+  #page-agent-send{padding-top:14px !important;}
+  #page-agent-trust{padding-top:14px !important;}
+  #page-agent-activity{padding-top:14px !important;}
   #page-agent-invoice{padding-top:14px !important;}
   #page-agent-recurring{padding-top:14px !important;}
   #page-history{padding-top:14px !important;}
