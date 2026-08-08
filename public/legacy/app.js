@@ -11290,9 +11290,9 @@ function updateHomeWithAgentBalance(){
 // ── Page state ───────────────────────────────────────────────────────────────
 async function nanRefreshAgentLimits(){
   if(!agentWalletAddr) return;
-  const perTxEl=document.getElementById('agentLimitPerTx');
-  const dailyEl=document.getElementById('agentLimitDaily');
-  const weeklyEl=document.getElementById('agentLimitWeekly');
+  const perTxEl=document.getElementById('agentLimitPerTxInput');
+  const dailyEl=document.getElementById('agentLimitDailyInput');
+  const weeklyEl=document.getElementById('agentLimitWeeklyInput');
   if(!perTxEl && !dailyEl && !weeklyEl) return;
   try{
     const r=await fetch('https://nan-production.up.railway.app/api/agent-wallets',{
@@ -11302,11 +11302,59 @@ async function nanRefreshAgentLimits(){
     });
     const d=await r.json();
     const p=d.success?d.policy:null;
-    if(perTxEl) perTxEl.textContent = p?.perTx!=null ? '$'+p.perTx : 'Not set';
-    if(dailyEl) dailyEl.textContent = p?.daily!=null ? '$'+p.daily : 'Not set';
-    if(weeklyEl) weeklyEl.textContent = p?.weekly!=null ? '$'+p.weekly : 'Not set';
+    if(perTxEl) perTxEl.value = p?.perTx!=null ? p.perTx : '';
+    if(dailyEl) dailyEl.value = p?.daily!=null ? p.daily : '';
+    if(weeklyEl) weeklyEl.value = p?.weekly!=null ? p.weekly : '';
   }catch(e){
     console.log('[agent] limits fetch error:', e.message);
+  }
+}
+async function nanSaveAgentLimits(){
+  const statusEl = document.getElementById('agentLimitStatus');
+  const btn = document.getElementById('agentLimitSaveBtn');
+  if(!agentWalletAddr){ if(statusEl) statusEl.textContent = 'Connect your agent wallet first.'; return; }
+  const perTxVal = document.getElementById('agentLimitPerTxInput')?.value;
+  const dailyVal = document.getElementById('agentLimitDailyInput')?.value;
+  const weeklyVal = document.getElementById('agentLimitWeeklyInput')?.value;
+  const perTx = perTxVal !== '' ? parseFloat(perTxVal) : null;
+  const daily = dailyVal !== '' ? parseFloat(dailyVal) : null;
+  const weekly = weeklyVal !== '' ? parseFloat(weeklyVal) : null;
+  if(perTx==null && daily==null && weekly==null){
+    if(statusEl) statusEl.textContent = 'Set at least one limit before saving.';
+    return;
+  }
+  if(btn){ btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Saving…'; }
+  if(statusEl) statusEl.textContent = '';
+  try{
+    const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'set-policy', walletAddress: agentWalletAddr, perTx, daily, weekly })
+    });
+    const d = await r.json();
+    if(!d.success) throw new Error(d.error || 'Could not save limits');
+    toast('✓ Spending limits saved', 'success', 3000);
+    nanRefreshAgentLimits();
+  }catch(err){
+    if(statusEl) statusEl.textContent = err.message.slice(0,150);
+  }
+  if(btn){ btn.disabled = false; btn.textContent = 'Save limits'; }
+}
+async function nanRemoveAgentLimits(){
+  const statusEl = document.getElementById('agentLimitStatus');
+  if(!agentWalletAddr){ if(statusEl) statusEl.textContent = 'Connect your agent wallet first.'; return; }
+  try{
+    const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'clear-policy', walletAddress: agentWalletAddr })
+    });
+    const d = await r.json();
+    if(!d.success) throw new Error(d.error || 'Could not remove limits');
+    toast('Spending limits removed', 'info', 3000);
+    ['agentLimitPerTxInput','agentLimitDailyInput','agentLimitWeeklyInput'].forEach(id=>{
+      const el = document.getElementById(id); if(el) el.value = '';
+    });
+  }catch(err){
+    if(statusEl) statusEl.textContent = err.message.slice(0,150);
   }
 }
 
@@ -11458,6 +11506,15 @@ function recurSetInterval(seconds, el){
   recurIntervalSeconds = seconds;
   document.querySelectorAll('#page-agent-recurring .ibtn').forEach(b => b.classList.remove('active'));
   if(el) el.classList.add('active');
+  const customInput = document.getElementById('recurCustomInput');
+  if(customInput) customInput.value = '';
+}
+function recurSetCustom(){
+  const n = parseFloat(document.getElementById('recurCustomInput')?.value);
+  const unit = parseInt(document.getElementById('recurCustomUnit')?.value) || 86400;
+  if(!n || n<=0) return;
+  recurIntervalSeconds = Math.round(n * unit);
+  document.querySelectorAll('#page-agent-recurring .ibtn').forEach(b => b.classList.remove('active'));
 }
 function recurFormatInterval(seconds){
   if(seconds < 3600) return Math.round(seconds/60) + ' min';
