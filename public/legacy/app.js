@@ -11422,7 +11422,8 @@ async function escrowLoadList(){
       body: JSON.stringify({ action:'escrow-list', userAddress: userAddr, agentWalletAddress: agentWalletAddr, direction: escrowTab })
     });
     const d = await r.json();
-    const escrows = d.success ? (d.escrows||[]) : [];
+    if(!d.success) throw new Error(d.error || 'Could not load escrows');
+    const escrows = d.escrows||[];
     if(!escrows.length){
       el.innerHTML = `<div style="text-align:center;padding:32px 16px;"><div style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:4px;">No ${escrowTab} escrows yet</div><div style="font-size:.78rem;color:var(--text3);">${escrowTab==='sent' ? 'Lock funds on the left to create one.' : 'Escrows sent to you will show up here.'}</div></div>`;
       return;
@@ -11577,7 +11578,8 @@ async function recurLoadList(){
       body: JSON.stringify({ action:'recurring-list', userAddress: userAddr, agentWalletAddress: agentWalletAddr })
     });
     const d = await r.json();
-    const schedules = d.success ? (d.schedules||[]) : [];
+    if(!d.success) throw new Error(d.error || 'Could not load schedules');
+    const schedules = d.schedules||[];
     if(!schedules.length){
       el.innerHTML = '<div style="text-align:center;padding:32px 16px;"><div style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:4px;">No schedules yet</div><div style="font-size:.78rem;color:var(--text3);">Set one up on the left — it runs on its own from there.</div></div>';
       return;
@@ -11692,7 +11694,8 @@ async function invoiceLoadList(){
       body: JSON.stringify({ action:'invoice-list', userAddress: userAddr, agentWalletAddress: agentWalletAddr, direction: invoiceTab })
     });
     const d = await r.json();
-    const invoices = d.success ? (d.invoices||[]) : [];
+    if(!d.success) throw new Error(d.error || 'Could not load invoices');
+    const invoices = d.invoices||[];
     if(!invoices.length){
       el.innerHTML = `<div style="text-align:center;padding:32px 16px;"><div style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:4px;">No ${invoiceTab} invoices</div><div style="font-size:.78rem;color:var(--text3);">${invoiceTab==='incoming' ? 'Invoices billed to you will show up here.' : 'Send one on the left to bill another agent.'}</div></div>`;
       return;
