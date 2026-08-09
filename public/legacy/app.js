@@ -12455,8 +12455,10 @@ async function nanopayDiscover(){
         <button onclick='nanopayDiscoveredPay(${i})' style="width:100%;padding:9px;border-radius:9px;border:1px solid rgba(37,99,235,.3);background:rgba(37,99,235,.08);color:#2563EB;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;">Pay &amp; call</button>
       </div>`).join('')
     }</div>
-    ${hiddenCount > 0 ? `<div style="font-size:.7rem;color:var(--text3);margin-top:12px;">${hiddenCount} other result${hiddenCount>1?'s':''} hidden — needed extra info in the URL this page doesn't collect yet.</div>` : ''}
-    <div style="font-size:.7rem;color:var(--text3);margin-top:14px;line-height:1.5;">Most discovered services run on BASE or Polygon, not Arc Testnet — paying one from here is untested against NAN's current Arc-focused setup and may not settle correctly. Worth trying, but don't be surprised if a discovered service behaves differently than Leakage.</div>`;
+    <div style="margin-top:14px;padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:var(--bg);">
+      ${hiddenCount > 0 ? `<div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">${hiddenCount} other result${hiddenCount>1?'s':''} hidden — needed extra info in the URL this page doesn't collect yet.</div>` : ''}
+      <div style="font-size:.72rem;color:var(--text3);line-height:1.5;">Signing and payment are confirmed working end-to-end (verified via Leakage) — the one thing still untested is a service running on BASE or Polygon specifically, since Arc is the only chain paid here so far. Worth trying; if a discovered service behaves differently than Leakage did, that's the one variable left to check.</div>
+    </div>`;
     window._nanopayDiscovered = services;
   }catch(err){
     resultsEl.innerHTML = `<div style="text-align:center;padding:20px 0;color:var(--danger);font-size:.8rem;">${err.message.slice(0,150)}</div>`;
