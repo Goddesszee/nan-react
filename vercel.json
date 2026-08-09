@@ -4,19 +4,55 @@
   "framework": "vite",
   "headers": [
     {
-      "source": "/legacy/(.*)",
+      "source": "/legacy/app.js",
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
+          "value": "public, max-age=3600, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/legacy/ui.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/legacy/style.css",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/legacy/app.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, must-revalidate"
         },
         {
           "key": "Pragma",
           "value": "no-cache"
+        }
+      ]
+    },
+    {
+      "source": "/legacy/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, must-revalidate"
         },
         {
-          "key": "Expires",
-          "value": "0"
+          "key": "Pragma",
+          "value": "no-cache"
         }
       ]
     },
