@@ -697,6 +697,7 @@ function syncSettingsSwitches(){
     notifSwitch.style.background = notifOn ? '#2563EB' : 'var(--surface)';
     notifKnob.style.left = notifOn ? '22px' : '2px';
   }
+  loadEmailNotifyPrefs();
 }
 async function toggleNotificationsSetting(){
   const notifOn = ('Notification' in window) && Notification.permission === 'granted';
@@ -715,6 +716,56 @@ async function toggleNotificationsSetting(){
     }
   }
   syncSettingsSwitches();
+}
+
+// ── Email notification preferences (per-category, backed by agent-wallets API) ──
+const EMAIL_NOTIF_CATEGORIES = ['transfers','invoices','escrow','recurring'];
+let _emailNotifPrefs = { transfers:true, invoices:true, escrow:true, recurring:true };
+function _emailNotifIds(cat){
+  const cap = cat.charAt(0).toUpperCase() + cat.slice(1);
+  return { sw: 'emailNotif'+cap+'Switch', knob: 'emailNotif'+cap+'Knob' };
+}
+function renderEmailNotifSwitches(){
+  EMAIL_NOTIF_CATEGORIES.forEach(cat=>{
+    const { sw, knob } = _emailNotifIds(cat);
+    const swEl = document.getElementById(sw), knobEl = document.getElementById(knob);
+    if(!swEl || !knobEl) return;
+    const on = _emailNotifPrefs[cat] !== false;
+    swEl.style.background = on ? '#2563EB' : 'var(--surface)';
+    knobEl.style.left = on ? '22px' : '2px';
+  });
+}
+async function loadEmailNotifyPrefs(){
+  if(!userAddr) return;
+  try{
+    const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'get-notify-prefs',userAddress:userAddr})
+    });
+    const d = await r.json();
+    if(d.success && d.prefs) _emailNotifPrefs = d.prefs;
+  }catch(e){}
+  renderEmailNotifSwitches();
+}
+async function toggleEmailNotifyCategory(cat){
+  if(!userAddr){ toast('Connect your wallet first','error',3000); return; }
+  const next = !( _emailNotifPrefs[cat] !== false );
+  _emailNotifPrefs[cat] = next;
+  renderEmailNotifSwitches();
+  try{
+    const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'set-notify-prefs',userAddress:userAddr,prefs:{[cat]:next}})
+    });
+    const d = await r.json();
+    if(d.success && d.prefs) _emailNotifPrefs = d.prefs;
+    renderEmailNotifSwitches();
+  }catch(e){
+    // revert on failure
+    _emailNotifPrefs[cat] = !next;
+    renderEmailNotifSwitches();
+    toast('Could not update notification setting','error',3000);
+  }
 }
 function updateTopBar(connected){
   const bar=document.getElementById('globalTopBar');
