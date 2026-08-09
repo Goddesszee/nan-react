@@ -6401,6 +6401,30 @@ async function sendAgentMsg(text){
   const borrowPos=parseFloat(document.getElementById('lendBorrowed')?.textContent||'0');
   const myNames=arcNames.filter(n=>n.owner===userAddr).map(n=>n.name+'.arc').join(', ')||'none';
   const pendingOrders=nanOrders.length;
+  // agentWalletAddr is normally only populated by an explicit user action
+  // (visiting Agent Wallet, sending, etc). A fresh chat session that hasn't
+  // triggered any of those yet would tell the AI "Not connected" even when
+  // a real, funded agent wallet already exists server-side — this happened
+  // in practice (AI said "you haven't set up your Agent Wallet" right after
+  // a successful agent-send earlier the same day, just in a fresh tab).
+  // get-or-create is idempotent — cheap read if it already exists, so it's
+  // safe to call unconditionally here rather than trusting stale client state.
+  if(!agentWalletAddr && userAddr){
+    try{
+      const _r=await fetch('https://nan-production.up.railway.app/api/agent-wallets',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action:'get-or-create',userAddress:userAddr}),
+        signal:AbortSignal.timeout(8000)
+      });
+      const _d=await _r.json();
+      if(_d.success&&_d.wallet?.walletAddress){
+        agentWalletAddr=_d.wallet.walletAddress;
+        window.agentWalletAddr=agentWalletAddr;
+        if(_d.balance) agentWalletBalance=`${_d.balance.USDC} USDC`;
+        localStorage.setItem('nan_agent_addr',agentWalletAddr);
+      }
+    }catch(e){console.warn('[agent-chat] agent wallet resolve failed:',e.message);}
+  }
   const context=`You are NAN AI ✦ — a smart DeFi assistant inside NAN Wallet on Arc Testnet. Be concise, friendly, direct. No markdown.
 
 LIVE WALLET DATA (use these exact numbers):
@@ -6487,6 +6511,7 @@ RULES:
 - Use agent-a2a when user wants to pay ANOTHER person's agent wallet specifically
 - Use agent-set-policy when user wants to CHANGE/CREATE a limit: "set limit", "set spending limit to X", "max per tx", "daily limit of X"
 - Use agent-get-policy when user is ASKING/CHECKING an existing limit: "what's my spending limit", "what are my limits", "show my policy", "spending rules" — any question form about limits, even if it contains the word "spending", is a GET not a SET
+- NEVER claim the agent wallet "isn't set up" or state what its limits/balance/status are from assumption — the Status/Balance lines above may be stale from before this message; always use the matching agent-* action to get a live answer instead of guessing
 - Use agent-clear-policy when user says "remove limits", "clear policy", "no limits" ("send to their agent", "agent to agent", "a2a")
 - Use regular send/swap for main wallet actions
 - The ACTION block is COMPLETELY INVISIBLE to user — NEVER write ACTION or JSON in your text
