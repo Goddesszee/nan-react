@@ -242,6 +242,8 @@ body::after{display:none;}
 /* Ã¢ââ¬Ã¢ââ¬ Send / Forms Ã¢ââ¬Ã¢ââ¬ */
 .send-tabs{display:flex;gap:6px;margin-bottom:10px;}
 .stab{flex:1;padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);background:transparent;color:var(--text3);font-family:'Inter',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:4px;}
+.mode-switch-btn{border:none;border-radius:10px;background:transparent;color:var(--text3);font-family:'Inter',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.mode-switch-btn.active{background:#2563EB;color:#fff;}
 .stab.active{background:var(--card2);border-color:var(--accent);color:var(--accent3);}
 .field{margin-bottom:8px;}
 .flbl{display:block;font-family:'Inter var','Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:1rem;color:var(--text2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;}
