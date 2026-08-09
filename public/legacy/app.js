@@ -11937,7 +11937,7 @@ async function invoiceCreate(){
     });
     const d = await r.json();
     if(!d.success) throw new Error(d.error || 'Could not send invoice');
-    const evalMsg = d.autoEval?.autoHonored ? ' — within their trust tier, likely to auto-honor' : '';
+    const evalMsg = d.autoEval?.autoHonored ? ' — within their trust tier, paid automatically ✓' : '';
     toast('✓ Invoice sent' + evalMsg, 'success', 4000);
     document.getElementById('invoiceFromInput').value = '';
     document.getElementById('invoiceAmountInput').value = '';
@@ -13253,7 +13253,7 @@ async function _a2aInvoiceCreate() {
     const d = await r.json();
     if (!d.success) { out.innerHTML = `<div style="color:#2563EB;font-size:.78rem;">${d.error||'Failed'}</div>`; return; }
     out.innerHTML = d.autoEval?.autoHonored
-      ? `<div style="color:#2563EB;font-size:.78rem;">✅ Request sent — within their trust tier, likely to auto-honor</div>`
+      ? `<div style="color:var(--success);font-size:.78rem;">✅ Paid automatically — within their trust tier and spending policy</div>`
       : `<div style="color:#2563EB;font-size:.78rem;">⏳ Request sent — pending manual review (${d.autoEval?.reason||'not auto-evaluated'})</div>`;
     document.getElementById('a2aInvFrom').value=''; document.getElementById('a2aInvAmt').value=''; document.getElementById('a2aInvReason').value='';
   } catch(e) { out.innerHTML = `<div style="color:#2563EB;font-size:.78rem;">${e.message}</div>`; }
