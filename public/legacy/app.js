@@ -11100,24 +11100,35 @@ function showAgentReconnectPrompt(){
   // Don't spam — only show once per session
   if(window._reconnectPromptShown) return;
   window._reconnectPromptShown = true;
-  // Show a non-intrusive banner at top of agent panel
+  // Show a non-intrusive banner at top of agent panel, if it happens to be open
   const panel = document.getElementById('agentPanel');
-  if(!panel) return;
-  const existing = document.getElementById('agentReconnectBanner');
-  if(existing) return;
-  const banner = document.createElement('div');
-  banner.id = 'agentReconnectBanner';
-  banner.style.cssText = 'background:rgba(37,99,235,.12);border:1px solid rgba(37,99,235,.3);border-radius:10px;padding:10px 14px;margin:8px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px;';
-  banner.innerHTML = `
-    <span style="font-size:.8rem;color:var(--text2);">⚡ Agent session expired</span>
-    <button onclick="reconnectAgentFromBanner()" style="padding:6px 14px;border-radius:8px;background:#2563EB;border:none;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;">Reconnect</button>
-  `;
-  // Insert at top of agent messages
-  const msgs = document.getElementById('agentMessages');
-  if(msgs) msgs.insertBefore(banner, msgs.firstChild);
+  const existingBanner = document.getElementById('agentReconnectBanner');
+  if(panel && !existingBanner){
+    const banner = document.createElement('div');
+    banner.id = 'agentReconnectBanner';
+    banner.style.cssText = 'background:rgba(37,99,235,.12);border:1px solid rgba(37,99,235,.3);border-radius:10px;padding:10px 14px;margin:8px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px;';
+    banner.innerHTML = `
+      <span style="font-size:.8rem;color:var(--text2);">⚡ Agent session expired</span>
+      <button onclick="reconnectAgentFromBanner()" style="padding:6px 14px;border-radius:8px;background:#2563EB;border:none;color:#fff;font-size:.8rem;font-weight:700;cursor:pointer;">Reconnect</button>
+    `;
+    // Insert at top of agent messages
+    const msgs = document.getElementById('agentMessages');
+    if(msgs) msgs.insertBefore(banner, msgs.firstChild);
+  }
   // Also show push notification if available
   if(typeof sendPushNotification==='function') sendPushNotification('Agent session expired','Tap to reconnect your agent wallet');
-  toast('⚡ Agent wallet session expired — tap Reconnect in the AI chat','warning',8000);
+  // The toast itself is the reconnect entry point, since the banner above
+  // is only visible if the AI chat panel happens to already be open. Tapping
+  // the toast anywhere reconnects directly, no need to hunt for the chat.
+  toast('⚡ Agent wallet session expired. Tap here to reconnect.','warning',10000);
+  const toastEl = document.getElementById('toast');
+  if(toastEl){
+    toastEl.style.cursor = 'pointer';
+    toastEl.onclick = function(){
+      this.classList.remove('show');
+      reconnectAgentFromBanner();
+    };
+  }
 }
 
 async function reconnectAgentFromBanner(){
