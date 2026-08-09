@@ -12263,6 +12263,7 @@ async function nanopaySignTest(){
         <div style="font-size:.85rem;font-weight:700;color:var(--danger);margin-bottom:6px;">Signing failed</div>
         <div style="font-size:.78rem;color:var(--text2);word-break:break-word;">${(d.error||'Unknown error').slice(0,300)}</div>
         ${d.rawResponseShape ? `<div style="font-size:.7rem;color:var(--text3);margin-top:8px;font-family:'JetBrains Mono',monospace;word-break:break-word;">${d.rawResponseShape}</div>` : ''}
+        ${d.circleErrorDetail ? `<div style="font-size:.7rem;color:var(--text3);margin-top:8px;font-family:'JetBrains Mono',monospace;word-break:break-word;white-space:pre-wrap;">${d.circleErrorDetail}</div>` : ''}
       </div>`);
     }
   }catch(err){
