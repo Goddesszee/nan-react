@@ -12242,6 +12242,34 @@ async function nanopayBtcTest(){
   }
   if(btn){ btn.disabled = false; btn.textContent = 'Pay & call'; }
 }
+async function nanopaySignTest(){
+  const btn = document.getElementById('nanopaySignTestBtn');
+  if(!agentWalletAddr){ toast('Connect your agent wallet first.', 'error', 3000); return; }
+  if(btn){ btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>'; }
+  nanopaySpinner();
+  try{
+    const r = await fetch(AGENT_API, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'test-agent-signing', userAddress: userAddr })
+    });
+    const d = await r.json();
+    if(d.success){
+      nanopayShowResult(`<div style="border:1px solid rgba(34,197,94,.25);background:rgba(34,197,94,.06);border-radius:12px;padding:14px;">
+        <div style="font-size:.85rem;font-weight:700;color:var(--success);margin-bottom:6px;">✓ Signing works</div>
+        <div style="font-size:.78rem;color:var(--text2);line-height:1.6;">Your Agent Wallet (${d.walletAddress}) successfully signed a real EIP-712 message via Circle's API. No payment was made — this only tests the signature step. Signature: ${d.signature} (${d.signatureLength} chars)</div>
+      </div>`);
+    } else {
+      nanopayShowResult(`<div style="border:1px solid rgba(220,38,38,.25);background:rgba(220,38,38,.06);border-radius:12px;padding:14px;">
+        <div style="font-size:.85rem;font-weight:700;color:var(--danger);margin-bottom:6px;">Signing failed</div>
+        <div style="font-size:.78rem;color:var(--text2);word-break:break-word;">${(d.error||'Unknown error').slice(0,300)}</div>
+        ${d.rawResponseShape ? `<div style="font-size:.7rem;color:var(--text3);margin-top:8px;font-family:'JetBrains Mono',monospace;word-break:break-word;">${d.rawResponseShape}</div>` : ''}
+      </div>`);
+    }
+  }catch(err){
+    nanopayShowResult(`<div style="color:var(--danger);font-size:.8rem;padding:16px 0;text-align:center;">${err.message.slice(0,150)}</div>`);
+  }
+  if(btn){ btn.disabled = false; btn.textContent = 'Run signing test'; }
+}
 async function nanopayCustomPay(){
   const url = document.getElementById('nanopayUrlInput')?.value.trim();
   const method = document.getElementById('nanopayMethodInput')?.value || 'GET';
