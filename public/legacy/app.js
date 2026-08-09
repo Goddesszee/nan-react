@@ -4940,7 +4940,7 @@ function schedulePayroll(){
       label:r.name||r.addr.slice(0,10),
     });
   });
-  toast('✓ Monthly payroll scheduled for '+new Date(nextRun).toLocaleDateString()+' — '+bulkRecipients.length+' recipients','success',6000);
+  toast('Monthly payroll scheduled for '+new Date(nextRun).toLocaleDateString()+' — '+bulkRecipients.length+' recipients','success',6000);
 }
 
 function getNext1st(){
@@ -5008,7 +5008,7 @@ function downloadPayrollReceipt(){
   link.download = 'nan-payroll-'+Date.now()+'.png';
   link.href = canvas.toDataURL('image/png');
   link.click();
-  toast('✓ Payroll receipt downloaded!','success',3000);
+  toast('Payroll receipt downloaded!','success',3000);
 }
 
 async function doBulkSend(){
@@ -5565,7 +5565,7 @@ function schedulePayrollWithFreq(){
       label: r.name||r.addr.slice(0,10),
     });
   });
-  toast(`✓ ${freqLabels[payrollFreq]} payroll scheduled — ${bulkRecipients.length} recipients`, 'success', 5000);
+  toast(`${freqLabels[payrollFreq]} payroll scheduled — ${bulkRecipients.length} recipients`, 'success', 5000);
 }
 
 async function payrollLoadReports(){
