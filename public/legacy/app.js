@@ -1620,7 +1620,7 @@ async function payNgnInUsdc(ngnAmount, btn){
     const res = await fetch('https://nan-production.up.railway.app/api/circle-wallets', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'transfer', walletId:circleWalletId, walletAddress:circleWalletAddress, destinationAddress:NAN_TREASURY_ADDR, amount:usdcAmount.toString(), tokenSymbol:'USDC' })
+      body: JSON.stringify({ action:'transfer', walletId:circleWalletId, walletAddress:circleWalletAddress, email:otpEmail, destinationAddress:NAN_TREASURY_ADDR, amount:usdcAmount.toString(), tokenSymbol:'USDC' })
     });
     const data = await res.json();
     if(!data.success) throw new Error(data.error || 'USDC payment failed');
@@ -1890,7 +1890,7 @@ async function submitListService(){
       onChainId = 'circ_'+Date.now();
       await fetch('https://nan-production.up.railway.app/api/circle-wallets', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ action:'contractCall', walletId:circleWalletId,
+        body: JSON.stringify({ action:'contractCall', walletId:circleWalletId, email:otpEmail,
           contractAddress: PAYREQ_CONTRACT,
           functionSignature: 'createRequest(address,uint256,string,string,uint256)',
           params: [tokenAddr, amtAtomic.toString(), label, note, String(expiresAt)] })
@@ -3197,7 +3197,7 @@ async function doSend(){
       if(!data.success){
         const fbRes=await fetch('https://nan-production.up.railway.app/api/circle-wallets',{
           method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({action:'transfer',walletId:circleWalletId,walletAddress:circleWalletAddress,destinationAddress:to,amount:amt.toString(),tokenSymbol:sendToken}),
+          body:JSON.stringify({action:'transfer',walletId:circleWalletId,walletAddress:circleWalletAddress,email:otpEmail,destinationAddress:to,amount:amt.toString(),tokenSymbol:sendToken}),
         });
         data=await fbRes.json();
       }
@@ -3941,7 +3941,7 @@ async function doSwap(){
         tokenIn, tokenOut, amountIn: fromAmt.toString()
       });
       const _swapBody2 = JSON.stringify({
-        action:'swapExecute', walletAddress:circleWalletAddress,
+        action:'swapExecute', walletAddress:circleWalletAddress, email:otpEmail,
         tokenIn, tokenOut, amountIn: fromAmt.toString()
       });
       const _timeout = ms => new Promise((_,rej) => setTimeout(() => rej(new Error('timeout')), ms));
@@ -4507,7 +4507,7 @@ async function _recordTxOnChain(tx){
       : ethers.zeroPadValue('0x01',32);
     if(isCircleWallet&&circleWalletId){
       await fetch('https://nan-production.up.railway.app/api/circle-wallets',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({action:'contractCall',walletId:circleWalletId,
+        body:JSON.stringify({action:'contractCall',walletId:circleWalletId,email:otpEmail,
           contractAddress:HISTORY_CONTRACT,
           functionSignature:'record(string,string,string,string,string,bytes32)',
           params:[tx.type||'out',tx.token||'USDC',tx.amount||'0',tx.to||'',tx.toRaw||'',hashBytes]
@@ -5178,6 +5178,7 @@ async function doBulkSend(){
             action: 'transfer',
             walletId: circleWalletId,
             walletAddress: circleWalletAddress,
+            email: otpEmail,
             destinationAddress: r.addr,
             amount: r.amount.toString(),
             tokenSymbol: bulkToken,
@@ -7310,7 +7311,7 @@ function executeAgentAction(action){
           if(isCircleWallet && circleWalletId){
             onChainId = 'circ_'+Date.now();
             fetch('https://nan-production.up.railway.app/api/circle-wallets',{method:'POST',headers:{'Content-Type':'application/json'},
-              body:JSON.stringify({action:'contractCall',walletId:circleWalletId,
+              body:JSON.stringify({action:'contractCall',walletId:circleWalletId,email:otpEmail,
                 contractAddress:PAYREQ_CONTRACT,
                 functionSignature:'createRequest(address,uint256,string,string,uint256)',
                 params:[tokenAddr,amtAtomic.toString(),label,note,String(expiresAt)]})})
@@ -8498,7 +8499,7 @@ async function doBorrow(){
     if(isCircleWallet&&circleWalletId){
       if(btn)btn.innerHTML='<span class="spinner"></span>Borrowing on Arc…';
       const r=await fetch('https://nan-production.up.railway.app/api/circle-wallets',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({action:'contractCall',walletId:circleWalletId,
+        body:JSON.stringify({action:'contractCall',walletId:circleWalletId,email:otpEmail,
           contractAddress:LENDING_CONTRACT,functionSignature:'borrow(uint256)',params:[amtAtomic]})});
       const d=await r.json();
       if(!d.success)throw new Error(d.error||'Borrow failed');
@@ -8550,12 +8551,12 @@ async function doRepay(){
       const repApprKey='nan_repay_approved_'+circleWalletId;
       if(!sessionStorage.getItem(repApprKey)){
         fetch('https://nan-production.up.railway.app/api/circle-wallets',{method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({action:'contractCall',walletId:circleWalletId,contractAddress:USDC_ADDR,functionSignature:'approve(address,uint256)',params:[LENDING_CONTRACT,'115792089237316195423570985008687907853269984665640564039457584007913129639935']})})
+          body:JSON.stringify({action:'contractCall',walletId:circleWalletId,email:otpEmail,contractAddress:USDC_ADDR,functionSignature:'approve(address,uint256)',params:[LENDING_CONTRACT,'115792089237316195423570985008687907853269984665640564039457584007913129639935']})})
           .then(()=>sessionStorage.setItem(repApprKey,'1')).catch(()=>{});
         await new Promise(r=>setTimeout(r,2000));
       }
       const r=await fetch('https://nan-production.up.railway.app/api/circle-wallets',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({action:'contractCall',walletId:circleWalletId,contractAddress:LENDING_CONTRACT,functionSignature:'repay(uint256)',params:[amtAtomic]})});
+        body:JSON.stringify({action:'contractCall',walletId:circleWalletId,email:otpEmail,contractAddress:LENDING_CONTRACT,functionSignature:'repay(uint256)',params:[amtAtomic]})});
       const d=await r.json();
       if(!d.success)throw new Error(d.error||'Repay failed');
       toast('✓ Repay submitted!','success',4000);
@@ -8674,7 +8675,7 @@ async function registerArcName(){
     if(isCircleWallet&&circleWalletId){
       if(btn)btn.innerHTML='<span class="spinner"></span>Approving USDC…';
       const appR=await fetch('https://nan-production.up.railway.app/api/circle-wallets',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({action:'contractCall',walletId:circleWalletId,contractAddress:USDC_ADDR,functionSignature:'approve(address,uint256)',params:[NAME_REGISTRY,'115792089237316195423570985008687907853269984665640564039457584007913129639935']})});
+        body:JSON.stringify({action:'contractCall',walletId:circleWalletId,email:otpEmail,contractAddress:USDC_ADDR,functionSignature:'approve(address,uint256)',params:[NAME_REGISTRY,'115792089237316195423570985008687907853269984665640564039457584007913129639935']})});
       const appD=await appR.json();
       if(!appD.success)throw new Error(appD.error||'Approve failed');
       sessionStorage.setItem('nan_name_approving_'+circleWalletId,'1');
@@ -8682,7 +8683,7 @@ async function registerArcName(){
       await new Promise(r=>setTimeout(r,2000));
       if(btn)btn.innerHTML='<span class="spinner"></span>Registering on Arc…';
       const regR=await fetch('https://nan-production.up.railway.app/api/circle-wallets',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({action:'contractCall',walletId:circleWalletId,contractAddress:NAME_REGISTRY,functionSignature:'register(string,uint8)',params:[name,arcNameDurationYears]})});
+        body:JSON.stringify({action:'contractCall',walletId:circleWalletId,email:otpEmail,contractAddress:NAME_REGISTRY,functionSignature:'register(string,uint8)',params:[name,arcNameDurationYears]})});
       const regD=await regR.json();
       if(!regD.success)throw new Error(regD.error||'Registration failed');
       toast('✓ '+name+'.arc registered on Arc! 🎉','success',7000);
@@ -9282,7 +9283,7 @@ async function createPaymentRequest(){
       onChainId='circ_'+Date.now();
       // Submit to chain in background
       fetch('https://nan-production.up.railway.app/api/circle-wallets',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({action:'contractCall',walletId:circleWalletId,
+        body:JSON.stringify({action:'contractCall',walletId:circleWalletId,email:otpEmail,
           contractAddress:PAYREQ_CONTRACT,
           functionSignature:'createRequest(address,uint256,string,string,uint256)',
           params:[tokenAddr,amtAtomic.toString(),label,note||'',String(expiresAt)]})})
@@ -9537,7 +9538,7 @@ async function submitInvoice(){
     if(isCircleWallet&&circleWalletId){
       onChainId='circ_'+Date.now();
       fetch('https://nan-production.up.railway.app/api/circle-wallets',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({action:'contractCall',walletId:circleWalletId,
+        body:JSON.stringify({action:'contractCall',walletId:circleWalletId,email:otpEmail,
           contractAddress:PAYREQ_CONTRACT,
           functionSignature:'createRequest(address,uint256,string,string,uint256)',
           params:[tokenAddr,amtAtomic.toString(),label,note,'0']})}).catch(e=>console.warn('Invoice submit error:',e.message));
@@ -9717,14 +9718,14 @@ async function doPayNow(){
       const payApprKey='nan_pay_approved_'+circleWalletId+'_'+token;
       if(!sessionStorage.getItem(payApprKey)){
         fetch('https://nan-production.up.railway.app/api/circle-wallets',{method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({action:'contractCall',walletId:circleWalletId,contractAddress:tokenAddr,
+          body:JSON.stringify({action:'contractCall',walletId:circleWalletId,email:otpEmail,contractAddress:tokenAddr,
             functionSignature:'approve(address,uint256)',params:[PAYREQ_CONTRACT,'115792089237316195423570985008687907853269984665640564039457584007913129639935']})})
           .then(()=>sessionStorage.setItem(payApprKey,'1')).catch(()=>{});
         await new Promise(r=>setTimeout(r,2000));
       }
       btn.innerHTML='<span class="spinner"></span>Paying…';
       const r=await fetch('https://nan-production.up.railway.app/api/circle-wallets',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({action:'contractCall',walletId:circleWalletId,contractAddress:PAYREQ_CONTRACT,
+        body:JSON.stringify({action:'contractCall',walletId:circleWalletId,email:otpEmail,contractAddress:PAYREQ_CONTRACT,
           functionSignature:'pay(uint256,uint256)',params:[prId,amtAtomic]})});
       const d=await r.json();
       if(!d.success)throw new Error(d.error||'Payment failed');
