@@ -6737,7 +6737,7 @@ RULES:
     }
     agentMsgs[agentMsgs.length-1]={role:'assistant',content:clean,action};
     // Auto-execute agent wallet actions immediately (no button needed)
-    const autoActions = ['agent-send','agent-a2a','agent-set-policy','agent-get-policy','agent-clear-policy','agent-bulk-send','agent-balance','agent-history','agent-fund','agent-pay','agent-swap','agent-bridge','agent-multichain','agent-offramp','agent-payroll','agent-ngn-rate','agent-bills','agent-data','agent-portfolio','agent-analytics','agent-price-alert','agent-auto-sweep','agent-receipt','agent-remita','fx-limit-offramp','payreq-create','list_orders','cancel_order','cancel_all'];
+    const autoActions = ['agent-send','agent-a2a','agent-invoice-create','agent-trust-check','agent-escrow-create','agent-set-policy','agent-get-policy','agent-clear-policy','agent-bulk-send','agent-balance','agent-history','agent-fund','agent-pay','agent-swap','agent-bridge','agent-multichain','agent-offramp','agent-payroll','agent-ngn-rate','agent-bills','agent-data','agent-portfolio','agent-analytics','agent-price-alert','agent-auto-sweep','agent-receipt','agent-remita','fx-limit-offramp','payreq-create','list_orders','cancel_order','cancel_all'];
     if(action && action.action && autoActions.includes(action.action)){
       setTimeout(()=>executeAgentAction(action), 500);
     }
@@ -7010,6 +7010,167 @@ function executeAgentAction(action){
           cancelBtn.textContent = 'Cancel';
           cancelBtn.style.cssText = 'padding:8px 14px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;';
           cancelBtn.onclick = function(){ window._pendingA2A=null; btns.remove(); addAgentMsg('\u274c A2A payment cancelled'); renderAgentMsgs(); };
+          btns.appendChild(confirmBtn); btns.appendChild(cancelBtn);
+          last.appendChild(btns);
+        },100);
+      })();
+      break;
+    case 'agent-invoice-create':
+      // Request a payment from another agent — doesn't spend the creator's
+      // own funds, so unlike A2A/escrow this doesn't need a confirm dialog.
+      if(!agentWalletAddr){
+        addAgentMsg('⚠️ Agent wallet not connected. Connect your agent wallet first.');
+        renderAgentMsgs(); break;
+      }
+      (async()=>{
+        var invTo  = action.to;
+        var invAmt = action.amount;
+        var invTok = action.token||'USDC';
+        var invReason = action.reason||'';
+
+        if(!invTo){ addAgentMsg('❌ Please specify who to invoice (address or .arc name).'); renderAgentMsgs(); return; }
+        if(!invAmt||isNaN(invAmt)||parseFloat(invAmt)<=0){ addAgentMsg('❌ Please specify an amount.'); renderAgentMsgs(); return; }
+        invAmt = parseFloat(invAmt);
+
+        var isAddr = /^0x[a-fA-F0-9]{40}$/.test(invTo);
+        var payerAddr = invTo;
+        if(!isAddr){
+          addAgentMsg('🔍 Looking up '+invTo+'...'); renderAgentMsgs();
+          try{
+            var lr = await fetch('https://nan-production.up.railway.app/api/agent-wallets',{
+              method:'POST', headers:{'Content-Type':'application/json'},
+              body:JSON.stringify({action:'lookup-by-arc', userAddress:userAddr, arcName:invTo.replace('.arc','').toLowerCase()})
+            });
+            var ld = await lr.json();
+            if(!ld.success || !ld.agentWalletAddress){ addAgentMsg('❌ Could not find an agent wallet for '+invTo); renderAgentMsgs(); return; }
+            payerAddr = ld.agentWalletAddress;
+          }catch(e){ addAgentMsg('❌ Lookup failed: '+e.message); renderAgentMsgs(); return; }
+        }
+
+        addAgentMsg('⏳ Sending invoice for '+invAmt+' '+invTok+'...'); renderAgentMsgs();
+        fetch('https://nan-production.up.railway.app/api/agent-wallets',{
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({action:'invoice-create', userAddress:userAddr, agentWalletAddress:agentWalletAddr, fromAgentAddress:payerAddr, amount:String(invAmt), token:invTok, reason:invReason})
+        }).then(r=>r.json()).then(d=>{
+          if(d.success){
+            var paid = d.autoEval?.autoHonored;
+            addAgentMsg((paid ? '✅ Invoice sent and paid automatically' : '✅ Invoice sent')+' — '+invAmt+' '+invTok+(paid ? '' : ' (pending their response)'));
+            renderAgentMsgs();
+            if(paid){ setTimeout(fetchAgentBalance,1500); setTimeout(updateHomeScreen,2000); }
+          } else {
+            addAgentMsg('❌ '+(d.error||'Could not send invoice'));
+            renderAgentMsgs();
+          }
+        }).catch(e=>{ addAgentMsg('❌ Error: '+e.message); renderAgentMsgs(); });
+      })();
+      break;
+    case 'agent-trust-check':
+      if(!agentWalletAddr){
+        addAgentMsg('⚠️ Agent wallet not connected. Connect your agent wallet first.');
+        renderAgentMsgs(); break;
+      }
+      (async()=>{
+        var tcWho = action.who||action.to;
+        if(!tcWho){ addAgentMsg('❌ Please specify who to check (address or .arc name).'); renderAgentMsgs(); return; }
+        var tcIsAddr = /^0x[a-fA-F0-9]{40}$/.test(tcWho);
+        var tcAddr = tcWho;
+        if(!tcIsAddr){
+          addAgentMsg('🔍 Looking up '+tcWho+'...'); renderAgentMsgs();
+          try{
+            var lr2 = await fetch('https://nan-production.up.railway.app/api/agent-wallets',{
+              method:'POST', headers:{'Content-Type':'application/json'},
+              body:JSON.stringify({action:'lookup-by-arc', userAddress:userAddr, arcName:tcWho.replace('.arc','').toLowerCase()})
+            });
+            var ld2 = await lr2.json();
+            if(!ld2.success || !ld2.agentWalletAddress){ addAgentMsg('❌ Could not find an agent wallet for '+tcWho); renderAgentMsgs(); return; }
+            tcAddr = ld2.agentWalletAddress;
+          }catch(e){ addAgentMsg('❌ Lookup failed: '+e.message); renderAgentMsgs(); return; }
+        }
+        fetch('https://nan-production.up.railway.app/api/agent-wallets',{
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({action:'trust', userAddress:userAddr, agentWalletAddress:agentWalletAddr, counterpartyAddress:tcAddr})
+        }).then(r=>r.json()).then(d=>{
+          if(d.success){
+            var t = d.trust||{};
+            addAgentMsg('🤝 Trust with '+tcAddr.slice(0,6)+'...'+tcAddr.slice(-4)+':\nAuto-approve cap: $'+(d.autoApproveCap??5)+'\nSuccessful payments: '+(t.successCount||0)+'\nTotal volume: $'+(t.totalVolume||0).toFixed(2));
+          } else {
+            addAgentMsg('❌ '+(d.error||'Could not check trust'));
+          }
+          renderAgentMsgs();
+        }).catch(e=>{ addAgentMsg('❌ Error: '+e.message); renderAgentMsgs(); });
+      })();
+      break;
+    case 'agent-escrow-create':
+      // Locks the user's own funds, so this gets the same confirm/cancel
+      // treatment as A2A rather than executing immediately.
+      if(!agentWalletAddr){
+        addAgentMsg('⚠️ Agent wallet not connected. Connect your agent wallet first.');
+        renderAgentMsgs(); break;
+      }
+      (async()=>{
+        var esTo  = action.to;
+        var esAmt = action.amount;
+        var esTok = action.token||'USDC';
+        var esTask = action.task||action.reason||'';
+
+        if(!esTo){ addAgentMsg('❌ Please specify who to escrow with (address or .arc name).'); renderAgentMsgs(); return; }
+        if(!esAmt||isNaN(esAmt)||parseFloat(esAmt)<=0){ addAgentMsg('❌ Please specify an amount.'); renderAgentMsgs(); return; }
+        esAmt = parseFloat(esAmt);
+
+        var esIsAddr = /^0x[a-fA-F0-9]{40}$/.test(esTo);
+        var esDest = esTo;
+        if(!esIsAddr){
+          addAgentMsg('🔍 Looking up '+esTo+'...'); renderAgentMsgs();
+          try{
+            var lr3 = await fetch('https://nan-production.up.railway.app/api/agent-wallets',{
+              method:'POST', headers:{'Content-Type':'application/json'},
+              body:JSON.stringify({action:'lookup-by-arc', userAddress:userAddr, arcName:esTo.replace('.arc','').toLowerCase()})
+            });
+            var ld3 = await lr3.json();
+            if(!ld3.success || !ld3.agentWalletAddress){ addAgentMsg('❌ Could not find an agent wallet for '+esTo); renderAgentMsgs(); return; }
+            esDest = ld3.agentWalletAddress;
+          }catch(e){ addAgentMsg('❌ Lookup failed: '+e.message); renderAgentMsgs(); return; }
+        }
+
+        window._pendingEscrow = {toAgent:esDest, amount:esAmt, token:esTok, task:esTask};
+        var shortEs = esDest.slice(0,6)+'...'+esDest.slice(-4);
+        addAgentMsg('⚠️ Confirm escrow:\n'+esAmt+' '+esTok+' locked for '+shortEs+(esTask ? '\nTask: '+esTask : '')+'\n\nFunds release once you attest the task is done.');
+        renderAgentMsgs();
+
+        setTimeout(()=>{
+          var mc = document.getElementById('agentMessages');
+          var last = mc ? mc.lastElementChild : null;
+          if(!last) return;
+          var btns = document.createElement('div');
+          btns.style.cssText = 'display:flex;gap:8px;margin-top:10px;';
+          var confirmBtn = document.createElement('button');
+          confirmBtn.textContent = '✓ Confirm';
+          confirmBtn.style.cssText = 'padding:8px 18px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
+          confirmBtn.onclick = function(){
+            btns.remove();
+            var p = window._pendingEscrow;
+            if(!p){ addAgentMsg('❌ Escrow request expired.'); renderAgentMsgs(); return; }
+            window._pendingEscrow = null;
+            addAgentMsg('⏳ Creating escrow...');
+            renderAgentMsgs();
+            fetch('https://nan-production.up.railway.app/api/agent-wallets',{
+              method:'POST', headers:{'Content-Type':'application/json'},
+              body:JSON.stringify({action:'escrow-create', userAddress:userAddr, agentWalletAddress:agentWalletAddr, toAgentAddress:p.toAgent, amount:String(p.amount), token:p.token, task:p.task})
+            }).then(r=>r.json()).then(d=>{
+              if(d.success){
+                addAgentMsg('✅ Escrow created — '+p.amount+' '+p.token+' locked.');
+                renderAgentMsgs();
+                setTimeout(fetchAgentBalance,1500);
+              } else {
+                addAgentMsg('❌ '+(d.error||'Could not create escrow'));
+                renderAgentMsgs();
+              }
+            }).catch(e=>{ addAgentMsg('❌ Error: '+e.message); renderAgentMsgs(); });
+          };
+          var cancelBtn = document.createElement('button');
+          cancelBtn.textContent = 'Cancel';
+          cancelBtn.style.cssText = 'padding:8px 14px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;';
+          cancelBtn.onclick = function(){ window._pendingEscrow=null; btns.remove(); addAgentMsg('❌ Escrow cancelled'); renderAgentMsgs(); };
           btns.appendChild(confirmBtn); btns.appendChild(cancelBtn);
           last.appendChild(btns);
         },100);
