@@ -12439,7 +12439,6 @@ async function nanopayDiscover(){
     // or ID you're meant to fill in) that isn't safe to call as-is — hide
     // those rather than let someone click into a guaranteed failure.
     const services = allServices.filter(s => !/\{[^}]+\}/.test(s.resource || ''));
-    const hiddenCount = allServices.length - services.length;
     if(!services.length){
       resultsEl.innerHTML = `<div style="text-align:center;padding:24px 16px;"><div style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:4px;">No matches</div><div style="font-size:.78rem;color:var(--text3);">Try a broader search term.</div></div>`;
       return;
@@ -12467,11 +12466,7 @@ async function nanopayDiscover(){
         <button onclick='nanopayDiscoveredPay(${i})' style="width:100%;padding:9px;border-radius:9px;border:1px solid rgba(37,99,235,.3);background:rgba(37,99,235,.08);color:#2563EB;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;">Pay &amp; call</button>
       </div>`;
       }).join('')
-    }</div>
-    <div style="margin-top:14px;padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:var(--bg);">
-      ${hiddenCount > 0 ? `<div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">${hiddenCount} other result${hiddenCount>1?'s':''} hidden — needed extra info in the URL this page doesn't collect yet.</div>` : ''}
-      <div style="font-size:.72rem;color:var(--text3);line-height:1.5;">Signing and payment are confirmed working end-to-end (verified via Leakage) — the one thing still untested is a service running on BASE or Polygon specifically, since Arc is the only chain paid here so far. Worth trying; if a discovered service behaves differently than Leakage did, that's the one variable left to check.</div>
-    </div>`;
+    }</div>`;
     window._nanopayDiscovered = services;
   }catch(err){
     resultsEl.innerHTML = `<div style="text-align:center;padding:20px 0;color:var(--danger);font-size:.8rem;">${err.message.slice(0,150)}</div>`;
