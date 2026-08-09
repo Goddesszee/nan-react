@@ -11915,6 +11915,26 @@ function nanopayShowResult(html){
 function nanopaySpinner(){
   nanopayShowResult('<div style="text-align:center;padding:32px 16px;"><span class="spinner"></span></div>');
 }
+function nanopayHumanize(key){
+  return key.replace(/([A-Z])/g,' $1').replace(/[_-]/g,' ').replace(/^./,c=>c.toUpperCase()).trim();
+}
+function nanopayRenderValue(val, depth){
+  if(val === null || val === undefined) return '<span style="color:var(--text3);">—</span>';
+  if(typeof val === 'object' && !Array.isArray(val)){
+    const keys = Object.keys(val);
+    if(depth < 2 && keys.length && keys.every(k => typeof val[k] !== 'object' || val[k] === null)){
+      return `<div style="margin-top:4px;padding-left:12px;border-left:2px solid var(--border);">${
+        keys.map(k => `<div style="display:flex;justify-content:space-between;gap:12px;padding:3px 0;font-size:.78rem;">
+          <span style="color:var(--text3);flex-shrink:0;">${nanopayHumanize(k)}</span>
+          <span style="color:var(--text);text-align:right;">${nanopayRenderValue(val[k], depth+1)}</span>
+        </div>`).join('')
+      }</div>`;
+    }
+    return `<span style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text2);">${JSON.stringify(val)}</span>`;
+  }
+  if(Array.isArray(val)) return `<span style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text2);">${JSON.stringify(val)}</span>`;
+  return String(val);
+}
 function nanopayFormatResult(d, url){
   if(!d.success){
     if(d.capBlocked){
@@ -11928,7 +11948,6 @@ function nanopayFormatResult(d, url){
       <div style="font-size:.78rem;color:var(--text2);">${(d.error||'Unknown error').slice(0,200)}</div>
     </div>`;
   }
-  const pretty = JSON.stringify(d.result, null, 2);
   let capNote = '';
   if(d.maxAmountRequested != null){
     capNote = d.capEnforced
@@ -11936,6 +11955,22 @@ function nanopayFormatResult(d, url){
       : `<div style="font-size:.7rem;color:#F59E0B;margin-top:8px;">⚠ Cap of $${d.maxAmountRequested} set, but couldn't verify a quote for this service before paying — proceeded without the check.</div>`;
   }
   const amountLine = d.amountPaid ? `<div style="font-size:.72rem;color:var(--text2);margin-top:2px;">Paid ${d.amountPaid} USDC</div>` : '';
+
+  // Render the response as labeled rows when it's a plain object — falls
+  // back to compact JSON per-value automatically for anything nested or
+  // array-shaped, rather than dumping the whole thing as raw text.
+  let resultHtml;
+  if(d.result && typeof d.result === 'object' && !Array.isArray(d.result) && Object.keys(d.result).length){
+    resultHtml = `<div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px;">${
+      Object.keys(d.result).map(k => `<div style="display:flex;justify-content:space-between;gap:16px;padding:6px 0;border-bottom:1px solid var(--border);">
+        <span style="font-size:.75rem;font-weight:600;color:var(--text3);flex-shrink:0;">${nanopayHumanize(k)}</span>
+        <span style="font-size:.78rem;color:var(--text);text-align:right;">${nanopayRenderValue(d.result[k], 0)}</span>
+      </div>`).join('')
+    }</div>`;
+  } else {
+    resultHtml = `<pre style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:.75rem;color:var(--text2);overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-family:'JetBrains Mono',monospace;max-height:280px;overflow-y:auto;">${JSON.stringify(d.result, null, 2)}</pre>`;
+  }
+
   return `<div style="border:1px solid rgba(34,197,94,.25);background:rgba(34,197,94,.06);border-radius:12px;padding:14px;margin-bottom:10px;">
     <div style="font-size:.8rem;font-weight:700;color:var(--success);margin-bottom:2px;">✓ Paid &amp; called</div>
     <div style="font-size:.72rem;color:var(--text3);font-family:'JetBrains Mono',monospace;word-break:break-all;">${url}</div>
@@ -11943,7 +11978,7 @@ function nanopayFormatResult(d, url){
     ${capNote}
   </div>
   <div style="font-size:.72rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Response (status ${d.status||'—'})</div>
-  <pre style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:.75rem;color:var(--text2);overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-family:'JetBrains Mono',monospace;max-height:280px;overflow-y:auto;">${pretty}</pre>`;
+  ${resultHtml}`;
 }
 async function nanopayQuickPay(){
   const btn = document.getElementById('nanopayQuickBtn');
