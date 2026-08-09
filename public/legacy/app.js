@@ -8374,7 +8374,7 @@ async function doSupply(){
       const supApprKey='nan_lend_approved_'+circleWalletId+'_'+lendAsset;
       if(!sessionStorage.getItem(supApprKey)){
         fetch('https://nan-production.up.railway.app/api/circle-wallets',{method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({action:'contractCall',walletId:circleWalletId,
+          body:JSON.stringify({action:'contractCall',walletId:circleWalletId,email:otpEmail,
             contractAddress:tokenAddr,functionSignature:'approve(address,uint256)',
             params:[LENDING_CONTRACT,'115792089237316195423570985008687907853269984665640564039457584007913129639935']})})
           .then(()=>sessionStorage.setItem(supApprKey,'1')).catch(()=>{});
@@ -8382,7 +8382,7 @@ async function doSupply(){
       }
       btn.innerHTML='<span class="spinner"></span>Supplying on Arc...';
       const supRes=await fetch('https://nan-production.up.railway.app/api/circle-wallets',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({action:'contractCall',walletId:circleWalletId,
+        body:JSON.stringify({action:'contractCall',walletId:circleWalletId,email:otpEmail,
           contractAddress:LENDING_CONTRACT,functionSignature:'supply(uint256)',
           params:[amtAtomic]})});
       const supData=await supRes.json();
@@ -8593,7 +8593,7 @@ async function doWithdraw(){
     const amtAtomic=Math.floor(amt*1_000_000).toString();
     if(isCircleWallet&&circleWalletId){
       const r=await fetch('https://nan-production.up.railway.app/api/circle-wallets',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({action:'contractCall',walletId:circleWalletId,contractAddress:LENDING_CONTRACT,functionSignature:'withdraw(uint256)',params:[amtAtomic]})});
+        body:JSON.stringify({action:'contractCall',walletId:circleWalletId,email:otpEmail,contractAddress:LENDING_CONTRACT,functionSignature:'withdraw(uint256)',params:[amtAtomic]})});
       const d=await r.json();
       if(!d.success)throw new Error(d.error||'Withdraw failed');
       toast('✓ Withdraw submitted!','success',4000);
