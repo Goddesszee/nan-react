@@ -6558,6 +6558,22 @@ RULES:
           if(arcM) sendTo = arcM[1].replace('.arc','').toLowerCase()+'.arc';
           else { action = null; }
         }
+        // If this regex accidentally matched the model's own conversational
+        // sentence ("...send 20 EURC to your agent wallet...") instead of
+        // its actual ACTION line, sendTo ends up as a filler word like
+        // "your"/"my"/"the" rather than a real address or .arc name — that's
+        // never valid, so reject it here instead of proceeding with garbage
+        // and showing a confusing error. Prefer a real 0x address elsewhere
+        // in the reply if one exists (very likely the model DID say it,
+        // just not in the exact spot this regex expected).
+        const fillerWords = ['your','my','the','agent','wallet','their','its','this','that','it'];
+        if(sendTo && fillerWords.includes(sendTo.toLowerCase())){
+          const realAddrM = reply.match(/0x[a-fA-F0-9]{40}/);
+          const realArcM = reply.match(/\b([\w]+\.arc)\b/i);
+          if(realAddrM) sendTo = realAddrM[0];
+          else if(realArcM) sendTo = realArcM[1].replace('.arc','').toLowerCase()+'.arc';
+          else action = null;
+        }
         // Use agent-send only if agent wallet is connected, else regular send
         const sendAction = agentWalletAddr ? 'agent-send' : 'send';
         if(sendTo) action={action:sendAction,amount:parseFloat(sendM[1]),token:sendM[2].toUpperCase(),to:sendTo};
