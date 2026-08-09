@@ -43,7 +43,7 @@ function apiFetch(path, opts){
   const AGENT_AUTH_ACTIONS = new Set([
     'transfer', 'a2a-transfer', 'escrow-release', 'escrow-refund',
     'set-policy', 'clear-policy', 'recurring-create', 'recurring-cancel',
-    'net-settle', 'invoice-respond',
+    'net-settle', 'invoice-respond', 'link-email',
   ]);
 
   function buildAuthMessage(action, addr, timestamp){
