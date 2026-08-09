@@ -6485,8 +6485,8 @@ RULES:
 - ALWAYS include <ACTION> tag when user wants to DO something — never just describe it
 - Use agent-send/agent-balance/agent-history/agent-fund when user says "agent wallet" or "agent"
 - Use agent-a2a when user wants to pay ANOTHER person's agent wallet specifically
-- Use agent-set-policy when user says "set limit", "spending limit", "max per tx", "daily limit" etc
-- Use agent-get-policy when user asks "what are my limits", "show my policy", "spending rules"
+- Use agent-set-policy when user wants to CHANGE/CREATE a limit: "set limit", "set spending limit to X", "max per tx", "daily limit of X"
+- Use agent-get-policy when user is ASKING/CHECKING an existing limit: "what's my spending limit", "what are my limits", "show my policy", "spending rules" — any question form about limits, even if it contains the word "spending", is a GET not a SET
 - Use agent-clear-policy when user says "remove limits", "clear policy", "no limits" ("send to their agent", "agent to agent", "a2a")
 - Use regular send/swap for main wallet actions
 - The ACTION block is COMPLETELY INVISIBLE to user — NEVER write ACTION or JSON in your text
@@ -6707,8 +6707,16 @@ RULES:
       if(!action && /portfolio|total balance|all.*wallet|net worth|overall balance/i.test(reply)){
         action={action:'agent-portfolio'};
       }
+      // agent-get-policy — checked BEFORE agent-analytics, since "spending
+      // limit" / "spending rules" contain the word "spending" and would
+      // otherwise be misrouted to analytics (which happened in practice:
+      // asking "what's my spending limit" triggered a transaction-history
+      // lookup instead of the actual policy/limit lookup).
+      if(!action && /spending limit|my limit|my policy|spending rules|policies|what.*limit|how much can i spend/i.test(reply)){
+        action={action:'agent-get-policy'};
+      }
       // agent-analytics
-      if(!action && /analytics|spend|spending|how much.*sent|transaction.*summary|monthly.*spend/i.test(reply)){
+      if(!action && /analytics|how much.*sent|transaction.*summary|monthly.*spend/i.test(reply)){
         action={action:'agent-analytics'};
       }
       // agent-price-alert
