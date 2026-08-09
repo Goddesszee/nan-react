@@ -4161,6 +4161,79 @@ html,body{background-color:var(--bg);}
 
   </div><!-- end Lend & Borrow card -->
 
+  <!-- Supply & Earn card — deposit USDC or EURC to earn yield -->
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;overflow:hidden;width:100%;max-width:100% !important;box-sizing:border-box;margin-top:20px;">
+
+    <div style="padding:18px 22px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+      <div style="font-size:1.05rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;letter-spacing:-.02em;">Supply &amp; Earn</div>
+      <div style="font-size:.68rem;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(37,99,235,.1);border:1px solid rgba(37,99,235,.25);color:#2563EB;">4.80% APY</div>
+    </div>
+
+    <!-- Info banner -->
+    <div style="margin:16px 22px 14px;background:rgba(37,99,235,.07);border:1px solid rgba(37,99,235,.2);border-radius:12px;padding:11px 14px;display:flex;align-items:flex-start;gap:8px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <div style="font-size:.75rem;color:var(--text2);line-height:1.5;">Supply USDC or EURC to earn yield on Arc. No lockup, withdraw anytime, interest accrues in real time on NANLendingPool.</div>
+    </div>
+
+    <!-- Supplied summary -->
+    <div style="margin:0 22px 14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;">
+        <div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Supplied</div>
+        <div id="suppliedAmt" style="font-size:1.15rem;font-weight:800;color:var(--text);">0.00 USDC</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;">
+        <div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Interest Earned</div>
+        <div id="accruedInterest" style="font-size:1.15rem;font-weight:800;color:var(--success);">+0.000000 earned</div>
+      </div>
+    </div>
+
+    <!-- Asset toggle: USDC / EURC -->
+    <div class="type-sel" style="margin:0 22px 14px;grid-template-columns:repeat(2,1fr);">
+      <button class="topt active" onclick="setLendAsset('USDC',this);updateSupplyAssetUI();">USDC</button>
+      <button class="topt" onclick="setLendAsset('EURC',this);updateSupplyAssetUI();">EURC</button>
+    </div>
+
+    <!-- Tabs: Supply / Withdraw -->
+    <div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:13px;padding:4px;gap:3px;margin:0 22px 14px;display:flex;">
+      <button class="supply-tab active" onclick="setSupplyTab('supply',this)" style="flex:1;padding:8px;border:none;background:transparent;border-radius:10px;color:var(--text3);font-family:'Inter',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;">Supply</button>
+      <button class="supply-tab" onclick="setSupplyTab('withdraw',this)" style="flex:1;padding:8px;border:none;background:transparent;border-radius:10px;color:var(--text3);font-family:'Inter',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;">Withdraw</button>
+    </div>
+
+    <!-- SUPPLY panel -->
+    <div class="supply-panel-el" id="lp-supply" style="padding:0 22px 22px;">
+      <div style="background:rgba(255,255,255,.04);border:1.5px solid rgba(37,99,235,.25);border-radius:14px;padding:16px;margin-bottom:10px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;">
+          <span style="font-size:.6rem;font-weight:700;color:rgba(37,99,235,.8);letter-spacing:.12em;text-transform:uppercase;">Amount to Supply</span>
+          <span style="font-size:.7rem;color:var(--text3);font-weight:600;">Bal: <span id="supplyBalHint">0.00</span> <span id="supplyBalUnit">USDC</span></span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <input id="supplyAmt" type="number" min="0.01" step="0.01" placeholder="0.00" inputmode="decimal"
+            style="flex:1;background:none;border:none;outline:none;font-family:'Inter',sans-serif;font-size:1.7rem;font-weight:800;color:var(--text);width:0;letter-spacing:-1px;"/>
+          <button onclick="setSupplyMax()" style="background:none;border:none;font-size:.75rem;font-weight:700;color:#2563EB;cursor:pointer;flex-shrink:0;">MAX</button>
+        </div>
+      </div>
+      <button class="btn" id="supplyBtn" onclick="doSupply()" style="width:100%;padding:15px;background:#2563EB;border:none;border-radius:13px;color:#fff;font-family:'Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(37,99,235,.35);">Supply USDC</button>
+      <div style="font-size:.72rem;color:var(--text3);text-align:center;margin-top:8px;">No lockup · withdraw anytime</div>
+    </div>
+
+    <!-- WITHDRAW panel -->
+    <div class="supply-panel-el" id="lp-withdraw" style="display:none;padding:0 22px 22px;">
+      <div style="background:rgba(255,255,255,.04);border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:10px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;">
+          <span style="font-size:.6rem;font-weight:700;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;">Amount to Withdraw</span>
+          <span style="font-size:.7rem;color:var(--text3);font-weight:600;">Supplied: <span id="withdrawAvail">0.00</span></span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <input id="withdrawAmt" type="number" min="0.01" step="0.01" placeholder="0.00" inputmode="decimal"
+            style="flex:1;background:none;border:none;outline:none;font-family:'Inter',sans-serif;font-size:1.7rem;font-weight:800;color:var(--text);width:0;letter-spacing:-1px;"/>
+          <button onclick="setWithdrawMax()" style="background:none;border:none;font-size:.75rem;font-weight:700;color:var(--text2);cursor:pointer;flex-shrink:0;">MAX</button>
+        </div>
+      </div>
+      <button class="btn" onclick="doWithdraw()" style="width:100%;padding:15px;background:var(--surface);border:1px solid var(--border);border-radius:13px;color:var(--text2);font-family:'Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;">Withdraw + Interest</button>
+    </div>
+
+  </div><!-- end Supply & Earn card -->
+
   </div><!-- end earn page wrapper -->
   </div><!-- end earn page -->
 
