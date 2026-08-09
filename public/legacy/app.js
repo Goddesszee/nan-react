@@ -1091,6 +1091,9 @@ async function verifyOTP(){
         onArcNetwork=true;
         document.getElementById('otpBox').style.display='none';
         toast('✓ Circle wallet ready!','success',3000);
+        // Link this email to the wallet for notifications (invoice alerts,
+        // etc) — best-effort, doesn't block login if it fails.
+        fetch('https://nan-production.up.railway.app/api/agent-wallets',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'link-email',userAddress:userAddr,email:otpEmail})}).catch(()=>{});
       resubscribePushOnConnect();
         await onConnected(true,false);
         btn.innerHTML='Verify →';btn.disabled=false;
@@ -6171,6 +6174,8 @@ async function verifyFloatingOTP(){
     localStorage.setItem('nan_login_type', 'circle');
     localStorage.setItem('nan_email', email);
     document.getElementById('floatingOtpModal').style.display='none';
+    // Link this email to the wallet for notifications — best-effort.
+    fetch('https://nan-production.up.railway.app/api/agent-wallets',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'link-email',userAddress:userAddr,email})}).catch(()=>{});
     try{ resubscribePushOnConnect(); }catch(e){}
     await onConnected(true, false);
   } catch(e){
