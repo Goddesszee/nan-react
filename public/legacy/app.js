@@ -11682,6 +11682,48 @@ function invoiceStatusPill(status){
   const [label,bg,color] = map[status] || map.pending;
   return `<span style="font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:100px;background:${bg};color:${color};">${label}</span>`;
 }
+async function nanCheckInvoiceNotifications(){
+  if(!agentWalletAddr) return;
+  try{
+    const [inR, outR] = await Promise.all([
+      fetch('https://nan-production.up.railway.app/api/agent-wallets', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'invoice-list', userAddress: userAddr, agentWalletAddress: agentWalletAddr, direction: 'incoming' })
+      }).then(r=>r.json()),
+      fetch('https://nan-production.up.railway.app/api/agent-wallets', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'invoice-list', userAddress: userAddr, agentWalletAddress: agentWalletAddr, direction: 'outgoing' })
+      }).then(r=>r.json())
+    ]);
+
+    // Badge: count of pending invoices someone else is waiting on you for.
+    const pendingCount = inR.success ? (inR.invoices||[]).filter(i=>i.status==='pending').length : 0;
+    const sbBadge = document.getElementById('agentWalletSbBadge');
+    const cardBadge = document.getElementById('invoiceCardBadge');
+    if(sbBadge){ sbBadge.style.display = pendingCount>0 ? 'flex' : 'none'; sbBadge.textContent = pendingCount>9?'9+':pendingCount; }
+    if(cardBadge){ cardBadge.style.display = pendingCount>0 ? 'flex' : 'none'; cardBadge.textContent = pendingCount>9?'9+':pendingCount; }
+
+    // Toast: tell them when an invoice THEY sent just got a status change
+    // (paid/rejected) since the last time this ran — compares against what
+    // was last seen, stored locally per wallet.
+    if(outR.success){
+      const seenKey = 'nan_invoice_seen_'+agentWalletAddr.toLowerCase();
+      let seen = {};
+      try{ seen = JSON.parse(localStorage.getItem(seenKey)||'{}'); }catch(e){}
+      (outR.invoices||[]).forEach(inv=>{
+        const prev = seen[inv.id];
+        if(prev && prev !== inv.status && inv.status !== 'pending'){
+          if(inv.status === 'honored') toast(`✓ Your invoice for ${inv.amount} ${inv.token} was paid`, 'success', 5000);
+          else if(inv.status === 'rejected') toast(`Your invoice for ${inv.amount} ${inv.token} was rejected`, 'info', 5000);
+        }
+        seen[inv.id] = inv.status;
+      });
+      localStorage.setItem(seenKey, JSON.stringify(seen));
+    }
+  }catch(e){
+    console.log('[invoice] notification check error:', e.message);
+  }
+}
 async function invoiceLoadList(){
   const el = document.getElementById('invoiceList');
   if(!el) return;
@@ -12051,6 +12093,7 @@ function agentPageRefresh() {
     if(breakdownEl) breakdownEl.textContent = agentWalletBalance || '0.00 USDC';
     if(typeof nanUpdateAgentHoldings === 'function') nanUpdateAgentHoldings();
     if(typeof nanRefreshAgentLimits === 'function') nanRefreshAgentLimits();
+    if(typeof nanCheckInvoiceNotifications === 'function') nanCheckInvoiceNotifications();
   } else {
     if (status) status.textContent = 'Not connected';
     if (badge)  { badge.textContent = 'Offline'; badge.style.cssText = 'font-size:.72rem;padding:3px 9px;border-radius:100px;background:rgba(107,114,128,.1);border:1px solid var(--border);color:var(--text3);font-weight:600;'; }

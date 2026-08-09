@@ -327,6 +327,7 @@ html,body{background-color:var(--bg);}
     <div class="nan-sb-item-row" data-sbpage="agent-wallet" onclick="goPage('agent-wallet')">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></svg>
       <span class="nan-sb-label">Agent Wallet</span>
+      <span id="agentWalletSbBadge" style="display:none;min-width:16px;height:16px;border-radius:100px;background:#2563EB;color:#fff;font-size:.68rem;font-weight:700;align-items:center;justify-content:center;padding:0 4px;margin-left:auto;flex-shrink:0;"></span>
     </div>
     <div class="nan-sb-item-row" data-sbpage="swap" onclick="goPage('swap')">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
@@ -1102,7 +1103,8 @@ html,body{background-color:var(--bg);}
           <div style="font-size:.83rem;font-weight:700;color:var(--text);margin-top:8px;">Recurring payments</div>
           <div style="font-size:.72rem;color:var(--text3);margin-top:2px;">Set it once, it pays on schedule</div>
         </div>
-        <div onclick="goPage('agent-invoice');invoiceLoadList();" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;">
+        <div onclick="goPage('agent-invoice');invoiceLoadList();" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;position:relative;">
+          <span id="invoiceCardBadge" style="display:none;position:absolute;top:10px;right:10px;min-width:18px;height:18px;border-radius:100px;background:#2563EB;color:#fff;font-size:.68rem;font-weight:700;align-items:center;justify-content:center;padding:0 5px;"></span>
           <div style="width:36px;height:36px;border-radius:50%;background:rgba(37,99,235,.1);display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg></div>
           <div style="font-size:.83rem;font-weight:700;color:var(--text);margin-top:8px;">Invoicing</div>
           <div style="font-size:.72rem;color:var(--text3);margin-top:2px;">Create and respond between agents</div>
