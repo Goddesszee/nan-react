@@ -1522,6 +1522,11 @@ async function onConnected(isEmail=false, isDev=false){
   }
   // Auto-open Ajo join flow if ?ajo= param present in URL
   setTimeout(()=>{ _checkAjoDeepLink(); }, 800);
+
+  // Guarantee Dashboard is the final landing page after login — fires last,
+  // after all connect/onboarding setup above, so nothing that runs earlier
+  // in this function can leave the user somewhere else.
+  if(typeof goPage==='function') goPage('dashboard');
 }
 
 function disconnect(){
@@ -6495,6 +6500,7 @@ RULES:
   agent-a2a:     <ACTION>{"action":"agent-a2a","amount":5,"token":"USDC","to":"friend.arc"}</ACTION>
   agent-set-policy: <ACTION>{"action":"agent-set-policy","perTx":10,"daily":50,"weekly":200}</ACTION>
   agent-get-policy: <ACTION>{"action":"agent-get-policy"}</ACTION>
+  agent-recurring-list: <ACTION>{"action":"agent-recurring-list"}</ACTION>
   agent-clear-policy: <ACTION>{"action":"agent-clear-policy"}</ACTION>
   swap:          <ACTION>{"action":"swap","amount":1,"from":"USDC","to":"EURC"}</ACTION>
   limit:         <ACTION>{"action":"limit","amount":50,"sellToken":"USDC","buyToken":"EURC","targetRate":0.95,"condition":"gte"}</ACTION>
@@ -6511,8 +6517,9 @@ RULES:
 - Use agent-a2a when user wants to pay ANOTHER person's agent wallet specifically
 - Use agent-set-policy when user wants to CHANGE/CREATE a limit: "set limit", "set spending limit to X", "max per tx", "daily limit of X"
 - Use agent-get-policy when user is ASKING/CHECKING an existing limit: "what's my spending limit", "what are my limits", "show my policy", "spending rules" — any question form about limits, even if it contains the word "spending", is a GET not a SET
-- NEVER claim the agent wallet "isn't set up" or state what its limits/balance/status are from assumption — the Status/Balance lines above may be stale from before this message; always use the matching agent-* action to get a live answer instead of guessing
+- NEVER claim the agent wallet "isn't set up" or state what its limits/balance/status/recurring payments are from assumption — the Status/Balance lines above may be stale from before this message; always use the matching agent-* action to get a live answer instead of guessing
 - Use agent-clear-policy when user says "remove limits", "clear policy", "no limits" ("send to their agent", "agent to agent", "a2a")
+- Use agent-recurring-list when user asks "do I have recurring payments", "what's scheduled", "show my recurring transfers" — a question about EXISTING recurring payments, not a request to create one
 - Use regular send/swap for main wallet actions
 - The ACTION block is COMPLETELY INVISIBLE to user — NEVER write ACTION or JSON in your text
 - Your text reply must be plain English only — confirm what you're about to do, then add ACTION tag
@@ -6774,6 +6781,16 @@ RULES:
         const whenM = reply.match(/tomorrow|next week|monday|tuesday|wednesday|thursday|friday|at\s+[\d:]+/i);
         if(amtM) action={action:'agent-schedule',amount:parseFloat(amtM[1]),token:amtM[2]?.toUpperCase()||'USDC',to:toM?toM[1]:null,when:whenM?whenM[0]:'tomorrow'};
       }
+      // agent-recurring-list — checked BEFORE agent-standing, since a query
+      // like "do I have any recurring payments" contains the word
+      // "recurring" but has no amount, so the create-fallback below would
+      // never fire for it (it requires amtM) — leaving the AI to answer
+      // from assumption instead of actually checking. Only match question
+      // forms here so a genuine "set up $5 weekly" command still falls
+      // through to agent-standing correctly.
+      if(!action && /(do i have|what.*scheduled|any recurring|my recurring|show.*recurring|list.*recurring|check.*recurring)/i.test(reply)){
+        action={action:'agent-recurring-list'};
+      }
       // agent-standing (recurring)
       if(!action && /every\s+(day|week|month|monday|tuesday|wednesday|thursday|friday)|daily|weekly|monthly|recurring/i.test(reply)){
         const amtM = reply.match(/([\d.]+)\s*(USDC|EURC)/i);
@@ -6788,7 +6805,7 @@ RULES:
     }
     agentMsgs[agentMsgs.length-1]={role:'assistant',content:clean,action};
     // Auto-execute agent wallet actions immediately (no button needed)
-    const autoActions = ['agent-send','agent-a2a','agent-invoice-create','agent-trust-check','agent-escrow-create','agent-set-policy','agent-get-policy','agent-clear-policy','agent-bulk-send','agent-balance','agent-history','agent-fund','agent-pay','agent-swap','agent-bridge','agent-multichain','agent-offramp','agent-payroll','agent-ngn-rate','agent-bills','agent-data','agent-portfolio','agent-analytics','agent-price-alert','agent-auto-sweep','agent-receipt','agent-remita','fx-limit-offramp','payreq-create','list_orders','cancel_order','cancel_all'];
+    const autoActions = ['agent-send','agent-a2a','agent-invoice-create','agent-trust-check','agent-escrow-create','agent-set-policy','agent-get-policy','agent-clear-policy','agent-recurring-list','agent-bulk-send','agent-balance','agent-history','agent-fund','agent-pay','agent-swap','agent-bridge','agent-multichain','agent-offramp','agent-payroll','agent-ngn-rate','agent-bills','agent-data','agent-portfolio','agent-analytics','agent-price-alert','agent-auto-sweep','agent-receipt','agent-remita','fx-limit-offramp','payreq-create','list_orders','cancel_order','cancel_all'];
     if(action && action.action && autoActions.includes(action.action)){
       setTimeout(()=>executeAgentAction(action), 500);
     }
@@ -6931,6 +6948,31 @@ function executeAgentAction(action){
           addAgentMsg('✅ Spending policy set!\n💳 Per transaction: $'+p.perTx+'\n📅 Daily limit: $'+p.daily+(p.weekly?'\n📆 Weekly limit: $'+p.weekly:'')+'\n\nYour agent wallet will block any transfer that exceeds these limits.');
           localStorage.setItem('nan_agent_policy_'+agentWalletAddr,JSON.stringify(p));
         } else { addAgentMsg('❌ '+(d.error||'Failed to set policy')); }
+        renderAgentMsgs();
+      }).catch(e=>{addAgentMsg('❌ Error: '+e.message);renderAgentMsgs();});
+      break;
+    }
+    case 'agent-recurring-list':{
+      if(!agentWalletAddr){addAgentMsg('⚠️ Connect agent wallet first.');renderAgentMsgs();break;}
+      addAgentMsg('⏳ Checking your recurring payments...');renderAgentMsgs();
+      fetch('https://nan-production.up.railway.app/api/agent-wallets',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action:'recurring-list',userAddress:userAddr,agentWalletAddress:agentWalletAddr})
+      }).then(r=>r.json()).then(d=>{
+        if(d.success){
+          const active=(d.schedules||[]).filter(s=>s.active);
+          if(!active.length){
+            addAgentMsg('ℹ️ No recurring payments set up right now.\n\nSay "send $X to [address] every [interval]" to set one up.');
+          } else {
+            const lines=active.map(s=>{
+              const to=s.toAgentAddress?s.toAgentAddress.slice(0,6)+'...'+s.toAgentAddress.slice(-4):'unknown';
+              const mins=Math.round((s.intervalSeconds||0)/60);
+              const freq=mins<60?mins+' min':mins<1440?Math.round(mins/60)+' hr':Math.round(mins/1440)+' day';
+              return '🔁 '+(s.amount||'?')+' '+(s.token||'USDC')+' → '+to+' every '+freq+(s.label?' ('+s.label+')':'');
+            });
+            addAgentMsg('Your active recurring payments:\n\n'+lines.join('\n'));
+          }
+        } else { addAgentMsg('❌ '+(d.error||'Failed')); }
         renderAgentMsgs();
       }).catch(e=>{addAgentMsg('❌ Error: '+e.message);renderAgentMsgs();});
       break;
