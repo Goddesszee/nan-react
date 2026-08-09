@@ -5539,6 +5539,15 @@ body.nan-sidebar-collapsed #supportPanel{left:72px !important;}
   #supportPanel{left:0 !important;}
 }
 
+/* Desktop with sidebar: the top bar (brand mark, network pill, Profile
+   dropdown) fully duplicates what the sidebar already provides — remove it
+   entirely and let page content use the reclaimed vertical space instead of
+   leaving it floating alone in the top-right. */
+@media(min-width:901px){
+  #globalTopBar{display:none !important;}
+  .page{top:0 !important;}
+}
+
 /* Old floating theme toggle + old top-nav Wallet dropdown are both redundant now
    that the sidebar has its own theme toggle and covers everything the Wallet
    dropdown used to (Send/Swap/Bridge/Payroll/Naira/History) */
