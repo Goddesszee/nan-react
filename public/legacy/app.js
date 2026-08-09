@@ -10556,9 +10556,10 @@ function saveNotifications(list) {
 
 // ── Add a notification (call this from anywhere) ──────────────────────────────
 // type: 'send' | 'receive' | 'swap' | 'bridge' | 'info'
-function addNotification(title, msg, type = 'info') {
+// page (optional): a goPage() target to navigate to when the notification is clicked
+function addNotification(title, msg, type = 'info', page = null) {
   const list = loadNotifications();
-  list.unshift({ id: Date.now(), title, msg, type, ts: Date.now(), read: false });
+  list.unshift({ id: Date.now(), title, msg, type, ts: Date.now(), read: false, page });
   saveNotifications(list);
   renderNotifBadge();
   if (nanNotifOpen) renderNotifList();
@@ -10637,9 +10638,12 @@ function renderNotifList() {
 }
 
 function handleNotifClick(id) {
-  const list = loadNotifications().map(n => n.id == id ? {...n, read:true} : n);
-  saveNotifications(list);
+  const list = loadNotifications();
+  const notif = list.find(n => n.id == id);
+  saveNotifications(list.map(n => n.id == id ? {...n, read:true} : n));
+  renderNotifBadge();
   toggleNotifPanel();
+  if (notif?.page && typeof goPage === 'function') goPage(notif.page);
 }
 
 function clearNotifications() {
@@ -11657,9 +11661,35 @@ async function nanCheckInvoiceNotifications(){
     if(sbBadge){ sbBadge.style.display = pendingCount>0 ? 'flex' : 'none'; sbBadge.textContent = pendingCount>9?'9+':pendingCount; }
     if(cardBadge){ cardBadge.style.display = pendingCount>0 ? 'flex' : 'none'; cardBadge.textContent = pendingCount>9?'9+':pendingCount; }
 
-    // Toast: tell them when an invoice THEY sent just got a status change
-    // (paid/rejected) since the last time this ran — compares against what
-    // was last seen, stored locally per wallet.
+    // Real notification (bell panel + toast) the first time we see a new
+    // incoming pending invoice — deduped against a locally-remembered set
+    // of IDs already notified about, so re-checking every 2 minutes doesn't
+    // create a fresh entry for the same still-pending invoice each time.
+    if(inR.success){
+      const notifiedKey = 'nan_invoice_notified_'+agentWalletAddr.toLowerCase();
+      let notified = [];
+      try{ notified = JSON.parse(localStorage.getItem(notifiedKey)||'[]'); }catch(e){}
+      const stillPendingIds = (inR.invoices||[]).filter(i=>i.status==='pending').map(i=>i.id);
+      (inR.invoices||[]).forEach(inv=>{
+        if(inv.status === 'pending' && !notified.includes(inv.id)){
+          addNotification(
+            'New invoice',
+            `${inv.amount} ${inv.token}${inv.reason ? ` — "${inv.reason}"` : ''}`,
+            'info',
+            'agent-invoice'
+          );
+          notified.push(inv.id);
+        }
+      });
+      // Drop IDs for invoices that are no longer pending (responded to
+      // elsewhere), keep the list from growing forever.
+      notified = notified.filter(id => stillPendingIds.includes(id));
+      localStorage.setItem(notifiedKey, JSON.stringify(notified));
+    }
+
+    // Toast + bell notification: tell them when an invoice THEY sent just
+    // got a status change (paid/rejected) since the last time this ran —
+    // compares against what was last seen, stored locally per wallet.
     if(outR.success){
       const seenKey = 'nan_invoice_seen_'+agentWalletAddr.toLowerCase();
       let seen = {};
@@ -11667,8 +11697,13 @@ async function nanCheckInvoiceNotifications(){
       (outR.invoices||[]).forEach(inv=>{
         const prev = seen[inv.id];
         if(prev && prev !== inv.status && inv.status !== 'pending'){
-          if(inv.status === 'honored') toast(`✓ Your invoice for ${inv.amount} ${inv.token} was paid`, 'success', 5000);
-          else if(inv.status === 'rejected') toast(`Your invoice for ${inv.amount} ${inv.token} was rejected`, 'info', 5000);
+          if(inv.status === 'honored'){
+            toast(`✓ Your invoice for ${inv.amount} ${inv.token} was paid`, 'success', 5000);
+            addNotification('Invoice paid', `${inv.amount} ${inv.token}${inv.reason ? ` — "${inv.reason}"` : ''}`, 'receive', 'agent-invoice');
+          } else if(inv.status === 'rejected'){
+            toast(`Your invoice for ${inv.amount} ${inv.token} was rejected`, 'info', 5000);
+            addNotification('Invoice rejected', `${inv.amount} ${inv.token}${inv.reason ? ` — "${inv.reason}"` : ''}`, 'info', 'agent-invoice');
+          }
         }
         seen[inv.id] = inv.status;
       });
