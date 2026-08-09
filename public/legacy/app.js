@@ -2861,6 +2861,7 @@ async function refreshBalances(){
     if(haNgn)haNgn.textContent='NGN0.00';
     updateSendAvailable();
     validateSend();
+    if(typeof updateSupplyAssetUI==='function') updateSupplyAssetUI();
   }catch(err){
     console.error('Balance fetch failed:',err);
     try{document.getElementById('rpcError').classList.add('show');}catch(e){}
@@ -8279,6 +8280,25 @@ function setLendAsset(asset,el){
   el.closest('.type-sel').querySelectorAll('.topt').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
 }
+// Supply & Earn card has its own tab toggle, scoped to its own panels only —
+// deliberately NOT reusing setLBTab/.stab, since those clear every .stab on
+// #page-lend and would blank out this card (or the cirBTC card) when switching.
+function setSupplyTab(tab,el){
+  document.querySelectorAll('.supply-tab').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.supply-panel-el').forEach(p=>p.style.display='none');
+  const panel=document.getElementById('lp-'+tab);
+  if(panel) panel.style.display='block';
+}
+function updateSupplyAssetUI(){
+  const bal=lendAsset==='USDC'?parseFloat(usdcBal||0):parseFloat(eurcBal||0);
+  const hintEl=document.getElementById('supplyBalHint');
+  const unitEl=document.getElementById('supplyBalUnit');
+  const btnEl=document.getElementById('supplyBtn');
+  if(hintEl) hintEl.textContent=bal.toFixed(2);
+  if(unitEl) unitEl.textContent=lendAsset;
+  if(btnEl) btnEl.textContent='Supply '+lendAsset;
+}
 function setSupplyMax(){document.getElementById('supplyAmt').value=Math.max(0,parseFloat(lendAsset==='USDC'?usdcBal:eurcBal)-0.02).toFixed(6);}
 function setBorrowMax(){document.getElementById('borrowAmt').value=(lendPositions.supplied*0.75).toFixed(6);}
 function setRepayMax(){document.getElementById('repayAmt').value=lendPositions.borrowed.toFixed(6);}
@@ -8287,11 +8307,13 @@ function setWithdrawMax(){document.getElementById('withdrawAmt').value=lendPosit
 function updateLendPositions(){
   // Update savings card
   const supEl=document.getElementById('suppliedAmt');
-  if(supEl) supEl.textContent=lendPositions.supplied.toFixed(2)+' USDC';
+  if(supEl) supEl.textContent=lendPositions.supplied.toFixed(2)+' '+(typeof lendAsset!=='undefined'?lendAsset:'USDC');
   const borEl=document.getElementById('borrowedAmt');
   if(borEl) borEl.textContent=lendPositions.borrowed.toFixed(2)+' USDC';
   const intEl=document.getElementById('accruedInterest');
   if(intEl) intEl.textContent='+'+lendPositions.interest.toFixed(6)+' earned';
+  const wAvailEl=document.getElementById('withdrawAvail');
+  if(wAvailEl) wAvailEl.textContent=lendPositions.supplied.toFixed(2)+' '+(typeof lendAsset!=='undefined'?lendAsset:'USDC');
   // Update repay panel
   const rbEl=document.getElementById('repayBorrowed');
   if(rbEl) rbEl.textContent=lendPositions.borrowed.toFixed(2)+' USDC';
