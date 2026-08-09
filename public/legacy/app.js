@@ -11316,6 +11316,8 @@ async function nanRefreshAgentLimits(){
     window._agentNanopayCap = p?.nanopayCap ?? null;
   }catch(e){
     console.log('[agent] limits fetch error:', e.message);
+    const anyStatusEl = document.getElementById('agentLimitStatus');
+    if(anyStatusEl) anyStatusEl.textContent = 'Could not load your saved limits — try refreshing the page.';
   }
 }
 async function nanSaveNanopayCap(){
