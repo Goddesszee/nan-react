@@ -11,7 +11,33 @@ function goPage(name) {
   // Agent Wallet's own connect hero now only lives behind the top-nav pill's
   // dropdown — don't show it as an in-app page when disconnected, redirect
   // to Swap instead.
+  //
+  // IMPORTANT: agentWalletAddr is only populated by prior user actions
+  // (visiting this page before, sending, etc) — a fresh session/tab that
+  // hasn't done any of those yet will have it unset even when a real,
+  // funded agent wallet already exists server-side. Don't trust it blindly:
+  // kick off a background resolve and only fall back to Swap once we've
+  // actually confirmed there's no wallet, instead of assuming there isn't
+  // one just because this tab hasn't fetched it yet.
   if (name === 'agent-wallet' && !(typeof agentWalletAddr !== 'undefined' && agentWalletAddr)) {
+    const _addr = (typeof userAddr !== 'undefined' && userAddr) ? userAddr : localStorage.getItem('nan_dynamic_address');
+    if (_addr) {
+      fetch('https://nan-production.up.railway.app/api/agent-wallets', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ action: 'get-or-create', userAddress: _addr }),
+        signal: AbortSignal.timeout(8000)
+      }).then(r => r.json()).then(d => {
+        if (d.success && d.wallet?.walletAddress) {
+          agentWalletAddr = d.wallet.walletAddress;
+          window.agentWalletAddr = agentWalletAddr;
+          localStorage.setItem('nan_agent_addr', agentWalletAddr);
+          // A real wallet was found after all — if the user is still trying
+          // to view Agent Wallet (didn't navigate elsewhere meanwhile),
+          // send them there properly now instead of leaving them on Swap.
+          if (window._currentPage === 'swap' || window._currentPage === 'agent-wallet') goPage('agent-wallet');
+        }
+      }).catch(() => {});
+    }
     name = 'swap';
   }
   window._prevPage = window._currentPage || 'home';
