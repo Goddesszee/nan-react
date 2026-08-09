@@ -4036,14 +4036,14 @@ html,body{background-color:var(--bg);}
   <!-- Page header -->
   <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:18px;">
     <div style="font-family:'Syne','Inter',sans-serif;font-size:1.5rem;font-weight:700;color:var(--text);letter-spacing:-.02em;">Earn</div>
-    <div style="font-size:.68rem;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(247,147,27,.1);border:1px solid rgba(247,147,27,.25);color:#f7931b;">cirBTC · Beta</div>
+    <div style="font-size:.68rem;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(37,99,235,.1);border:1px solid rgba(37,99,235,.25);color:#2563EB;">cirBTC · Beta</div>
   </div>
 
   <!-- Stats row -->
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:20px;">
     <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 20px;">
       <div style="font-size:.72rem;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">Collateral</div>
-      <div id="lbCollateralBal" style="font-family:'Syne','Inter',sans-serif;font-size:1.5rem;font-weight:800;color:#f7931b;letter-spacing:-.02em;">0.000000</div>
+      <div id="lbCollateralBal" style="font-family:'Syne','Inter',sans-serif;font-size:1.5rem;font-weight:800;color:#2563EB;letter-spacing:-.02em;">0.000000</div>
       <div style="font-size:.72rem;color:var(--text3);margin-top:3px;">cirBTC</div>
     </div>
     <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 20px;">
@@ -4066,13 +4066,13 @@ html,body{background-color:var(--bg);}
     </div>
 
     <!-- Info banner -->
-    <div style="margin:16px 22px 14px;background:rgba(247,147,27,.07);border:1px solid rgba(247,147,27,.2);border-radius:12px;padding:11px 14px;display:flex;align-items:flex-start;gap:8px;">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f7931b" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <div style="font-size:.75rem;color:var(--text2);line-height:1.5;">Deposit cirBTC as collateral → borrow up to 50% of its value in USDC. Interest-free. One active loan at a time. Get cirBTC free at <span style="color:#f7931b;">faucet.circle.com</span></div>
+    <div style="margin:16px 22px 14px;background:rgba(37,99,235,.07);border:1px solid rgba(37,99,235,.2);border-radius:12px;padding:11px 14px;display:flex;align-items:flex-start;gap:8px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <div style="font-size:.75rem;color:var(--text2);line-height:1.5;">Deposit cirBTC as collateral → borrow up to 50% of its value in USDC. Interest-free. One active loan at a time. Get cirBTC free at <span style="color:#2563EB;">faucet.circle.com</span></div>
     </div>
 
     <!-- Tabs -->
-    <div class="send-tabs" style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:13px;padding:4px;gap:3px;margin:0 22px 14px;max-width:460px;">
+    <div class="send-tabs" style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:13px;padding:4px;gap:3px;margin:0 22px 14px;">
       <button class="stab active" id="lbTab-deposit" onclick="setLBTab('deposit',this)">Deposit</button>
       <button class="stab" id="lbTab-withdraw" onclick="setLBTab('withdraw',this)">Withdraw</button>
       <button class="stab" id="lbTab-borrow" onclick="setLBTab('borrow',this)">Borrow</button>
@@ -4080,31 +4080,31 @@ html,body{background-color:var(--bg);}
     </div>
 
     <!-- DEPOSIT cirBTC panel -->
-    <div class="stake-panel active" id="lb-deposit" style="padding:0 22px 22px;max-width:460px;">
-      <div style="background:rgba(255,255,255,.04);border:1.5px solid rgba(247,147,27,.25);border-radius:14px;padding:16px;margin-bottom:10px;">
+    <div class="stake-panel active" id="lb-deposit" style="padding:0 22px 22px;">
+      <div style="background:rgba(255,255,255,.04);border:1.5px solid rgba(37,99,235,.25);border-radius:14px;padding:16px;margin-bottom:10px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;">
           <div style="display:flex;align-items:center;gap:6px;">
             <svg width="14" height="14" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#F7931B"/><path d="M23.19 13.54c.32-2.1-1.29-3.24-3.48-4l.71-2.85-1.73-.43-.69 2.77-1.39-.34.69-2.77-1.73-.43-.71 2.84-1.11-.27-2.39-.6-.71 2.84 1.38.35-.97 3.9 1.38.34-1.07 4.31c-.14.17-.32.43-.72.34l-1.38-.34-.95 3.79 2.26.56-.71 2.85 1.49.37-.71 2.84 1.39.35.71-2.84 1.38.34-.71 2.84 1.73.43.71-2.84c2.25.56 4.17.39 5.52-.88 1.1-1.03 1.43-2.48.9-3.84 1.31-.5 2.25-1.6 2.52-3.24z" fill="#fff"/></svg>
-            <span style="font-size:.6rem;font-weight:700;color:rgba(247,147,27,.7);letter-spacing:.12em;text-transform:uppercase;">cirBTC Amount</span>
+            <span style="font-size:.6rem;font-weight:700;color:rgba(37,99,235,.8);letter-spacing:.12em;text-transform:uppercase;">cirBTC Amount</span>
           </div>
-          <span style="font-size:.7rem;color:rgba(247,147,27,.6);font-weight:600;">Wallet: <span id="lbCirbtcWallet">—</span></span>
+          <span style="font-size:.7rem;color:rgba(37,99,235,.7);font-weight:600;">Wallet: <span id="lbCirbtcWallet">—</span></span>
         </div>
         <div style="display:flex;align-items:center;gap:10px;">
           <input id="lbDepositAmt" type="number" min="0.000001" step="0.000001" placeholder="0.000000" inputmode="decimal"
             style="flex:1;background:none;border:none;outline:none;font-family:'Syne','Inter',sans-serif;font-size:1.7rem;font-weight:800;color:var(--text);width:0;letter-spacing:-1px;"/>
-          <button onclick="document.getElementById('lbDepositAmt').value=parseFloat(cirbtcBal||0).toFixed(6);lbCalcDeposit();" style="background:none;border:none;font-size:.75rem;font-weight:700;color:#f7931b;cursor:pointer;flex-shrink:0;">MAX</button>
+          <button onclick="document.getElementById('lbDepositAmt').value=parseFloat(cirbtcBal||0).toFixed(6);lbCalcDeposit();" style="background:none;border:none;font-size:.75rem;font-weight:700;color:#2563EB;cursor:pointer;flex-shrink:0;">MAX</button>
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--border);margin-top:8px;">
           <span style="font-size:.72rem;color:var(--text3);">Borrow capacity unlocked</span>
           <span id="lbDepositCapacity" style="font-family:'DM Mono','Roboto Mono',monospace;font-size:.72rem;color:var(--text3);font-weight:600;">≈ 0.00 USDC</span>
         </div>
       </div>
-      <button class="btn" onclick="doLBDeposit()" style="width:100%;padding:15px;background:#f7931b;border:none;border-radius:13px;color:#fff;font-family:'Syne','Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(247,147,27,.35);">Deposit cirBTC →</button>
+      <button class="btn" onclick="doLBDeposit()" style="width:100%;padding:15px;background:#2563EB;border:none;border-radius:13px;color:#fff;font-family:'Syne','Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(37,99,235,.35);">Deposit cirBTC →</button>
       <div style="font-size:.72rem;color:var(--text3);text-align:center;margin-top:8px;">Requires MetaMask approval on Arc Testnet</div>
     </div>
 
     <!-- WITHDRAW cirBTC panel -->
-    <div class="stake-panel" id="lb-withdraw" style="padding:0 22px 22px;max-width:460px;">
+    <div class="stake-panel" id="lb-withdraw" style="padding:0 22px 22px;">
       <div style="background:rgba(255,255,255,.04);border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:10px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;">
           <span style="font-size:.6rem;font-weight:700;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;">Withdraw cirBTC</span>
@@ -4121,7 +4121,7 @@ html,body{background-color:var(--bg);}
     </div>
 
     <!-- BORROW USDC panel -->
-    <div class="stake-panel" id="lb-borrow" style="padding:0 22px 22px;max-width:460px;">
+    <div class="stake-panel" id="lb-borrow" style="padding:0 22px 22px;">
       <div style="background:rgba(255,255,255,.04);border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:10px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;">
           <span style="font-size:.6rem;font-weight:700;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;">USDC Amount</span>
@@ -4142,7 +4142,7 @@ html,body{background-color:var(--bg);}
     </div>
 
     <!-- REPAY USDC panel -->
-    <div class="stake-panel" id="lb-repay" style="padding:0 22px 22px;max-width:460px;">
+    <div class="stake-panel" id="lb-repay" style="padding:0 22px 22px;">
       <div style="background:rgba(255,255,255,.04);border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:10px;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;">
           <span style="font-size:.6rem;font-weight:700;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;">Repay USDC</span>
@@ -4158,7 +4158,7 @@ html,body{background-color:var(--bg);}
     </div>
 
     <!-- Status message -->
-    <div id="lbStatus" style="display:none;margin:0 22px 22px;padding:10px 14px;border-radius:10px;font-size:.78rem;font-weight:600;text-align:center;max-width:460px;"></div>
+    <div id="lbStatus" style="display:none;margin:0 22px 22px;padding:10px 14px;border-radius:10px;font-size:.78rem;font-weight:600;text-align:center;"></div>
 
   </div><!-- end Lend & Borrow card -->
 
