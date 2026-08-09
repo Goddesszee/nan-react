@@ -12445,15 +12445,31 @@ async function nanopayDiscover(){
       return;
     }
     resultsEl.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;">${
-      services.map((s,i) => `<div style="border:1px solid var(--border);border-radius:12px;padding:14px;">
+      services.map((s,i) => {
+        // Arc is the only chain actually proven end-to-end (via Leakage).
+        // Others the backend recognizes (Base, Sepolia variants) are
+        // technically mapped but genuinely untested — the agent wallet was
+        // created as a single-chain Arc Testnet wallet, so it may not even
+        // have presence elsewhere. Being honest about that distinction
+        // rather than showing a blanket "supported" badge.
+        const netMap = { 'eip155:5042002':'Arc Testnet', 'eip155:8453':'Base', 'eip155:1':'Ethereum', 'eip155:11155111':'Sepolia', 'eip155:84532':'Base Sepolia' };
+        const netLabel = netMap[s.network] || (s.network ? s.network.replace('eip155:','Chain ') : 'Unknown network');
+        const netBadge = s.network === 'eip155:5042002'
+          ? `<span style="font-size:.62rem;font-weight:700;color:var(--success);background:rgba(34,197,94,.1);padding:2px 6px;border-radius:100px;">✓ ${netLabel}</span>`
+          : netMap[s.network]
+            ? `<span style="font-size:.62rem;font-weight:700;color:#F59E0B;background:rgba(245,158,11,.1);padding:2px 6px;border-radius:100px;">⚠ ${netLabel} — untested</span>`
+            : `<span style="font-size:.62rem;font-weight:700;color:var(--danger);background:rgba(220,38,38,.1);padding:2px 6px;border-radius:100px;">✕ ${netLabel} — not supported</span>`;
+        return `<div style="border:1px solid var(--border);border-radius:12px;padding:14px;">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;">
           <div style="font-size:.85rem;font-weight:700;color:var(--text);">${nanopayHumanize(s.name).slice(0,60)}</div>
           <span style="font-size:.72rem;font-weight:700;color:#2563EB;flex-shrink:0;">${s.priceUsdc != null ? '$'+s.priceUsdc : '—'}</span>
         </div>
+        <div style="margin-bottom:8px;">${netBadge}</div>
         <div style="font-size:.75rem;color:var(--text3);margin-bottom:10px;min-height:32px;">${(s.description||'No description provided').slice(0,120)}</div>
         <div style="font-size:.68rem;color:var(--text3);font-family:'JetBrains Mono',monospace;word-break:break-all;margin-bottom:10px;">${s.method} ${s.resource}</div>
         <button onclick='nanopayDiscoveredPay(${i})' style="width:100%;padding:9px;border-radius:9px;border:1px solid rgba(37,99,235,.3);background:rgba(37,99,235,.08);color:#2563EB;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;">Pay &amp; call</button>
-      </div>`).join('')
+      </div>`;
+      }).join('')
     }</div>
     <div style="margin-top:14px;padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:var(--bg);">
       ${hiddenCount > 0 ? `<div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">${hiddenCount} other result${hiddenCount>1?'s':''} hidden — needed extra info in the URL this page doesn't collect yet.</div>` : ''}
