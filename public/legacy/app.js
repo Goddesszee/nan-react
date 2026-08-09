@@ -12452,7 +12452,7 @@ async function nanopayDiscover(){
         // created as a single-chain Arc Testnet wallet, so it may not even
         // have presence elsewhere. Being honest about that distinction
         // rather than showing a blanket "supported" badge.
-        const netMap = { 'eip155:5042002':'Arc Testnet', 'eip155:8453':'Base', 'eip155:1':'Ethereum', 'eip155:11155111':'Sepolia', 'eip155:84532':'Base Sepolia' };
+        const netMap = { 'eip155:5042002':'Arc Testnet', 'eip155:84532':'Base Sepolia', 'eip155:11155111':'Sepolia', 'eip155:80002':'Polygon Amoy' };
         const netLabel = netMap[s.network] || (s.network ? s.network.replace('eip155:','Chain ') : 'Unknown network');
         const netBadge = s.network === 'eip155:5042002'
           ? `<span style="font-size:.62rem;font-weight:700;color:var(--success);background:rgba(34,197,94,.1);padding:2px 6px;border-radius:100px;">✓ ${netLabel}</span>`
