@@ -12152,6 +12152,29 @@ async function nanopayQuickPay(){
   }
   if(btn){ btn.disabled = false; btn.textContent = 'Pay & call'; }
 }
+async function nanopayBtcTest(){
+  const btn = document.getElementById('nanopayBtcBtn');
+  const statusEl = document.getElementById('nanopayStatus');
+  if(!agentWalletAddr){ if(statusEl) statusEl.textContent = 'Connect your agent wallet first.'; return; }
+  if(btn){ btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Paying…'; }
+  nanopaySpinner();
+  // Real, non-free service from Circle's marketplace — the placeholder from
+  // last time filled in with an actual value (BTC-USD), so this one should
+  // genuinely trigger a payment instead of a 404 or a free pass.
+  const url = 'https://nano.blockrun.ai/api/v1/crypto/price/BTC-USD';
+  try{
+    const r = await fetch(AGENT_API, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'pay-service', userAddress: userAddr, address: agentWalletAddr, url, method:'GET', chain:'ARC-TESTNET', maxAmount: window._agentNanopayCap ?? undefined })
+    });
+    const d = await r.json();
+    nanopayShowResult(nanopayFormatResult(d, url));
+    if(statusEl) statusEl.textContent = '';
+  }catch(err){
+    nanopayShowResult(`<div style="color:var(--danger);font-size:.8rem;padding:16px 0;text-align:center;">${err.message.slice(0,150)}</div>`);
+  }
+  if(btn){ btn.disabled = false; btn.textContent = 'Pay & call'; }
+}
 async function nanopayCustomPay(){
   const url = document.getElementById('nanopayUrlInput')?.value.trim();
   const method = document.getElementById('nanopayMethodInput')?.value || 'GET';
