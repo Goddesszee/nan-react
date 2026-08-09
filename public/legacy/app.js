@@ -22,6 +22,71 @@ function apiFetch(path, opts){
   return fetch(API_BASE + path, opts);
 }
 
+// ═══════════════════════════════════════════
+// AUTH — transparently attach proof-of-identity to sensitive requests
+// ═══════════════════════════════════════════
+// The backend now requires proof of identity on money-moving actions:
+//   - circle-wallets.js  → Authorization: Bearer <session token from OTP verify>
+//   - agent-wallets.js   → EITHER that same session token (Circle-custody
+//                          wallets, if the email is linked) OR a fresh
+//                          personal_sign signature (self-custody wallets)
+// Rather than edit every one of the ~60 existing fetch() call sites for these
+// two endpoints, this wraps window.fetch once so nothing else in the file
+// needs to change. Only requests whose JSON body has one of the listed
+// `action` values are touched — everything else passes through untouched.
+(function(){
+  const _origFetch = window.fetch.bind(window);
+
+  const CIRCLE_AUTH_ACTIONS = new Set([
+    'transfer', 'bridge', 'contractCall', 'swapExecute', 'appkitSend', 'appkitBridge', 'cctpMint',
+  ]);
+  const AGENT_AUTH_ACTIONS = new Set([
+    'transfer', 'a2a-transfer', 'escrow-release', 'escrow-refund',
+    'set-policy', 'clear-policy', 'recurring-create', 'recurring-cancel',
+    'net-settle', 'invoice-respond',
+  ]);
+
+  function buildAuthMessage(action, addr, timestamp){
+    return `NAN authorization\naction: ${action}\naddress: ${String(addr).toLowerCase()}\ntimestamp: ${timestamp}`;
+  }
+
+  window.fetch = async function(input, opts){
+    try{
+      const url = typeof input === 'string' ? input : (input && input.url) || '';
+      if (opts && opts.method === 'POST' && typeof opts.body === 'string' && url.includes('/api/circle-wallets')) {
+        const body = JSON.parse(opts.body);
+        if (CIRCLE_AUTH_ACTIONS.has(body.action)) {
+          const token = localStorage.getItem('nan_session_token');
+          if (token) {
+            opts = Object.assign({}, opts, { headers: Object.assign({}, opts.headers, { Authorization: 'Bearer ' + token }) });
+          }
+        }
+      } else if (opts && opts.method === 'POST' && typeof opts.body === 'string' && url.includes('/api/agent-wallets')) {
+        const body = JSON.parse(opts.body);
+        if (AGENT_AUTH_ACTIONS.has(body.action) && body.userAddress) {
+          // Self-custody wallets sign; Circle-custody wallets (no injected
+          // signer for their address) fall back to the session token, which
+          // the server accepts only if that email is linked to this wallet.
+          if (window.ethereum && !isCircleWallet) {
+            const timestamp = Date.now();
+            const message = buildAuthMessage(body.action, body.userAddress, timestamp);
+            const signature = await window.ethereum.request({ method: 'personal_sign', params: [message, body.userAddress] });
+            body.signature = signature;
+            body.timestamp = timestamp;
+            opts = Object.assign({}, opts, { body: JSON.stringify(body) });
+          } else {
+            const token = localStorage.getItem('nan_session_token');
+            if (token) {
+              opts = Object.assign({}, opts, { headers: Object.assign({}, opts.headers, { Authorization: 'Bearer ' + token }) });
+            }
+          }
+        }
+      }
+    }catch(e){ console.warn('[nan-auth] skipped auth injection:', e.message); }
+    return _origFetch(input, opts);
+  };
+})();
+
 const ARC_CHAIN_ID  = 5042002;
 const ARC_HEX       = '0x4CEF52';
 const ARC_RPC       = 'https://rpc.testnet.arc.io';
@@ -1126,6 +1191,7 @@ async function verifyOTP(){
     });
     const data=await res.json();
     if(!data.success){toast(data.error||'Wrong code — try again','error',5000);btn.innerHTML='Verify →';btn.disabled=false;return;}
+    if(data.sessionToken){localStorage.setItem('nan_session_token', data.sessionToken);}
     try{
       const cwRes=await fetch('https://nan-production.up.railway.app/api/circle-wallets',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'getWallet',email:otpEmail})});
       const cwData=await cwRes.json();
@@ -6201,6 +6267,7 @@ async function verifyFloatingOTP(){
       body:JSON.stringify({action:'verify',email,otp,token:window._otpToken,expiresAt:window._otpExpiry})});
     const data = await res.json();
     if(!data.success) throw new Error(data.error||'Invalid code — try again');
+    if(data.sessionToken){localStorage.setItem('nan_session_token', data.sessionToken);}
 
     // Step 2: Get or create Circle wallet
     btn.textContent = 'Setting up wallet…';
