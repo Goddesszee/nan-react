@@ -5478,13 +5478,13 @@ html[data-theme=light] .nan-hero-globe{
   transition:transform .2s,background .15s;z-index:1;
 }
 #nanSidebarCollapseBtn:hover{background:var(--card2);}
-.nan-sb-brand{display:flex;align-items:center;gap:8px;padding:0 6px 24px;}
+.nan-sb-brand{display:flex;align-items:center;gap:8px;padding:0 6px 16px;}
 .nan-sb-logo{width:28px;height:28px;border-radius:50%;background:#2563EB;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .nan-sb-brand-label{font-weight:800;font-size:1rem;color:var(--text);}
-.nan-sb-items{flex:1;display:flex;flex-direction:column;gap:4px;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;}
+.nan-sb-items{flex:1;display:flex;flex-direction:column;gap:2px;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;}
 .nan-sb-items::-webkit-scrollbar{display:none;}
 .nan-sb-item-row{
-  display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:11px;
+  display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:11px;
   cursor:pointer;font-size:15px;font-weight:500;color:var(--text2);font-family:'Inter',sans-serif;
   transition:background .15s,color .15s;
 }
@@ -5494,7 +5494,7 @@ html[data-theme=light] .nan-hero-globe{
   color:#fff;font-weight:700;
 }
 .nan-sb-section-label{
-  padding:14px 12px 4px;font-size:.68rem;font-weight:700;letter-spacing:.1em;
+  padding:10px 12px 4px;font-size:.68rem;font-weight:700;letter-spacing:.1em;
   text-transform:uppercase;color:var(--text3);font-family:'Inter',sans-serif;
 }
 .nan-sb-divider{height:1px;background:var(--border);margin:8px 12px;}
