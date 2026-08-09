@@ -11974,19 +11974,36 @@ function nanopayHumanize(key){
 }
 function nanopayRenderValue(val, depth){
   if(val === null || val === undefined) return '<span style="color:var(--text3);">—</span>';
-  if(typeof val === 'object' && !Array.isArray(val)){
+  if(Array.isArray(val)){
+    if(!val.length) return '<span style="color:var(--text3);">Empty</span>';
+    // Array of objects (e.g. a list of subscriptions) — render each as its
+    // own mini-card instead of dumping the whole array as one long JSON
+    // string, which overflows a label:value row badly.
+    if(typeof val[0] === 'object' && val[0] !== null && !Array.isArray(val[0])){
+      return `<div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">${
+        val.map(item => `<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 10px;">${
+          Object.keys(item).map(k => `<div style="display:flex;justify-content:space-between;gap:12px;padding:2px 0;font-size:.75rem;">
+            <span style="color:var(--text3);flex-shrink:0;">${nanopayHumanize(k)}</span>
+            <span style="color:var(--text);text-align:right;word-break:break-word;">${nanopayRenderValue(item[k], depth+1)}</span>
+          </div>`).join('')
+        }</div>`).join('')
+      }</div>`;
+    }
+    // Array of primitives — plain comma-separated, wraps normally.
+    return `<span style="word-break:break-word;">${val.map(String).join(', ')}</span>`;
+  }
+  if(typeof val === 'object'){
     const keys = Object.keys(val);
     if(depth < 2 && keys.length && keys.every(k => typeof val[k] !== 'object' || val[k] === null)){
       return `<div style="margin-top:4px;padding-left:12px;border-left:2px solid var(--border);">${
         keys.map(k => `<div style="display:flex;justify-content:space-between;gap:12px;padding:3px 0;font-size:.78rem;">
           <span style="color:var(--text3);flex-shrink:0;">${nanopayHumanize(k)}</span>
-          <span style="color:var(--text);text-align:right;">${nanopayRenderValue(val[k], depth+1)}</span>
+          <span style="color:var(--text);text-align:right;word-break:break-word;">${nanopayRenderValue(val[k], depth+1)}</span>
         </div>`).join('')
       }</div>`;
     }
-    return `<span style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text2);">${JSON.stringify(val)}</span>`;
+    return `<span style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text2);word-break:break-word;">${JSON.stringify(val)}</span>`;
   }
-  if(Array.isArray(val)) return `<span style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text2);">${JSON.stringify(val)}</span>`;
   return String(val);
 }
 function nanopayFormatResult(d, url){
@@ -12016,10 +12033,25 @@ function nanopayFormatResult(d, url){
   let resultHtml;
   if(d.result && typeof d.result === 'object' && !Array.isArray(d.result) && Object.keys(d.result).length){
     resultHtml = `<div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px 14px;">${
-      Object.keys(d.result).map(k => `<div style="display:flex;justify-content:space-between;gap:16px;padding:6px 0;border-bottom:1px solid var(--border);">
-        <span style="font-size:.75rem;font-weight:600;color:var(--text3);flex-shrink:0;">${nanopayHumanize(k)}</span>
-        <span style="font-size:.78rem;color:var(--text);text-align:right;">${nanopayRenderValue(d.result[k], 0)}</span>
-      </div>`).join('')
+      Object.keys(d.result).map(k => {
+        const v = d.result[k];
+        // Complex values (an array of objects, or a nested object) get
+        // stacked full-width below their label instead of squeezed into a
+        // narrow right-aligned column — that's what was clipping the
+        // Subscriptions list.
+        const isComplex = (Array.isArray(v) && v.length && typeof v[0] === 'object' && v[0] !== null)
+          || (v && typeof v === 'object' && !Array.isArray(v) && Object.values(v).some(x => x && typeof x === 'object'));
+        if(isComplex){
+          return `<div style="padding:8px 0;border-bottom:1px solid var(--border);">
+            <div style="font-size:.75rem;font-weight:600;color:var(--text3);margin-bottom:6px;">${nanopayHumanize(k)}</div>
+            <div>${nanopayRenderValue(v, 0)}</div>
+          </div>`;
+        }
+        return `<div style="display:flex;justify-content:space-between;gap:16px;padding:6px 0;border-bottom:1px solid var(--border);">
+          <span style="font-size:.75rem;font-weight:600;color:var(--text3);flex-shrink:0;">${nanopayHumanize(k)}</span>
+          <span style="font-size:.78rem;color:var(--text);text-align:right;word-break:break-word;">${nanopayRenderValue(v, 0)}</span>
+        </div>`;
+      }).join('')
     }</div>`;
   } else {
     resultHtml = `<pre style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:.75rem;color:var(--text2);overflow-x:auto;white-space:pre-wrap;word-break:break-word;font-family:'JetBrains Mono',monospace;max-height:280px;overflow-y:auto;">${JSON.stringify(d.result, null, 2)}</pre>`;
