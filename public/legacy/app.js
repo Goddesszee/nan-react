@@ -6862,7 +6862,7 @@ function executeAgentAction(action){
       }
       // If no destination or user said "to my agent wallet", send from main wallet to agent wallet
       if(!action.to || action.to==='AGENT_SELF' || action.to===agentWalletAddr){
-        addAgentMsg('⏳ Sending '+action.amount+' '+(action.token||'USDC')+' from main wallet to agent wallet...');
+        addAgentMsg('That address is your own agent wallet — sending there means funding it, not paying someone else.\n\n⏳ Sending '+action.amount+' '+(action.token||'USDC')+' from your main wallet to your agent wallet...');
         renderAgentMsgs();
         goPage('send');
         setTimeout(()=>{document.getElementById('recipInput').value=agentWalletAddr;document.getElementById('amtInput').value=action.amount||'';sendToken=action.token||'USDC';document.getElementById('sendTokenLabel').textContent=sendToken;validateSend();},300);
