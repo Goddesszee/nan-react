@@ -971,6 +971,19 @@ html,body{background-color:var(--bg);}
     <div id="agentPageTitle" style="font-family:'Inter',sans-serif;font-size:2.1rem;font-weight:700;color:var(--text);letter-spacing:-.02em;">Agent Wallet</div>
     <div style="font-family:'Inter',sans-serif;font-size:1rem;font-weight:500;color:var(--text2);margin-top:6px;">Manage your agent's balance, spending policy, and activity, all in one place.</div>
   </div>
+  <div id="agentEmailBanner" style="display:none;margin:16px 24px 0;background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.2);border-radius:16px;padding:16px 20px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:220px;">
+        <div style="font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:2px;">Get notified by email</div>
+        <div style="font-size:.78rem;color:var(--text2);">New invoices, payments received, anything that needs you — even when the app is closed.</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input id="agentEmailBannerInput" type="email" placeholder="you@example.com" style="width:200px;padding:9px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);box-sizing:border-box;font-size:.85rem;"/>
+        <button id="agentEmailBannerSaveBtn" onclick="nanSaveEmailBanner()" style="padding:9px 16px;border-radius:10px;border:none;background:#2563EB;color:#fff;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;white-space:nowrap;">Save</button>
+        <button onclick="nanDismissEmailBanner()" style="width:32px;height:32px;border-radius:8px;border:none;background:none;color:var(--text3);cursor:pointer;font-size:.9rem;flex-shrink:0;">✕</button>
+      </div>
+    </div>
+  </div>
   <div class="nan-bal-card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px 32px;margin:20px 24px 28px;box-sizing:border-box;">
     <div>
       <div style="display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.04em;">

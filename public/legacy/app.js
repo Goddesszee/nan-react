@@ -11687,6 +11687,51 @@ function invoiceStatusPill(status){
   const [label,bg,color] = map[status] || map.pending;
   return `<span style="font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:100px;background:${bg};color:${color};">${label}</span>`;
 }
+async function nanCheckEmailBanner(){
+  if(!userAddr) return;
+  const banner = document.getElementById('agentEmailBanner');
+  if(!banner) return;
+  const dismissKey = 'nan_email_banner_dismissed_'+userAddr.toLowerCase();
+  if(localStorage.getItem(dismissKey)) return;
+  try{
+    const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'get-email', userAddress: userAddr })
+    });
+    const d = await r.json();
+    if(d.success && !d.email){
+      banner.style.display = 'block';
+    }
+  }catch(e){
+    console.log('[email banner] check failed:', e.message);
+  }
+}
+function nanDismissEmailBanner(){
+  const banner = document.getElementById('agentEmailBanner');
+  if(banner) banner.style.display = 'none';
+  if(userAddr) localStorage.setItem('nan_email_banner_dismissed_'+userAddr.toLowerCase(), '1');
+}
+async function nanSaveEmailBanner(){
+  const input = document.getElementById('agentEmailBannerInput');
+  const btn = document.getElementById('agentEmailBannerSaveBtn');
+  const email = input?.value.trim();
+  if(!email || !email.includes('@')){ toast('Enter a valid email', 'error', 3000); return; }
+  if(!userAddr){ toast('Connect your wallet first', 'error', 3000); return; }
+  if(btn){ btn.disabled = true; btn.textContent = 'Saving…'; }
+  try{
+    const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'link-email', userAddress: userAddr, email })
+    });
+    const d = await r.json();
+    if(!d.success) throw new Error(d.error || 'Could not save');
+    toast('✓ You\'ll get notified by email now', 'success', 3500);
+    nanDismissEmailBanner();
+  }catch(err){
+    toast(err.message.slice(0,120), 'error', 4000);
+    if(btn){ btn.disabled = false; btn.textContent = 'Save'; }
+  }
+}
 async function nanCheckInvoiceNotifications(){
   if(!agentWalletAddr) return;
   try{
@@ -12099,6 +12144,7 @@ function agentPageRefresh() {
     if(typeof nanUpdateAgentHoldings === 'function') nanUpdateAgentHoldings();
     if(typeof nanRefreshAgentLimits === 'function') nanRefreshAgentLimits();
     if(typeof nanCheckInvoiceNotifications === 'function') nanCheckInvoiceNotifications();
+    if(typeof nanCheckEmailBanner === 'function') nanCheckEmailBanner();
   } else {
     if (status) status.textContent = 'Not connected';
     if (badge)  { badge.textContent = 'Offline'; badge.style.cssText = 'font-size:.72rem;padding:3px 9px;border-radius:100px;background:rgba(107,114,128,.1);border:1px solid var(--border);color:var(--text3);font-weight:600;'; }
