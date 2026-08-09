@@ -162,11 +162,11 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
         </div>
 
         <h1 style={{ fontFamily:'Inter,sans-serif', fontSize:'clamp(2.3rem,6.5vw,4.6rem)', fontWeight:800, lineHeight:1.04, letterSpacing:'-.035em', margin:'0 0 16px' }}>
-          The intelligent payment layer<br/>for the <span style={{ color:accentL }}>stablecoin economy.</span>
+          Payment rails<br/>for <span style={{ color:accentL }}>AI agents.</span>
         </h1>
 
         <p style={{ fontSize:'clamp(1rem,1.7vw,1.15rem)', color:text2, lineHeight:1.55, maxWidth:560, margin:'0 0 28px' }}>
-          Nan connects people, businesses, and AI agents through secure stablecoin payments and intelligent financial automation.
+          Give your agents a wallet, spending limits, and an onchain identity, so they can pay and get paid without a human approving every transaction.
         </p>
 
         <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:16, width:'100%', maxWidth:400 }}>
