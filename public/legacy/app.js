@@ -12175,6 +12175,62 @@ async function nanopayCustomPay(){
   if(btn){ btn.disabled = false; btn.textContent = 'Pay & call'; }
 }
 
+// ── Service discovery (Circle's public x402 Bazaar) ────────────────────────
+async function nanopayDiscover(){
+  const q = document.getElementById('nanopayDiscoverInput')?.value.trim();
+  const btn = document.getElementById('nanopayDiscoverBtn');
+  const resultsEl = document.getElementById('nanopayDiscoverResults');
+  if(!resultsEl) return;
+  if(btn){ btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>'; }
+  resultsEl.innerHTML = '<div style="text-align:center;padding:24px 0;"><span class="spinner"></span></div>';
+  try{
+    const r = await fetch(AGENT_API, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'discover-services', query: q || undefined, limit: 12 })
+    });
+    const d = await r.json();
+    if(!d.success) throw new Error(d.error || 'Could not search services');
+    const services = d.services || [];
+    if(!services.length){
+      resultsEl.innerHTML = `<div style="text-align:center;padding:24px 16px;"><div style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:4px;">No matches</div><div style="font-size:.78rem;color:var(--text3);">Try a broader search term.</div></div>`;
+      return;
+    }
+    resultsEl.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;">${
+      services.map((s,i) => `<div style="border:1px solid var(--border);border-radius:12px;padding:14px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;">
+          <div style="font-size:.85rem;font-weight:700;color:var(--text);">${nanopayHumanize(s.name).slice(0,60)}</div>
+          <span style="font-size:.72rem;font-weight:700;color:#2563EB;flex-shrink:0;">${s.priceUsdc != null ? '$'+s.priceUsdc : '—'}</span>
+        </div>
+        <div style="font-size:.75rem;color:var(--text3);margin-bottom:10px;min-height:32px;">${(s.description||'No description provided').slice(0,120)}</div>
+        <div style="font-size:.68rem;color:var(--text3);font-family:'JetBrains Mono',monospace;word-break:break-all;margin-bottom:10px;">${s.method} ${s.resource}</div>
+        <button onclick='nanopayDiscoveredPay(${i})' style="width:100%;padding:9px;border-radius:9px;border:1px solid rgba(37,99,235,.3);background:rgba(37,99,235,.08);color:#2563EB;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;">Pay &amp; call</button>
+      </div>`).join('')
+    }</div>
+    <div style="font-size:.7rem;color:var(--text3);margin-top:14px;line-height:1.5;">Most discovered services run on BASE or Polygon, not Arc Testnet — paying one from here is untested against NAN's current Arc-focused setup and may not settle correctly. Worth trying, but don't be surprised if a discovered service behaves differently than Leakage.</div>`;
+    window._nanopayDiscovered = services;
+  }catch(err){
+    resultsEl.innerHTML = `<div style="text-align:center;padding:20px 0;color:var(--danger);font-size:.8rem;">${err.message.slice(0,150)}</div>`;
+  }
+  if(btn){ btn.disabled = false; btn.textContent = 'Search'; }
+}
+async function nanopayDiscoveredPay(idx){
+  const s = (window._nanopayDiscovered||[])[idx];
+  if(!s) return;
+  if(!agentWalletAddr){ toast('Connect your agent wallet first.', 'error', 3000); return; }
+  nanopaySpinner();
+  document.getElementById('nanopayResult')?.scrollIntoView({behavior:'smooth', block:'nearest'});
+  try{
+    const r = await fetch(AGENT_API, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'pay-service', userAddress: userAddr, address: agentWalletAddr, url: s.resource, method: s.method, chain: s.network || 'ARC-TESTNET', maxAmount: window._agentNanopayCap ?? undefined })
+    });
+    const d = await r.json();
+    nanopayShowResult(nanopayFormatResult(d, s.resource));
+  }catch(err){
+    nanopayShowResult(`<div style="color:var(--danger);font-size:.8rem;padding:16px 0;text-align:center;">${err.message.slice(0,150)}</div>`);
+  }
+}
+
 function agentPageRefresh() {
   const connected = !!agentWalletAddr;
   const s = (id, show) => {
