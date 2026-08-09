@@ -11912,18 +11912,29 @@ function nanopaySpinner(){
 }
 function nanopayFormatResult(d, url){
   if(!d.success){
+    if(d.capBlocked){
+      return `<div style="border:1px solid rgba(245,158,11,.3);background:rgba(245,158,11,.08);border-radius:12px;padding:14px;">
+        <div style="font-size:.8rem;font-weight:700;color:#F59E0B;margin-bottom:4px;">Blocked by your cap</div>
+        <div style="font-size:.78rem;color:var(--text2);">${(d.error||'').slice(0,200)}</div>
+      </div>`;
+    }
     return `<div style="border:1px solid rgba(220,38,38,.25);background:rgba(220,38,38,.06);border-radius:12px;padding:14px;">
       <div style="font-size:.8rem;font-weight:700;color:var(--danger);margin-bottom:4px;">Payment failed</div>
       <div style="font-size:.78rem;color:var(--text2);">${(d.error||'Unknown error').slice(0,200)}</div>
     </div>`;
   }
   const pretty = JSON.stringify(d.result, null, 2);
-  const capNote = d.maxAmountRequested != null
-    ? `<div style="font-size:.7rem;color:var(--text3);margin-top:8px;">Cap requested: $${d.maxAmountRequested} — logged, not yet independently verified as enforced pre-payment.</div>`
-    : '';
+  let capNote = '';
+  if(d.maxAmountRequested != null){
+    capNote = d.capEnforced
+      ? `<div style="font-size:.7rem;color:var(--success);margin-top:8px;">✓ Cap of $${d.maxAmountRequested} verified against the quoted price before paying.</div>`
+      : `<div style="font-size:.7rem;color:#F59E0B;margin-top:8px;">⚠ Cap of $${d.maxAmountRequested} set, but couldn't verify a quote for this service before paying — proceeded without the check.</div>`;
+  }
+  const amountLine = d.amountPaid ? `<div style="font-size:.72rem;color:var(--text2);margin-top:2px;">Paid ${d.amountPaid} USDC</div>` : '';
   return `<div style="border:1px solid rgba(34,197,94,.25);background:rgba(34,197,94,.06);border-radius:12px;padding:14px;margin-bottom:10px;">
     <div style="font-size:.8rem;font-weight:700;color:var(--success);margin-bottom:2px;">✓ Paid &amp; called</div>
     <div style="font-size:.72rem;color:var(--text3);font-family:'JetBrains Mono',monospace;word-break:break-all;">${url}</div>
+    ${amountLine}
     ${capNote}
   </div>
   <div style="font-size:.72rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Response (status ${d.status||'—'})</div>
