@@ -11227,11 +11227,34 @@ async function nanRefreshAgentLimits(){
     if(weeklyEl) weeklyEl.value = p?.weekly!=null ? p.weekly : '';
     if(nanopayCapEl) nanopayCapEl.value = p?.nanopayCap!=null ? p.nanopayCap : '';
     window._agentNanopayCap = p?.nanopayCap ?? null;
+    // Mark each field as confirmed/saved (green check) or genuinely unset
+    // (dash) — this is what's actually on the server right now, distinct
+    // from whatever's mid-edit in the input.
+    nanShowLimitState('agentLimitPerTxState', p?.perTx);
+    nanShowLimitState('agentLimitDailyState', p?.daily);
+    nanShowLimitState('agentLimitWeeklyState', p?.weekly);
   }catch(e){
     console.log('[agent] limits fetch error:', e.message);
     const anyStatusEl = document.getElementById('agentLimitStatus');
     if(anyStatusEl) anyStatusEl.textContent = 'Could not load your saved limits — try refreshing the page.';
   }
+}
+function nanShowLimitState(stateElId, value){
+  const el = document.getElementById(stateElId);
+  if(!el) return;
+  if(value != null){
+    el.textContent = '✓ Saved';
+    el.style.color = 'var(--success)';
+  } else {
+    el.textContent = 'Not set';
+    el.style.color = 'var(--text3)';
+  }
+}
+function nanMarkLimitUnsaved(stateElId){
+  const el = document.getElementById(stateElId);
+  if(!el) return;
+  el.textContent = 'Unsaved';
+  el.style.color = '#F59E0B';
 }
 async function nanSaveNanopayCap(){
   const statusEl = document.getElementById('agentNanopayCapStatus');
