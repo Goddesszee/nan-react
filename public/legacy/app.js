@@ -12041,9 +12041,14 @@ async function nanopayQuickPay(){
   if(btn){ btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Paying…'; }
   nanopaySpinner();
   try{
+    // POST with a real sample body — Leakage's actual paid action is
+    // analyzing transaction text, not the GET (which just returns the
+    // service description, unprotected, nothing to charge or verify a
+    // quote for). This is a made-up sample transaction for demo purposes.
+    const sampleBody = { transactions: 'NETFLIX.COM $15.99 08/01 | SPOTIFY PREMIUM $9.99 08/03 | GYM MEMBERSHIP $45.00 08/05' };
     const r = await fetch(AGENT_API, {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'pay-service', userAddress: userAddr, address: agentWalletAddr, url: LEAKAGE_URL, method:'GET', chain:'ARC-TESTNET', maxAmount: window._agentNanopayCap ?? undefined })
+      body: JSON.stringify({ action:'pay-service', userAddress: userAddr, address: agentWalletAddr, url: LEAKAGE_URL, method:'POST', body: sampleBody, chain:'ARC-TESTNET', maxAmount: window._agentNanopayCap ?? undefined })
     });
     const d = await r.json();
     nanopayShowResult(nanopayFormatResult(d, LEAKAGE_URL));
