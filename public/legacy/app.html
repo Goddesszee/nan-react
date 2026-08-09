@@ -1641,6 +1641,49 @@ html,body{background-color:var(--bg);}
             <div id="settingsNotifKnob" style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:left .2s;"></div>
           </div>
         </div>
+
+        <div style="font-size:.8rem;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin:22px 4px 6px;">Email Notifications</div>
+        <div style="font-size:.8rem;color:var(--text3);margin:0 4px 12px;">Choose which money movements email you.</div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 4px;border-bottom:1px solid var(--border);">
+          <div>
+            <div style="font-size:1rem;font-weight:600;color:var(--text);">Transfers</div>
+            <div style="font-size:.85rem;color:var(--text3);margin-top:2px;">Sends and agent-to-agent transfers</div>
+          </div>
+          <div id="emailNotifTransfersSwitch" onclick="toggleEmailNotifyCategory('transfers')" style="width:46px;height:26px;border-radius:100px;background:var(--surface);border:1px solid var(--border);position:relative;cursor:pointer;flex-shrink:0;transition:background .2s;">
+            <div id="emailNotifTransfersKnob" style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:left .2s;"></div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 4px;border-bottom:1px solid var(--border);">
+          <div>
+            <div style="font-size:1rem;font-weight:600;color:var(--text);">Invoices</div>
+            <div style="font-size:.85rem;color:var(--text3);margin-top:2px;">New, paid, and rejected invoices</div>
+          </div>
+          <div id="emailNotifInvoicesSwitch" onclick="toggleEmailNotifyCategory('invoices')" style="width:46px;height:26px;border-radius:100px;background:var(--surface);border:1px solid var(--border);position:relative;cursor:pointer;flex-shrink:0;transition:background .2s;">
+            <div id="emailNotifInvoicesKnob" style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:left .2s;"></div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 4px;border-bottom:1px solid var(--border);">
+          <div>
+            <div style="font-size:1rem;font-weight:600;color:var(--text);">Escrow</div>
+            <div style="font-size:.85rem;color:var(--text3);margin-top:2px;">Created, released, and refunded escrows</div>
+          </div>
+          <div id="emailNotifEscrowSwitch" onclick="toggleEmailNotifyCategory('escrow')" style="width:46px;height:26px;border-radius:100px;background:var(--surface);border:1px solid var(--border);position:relative;cursor:pointer;flex-shrink:0;transition:background .2s;">
+            <div id="emailNotifEscrowKnob" style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:left .2s;"></div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 4px;">
+          <div>
+            <div style="font-size:1rem;font-weight:600;color:var(--text);">Recurring payments</div>
+            <div style="font-size:.85rem;color:var(--text3);margin-top:2px;">Scheduled and executed recurring sends</div>
+          </div>
+          <div id="emailNotifRecurringSwitch" onclick="toggleEmailNotifyCategory('recurring')" style="width:46px;height:26px;border-radius:100px;background:var(--surface);border:1px solid var(--border);position:relative;cursor:pointer;flex-shrink:0;transition:background .2s;">
+            <div id="emailNotifRecurringKnob" style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:left .2s;"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
