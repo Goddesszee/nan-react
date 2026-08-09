@@ -12190,7 +12190,12 @@ async function nanopayDiscover(){
     });
     const d = await r.json();
     if(!d.success) throw new Error(d.error || 'Could not search services');
-    const services = d.services || [];
+    const allServices = d.services || [];
+    // Some catalog listings have a {placeholder} in their URL (e.g. a symbol
+    // or ID you're meant to fill in) that isn't safe to call as-is — hide
+    // those rather than let someone click into a guaranteed failure.
+    const services = allServices.filter(s => !/\{[^}]+\}/.test(s.resource || ''));
+    const hiddenCount = allServices.length - services.length;
     if(!services.length){
       resultsEl.innerHTML = `<div style="text-align:center;padding:24px 16px;"><div style="font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:4px;">No matches</div><div style="font-size:.78rem;color:var(--text3);">Try a broader search term.</div></div>`;
       return;
@@ -12206,6 +12211,7 @@ async function nanopayDiscover(){
         <button onclick='nanopayDiscoveredPay(${i})' style="width:100%;padding:9px;border-radius:9px;border:1px solid rgba(37,99,235,.3);background:rgba(37,99,235,.08);color:#2563EB;font-family:'Inter',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;">Pay &amp; call</button>
       </div>`).join('')
     }</div>
+    ${hiddenCount > 0 ? `<div style="font-size:.7rem;color:var(--text3);margin-top:12px;">${hiddenCount} other result${hiddenCount>1?'s':''} hidden — needed extra info in the URL this page doesn't collect yet.</div>` : ''}
     <div style="font-size:.7rem;color:var(--text3);margin-top:14px;line-height:1.5;">Most discovered services run on BASE or Polygon, not Arc Testnet — paying one from here is untested against NAN's current Arc-focused setup and may not settle correctly. Worth trying, but don't be surprised if a discovered service behaves differently than Leakage.</div>`;
     window._nanopayDiscovered = services;
   }catch(err){
