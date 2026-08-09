@@ -454,38 +454,6 @@ html,body{background-color:var(--bg);}
       </div>
       
     </div>
-    <!-- Desktop: nav links -->
-    <div id="topbarPageInfo" style="display:none;align-items:center;gap:2px;">
-    <div id="topbarNav" style="display:none;align-items:center;gap:2px;">
-      <button onclick="goPage('career-agent')" id="tnav-career" class="tnav-btn" style="display:none;align-items:center;gap:4px;">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
-        Career agent
-      </button>
-      <button onclick="goPage('explore')" id="tnav-explore" class="tnav-btn" style="display:none;align-items:center;gap:4px;">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        Explore
-      </button>
-      <button onclick="goPage('supplier-agent')" id="tnav-supplier" class="tnav-btn" style="display:none;align-items:center;gap:4px;">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21h18M5 21V7l7-4 7 4v14"/><path d="M9 9h1M9 13h1M14 9h1M14 13h1"/></svg>
-        Real Estate Marketplace
-      </button>
-      <button onclick="goPage('marketplace')" id="tnav-marketplace" class="tnav-btn" style="display:none;align-items:center;gap:4px;">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 9l1.5-5h15L21 9M3 9v10a1 1 0 001 1h16a1 1 0 001-1V9M3 9h18M9 13a2 2 0 11-4 0M19 13a2 2 0 11-4 0"/></svg>
-        Marketplace
-      </button>
-      <button onclick="goPage('gigs')" id="tnav-gigs" class="tnav-btn" style="display:none;align-items:center;gap:4px;">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12l3 3 6-6"/><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 9h18"/></svg>
-        Gigs
-      </button>
-      <button onclick="goPage('cashinout')" id="tnav-cashinout" class="tnav-btn" style="display:none;align-items:center;gap:4px;">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/></svg>
-        Fiat
-      </button>
-      <button id="tnav-trade-btn" class="tnav-btn" style="display:none;" onclick="event.stopPropagation();nanToggleDd('trade',this)">Wallet <span class="nan-caret" style="font-size:12px;margin-left:3px;display:inline-block;transition:transform .2s;">&#9660;</span></button>
-      
-      <button id="tnav-ai" onclick="toggleAgent()" style="display:none;align-items:center;gap:5px;background:rgba(37,99,235,.15);border:1px solid rgba(37,99,235,.3);border-radius:100px;padding:6px 12px;font-family:'Inter',sans-serif;font-size:.875rem;font-weight:700;color:#60A5FA;cursor:pointer;white-space:nowrap;">✦ NAN AI</button>
-    </div>
-    </div>
     <!-- Mobile wallet address pill (center) -->
     <button id="mobileAddrPill" onclick="if(userAddr){navigator.clipboard.writeText(userAddr).then(()=>{const o=this.textContent;this.textContent='✓ Copied';setTimeout(()=>this.textContent=o,1600)})}" style="display:none;background:var(--surface);border:1px solid var(--border);border-radius:100px;padding:4px 10px;font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:.72rem;font-weight:600;color:var(--text2);cursor:pointer;white-space:nowrap;flex:1;text-align:center;max-width:110px;overflow:hidden;text-overflow:ellipsis;transition:all .2s;"></button>
     <div id="globalTopBarRight" style="display:flex;align-items:center;gap:6px;">
