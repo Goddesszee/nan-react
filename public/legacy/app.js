@@ -1549,11 +1549,6 @@ async function onConnected(isEmail=false, isDev=false){
   }
   // Auto-open Ajo join flow if ?ajo= param present in URL
   setTimeout(()=>{ _checkAjoDeepLink(); }, 800);
-
-  // Guarantee Dashboard is the final landing page after login — fires last,
-  // after all connect/onboarding setup above, so nothing that runs earlier
-  // in this function can leave the user somewhere else.
-  if(typeof goPage==='function') goPage('dashboard');
 }
 
 function disconnect(){
