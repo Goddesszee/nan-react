@@ -3620,7 +3620,8 @@ input[style*="background: none"] {
   background: transparent !important;
 }
 #page-lend .stab.active {
-  background: var(--surface-raised) !important;
+  background: #2563EB !important;
+  color: #fff !important;
 }
 
 /* ── Light mode: undo surface-raised (light mode already works) ── */
