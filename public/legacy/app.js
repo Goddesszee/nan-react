@@ -4089,9 +4089,10 @@ function initBridgeUI(){
   });
   // Load gateway balance when bridge page is ready
   if(userAddr) refreshGatewayBalance();
-  // Show deposit section only for Circle wallet users
+  // Deposit-to-Gateway is available to every wallet type, not just Circle —
+  // shown whenever a wallet address is connected, regardless of which kind.
   const depSec=document.getElementById('gatewayDepositSection');
-  if(depSec) depSec.style.display=userAddr?'block':'none'; // show for all wallet types
+  if(depSec) depSec.style.display=userAddr?'block':'none';
 }
 function initSwapUI(){
   document.getElementById('swapModeBanner').style.display='none';
