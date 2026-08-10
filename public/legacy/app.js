@@ -8671,6 +8671,14 @@ async function depositToGateway() {
   if(btn){ btn.disabled=true; btn.textContent='Depositing…'; }
 
   // ── Circle Wallet path ──
+  // Recover circleWalletId from localStorage if the in-memory variable was
+  // somehow lost — without this, a genuine Circle-wallet user could
+  // silently fall through to the MetaMask-only branch below and see
+  // "Connect MetaMask" even though they never used MetaMask at all.
+  if (isCircleWallet && !circleWalletId) {
+    circleWalletId = localStorage.getItem('circleWalletId') || circleWalletId;
+    circleWalletAddress = circleWalletAddress || localStorage.getItem('circleWalletAddr');
+  }
   if (isCircleWallet && circleWalletId) {
     try {
       const r = await fetch('https://nan-production.up.railway.app/api/gateway-deposit', {
@@ -8693,7 +8701,7 @@ async function depositToGateway() {
 
   // ── MetaMask path — deposit() on Circle Gateway Wallet contract ──
   if (!signer || !onArcNetwork) {
-    toast('Connect MetaMask on Arc Testnet first','error');
+    toast(isCircleWallet ? 'Wallet session lost — please log out and back in' : 'Connect MetaMask on Arc Testnet first','error');
     if(btn){ btn.disabled=false; btn.textContent='Deposit'; }
     return;
   }
