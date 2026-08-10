@@ -4905,9 +4905,15 @@ function setBulkToken(token){
   updateBulkSummary();
 }
 
-function setBulkDefaultAmt(amt){
+function setBulkDefaultAmt(amt, btnEl){
   bulkDefaultAmt = amt;
   document.getElementById('bulkDefaultAmt').value = '';
+  document.querySelectorAll('.bulk-amt-preset').forEach(b => {
+    const isSelected = b === btnEl;
+    b.style.background = isSelected ? '#2563EB' : 'var(--surface)';
+    b.style.color = isSelected ? '#fff' : 'var(--text)';
+    b.style.border = isSelected ? 'none' : '1px solid var(--border)';
+  });
   bulkRecipients.forEach(r => r.amount = amt);
   renderBulkRecipients();
   updateBulkSummary();
@@ -4917,6 +4923,11 @@ function updateBulkAmounts(){
   const val = parseFloat(document.getElementById('bulkDefaultAmt').value);
   if(!val || val <= 0) return;
   bulkDefaultAmt = val;
+  document.querySelectorAll('.bulk-amt-preset').forEach(b => {
+    b.style.background = 'var(--surface)';
+    b.style.color = 'var(--text)';
+    b.style.border = '1px solid var(--border)';
+  });
   bulkRecipients.forEach(r => r.amount = val);
   renderBulkRecipients();
   updateBulkSummary();
