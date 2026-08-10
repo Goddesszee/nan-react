@@ -4016,76 +4016,70 @@ html,body{background-color:var(--bg);}
   </div>
 
   <!-- EARN mode: Supplied / Interest stats -->
-  <div id="earnStatsRow" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:20px;">
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 20px;">
-      <div style="font-size:.72rem;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">Supplied</div>
-      <div id="suppliedAmt" style="font-family:'Inter',sans-serif;font-size:1.5rem;font-weight:800;color:#2563EB;letter-spacing:-.02em;">0.00 USDC</div>
+  <div id="earnStatsRow" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:28px;">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px 32px;">
+      <div style="font-size:.85rem;font-weight:500;color:var(--text3);margin-bottom:10px;">Supplied</div>
+      <div id="suppliedAmt" style="font-family:'Inter',sans-serif;font-size:2rem;font-weight:700;color:#2563EB;letter-spacing:-.02em;">0.00 USDC</div>
     </div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 20px;">
-      <div style="font-size:.72rem;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">Interest Earned</div>
-      <div id="accruedInterest" style="font-family:'Inter',sans-serif;font-size:1.5rem;font-weight:800;color:var(--success);letter-spacing:-.02em;">+0.000000 earned</div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px 32px;">
+      <div style="font-size:.85rem;font-weight:500;color:var(--text3);margin-bottom:10px;">Interest Earned</div>
+      <div id="accruedInterest" style="font-family:'Inter',sans-serif;font-size:2rem;font-weight:700;color:var(--success);letter-spacing:-.02em;">+0.000000 earned</div>
     </div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 20px;">
-      <div style="font-size:.72rem;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">APY</div>
-      <div style="font-family:'Inter',sans-serif;font-size:1.5rem;font-weight:800;color:var(--text);letter-spacing:-.02em;">4.80%</div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px 32px;">
+      <div style="font-size:.85rem;font-weight:500;color:var(--text3);margin-bottom:10px;">APY</div>
+      <div style="font-family:'Inter',sans-serif;font-size:2rem;font-weight:700;color:var(--text);letter-spacing:-.02em;">4.80%</div>
     </div>
   </div>
 
   <!-- BORROW mode: Collateral / Borrowed / Max Borrow stats -->
-  <div id="borrowStatsRow" style="display:none;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:20px;">
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 20px;">
-      <div style="font-size:.72rem;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">Collateral</div>
-      <div id="lbCollateralBal" style="font-family:'Inter',sans-serif;font-size:1.5rem;font-weight:800;color:#2563EB;letter-spacing:-.02em;">0.000000</div>
-      <div style="font-size:.72rem;color:var(--text3);margin-top:3px;">cirBTC</div>
+  <div id="borrowStatsRow" style="display:none;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:28px;">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px 32px;">
+      <div style="font-size:.85rem;font-weight:500;color:var(--text3);margin-bottom:10px;">Total Collateral</div>
+      <div id="lbCollateralBal" style="font-family:'Inter',sans-serif;font-size:2rem;font-weight:700;color:#2563EB;letter-spacing:-.02em;">0.000000</div>
+      <div style="font-size:.8rem;color:var(--text3);margin-top:4px;">cirBTC</div>
     </div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 20px;">
-      <div style="font-size:.72rem;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">Borrowed</div>
-      <div id="lbLoanAmt" style="font-family:'Inter',sans-serif;font-size:1.5rem;font-weight:800;color:rgba(248,113,113,.85);letter-spacing:-.02em;">0.00</div>
-      <div style="font-size:.72rem;color:var(--text3);margin-top:3px;">USDC</div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px 32px;">
+      <div style="font-size:.85rem;font-weight:500;color:var(--text3);margin-bottom:10px;">Total Debt</div>
+      <div id="lbLoanAmt" style="font-family:'Inter',sans-serif;font-size:2rem;font-weight:700;color:var(--text);letter-spacing:-.02em;">0.00</div>
+      <div style="font-size:.8rem;color:var(--text3);margin-top:4px;">USDC</div>
     </div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 20px;">
-      <div style="font-size:.72rem;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">Max Borrow</div>
-      <div id="lbMaxBorrow" style="font-family:'Inter',sans-serif;font-size:1.5rem;font-weight:800;color:var(--text);letter-spacing:-.02em;">0.00</div>
-      <div style="font-size:.72rem;color:var(--text3);margin-top:3px;">USDC (50% LTV)</div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:18px;padding:28px 32px;">
+      <div style="font-size:.85rem;font-weight:500;color:var(--text3);margin-bottom:10px;">Available to Borrow</div>
+      <div id="lbMaxBorrow" style="font-family:'Inter',sans-serif;font-size:2rem;font-weight:700;color:var(--text);letter-spacing:-.02em;">0.00</div>
+      <div style="font-size:.8rem;color:var(--text3);margin-top:4px;">USDC (50% LTV)</div>
     </div>
   </div>
 
   <!-- Single merged card — full width -->
   <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;overflow:hidden;width:100%;max-width:100% !important;box-sizing:border-box;">
 
-    <div style="padding:18px 22px 14px;border-bottom:1px solid var(--border);">
-      <div id="earnCardTitle" style="font-size:1.05rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;letter-spacing:-.02em;">Supply &amp; Earn</div>
+    <div style="padding:24px 28px 18px;border-bottom:1px solid var(--border);">
+      <div id="earnCardTitle" style="font-size:1.15rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;letter-spacing:-.02em;">Supply &amp; Earn</div>
     </div>
 
-    <!-- EARN mode info banner -->
-    <div id="earnInfoBanner" style="margin:16px 22px 14px;background:rgba(37,99,235,.07);border:1px solid rgba(37,99,235,.2);border-radius:12px;padding:11px 14px;display:flex;align-items:flex-start;gap:8px;">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <div style="font-size:.75rem;color:var(--text2);line-height:1.5;">Supply USDC or EURC to earn yield on Arc. No lockup, withdraw anytime, interest accrues in real time on NANLendingPool.</div>
-    </div>
+    <!-- EARN mode info caption — plain text, no boxed callout, matches a cleaner reference layout -->
+    <div id="earnInfoBanner" style="margin:16px 28px 6px;font-size:.8rem;color:var(--text3);line-height:1.5;">Supply USDC or EURC to earn yield on Arc. No lockup, withdraw anytime.</div>
 
-    <!-- BORROW mode info banner -->
-    <div id="borrowInfoBanner" style="display:none;margin:16px 22px 14px;background:rgba(37,99,235,.07);border:1px solid rgba(37,99,235,.2);border-radius:12px;padding:11px 14px;display:flex;align-items:flex-start;gap:8px;">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <div style="font-size:.75rem;color:var(--text2);line-height:1.5;">Deposit cirBTC as collateral → borrow up to 50% of its value in USDC. Interest-free. One active loan at a time. Get cirBTC free at <span style="color:#2563EB;">faucet.circle.com</span></div>
-    </div>
+    <!-- BORROW mode info caption -->
+    <div id="borrowInfoBanner" style="display:none;margin:16px 28px 6px;font-size:.8rem;color:var(--text3);line-height:1.5;">Deposit cirBTC as collateral to borrow up to 50% of its value in USDC, interest-free. Get cirBTC free at <span style="color:#2563EB;">faucet.circle.com</span></div>
 
     <!-- EARN mode content -->
     <div id="earnModeContent">
       <!-- Asset toggle: USDC / EURC -->
-      <div class="type-sel" style="margin:0 22px 14px;grid-template-columns:repeat(2,1fr);">
+      <div class="type-sel" style="margin:10px 28px 14px;grid-template-columns:repeat(2,1fr);">
         <button class="topt active" onclick="setLendAsset('USDC',this);updateSupplyAssetUI();">USDC</button>
         <button class="topt" onclick="setLendAsset('EURC',this);updateSupplyAssetUI();">EURC</button>
       </div>
 
       <!-- Tabs: Supply / Withdraw -->
-      <div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:13px;padding:4px;gap:3px;margin:0 22px 14px;display:flex;">
-        <button class="supply-tab active" onclick="setSupplyTab('supply',this)" style="flex:1;padding:8px;border:none;background:transparent;border-radius:10px;color:var(--text3);font-family:'Inter',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;">Supply</button>
-        <button class="supply-tab" onclick="setSupplyTab('withdraw',this)" style="flex:1;padding:8px;border:none;background:transparent;border-radius:10px;color:var(--text3);font-family:'Inter',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;">Withdraw</button>
+      <div style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:14px;padding:5px;gap:4px;margin:0 28px 18px;display:flex;">
+        <button class="supply-tab active" onclick="setSupplyTab('supply',this)" style="flex:1;padding:13px;border:none;background:transparent;border-radius:11px;color:var(--text3);font-family:'Inter',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;">Supply</button>
+        <button class="supply-tab" onclick="setSupplyTab('withdraw',this)" style="flex:1;padding:13px;border:none;background:transparent;border-radius:11px;color:var(--text3);font-family:'Inter',sans-serif;font-size:1rem;font-weight:600;cursor:pointer;">Withdraw</button>
       </div>
 
       <!-- SUPPLY panel -->
-      <div class="supply-panel-el" id="lp-supply" style="padding:0 22px 22px;">
-        <div style="background:rgba(255,255,255,.04);border:1.5px solid rgba(37,99,235,.25);border-radius:14px;padding:16px;margin-bottom:10px;">
+      <div class="supply-panel-el" id="lp-supply" style="padding:0 28px 26px;">
+        <div style="background:rgba(255,255,255,.04);border:1.5px solid rgba(37,99,235,.25);border-radius:16px;padding:22px;margin-bottom:12px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;">
             <span style="font-size:.6rem;font-weight:700;color:rgba(37,99,235,.8);letter-spacing:.12em;text-transform:uppercase;">Amount to Supply</span>
             <span style="font-size:.7rem;color:var(--text3);font-weight:600;">Bal: <span id="supplyBalHint">0.00</span> <span id="supplyBalUnit">USDC</span></span>
@@ -4096,13 +4090,13 @@ html,body{background-color:var(--bg);}
             <button onclick="setSupplyMax()" style="background:none;border:none;font-size:.75rem;font-weight:700;color:#2563EB;cursor:pointer;flex-shrink:0;">MAX</button>
           </div>
         </div>
-        <button class="btn" id="supplyBtn" onclick="doSupply()" style="width:100%;padding:15px;background:#2563EB;border:none;border-radius:13px;color:#fff;font-family:'Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(37,99,235,.35);">Supply USDC</button>
+        <button class="btn" id="supplyBtn" onclick="doSupply()" style="width:100%;padding:17px;background:#2563EB;border:none;border-radius:13px;color:#fff;font-family:'Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(37,99,235,.35);">Supply USDC</button>
         <div style="font-size:.72rem;color:var(--text3);text-align:center;margin-top:8px;">No lockup · withdraw anytime</div>
       </div>
 
       <!-- WITHDRAW panel -->
-      <div class="supply-panel-el" id="lp-withdraw" style="display:none;padding:0 22px 22px;">
-        <div style="background:rgba(255,255,255,.04);border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:10px;">
+      <div class="supply-panel-el" id="lp-withdraw" style="display:none;padding:0 28px 26px;">
+        <div style="background:rgba(255,255,255,.04);border:1.5px solid var(--border);border-radius:16px;padding:22px;margin-bottom:12px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;">
             <span style="font-size:.6rem;font-weight:700;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;">Amount to Withdraw</span>
             <span style="font-size:.7rem;color:var(--text3);font-weight:600;">Supplied: <span id="withdrawAvail">0.00</span></span>
@@ -4113,7 +4107,7 @@ html,body{background-color:var(--bg);}
             <button onclick="setWithdrawMax()" style="background:none;border:none;font-size:.75rem;font-weight:700;color:var(--text2);cursor:pointer;flex-shrink:0;">MAX</button>
           </div>
         </div>
-        <button class="btn" onclick="doWithdraw()" style="width:100%;padding:15px;background:var(--surface);border:1px solid var(--border);border-radius:13px;color:var(--text2);font-family:'Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;">Withdraw + Interest</button>
+        <button class="btn" onclick="doWithdraw()" style="width:100%;padding:17px;background:var(--surface);border:1px solid var(--border);border-radius:13px;color:var(--text2);font-family:'Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;">Withdraw + Interest</button>
       </div>
     </div>
 
@@ -4128,8 +4122,8 @@ html,body{background-color:var(--bg);}
       </div>
 
       <!-- DEPOSIT cirBTC panel -->
-      <div class="stake-panel active" id="lb-deposit" style="padding:0 22px 22px;">
-        <div style="background:rgba(255,255,255,.04);border:1.5px solid rgba(37,99,235,.25);border-radius:14px;padding:16px;margin-bottom:10px;">
+      <div class="stake-panel active" id="lb-deposit" style="padding:0 28px 26px;">
+        <div style="background:rgba(255,255,255,.04);border:1.5px solid rgba(37,99,235,.25);border-radius:16px;padding:22px;margin-bottom:12px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;">
             <div style="display:flex;align-items:center;gap:6px;">
               <svg width="14" height="14" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#F7931B"/><path d="M23.19 13.54c.32-2.1-1.29-3.24-3.48-4l.71-2.85-1.73-.43-.69 2.77-1.39-.34.69-2.77-1.73-.43-.71 2.84-1.11-.27-2.39-.6-.71 2.84 1.38.35-.97 3.9 1.38.34-1.07 4.31c-.14.17-.32.43-.72.34l-1.38-.34-.95 3.79 2.26.56-.71 2.85 1.49.37-.71 2.84 1.39.35.71-2.84 1.38.34-.71 2.84 1.73.43.71-2.84c2.25.56 4.17.39 5.52-.88 1.1-1.03 1.43-2.48.9-3.84 1.31-.5 2.25-1.6 2.52-3.24z" fill="#fff"/></svg>
@@ -4147,12 +4141,12 @@ html,body{background-color:var(--bg);}
             <span id="lbDepositCapacity" style="font-family:'DM Mono','Roboto Mono',monospace;font-size:.72rem;color:var(--text3);font-weight:600;">≈ 0.00 USDC</span>
           </div>
         </div>
-        <button class="btn" onclick="doLBDeposit()" style="width:100%;padding:15px;background:#2563EB;border:none;border-radius:13px;color:#fff;font-family:'Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(37,99,235,.35);">Deposit cirBTC →</button>
+        <button class="btn" onclick="doLBDeposit()" style="width:100%;padding:17px;background:#2563EB;border:none;border-radius:13px;color:#fff;font-family:'Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(37,99,235,.35);">Deposit cirBTC →</button>
       </div>
 
       <!-- WITHDRAW cirBTC panel -->
-      <div class="stake-panel" id="lb-withdraw" style="padding:0 22px 22px;">
-        <div style="background:rgba(255,255,255,.04);border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:10px;">
+      <div class="stake-panel" id="lb-withdraw" style="padding:0 28px 26px;">
+        <div style="background:rgba(255,255,255,.04);border:1.5px solid var(--border);border-radius:16px;padding:22px;margin-bottom:12px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;">
             <span style="font-size:.6rem;font-weight:700;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;">Withdraw cirBTC</span>
             <span style="font-size:.7rem;color:var(--text3);font-weight:600;">Available: <span id="lbAvailWithdraw">0.000000</span></span>
@@ -4164,12 +4158,12 @@ html,body{background-color:var(--bg);}
           </div>
           <div style="font-size:.72rem;color:var(--text3);padding-top:8px;border-top:1px solid var(--border);margin-top:8px;">Collateral locked by active loan cannot be withdrawn</div>
         </div>
-        <button class="btn" onclick="doLBWithdraw()" style="width:100%;padding:15px;background:#2563EB;border:none;border-radius:13px;color:#fff;font-family:'Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(37,99,235,.35);">Withdraw cirBTC</button>
+        <button class="btn" onclick="doLBWithdraw()" style="width:100%;padding:17px;background:#2563EB;border:none;border-radius:13px;color:#fff;font-family:'Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(37,99,235,.35);">Withdraw cirBTC</button>
       </div>
 
       <!-- BORROW USDC panel -->
-      <div class="stake-panel" id="lb-borrow" style="padding:0 22px 22px;">
-        <div style="background:rgba(255,255,255,.04);border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:10px;">
+      <div class="stake-panel" id="lb-borrow" style="padding:0 28px 26px;">
+        <div style="background:rgba(255,255,255,.04);border:1.5px solid var(--border);border-radius:16px;padding:22px;margin-bottom:12px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;">
             <span style="font-size:.6rem;font-weight:700;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;">USDC Amount</span>
             <span style="font-size:.7rem;color:var(--text3);font-weight:600;">Max: <span id="lbMaxBorrow2">0.00</span> USDC</span>
@@ -4184,13 +4178,13 @@ html,body{background-color:var(--bg);}
             <span style="font-family:'DM Mono','Roboto Mono',monospace;font-size:.72rem;color:var(--text3);font-weight:600;">0% (interest-free)</span>
           </div>
         </div>
-        <button class="btn" onclick="doLBBorrow()" style="width:100%;padding:15px;background:var(--surface);border:1px solid var(--border);border-radius:13px;color:var(--text2);font-family:'Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;">Borrow USDC →</button>
+        <button class="btn" onclick="doLBBorrow()" style="width:100%;padding:17px;background:var(--surface);border:1px solid var(--border);border-radius:13px;color:var(--text2);font-family:'Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;">Borrow USDC →</button>
         <div style="font-size:.72rem;color:var(--text3);text-align:center;margin-top:8px;">Repay to unlock your cirBTC collateral</div>
       </div>
 
       <!-- REPAY USDC panel -->
-      <div class="stake-panel" id="lb-repay" style="padding:0 22px 22px;">
-        <div style="background:rgba(255,255,255,.04);border:1.5px solid var(--border);border-radius:14px;padding:16px;margin-bottom:10px;">
+      <div class="stake-panel" id="lb-repay" style="padding:0 28px 26px;">
+        <div style="background:rgba(255,255,255,.04);border:1.5px solid var(--border);border-radius:16px;padding:22px;margin-bottom:12px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;">
             <span style="font-size:.6rem;font-weight:700;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;">Repay USDC</span>
             <span style="font-size:.7rem;color:rgba(248,113,113,.6);font-weight:600;">Owed: <span id="lbOwed">0.00</span> USDC</span>
@@ -4201,7 +4195,7 @@ html,body{background-color:var(--bg);}
             <button onclick="document.getElementById('lbRepayAmt').value=document.getElementById('lbOwed').textContent;void 0;" style="background:none;border:none;font-size:.75rem;font-weight:700;color:rgba(248,113,113,.8);cursor:pointer;flex-shrink:0;">MAX</button>
           </div>
         </div>
-        <button class="btn" onclick="doLBRepay()" style="width:100%;padding:15px;background:var(--surface);border:1px solid var(--border);border-radius:13px;color:rgba(248,113,113,.9);font-family:'Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;">Repay Loan</button>
+        <button class="btn" onclick="doLBRepay()" style="width:100%;padding:17px;background:var(--surface);border:1px solid var(--border);border-radius:13px;color:rgba(248,113,113,.9);font-family:'Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;">Repay Loan</button>
       </div>
 
       <!-- Status message -->
