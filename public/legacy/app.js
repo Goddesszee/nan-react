@@ -960,9 +960,9 @@ function nanWalletDisconnect(){
   nanCloseAll();
   if(typeof disconnect==='function')disconnect();
 }
-function nanProfileCopyAddress(){
+async function nanProfileCopyAddress(){
   const el=document.getElementById('nanProfileCopyAddr');
-  const addr=(typeof userAddr!=='undefined'&&userAddr)?userAddr:null;
+  const addr=await ensureWalletConnected();
   if(!addr){ if(typeof toast==='function') toast('No wallet connected','error',3000); return; }
   navigator.clipboard.writeText(addr).then(()=>{
     if(el){ el.textContent='✓ Copied!'; setTimeout(()=>{ el.textContent='Copy Address'; },1500); }
@@ -5254,7 +5254,30 @@ function nanConfirm(title, bodyHtml){
     overlay.onclick = (e) => { if(e.target === overlay) cleanup(false); };
   });
 }
+// Robust wallet-connection check — recovers userAddr from localStorage if
+// the in-memory variable hasn't caught up yet (same race-condition class
+// found and fixed in goPage() and the Gateway deposit flow earlier: a brief
+// window right after page load where the async session-restore is still
+// running). Many functions across the app independently check a bare
+// `if(!userAddr)` with no recovery, so a real, connected user can hit a
+// false "connect your wallet" error if they act quickly after load. Use
+// this instead of checking userAddr directly wherever that's happened.
+async function ensureWalletConnected(){
+  if(userAddr) return userAddr;
+  const stored = localStorage.getItem('circleWalletAddr') || localStorage.getItem('nan_dynamic_address');
+  if(!stored) return null;
+  userAddr = stored; window.userAddr = stored;
+  if(!isCircleWallet && localStorage.getItem('circleWalletId')){
+    isCircleWallet = true; window.isCircleWallet = true;
+    circleWalletId = localStorage.getItem('circleWalletId'); window.circleWalletId = circleWalletId;
+    circleWalletAddress = stored; window.circleWalletAddress = stored;
+  } else if(!isCircleWallet && !signer){
+    await getDynamicSigner();
+  }
+  return userAddr;
+}
 async function doBulkSend(){
+  await ensureWalletConnected();
   if(!bulkRecipients.length) return;
 
   // Dry run confirmation
@@ -9075,7 +9098,7 @@ function updateLendPositions(){
 }
 
 async function doSupply(){
-  if(!userAddr){toast('Connect wallet first','error');return;}
+  if(!(await ensureWalletConnected())){toast('Connect wallet first','error');return;}
   const amt=parseFloat(document.getElementById('supplyAmt').value);
   if(!amt||amt<=0){toast('Enter an amount','error');return;}
   const bal=lendAsset==='USDC'?parseFloat(usdcBal):parseFloat(eurcBal);
@@ -9188,7 +9211,7 @@ function updateBorrowPreview(){
 async function doBorrow(){
   const amt=parseFloat(document.getElementById('borrowAmt').value);
   if(!amt||amt<=0){toast('Enter an amount to borrow','error');return;}
-  if(!userAddr){toast('Connect wallet first','error');return;}
+  if(!(await ensureWalletConnected())){toast('Connect wallet first','error');return;}
   // Refresh position first to get latest on-chain data
   await refreshLendPosition();
   if(lendPositions.supplied===0&&(lendPositions.collateral||0)===0){
@@ -9256,6 +9279,7 @@ async function doBorrow(){
 }
 
 async function doRepay(){
+  await ensureWalletConnected();
   const amt=parseFloat(document.getElementById('repayAmt').value);
   if(!amt||amt<=0){toast('Enter an amount','error');return;}
   if(amt>lendPositions.borrowed){toast('More than you owe','error');return;}
@@ -9301,6 +9325,7 @@ async function doRepay(){
   btn.innerHTML='Repay Debt';btn.disabled=false;
 }
 async function doWithdraw(){
+  await ensureWalletConnected();
   const amt=parseFloat(document.getElementById('withdrawAmt').value);
   if(!amt||amt<=0){toast('Enter an amount','error');return;}
   if(amt>lendPositions.supplied){toast('More than supplied','error');return;}
@@ -9376,7 +9401,7 @@ async function checkArcName(){
   }
 }
 async function registerArcName(){
-  if(!userAddr){toast('Connect wallet first','error');return;}
+  if(!(await ensureWalletConnected())){toast('Connect wallet first','error');return;}
   const name=document.getElementById('arcNameInput').value.trim().toLowerCase().replace('.arc','');
   if(!name||name.length<2){toast('Enter a valid name (min 2 chars)','error');return;}
   if(!/^[a-z0-9-]+$/.test(name)){toast('Only letters, numbers and hyphens allowed','error');return;}
@@ -9982,6 +10007,7 @@ function initNewPRForm(){
   const _pcb=document.getElementById('prCreateBtn');_pcb.disabled=true;_pcb.style.opacity='.4';_pcb.innerHTML='Create Request';
 }
 async function createPaymentRequest(){
+  await ensureWalletConnected();
   const label=document.getElementById('prLabel').value.trim();
   const amt=parseFloat(document.getElementById('prAmount').value)||null;
   const note=document.getElementById('prNote').value.trim();
@@ -10232,7 +10258,7 @@ function updateInvoicePreview(){
   document.getElementById('invTotal').textContent = subtotal.toFixed(2);
 }
 async function submitInvoice(){
-  if(!userAddr){ toast('Connect your wallet first','error'); return; }
+  if(!(await ensureWalletConnected())){ toast('Connect your wallet first','error'); return; }
   const businessName = document.getElementById('invBusinessName').value.trim();
   const customerName = document.getElementById('invCustomerName').value.trim();
   const itemDesc = document.getElementById('invItemDesc').value.trim();
@@ -10414,6 +10440,7 @@ function markPRAsPaid(){
   toast('✓ Marked as paid!','success',2500);
 }
 async function doPayNow(){
+  await ensureWalletConnected();
   const to=document.getElementById('payNowTo').textContent;
   const token=document.getElementById('payNowToken').textContent;
   const fixedAmt=document.getElementById('payNowAmt').textContent;
