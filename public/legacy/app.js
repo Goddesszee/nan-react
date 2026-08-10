@@ -1458,6 +1458,33 @@ async function onConnected(isEmail=false, isDev=false){
   showPage('dashboard');
   updateTopBar(true);
   if(typeof updateDesktopNav === 'function') updateDesktopNav();
+  // Eagerly resolve the agent wallet address right after login — every
+  // agent-* feature (send, policy, recurring, supply, etc) individually
+  // checks `if(!agentWalletAddr)` and shows a "connect wallet" gate if it's
+  // empty. That variable was previously only populated by whichever page
+  // or action happened to trigger a fetch for it first, so a user could
+  // land on Dashboard, immediately try an Agent Wallet feature, and hit a
+  // false "not connected" gate even though a real funded wallet already
+  // exists server-side. Resolving it once, right here, closes that gap at
+  // the source instead of patching each individual check site.
+  // Fire-and-forget — must not block or delay the rest of onConnected().
+  (async()=>{
+    try{
+      if(!agentWalletAddr && userAddr){
+        const _r=await fetch('https://nan-production.up.railway.app/api/agent-wallets',{
+          method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({action:'get-or-create',userAddress:userAddr}),
+          signal:AbortSignal.timeout(8000)
+        });
+        const _d=await _r.json();
+        if(_d.success&&_d.wallet?.walletAddress){
+          agentWalletAddr=_d.wallet.walletAddress;
+          window.agentWalletAddr=agentWalletAddr;
+          localStorage.setItem('nan_agent_addr',agentWalletAddr);
+        }
+      }
+    }catch(e){console.warn('[onConnected] agent wallet eager resolve failed:',e.message);}
+  })();
   // Mobile UI enhancements
   setTimeout(()=>{ injectMobileWelcome(); }, 300);
   // Update More page profile card
@@ -1532,6 +1559,23 @@ async function onConnected(isEmail=false, isDev=false){
 function disconnect(){
   // Stop all timers
   if(txPollTimer){clearInterval(txPollTimer);txPollTimer=null;}
+  // Before wiping, remember this account (email + wallet) for up to 30 days
+  // so the NEXT login with the SAME email can skip OTP entirely. Uses
+  // separate 'nan_remember_*' keys, deliberately different from the active
+  // session keys the page-load auto-restore checks, so logout still shows
+  // the login screen rather than silently bypassing it — the user still
+  // goes through "log in," they just won't need to re-verify a code.
+  try{
+    if(otpEmail && circleWalletId && circleWalletAddress){
+      localStorage.setItem('nan_remember_email', otpEmail.toLowerCase().trim());
+      localStorage.setItem('nan_remember_walletId', circleWalletId);
+      localStorage.setItem('nan_remember_walletAddr', circleWalletAddress);
+      localStorage.setItem('nan_remember_blockchain', circleWalletBlockchain||'');
+      localStorage.setItem('nan_remember_ts', String(Date.now()));
+      const _tok=localStorage.getItem('nan_session_token');
+      if(_tok) localStorage.setItem('nan_remember_token', _tok);
+    }
+  }catch(e){}
   // Clear in-memory state
   txHistory=[];paymentRequests=[];arcNames=[];
   provider=signer=userAddr=wp=null;
@@ -1539,19 +1583,16 @@ function disconnect(){
   circleWalletId=circleWalletAddress=circleWalletBlockchain=null;
   circleUserToken=circleUserId=otpEmail=null;
   isCircleWallet=false;
-  // Wipe ALL localStorage — no trace of former account
+  // Wipe localStorage EXCEPT the just-saved nan_remember_* keys
   try{
     var keys=[];
     for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k)keys.push(k);}
-    keys.forEach(function(k){localStorage.removeItem(k);});
+    keys.forEach(function(k){ if(k.indexOf('nan_remember_')!==0) localStorage.removeItem(k); });
   }catch(e){}
   // Wipe sessionStorage
   try{sessionStorage.clear();}catch(e){}
   // Redirect to landing — use replace so back button doesn't return to app
   // Add nocache param so browser doesn't serve stale React bundle
-  // Wipe all storage right here then hard navigate to landing
-  try { localStorage.clear(); sessionStorage.clear(); } catch(e) {}
-  // Use replace so back button can't return to app
   window.location.replace('/?__nan_disconnected=1');
 }
 
@@ -6240,6 +6281,37 @@ async function sendFloatingOTP(){
   const email = document.getElementById('floatingEmailInput').value.trim();
   if(!email||!email.includes('@')){ toast('Enter a valid email','error'); return; }
   const btn = document.querySelector('#floatingEmailStep button');
+  // Skip OTP entirely if this matches a remembered account from within the
+  // last 30 days — same email, still-fresh logout. Different email or an
+  // expired remember-window falls through to the normal OTP flow below.
+  try{
+    const remEmail=localStorage.getItem('nan_remember_email');
+    const remTs=parseInt(localStorage.getItem('nan_remember_ts')||'0',10);
+    const THIRTY_DAYS_MS=30*24*60*60*1000;
+    if(remEmail && remEmail===email.toLowerCase() && remTs && (Date.now()-remTs)<THIRTY_DAYS_MS){
+      const remWalletId=localStorage.getItem('nan_remember_walletId');
+      const remWalletAddr=localStorage.getItem('nan_remember_walletAddr');
+      const remBlockchain=localStorage.getItem('nan_remember_blockchain')||'';
+      const remToken=localStorage.getItem('nan_remember_token');
+      if(remWalletId && remWalletAddr){
+        btn.textContent='Signing in…'; btn.disabled=true;
+        otpEmail=email;
+        circleWalletId=remWalletId;
+        circleWalletAddress=remWalletAddr;
+        circleWalletBlockchain=remBlockchain;
+        isCircleWallet=true;
+        userAddr=circleWalletAddress;
+        localStorage.setItem('circleWalletId',circleWalletId);
+        localStorage.setItem('circleWalletAddr',circleWalletAddress);
+        if(remToken) localStorage.setItem('nan_session_token',remToken);
+        provider=getArcProvider();
+        onArcNetwork=true;
+        document.getElementById('floatingEmailStep').style.display='none';
+        await onConnected(true,false);
+        return;
+      }
+    }
+  }catch(e){console.warn('[sendFloatingOTP] remember-check failed:',e.message);}
   btn.textContent = 'Sending…'; btn.disabled = true;
   try{
     const res = await fetch('https://nan-production.up.railway.app/api/otp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'send',email})});
@@ -6298,6 +6370,14 @@ async function verifyFloatingOTP(){
     localStorage.setItem('circleWalletAddr', walletAddr);
     localStorage.setItem('nan_login_type', 'circle');
     localStorage.setItem('nan_email', email);
+    // Start the 30-day skip-OTP remember-window right away, not just on
+    // next logout — covers the case where this is a first-time login.
+    localStorage.setItem('nan_remember_email', email.toLowerCase().trim());
+    localStorage.setItem('nan_remember_walletId', walletId);
+    localStorage.setItem('nan_remember_walletAddr', walletAddr);
+    localStorage.setItem('nan_remember_blockchain', circleWalletBlockchain||'');
+    localStorage.setItem('nan_remember_ts', String(Date.now()));
+    if(data.sessionToken) localStorage.setItem('nan_remember_token', data.sessionToken);
     document.getElementById('floatingOtpModal').style.display='none';
     // Link this email to the wallet for notifications — best-effort.
     fetch('https://nan-production.up.railway.app/api/agent-wallets',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'link-email',userAddress:userAddr,email})}).catch(()=>{});
