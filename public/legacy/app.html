@@ -1617,43 +1617,13 @@ html,body{background-color:var(--bg);}
         <div style="font-size:.8rem;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin:22px 4px 6px;">Email Notifications</div>
         <div style="font-size:.8rem;color:var(--text3);margin:0 4px 12px;">Choose which money movements email you.</div>
 
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 4px;border-bottom:1px solid var(--border);">
-          <div>
-            <div style="font-size:1rem;font-weight:600;color:var(--text);">Transfers</div>
-            <div style="font-size:.85rem;color:var(--text3);margin-top:2px;">Sends and agent-to-agent transfers</div>
-          </div>
-          <div id="emailNotifTransfersSwitch" onclick="toggleEmailNotifyCategory('transfers')" style="width:46px;height:26px;border-radius:100px;background:var(--surface);border:1px solid var(--border);position:relative;cursor:pointer;flex-shrink:0;transition:background .2s;">
-            <div id="emailNotifTransfersKnob" style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:left .2s;"></div>
-          </div>
-        </div>
-
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 4px;border-bottom:1px solid var(--border);">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 4px;">
           <div>
             <div style="font-size:1rem;font-weight:600;color:var(--text);">Invoices</div>
             <div style="font-size:.85rem;color:var(--text3);margin-top:2px;">New, paid, and rejected invoices</div>
           </div>
           <div id="emailNotifInvoicesSwitch" onclick="toggleEmailNotifyCategory('invoices')" style="width:46px;height:26px;border-radius:100px;background:var(--surface);border:1px solid var(--border);position:relative;cursor:pointer;flex-shrink:0;transition:background .2s;">
             <div id="emailNotifInvoicesKnob" style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:left .2s;"></div>
-          </div>
-        </div>
-
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 4px;border-bottom:1px solid var(--border);">
-          <div>
-            <div style="font-size:1rem;font-weight:600;color:var(--text);">Escrow</div>
-            <div style="font-size:.85rem;color:var(--text3);margin-top:2px;">Created, released, and refunded escrows</div>
-          </div>
-          <div id="emailNotifEscrowSwitch" onclick="toggleEmailNotifyCategory('escrow')" style="width:46px;height:26px;border-radius:100px;background:var(--surface);border:1px solid var(--border);position:relative;cursor:pointer;flex-shrink:0;transition:background .2s;">
-            <div id="emailNotifEscrowKnob" style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:left .2s;"></div>
-          </div>
-        </div>
-
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 4px;">
-          <div>
-            <div style="font-size:1rem;font-weight:600;color:var(--text);">Recurring payments</div>
-            <div style="font-size:.85rem;color:var(--text3);margin-top:2px;">Scheduled and executed recurring sends</div>
-          </div>
-          <div id="emailNotifRecurringSwitch" onclick="toggleEmailNotifyCategory('recurring')" style="width:46px;height:26px;border-radius:100px;background:var(--surface);border:1px solid var(--border);position:relative;cursor:pointer;flex-shrink:0;transition:background .2s;">
-            <div id="emailNotifRecurringKnob" style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:left .2s;"></div>
           </div>
         </div>
       </div>
@@ -5509,7 +5479,7 @@ document.addEventListener('DOMContentLoaded',function(){
   }
 })();
 </script>
-<script src="/legacy/app.js?v=1786353744"></script>
+<script src="/legacy/app.js?v=1786354513"></script>
 <script src="/legacy/ui.js?v=1786319070"></script>
 <script>
 /* ══ Nav restructure: sidebar product links, split Profile / Agent Wallet menus ══
@@ -6494,11 +6464,13 @@ window.addEventListener('load', function() {
 
         <div style="font-size:.72rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Every</div>
         <div style="display:flex;gap:5px;margin-bottom:12px;">
-          <button onclick="recurSetInterval(3600,this)" class="ibtn active" style="flex:1;padding:8px 4px;text-align:center;font-size:.78rem;">Hourly</button>
-          <button onclick="recurSetInterval(86400,this)" class="ibtn" style="flex:1;padding:8px 4px;text-align:center;font-size:.78rem;">Daily</button>
+          <button onclick="recurSetInterval(60,this)" class="ibtn" style="flex:1;padding:8px 4px;text-align:center;font-size:.78rem;">1 min</button>
+          <button onclick="recurSetInterval(3600,this)" class="ibtn" style="flex:1;padding:8px 4px;text-align:center;font-size:.78rem;">Hourly</button>
+          <button onclick="recurSetInterval(86400,this)" class="ibtn active" style="flex:1;padding:8px 4px;text-align:center;font-size:.78rem;">Daily</button>
           <button onclick="recurSetInterval(604800,this)" class="ibtn" style="flex:1;padding:8px 4px;text-align:center;font-size:.78rem;">Weekly</button>
           <button onclick="recurSetInterval(2592000,this)" class="ibtn" style="flex:1;padding:8px 4px;text-align:center;font-size:.78rem;">Monthly</button>
         </div>
+        <div style="font-size:.7rem;color:var(--text3);margin-bottom:12px;">1 min is here for testing — watch it actually fire.</div>
 
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
           <span style="font-size:.78rem;color:var(--text2);white-space:nowrap;">or every</span>
