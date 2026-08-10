@@ -5618,6 +5618,7 @@ function payrollSwitchTab(tab){
 async function payrollLoadDashboard(){
   if (!userAddr) return;
   document.getElementById('dashWalletBal').textContent = (parseFloat(usdcBal||0)).toFixed(2) + ' USDC';
+  payrollFetchNgnRates();
   try{
     const r = await fetch(PAYROLL_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'dashboard-stats', employerAddress:userAddr})});
     const d = await r.json();
@@ -5639,6 +5640,42 @@ async function payrollLoadDashboard(){
         </div>`).join('');
     }
   }catch(e){ document.getElementById('dashRecentRuns').textContent = '❌ ' + e.message; }
+}
+
+// Live NGN rate for Payroll — free, no payment gate (unlike the x402-sold
+// /api/x402/ngn-rate endpoint, which requires a real $0.001 micropayment per
+// call and is meant to be sold to other agents, not used for our own UI).
+// Uses the same free Frankfurter source the backend already uses internally
+// for its own EUR/USD checks, combined with the FX rate already fetched
+// on page load (EURC per USDC) to derive both NGN/USDC and NGN/EURC.
+async function payrollFetchNgnRates(){
+  const usdcEl = document.getElementById('payrollFxUsdc');
+  const eurcEl = document.getElementById('payrollFxEurc');
+  const updEl  = document.getElementById('payrollFxUpdated');
+  if(!usdcEl) return;
+  try{
+    const cached = localStorage.getItem('nan_ngn_rate');
+    const cachedTime = localStorage.getItem('nan_ngn_time');
+    let ngnPerUsd;
+    if(cached && cachedTime && Date.now()-parseInt(cachedTime) < 3600000){
+      ngnPerUsd = parseFloat(cached);
+    } else {
+      const r = await fetch('https://api.frankfurter.app/latest?from=USD&to=NGN');
+      const d = await r.json();
+      ngnPerUsd = d?.rates?.NGN;
+      if(!ngnPerUsd || ngnPerUsd < 100 || ngnPerUsd > 10000) throw new Error('Bad NGN rate');
+      localStorage.setItem('nan_ngn_rate', ngnPerUsd);
+      localStorage.setItem('nan_ngn_time', Date.now());
+    }
+    const ngnPerEurc = ngnPerUsd / (FX || 0.9258); // FX = EURC per USDC
+    usdcEl.textContent = '1 USDC ≈ ' + ngnPerUsd.toLocaleString(undefined,{maximumFractionDigits:0}) + ' NGN';
+    eurcEl.textContent = '1 EURC ≈ ' + ngnPerEurc.toLocaleString(undefined,{maximumFractionDigits:0}) + ' NGN';
+    if(updEl) updEl.textContent = 'Updated ' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  }catch(e){
+    usdcEl.textContent = '1 USDC ≈ — NGN';
+    eurcEl.textContent = '1 EURC ≈ — NGN';
+    if(updEl) updEl.textContent = 'Rate unavailable';
+  }
 }
 
 let payrollEmployeesCache = [];
