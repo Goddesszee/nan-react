@@ -6731,7 +6731,9 @@ RULES:
   bridge:        <ACTION>{"action":"navigate","tab":"bridge"}</ACTION>
   name:          <ACTION>{"action":"navigate","tab":"arcname"}</ACTION>
   history:       <ACTION>{"action":"navigate","tab":"history"}</ACTION>
-- ALWAYS include <ACTION> tag when user wants to DO something — never just describe it
+- ALWAYS include <ACTION> tag when user wants to DO something — never just describe it. Saying "I'll check that now" or "just a moment" WITHOUT an <ACTION> tag in the same reply is a bug — if you say you're about to check something, the tag must be in that exact message, not a promise to do it later.
+- Use agent-balance for ANY balance question: "what's my agent wallet balance", "how much do I have", "check my balance" — always include the tag, never just say you're checking
+- If a user asks for balance AND spending limit together in one message, still include an <ACTION> tag — use agent-balance first (the more commonly-needed one); they can ask for the limit separately as a natural follow-up
 - Use agent-send/agent-balance/agent-history/agent-fund when user says "agent wallet" or "agent"
 - Use agent-a2a when user wants to pay ANOTHER person's agent wallet specifically
 - Use agent-set-policy when user wants to CHANGE/CREATE a limit: "set limit", "set spending limit to X", "max per tx", "daily limit of X"
@@ -6960,6 +6962,15 @@ RULES:
           action={action:'agent-bills',billType:'cable',card:cardM[0],provider:(providerM[0]).toLowerCase(),plan:planM?planM[0].toLowerCase():'compact'};
           console.log('[agent] fallback cable inferred:', action);
         }
+      }
+      // agent-balance — checked BEFORE agent-portfolio, since "agent wallet
+      // balance" is specifically about the agent wallet, not the overall
+      // portfolio. This was the actual reported bug: the AI would say
+      // "I will check your agent wallet balance... just a moment" with no
+      // <ACTION> tag at all, so nothing ever executed and the promised
+      // check never happened.
+      if(!action && /agent.*balance|agent wallet balance|how much.*agent|check.*balance/i.test(reply)){
+        action={action:'agent-balance'};
       }
       // agent-portfolio
       if(!action && /portfolio|total balance|all.*wallet|net worth|overall balance/i.test(reply)){
