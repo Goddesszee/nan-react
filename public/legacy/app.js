@@ -2510,7 +2510,7 @@ async function submitAjoStart(groupId){
 async function submitAjoContribute(groupId){
   const btn=document.getElementById('ajoActionBtn');
   const statusEl=document.getElementById('ajoGroupStatus');
-  if(!signer){ toast('Connect MetaMask & switch to Arc Testnet','error',5000); return; }
+  if(!isCircleWallet && !signer){ toast('Connect MetaMask & switch to Arc Testnet','error',5000); return; }
   btn.disabled=true; btn.textContent='Approving USDC…';
   try{
     const readC=ajoContract(provider||getArcProvider());
@@ -6511,6 +6511,10 @@ RULES:
   gig-list:      <ACTION>{"action":"gig-list"}</ACTION>
   market-list:   <ACTION>{"action":"market-list","title":"iPhone charger","price":10,"description":"..."}</ACTION>
   market-browse: <ACTION>{"action":"market-browse","query":"charger"}</ACTION>
+  ajo-create: <ACTION>{"action":"ajo-create","label":"Friends Circle","maxMembers":5,"contribution":20,"roundLength":7}</ACTION>
+  ajo-join:   <ACTION>{"action":"ajo-join","code":"NAN-ABCD-001"}</ACTION>
+  ajo-contribute: <ACTION>{"action":"ajo-contribute","groupId":3}</ACTION>
+  ajo-list:   <ACTION>{"action":"ajo-list"}</ACTION>
   agent-clear-policy: <ACTION>{"action":"agent-clear-policy"}</ACTION>
   swap:          <ACTION>{"action":"swap","amount":1,"from":"USDC","to":"EURC"}</ACTION>
   limit:         <ACTION>{"action":"limit","amount":50,"sellToken":"USDC","buyToken":"EURC","targetRate":0.95,"condition":"gte"}</ACTION>
@@ -6536,6 +6540,7 @@ RULES:
 - Use borrow/repay-loan for borrowing USDC against cirBTC collateral or repaying that loan
 - Use gig-post when user wants to post a task/gig for others to complete; gig-list when they ask what gigs are open
 - Use market-list when user wants to sell/list an item; market-browse when they ask what's for sale
+- Use ajo-create when user wants to start a new group savings circle (needs name, member count, contribution amount); ajo-join when they have a group code; ajo-contribute for paying into an existing group's round; ajo-list when they ask "what circles am I in" or similar
 - Use regular send/swap for main wallet actions
 - The ACTION block is COMPLETELY INVISIBLE to user — NEVER write ACTION or JSON in your text
 - Your text reply must be plain English only — confirm what you're about to do, then add ACTION tag
@@ -6868,10 +6873,32 @@ RULES:
         const priceM = reply.match(/\$\s*([\d.]+)/);
         if(titleM&&priceM) action={action:'market-list',title:titleM[1].trim(),price:priceM[1]};
       }
+      // ajo-list — question form, checked before create/join so "what circles
+      // am i in" doesn't need extra params to match something
+      if(!action && /(what circles|my circles|my ajo|my group.*saving|list.*circle)/i.test(reply)){
+        action={action:'ajo-list'};
+      }
+      // ajo-join — needs a group code (NAN-XXXX-000 pattern)
+      if(!action && /join.*(ajo|circle|group saving)/i.test(reply)){
+        const codeM = reply.match(/NAN-[A-Z0-9]+-[0-9]+/i);
+        if(codeM) action={action:'ajo-join',code:codeM[0].toUpperCase()};
+      }
+      // ajo-contribute — needs a group number
+      if(!action && /contribute.*(ajo|circle|group)/i.test(reply)){
+        const idM = reply.match(/group\s*#?\s*(\d+)/i);
+        if(idM) action={action:'ajo-contribute',groupId:parseInt(idM[1])};
+      }
+      // ajo-create — needs a label at minimum
+      if(!action && /create.*(ajo|circle|group saving)/i.test(reply)){
+        const labelM = reply.match(/called\s+([^,.]+)/i) || reply.match(/named\s+([^,.]+)/i);
+        const membersM = reply.match(/(\d+)\s*members/i);
+        const contribM = reply.match(/([\d.]+)\s*USDC/i);
+        if(labelM&&membersM&&contribM) action={action:'ajo-create',label:labelM[1].trim(),maxMembers:parseInt(membersM[1]),contribution:parseFloat(contribM[1])};
+      }
     }
     agentMsgs[agentMsgs.length-1]={role:'assistant',content:clean,action};
     // Auto-execute agent wallet actions immediately (no button needed)
-    const autoActions = ['agent-send','agent-a2a','agent-invoice-create','agent-trust-check','agent-escrow-create','agent-set-policy','agent-get-policy','agent-clear-policy','agent-recurring-list','agent-bulk-send','agent-balance','agent-history','agent-fund','agent-pay','agent-swap','agent-bridge','agent-multichain','agent-offramp','agent-payroll','agent-ngn-rate','agent-bills','agent-data','agent-portfolio','agent-analytics','agent-price-alert','agent-auto-sweep','agent-receipt','agent-remita','fx-limit-offramp','payreq-create','list_orders','cancel_order','cancel_all','supply','earn-withdraw','cirbtc-deposit','cirbtc-withdraw','borrow','repay-loan','gig-post','gig-list','market-list','market-browse'];
+    const autoActions = ['agent-send','agent-a2a','agent-invoice-create','agent-trust-check','agent-escrow-create','agent-set-policy','agent-get-policy','agent-clear-policy','agent-recurring-list','agent-bulk-send','agent-balance','agent-history','agent-fund','agent-pay','agent-swap','agent-bridge','agent-multichain','agent-offramp','agent-payroll','agent-ngn-rate','agent-bills','agent-data','agent-portfolio','agent-analytics','agent-price-alert','agent-auto-sweep','agent-receipt','agent-remita','fx-limit-offramp','payreq-create','list_orders','cancel_order','cancel_all','supply','earn-withdraw','cirbtc-deposit','cirbtc-withdraw','borrow','repay-loan','gig-post','gig-list','market-list','market-browse','ajo-create','ajo-join','ajo-contribute','ajo-list'];
     if(action && action.action && autoActions.includes(action.action)){
       setTimeout(()=>executeAgentAction(action), 500);
     }
@@ -7279,6 +7306,127 @@ function executeAgentAction(action){
         }
         renderAgentMsgs();
       }).catch(e=>{addAgentMsg('❌ Error: '+e.message);renderAgentMsgs();});
+      break;
+    }
+    case 'ajo-create':{
+      const label=action.label;
+      const maxMembers=parseInt(action.maxMembers);
+      const contribution=parseFloat(action.contribution);
+      const roundLength=parseInt(action.roundLength)||7;
+      if(!label||!maxMembers||!contribution){addAgentMsg('❌ Give me a group name, max members, and contribution amount. e.g. "create an ajo circle called Friends, 5 members, 20 USDC per round"');renderAgentMsgs();break;}
+      if(!userAddr){addAgentMsg('⚠️ Connect your wallet first.');renderAgentMsgs();break;}
+      addAgentMsg(`👥 Confirm Group Savings circle:\n"${label}"\n${maxMembers} members · ${contribution} USDC/round · every ${roundLength} days`);
+      renderAgentMsgs();
+      setTimeout(()=>{
+        const msgs=document.getElementById('agentMessages');const last=msgs?.lastElementChild;if(!last)return;
+        const btns=document.createElement('div');btns.style.cssText='display:flex;gap:8px;margin-top:10px;';
+        const confirmBtn=document.createElement('button');confirmBtn.textContent='✓ Create Circle';
+        confirmBtn.style.cssText='padding:8px 18px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
+        confirmBtn.onclick=()=>{
+          btns.remove();
+          goPage('groupsavings');
+          setTimeout(()=>{
+            groupSavingsSwitchTab('create');
+            setTimeout(()=>{
+              const lEl=document.getElementById('ajoLabel'),mEl=document.getElementById('ajoMaxMembers'),cEl=document.getElementById('ajoContribution'),rEl=document.getElementById('ajoRoundLength');
+              if(lEl)lEl.value=label; if(mEl)mEl.value=maxMembers; if(cEl)cEl.value=contribution; if(rEl)rEl.value=roundLength;
+              if(typeof submitAjoCreate==='function') submitAjoCreate();
+            },150);
+          },150);
+          addAgentMsg('⏳ Creating circle — check Nan Circles for confirmation.');renderAgentMsgs();
+        };
+        const cancelBtn=document.createElement('button');cancelBtn.textContent='Cancel';
+        cancelBtn.style.cssText='padding:8px 14px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;';
+        cancelBtn.onclick=()=>{btns.remove();addAgentMsg('Circle creation cancelled.');renderAgentMsgs();};
+        btns.appendChild(confirmBtn);btns.appendChild(cancelBtn);last.appendChild(btns);scrollAgentBottom();
+      },100);
+      break;
+    }
+    case 'ajo-join':{
+      const code=action.code;
+      if(!code){addAgentMsg('❌ Give me the group code, e.g. "join ajo group NAN-ABCD-001"');renderAgentMsgs();break;}
+      if(!userAddr){addAgentMsg('⚠️ Connect your wallet first.');renderAgentMsgs();break;}
+      addAgentMsg(`👥 Confirm joining group: ${code}`);
+      renderAgentMsgs();
+      setTimeout(()=>{
+        const msgs=document.getElementById('agentMessages');const last=msgs?.lastElementChild;if(!last)return;
+        const btns=document.createElement('div');btns.style.cssText='display:flex;gap:8px;margin-top:10px;';
+        const confirmBtn=document.createElement('button');confirmBtn.textContent='✓ Join Circle';
+        confirmBtn.style.cssText='padding:8px 18px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
+        confirmBtn.onclick=()=>{
+          btns.remove();
+          goPage('groupsavings');
+          setTimeout(()=>{
+            groupSavingsSwitchTab('join');
+            setTimeout(()=>{
+              const idEl=document.getElementById('ajoJoinId');
+              if(idEl) idEl.value=code;
+              if(typeof submitAjoJoin==='function') submitAjoJoin();
+            },150);
+          },150);
+          addAgentMsg('⏳ Joining circle — check Nan Circles for confirmation.');renderAgentMsgs();
+        };
+        const cancelBtn=document.createElement('button');cancelBtn.textContent='Cancel';
+        cancelBtn.style.cssText='padding:8px 14px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;';
+        cancelBtn.onclick=()=>{btns.remove();addAgentMsg('Join cancelled.');renderAgentMsgs();};
+        btns.appendChild(confirmBtn);btns.appendChild(cancelBtn);last.appendChild(btns);scrollAgentBottom();
+      },100);
+      break;
+    }
+    case 'ajo-contribute':{
+      const groupId=parseInt(action.groupId);
+      if(isNaN(groupId)){addAgentMsg('❌ Which group? Give me the group number, e.g. "contribute to ajo group 3"');renderAgentMsgs();break;}
+      if(!userAddr){addAgentMsg('⚠️ Connect your wallet first.');renderAgentMsgs();break;}
+      addAgentMsg(`👥 Confirm contribution to Group #${groupId} (this round's amount, per your group terms)`);
+      renderAgentMsgs();
+      setTimeout(()=>{
+        const msgs=document.getElementById('agentMessages');const last=msgs?.lastElementChild;if(!last)return;
+        const btns=document.createElement('div');btns.style.cssText='display:flex;gap:8px;margin-top:10px;';
+        const confirmBtn=document.createElement('button');confirmBtn.textContent='✓ Contribute Now';
+        confirmBtn.style.cssText='padding:8px 18px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
+        confirmBtn.onclick=()=>{
+          btns.remove();
+          goPage('groupsavings');
+          setTimeout(()=>{ if(typeof showAjoGroup==='function') showAjoGroup(groupId);
+            setTimeout(()=>{ if(typeof submitAjoContribute==='function') submitAjoContribute(groupId); },300);
+          },150);
+          addAgentMsg('⏳ Contributing — check Nan Circles for confirmation.');renderAgentMsgs();
+        };
+        const cancelBtn=document.createElement('button');cancelBtn.textContent='Cancel';
+        cancelBtn.style.cssText='padding:8px 14px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;';
+        cancelBtn.onclick=()=>{btns.remove();addAgentMsg('Contribution cancelled.');renderAgentMsgs();};
+        btns.appendChild(confirmBtn);btns.appendChild(cancelBtn);last.appendChild(btns);scrollAgentBottom();
+      },100);
+      break;
+    }
+    case 'ajo-list':{
+      if(!userAddr){addAgentMsg('⚠️ Connect your wallet first.');renderAgentMsgs();break;}
+      addAgentMsg('⏳ Checking your savings circles...');renderAgentMsgs();
+      (async()=>{
+        try{
+          const readProvider=provider||getArcProvider();
+          const c=ajoContract(readProvider);
+          const total=await c.nextGroupId();
+          const myGroups=[];
+          const start=total>50n?total-50n:0n;
+          for(let id=start;id<total;id++){
+            const member=await c.isMember(id,userAddr).catch(()=>false);
+            if(member) myGroups.push(id);
+          }
+          if(!myGroups.length){
+            addAgentMsg('ℹ️ You\'re not in any savings circles yet. Say "create an ajo circle" or "join ajo group [code]" to get started.');
+          } else {
+            const statusLabel=['Open','Live','Done'];
+            const lines=[];
+            for(const id of myGroups){
+              const g=await c.getGroup(id);
+              lines.push('👥 '+(g.label||'Group #'+id)+' — '+statusLabel[Number(g.status)]+' · '+Number(g.memberCount)+'/'+Number(g.maxMembers)+' members · '+ethers.formatUnits(g.contributionAmount,6)+' USDC/round');
+            }
+            addAgentMsg('Your savings circles:\n\n'+lines.join('\n'));
+          }
+        }catch(e){addAgentMsg('❌ Error: '+e.message);}
+        renderAgentMsgs();
+      })();
       break;
     }
     case 'agent-get-policy':{
