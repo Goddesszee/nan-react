@@ -6501,6 +6501,16 @@ RULES:
   agent-set-policy: <ACTION>{"action":"agent-set-policy","perTx":10,"daily":50,"weekly":200}</ACTION>
   agent-get-policy: <ACTION>{"action":"agent-get-policy"}</ACTION>
   agent-recurring-list: <ACTION>{"action":"agent-recurring-list"}</ACTION>
+  supply:        <ACTION>{"action":"supply","amount":10,"token":"USDC"}</ACTION>
+  earn-withdraw: <ACTION>{"action":"earn-withdraw","amount":10}</ACTION>
+  cirbtc-deposit:  <ACTION>{"action":"cirbtc-deposit","amount":0.01}</ACTION>
+  cirbtc-withdraw: <ACTION>{"action":"cirbtc-withdraw","amount":0.01}</ACTION>
+  borrow:        <ACTION>{"action":"borrow","amount":50}</ACTION>
+  repay-loan:    <ACTION>{"action":"repay-loan","amount":50}</ACTION>
+  gig-post:      <ACTION>{"action":"gig-post","title":"Logo design","budget":50,"description":"..."}</ACTION>
+  gig-list:      <ACTION>{"action":"gig-list"}</ACTION>
+  market-list:   <ACTION>{"action":"market-list","title":"iPhone charger","price":10,"description":"..."}</ACTION>
+  market-browse: <ACTION>{"action":"market-browse","query":"charger"}</ACTION>
   agent-clear-policy: <ACTION>{"action":"agent-clear-policy"}</ACTION>
   swap:          <ACTION>{"action":"swap","amount":1,"from":"USDC","to":"EURC"}</ACTION>
   limit:         <ACTION>{"action":"limit","amount":50,"sellToken":"USDC","buyToken":"EURC","targetRate":0.95,"condition":"gte"}</ACTION>
@@ -6520,6 +6530,12 @@ RULES:
 - NEVER claim the agent wallet "isn't set up" or state what its limits/balance/status/recurring payments are from assumption — the Status/Balance lines above may be stale from before this message; always use the matching agent-* action to get a live answer instead of guessing
 - Use agent-clear-policy when user says "remove limits", "clear policy", "no limits" ("send to their agent", "agent to agent", "a2a")
 - Use agent-recurring-list when user asks "do I have recurring payments", "what's scheduled", "show my recurring transfers" — a question about EXISTING recurring payments, not a request to create one
+- Use supply when user wants to deposit USDC/EURC into Earn to gain yield ("supply", "deposit into earn", "earn yield on")
+- Use earn-withdraw when user wants to withdraw from their Earn/supply position (not cirBTC collateral)
+- Use cirbtc-deposit/cirbtc-withdraw for depositing or withdrawing cirBTC as loan collateral specifically
+- Use borrow/repay-loan for borrowing USDC against cirBTC collateral or repaying that loan
+- Use gig-post when user wants to post a task/gig for others to complete; gig-list when they ask what gigs are open
+- Use market-list when user wants to sell/list an item; market-browse when they ask what's for sale
 - Use regular send/swap for main wallet actions
 - The ACTION block is COMPLETELY INVISIBLE to user — NEVER write ACTION or JSON in your text
 - Your text reply must be plain English only — confirm what you're about to do, then add ACTION tag
@@ -6802,10 +6818,60 @@ RULES:
       if(!action && /ngn.*rate|naira.*rate|rate.*naira|dollar.*naira|how far.*fx/i.test(reply)){
         action={action:'agent-ngn-rate'};
       }
+      // supply (Earn) — checked before generic 'recurring/spend' patterns
+      // don't apply here; requires an explicit amount to avoid false triggers
+      if(!action && /supply|deposit.*earn|earn.*yield|earn.*apy/i.test(reply)){
+        const amtM = reply.match(/([\d.]+)\s*(USDC|EURC)/i);
+        if(amtM) action={action:'supply',amount:parseFloat(amtM[1]),token:amtM[2]?.toUpperCase()||'USDC'};
+      }
+      // earn-withdraw
+      if(!action && /withdraw.*earn|withdraw.*supply|earn.*withdraw/i.test(reply)){
+        const amtM = reply.match(/([\d.]+)/);
+        if(amtM) action={action:'earn-withdraw',amount:parseFloat(amtM[1])};
+      }
+      // cirbtc-deposit / cirbtc-withdraw / borrow / repay-loan
+      if(!action && /cirbtc.*deposit|deposit.*cirbtc|cirbtc.*collateral/i.test(reply)){
+        const amtM = reply.match(/([\d.]+)/);
+        if(amtM) action={action:'cirbtc-deposit',amount:parseFloat(amtM[1])};
+      }
+      if(!action && /cirbtc.*withdraw|withdraw.*cirbtc/i.test(reply)){
+        const amtM = reply.match(/([\d.]+)/);
+        if(amtM) action={action:'cirbtc-withdraw',amount:parseFloat(amtM[1])};
+      }
+      if(!action && /borrow.*usdc|borrow.*against|how much.*borrow/i.test(reply)){
+        const amtM = reply.match(/([\d.]+)/);
+        if(amtM) action={action:'borrow',amount:parseFloat(amtM[1])};
+      }
+      if(!action && /repay.*loan|repay.*usdc|pay.*back.*loan/i.test(reply)){
+        const amtM = reply.match(/([\d.]+)/);
+        if(amtM) action={action:'repay-loan',amount:parseFloat(amtM[1])};
+      }
+      // gig-list — question form, checked before gig-post so a bare "what
+      // gigs are there" doesn't need a title/budget to match something
+      if(!action && /(what gigs|open gigs|available gigs|browse gigs|show.*gigs|list.*gigs)/i.test(reply)){
+        action={action:'gig-list'};
+      }
+      // gig-post — needs a title, budget is optional at fallback level (the
+      // case handler itself requires both, so this just gets it started)
+      if(!action && /post.*gig|post.*task|create.*gig|create.*task/i.test(reply)){
+        const titleM = reply.match(/gig:?\s*([^,.$]+)/i) || reply.match(/task:?\s*([^,.$]+)/i);
+        const budgetM = reply.match(/\$\s*([\d.]+)/);
+        if(titleM) action={action:'gig-post',title:titleM[1].trim(),budget:budgetM?budgetM[1]:null};
+      }
+      // market-browse — question form, checked before market-list
+      if(!action && /(what.*for sale|browse.*market|market.*listing|show.*marketplace)/i.test(reply)){
+        action={action:'market-browse'};
+      }
+      // market-list
+      if(!action && /list.*item|sell.*item|list.*marketplace/i.test(reply)){
+        const titleM = reply.match(/item:?\s*([^,.$]+)/i);
+        const priceM = reply.match(/\$\s*([\d.]+)/);
+        if(titleM&&priceM) action={action:'market-list',title:titleM[1].trim(),price:priceM[1]};
+      }
     }
     agentMsgs[agentMsgs.length-1]={role:'assistant',content:clean,action};
     // Auto-execute agent wallet actions immediately (no button needed)
-    const autoActions = ['agent-send','agent-a2a','agent-invoice-create','agent-trust-check','agent-escrow-create','agent-set-policy','agent-get-policy','agent-clear-policy','agent-recurring-list','agent-bulk-send','agent-balance','agent-history','agent-fund','agent-pay','agent-swap','agent-bridge','agent-multichain','agent-offramp','agent-payroll','agent-ngn-rate','agent-bills','agent-data','agent-portfolio','agent-analytics','agent-price-alert','agent-auto-sweep','agent-receipt','agent-remita','fx-limit-offramp','payreq-create','list_orders','cancel_order','cancel_all'];
+    const autoActions = ['agent-send','agent-a2a','agent-invoice-create','agent-trust-check','agent-escrow-create','agent-set-policy','agent-get-policy','agent-clear-policy','agent-recurring-list','agent-bulk-send','agent-balance','agent-history','agent-fund','agent-pay','agent-swap','agent-bridge','agent-multichain','agent-offramp','agent-payroll','agent-ngn-rate','agent-bills','agent-data','agent-portfolio','agent-analytics','agent-price-alert','agent-auto-sweep','agent-receipt','agent-remita','fx-limit-offramp','payreq-create','list_orders','cancel_order','cancel_all','supply','earn-withdraw','cirbtc-deposit','cirbtc-withdraw','borrow','repay-loan','gig-post','gig-list','market-list','market-browse'];
     if(action && action.action && autoActions.includes(action.action)){
       setTimeout(()=>executeAgentAction(action), 500);
     }
@@ -6973,6 +7039,244 @@ function executeAgentAction(action){
             addAgentMsg('Your active recurring payments:\n\n'+lines.join('\n'));
           }
         } else { addAgentMsg('❌ '+(d.error||'Failed')); }
+        renderAgentMsgs();
+      }).catch(e=>{addAgentMsg('❌ Error: '+e.message);renderAgentMsgs();});
+      break;
+    }
+    case 'supply':{
+      const amt=parseFloat(action.amount);
+      const asset=(action.token||'USDC').toUpperCase()==='EURC'?'EURC':'USDC';
+      if(!amt||amt<=0){addAgentMsg('❌ Specify an amount to supply. e.g. "supply 10 USDC to earn"');renderAgentMsgs();break;}
+      if(!userAddr){addAgentMsg('⚠️ Connect your wallet first.');renderAgentMsgs();break;}
+      const supBal=parseFloat(asset==='USDC'?usdcBal:eurcBal)||0;
+      if(amt>supBal){addAgentMsg(`❌ Insufficient ${asset} balance. You have ${supBal.toFixed(2)} ${asset}.`);renderAgentMsgs();break;}
+      addAgentMsg(`💰 Confirm supply:\n${amt} ${asset} → NANLendingPool\nEarns 4.80% APY, withdraw anytime`);
+      renderAgentMsgs();
+      setTimeout(()=>{
+        const msgs=document.getElementById('agentMessages');const last=msgs?.lastElementChild;if(!last)return;
+        const btns=document.createElement('div');btns.style.cssText='display:flex;gap:8px;margin-top:10px;';
+        const confirmBtn=document.createElement('button');confirmBtn.textContent='✓ Supply Now';
+        confirmBtn.style.cssText='padding:8px 18px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
+        confirmBtn.onclick=()=>{
+          btns.remove();
+          lendAsset=asset;
+          const input=document.getElementById('supplyAmt');
+          if(input) input.value=amt;
+          if(typeof doSupply==='function') doSupply();
+          addAgentMsg('⏳ Supply submitted — check the Earn page for confirmation.');renderAgentMsgs();
+        };
+        const cancelBtn=document.createElement('button');cancelBtn.textContent='Cancel';
+        cancelBtn.style.cssText='padding:8px 14px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;';
+        cancelBtn.onclick=()=>{btns.remove();addAgentMsg('Supply cancelled.');renderAgentMsgs();};
+        btns.appendChild(confirmBtn);btns.appendChild(cancelBtn);last.appendChild(btns);scrollAgentBottom();
+      },100);
+      break;
+    }
+    case 'earn-withdraw':{
+      const amt=parseFloat(action.amount);
+      if(!amt||amt<=0){addAgentMsg('❌ Specify an amount to withdraw from Earn. e.g. "withdraw 10 from earn"');renderAgentMsgs();break;}
+      if(!userAddr){addAgentMsg('⚠️ Connect your wallet first.');renderAgentMsgs();break;}
+      addAgentMsg(`💰 Confirm Earn withdrawal:\n${amt} ${typeof lendAsset!=='undefined'?lendAsset:'USDC'} + accrued interest`);
+      renderAgentMsgs();
+      setTimeout(()=>{
+        const msgs=document.getElementById('agentMessages');const last=msgs?.lastElementChild;if(!last)return;
+        const btns=document.createElement('div');btns.style.cssText='display:flex;gap:8px;margin-top:10px;';
+        const confirmBtn=document.createElement('button');confirmBtn.textContent='✓ Withdraw Now';
+        confirmBtn.style.cssText='padding:8px 18px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
+        confirmBtn.onclick=()=>{
+          btns.remove();
+          const input=document.getElementById('withdrawAmt');
+          if(input) input.value=amt;
+          if(typeof doWithdraw==='function') doWithdraw();
+          addAgentMsg('⏳ Withdrawal submitted — check the Earn page for confirmation.');renderAgentMsgs();
+        };
+        const cancelBtn=document.createElement('button');cancelBtn.textContent='Cancel';
+        cancelBtn.style.cssText='padding:8px 14px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;';
+        cancelBtn.onclick=()=>{btns.remove();addAgentMsg('Withdrawal cancelled.');renderAgentMsgs();};
+        btns.appendChild(confirmBtn);btns.appendChild(cancelBtn);last.appendChild(btns);scrollAgentBottom();
+      },100);
+      break;
+    }
+    case 'cirbtc-deposit':{
+      const amt=parseFloat(action.amount);
+      if(!amt||amt<=0){addAgentMsg('❌ Specify how much cirBTC to deposit as collateral.');renderAgentMsgs();break;}
+      if(!signer){addAgentMsg('⚠️ cirBTC collateral deposits currently require a MetaMask-connected wallet — this isn\'t available for Circle email-login wallets yet.');renderAgentMsgs();break;}
+      addAgentMsg(`₿ Confirm cirBTC deposit:\n${amt} cirBTC → collateral\nUnlocks borrowing up to 50% of its value in USDC`);
+      renderAgentMsgs();
+      setTimeout(()=>{
+        const msgs=document.getElementById('agentMessages');const last=msgs?.lastElementChild;if(!last)return;
+        const btns=document.createElement('div');btns.style.cssText='display:flex;gap:8px;margin-top:10px;';
+        const confirmBtn=document.createElement('button');confirmBtn.textContent='✓ Deposit Now';
+        confirmBtn.style.cssText='padding:8px 18px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
+        confirmBtn.onclick=()=>{
+          btns.remove();
+          const input=document.getElementById('lbDepositAmt');
+          if(input) input.value=amt;
+          if(typeof doLBDeposit==='function') doLBDeposit();
+          addAgentMsg('⏳ Deposit submitted — check the Earn > Borrow page for confirmation.');renderAgentMsgs();
+        };
+        const cancelBtn=document.createElement('button');cancelBtn.textContent='Cancel';
+        cancelBtn.style.cssText='padding:8px 14px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;';
+        cancelBtn.onclick=()=>{btns.remove();addAgentMsg('Deposit cancelled.');renderAgentMsgs();};
+        btns.appendChild(confirmBtn);btns.appendChild(cancelBtn);last.appendChild(btns);scrollAgentBottom();
+      },100);
+      break;
+    }
+    case 'cirbtc-withdraw':{
+      const amt=parseFloat(action.amount);
+      if(!amt||amt<=0){addAgentMsg('❌ Specify how much cirBTC to withdraw.');renderAgentMsgs();break;}
+      if(!signer){addAgentMsg('⚠️ cirBTC collateral withdrawals currently require a MetaMask-connected wallet.');renderAgentMsgs();break;}
+      addAgentMsg(`₿ Confirm cirBTC withdrawal: ${amt} cirBTC`);
+      renderAgentMsgs();
+      setTimeout(()=>{
+        const msgs=document.getElementById('agentMessages');const last=msgs?.lastElementChild;if(!last)return;
+        const btns=document.createElement('div');btns.style.cssText='display:flex;gap:8px;margin-top:10px;';
+        const confirmBtn=document.createElement('button');confirmBtn.textContent='✓ Withdraw Now';
+        confirmBtn.style.cssText='padding:8px 18px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
+        confirmBtn.onclick=()=>{
+          btns.remove();
+          const input=document.getElementById('lbWithdrawAmt');
+          if(input) input.value=amt;
+          if(typeof doLBWithdraw==='function') doLBWithdraw();
+          addAgentMsg('⏳ Withdrawal submitted — check the Earn > Borrow page for confirmation.');renderAgentMsgs();
+        };
+        const cancelBtn=document.createElement('button');cancelBtn.textContent='Cancel';
+        cancelBtn.style.cssText='padding:8px 14px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;';
+        cancelBtn.onclick=()=>{btns.remove();addAgentMsg('Withdrawal cancelled.');renderAgentMsgs();};
+        btns.appendChild(confirmBtn);btns.appendChild(cancelBtn);last.appendChild(btns);scrollAgentBottom();
+      },100);
+      break;
+    }
+    case 'borrow':{
+      const amt=parseFloat(action.amount);
+      if(!amt||amt<=0){addAgentMsg('❌ Specify an amount of USDC to borrow against your cirBTC collateral.');renderAgentMsgs();break;}
+      if(!signer){addAgentMsg('⚠️ Borrowing against cirBTC currently requires a MetaMask-connected wallet.');renderAgentMsgs();break;}
+      addAgentMsg(`🏦 Confirm borrow: ${amt} USDC against your cirBTC collateral (interest-free)`);
+      renderAgentMsgs();
+      setTimeout(()=>{
+        const msgs=document.getElementById('agentMessages');const last=msgs?.lastElementChild;if(!last)return;
+        const btns=document.createElement('div');btns.style.cssText='display:flex;gap:8px;margin-top:10px;';
+        const confirmBtn=document.createElement('button');confirmBtn.textContent='✓ Borrow Now';
+        confirmBtn.style.cssText='padding:8px 18px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
+        confirmBtn.onclick=()=>{
+          btns.remove();
+          const input=document.getElementById('lbBorrowAmt');
+          if(input) input.value=amt;
+          if(typeof doLBBorrow==='function') doLBBorrow();
+          addAgentMsg('⏳ Borrow submitted — check the Earn > Borrow page for confirmation.');renderAgentMsgs();
+        };
+        const cancelBtn=document.createElement('button');cancelBtn.textContent='Cancel';
+        cancelBtn.style.cssText='padding:8px 14px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;';
+        cancelBtn.onclick=()=>{btns.remove();addAgentMsg('Borrow cancelled.');renderAgentMsgs();};
+        btns.appendChild(confirmBtn);btns.appendChild(cancelBtn);last.appendChild(btns);scrollAgentBottom();
+      },100);
+      break;
+    }
+    case 'repay-loan':{
+      const amt=parseFloat(action.amount);
+      if(!amt||amt<=0){addAgentMsg('❌ Specify an amount of USDC to repay.');renderAgentMsgs();break;}
+      if(!signer){addAgentMsg('⚠️ Repaying a cirBTC loan currently requires a MetaMask-connected wallet.');renderAgentMsgs();break;}
+      addAgentMsg(`🏦 Confirm loan repayment: ${amt} USDC`);
+      renderAgentMsgs();
+      setTimeout(()=>{
+        const msgs=document.getElementById('agentMessages');const last=msgs?.lastElementChild;if(!last)return;
+        const btns=document.createElement('div');btns.style.cssText='display:flex;gap:8px;margin-top:10px;';
+        const confirmBtn=document.createElement('button');confirmBtn.textContent='✓ Repay Now';
+        confirmBtn.style.cssText='padding:8px 18px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
+        confirmBtn.onclick=()=>{
+          btns.remove();
+          const input=document.getElementById('lbRepayAmt');
+          if(input) input.value=amt;
+          if(typeof doLBRepay==='function') doLBRepay();
+          addAgentMsg('⏳ Repayment submitted — check the Earn > Borrow page for confirmation.');renderAgentMsgs();
+        };
+        const cancelBtn=document.createElement('button');cancelBtn.textContent='Cancel';
+        cancelBtn.style.cssText='padding:8px 14px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;';
+        cancelBtn.onclick=()=>{btns.remove();addAgentMsg('Repayment cancelled.');renderAgentMsgs();};
+        btns.appendChild(confirmBtn);btns.appendChild(cancelBtn);last.appendChild(btns);scrollAgentBottom();
+      },100);
+      break;
+    }
+    case 'gig-post':{
+      const title=action.title;
+      const budget=action.budget;
+      if(!title||!budget){addAgentMsg('❌ Give me a title and budget, e.g. "post a gig: logo design, budget $50"');renderAgentMsgs();break;}
+      const gigWallet=(typeof gigMyWalletAddress==='function')?gigMyWalletAddress():(circleWalletAddress||userAddr);
+      if(!gigWallet){addAgentMsg('⚠️ Connect your wallet first.');renderAgentMsgs();break;}
+      addAgentMsg(`📋 Confirm gig posting:\n"${title}"\nBudget: $${budget}${action.description?'\n'+action.description:''}`);
+      renderAgentMsgs();
+      setTimeout(()=>{
+        const msgs=document.getElementById('agentMessages');const last=msgs?.lastElementChild;if(!last)return;
+        const btns=document.createElement('div');btns.style.cssText='display:flex;gap:8px;margin-top:10px;';
+        const confirmBtn=document.createElement('button');confirmBtn.textContent='✓ Post Gig';
+        confirmBtn.style.cssText='padding:8px 18px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
+        confirmBtn.onclick=async()=>{
+          btns.remove();addAgentMsg('⏳ Posting gig...');renderAgentMsgs();
+          try{
+            const d=await gigCall('task-create',{requesterAddress:gigWallet,title,description:action.description||'',budget:String(budget),negotiable:!!action.negotiable});
+            addAgentMsg(d.success?'✅ Gig posted! Visible under Gigs > Discover.':'❌ '+(d.error||'Failed to post gig'));
+          }catch(e){addAgentMsg('❌ Error: '+e.message);}
+          renderAgentMsgs();
+        };
+        const cancelBtn=document.createElement('button');cancelBtn.textContent='Cancel';
+        cancelBtn.style.cssText='padding:8px 14px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;';
+        cancelBtn.onclick=()=>{btns.remove();addAgentMsg('Gig posting cancelled.');renderAgentMsgs();};
+        btns.appendChild(confirmBtn);btns.appendChild(cancelBtn);last.appendChild(btns);scrollAgentBottom();
+      },100);
+      break;
+    }
+    case 'gig-list':{
+      addAgentMsg('⏳ Checking open gigs...');renderAgentMsgs();
+      gigCall('task-list',{}).then(d=>{
+        if(!d.success){addAgentMsg('❌ '+(d.error||'Failed'));renderAgentMsgs();return;}
+        const tasks=(d.tasks||[]).filter(t=>!t.completed&&!t.closed).slice(0,8);
+        if(!tasks.length){addAgentMsg('ℹ️ No open gigs right now. Say "post a gig" to create one.');}
+        else{
+          const lines=tasks.map(t=>'💼 '+t.title+' — $'+t.budget+(t.negotiable?' (negotiable)':''));
+          addAgentMsg('Open gigs:\n\n'+lines.join('\n'));
+        }
+        renderAgentMsgs();
+      }).catch(e=>{addAgentMsg('❌ Error: '+e.message);renderAgentMsgs();});
+      break;
+    }
+    case 'market-list':{
+      const title=action.title;
+      const price=action.price;
+      if(!title||!price){addAgentMsg('❌ Give me a title and price, e.g. "list an item: iPhone charger, $10"');renderAgentMsgs();break;}
+      const mktWallet=circleWalletAddress||userAddr;
+      if(!mktWallet){addAgentMsg('⚠️ Connect your wallet first.');renderAgentMsgs();break;}
+      addAgentMsg(`🛒 Confirm marketplace listing:\n"${title}"\nPrice: $${price}${action.description?'\n'+action.description:''}`);
+      renderAgentMsgs();
+      setTimeout(()=>{
+        const msgs=document.getElementById('agentMessages');const last=msgs?.lastElementChild;if(!last)return;
+        const btns=document.createElement('div');btns.style.cssText='display:flex;gap:8px;margin-top:10px;';
+        const confirmBtn=document.createElement('button');confirmBtn.textContent='✓ List Item';
+        confirmBtn.style.cssText='padding:8px 18px;border-radius:10px;background:#2563EB;border:none;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;';
+        confirmBtn.onclick=async()=>{
+          btns.remove();addAgentMsg('⏳ Listing item...');renderAgentMsgs();
+          try{
+            const d=await mktCall('listing-create',{sellerAddress:mktWallet,title,price:String(price),description:action.description||'',category:action.category||'',location:action.location||'',images:[]});
+            addAgentMsg(d.success?'✅ Listed! Visible under Marketplace > Browse.':'❌ '+(d.error||'Failed to list item'));
+          }catch(e){addAgentMsg('❌ Error: '+e.message);}
+          renderAgentMsgs();
+        };
+        const cancelBtn=document.createElement('button');cancelBtn.textContent='Cancel';
+        cancelBtn.style.cssText='padding:8px 14px;border-radius:10px;background:none;border:1px solid var(--border);color:var(--text3);font-size:.85rem;cursor:pointer;';
+        cancelBtn.onclick=()=>{btns.remove();addAgentMsg('Listing cancelled.');renderAgentMsgs();};
+        btns.appendChild(confirmBtn);btns.appendChild(cancelBtn);last.appendChild(btns);scrollAgentBottom();
+      },100);
+      break;
+    }
+    case 'market-browse':{
+      addAgentMsg('⏳ Checking the marketplace...');renderAgentMsgs();
+      mktCall('listing-list',{query:action.query||''}).then(d=>{
+        if(!d.success){addAgentMsg('❌ '+(d.error||'Failed'));renderAgentMsgs();return;}
+        const listings=(d.listings||[]).slice(0,8);
+        if(!listings.length){addAgentMsg('ℹ️ No listings found'+(action.query?' for "'+action.query+'"':'')+'.');}
+        else{
+          const lines=listings.map(l=>'🛒 '+l.title+' — $'+l.price);
+          addAgentMsg('Marketplace listings:\n\n'+lines.join('\n'));
+        }
         renderAgentMsgs();
       }).catch(e=>{addAgentMsg('❌ Error: '+e.message);renderAgentMsgs();});
       break;
