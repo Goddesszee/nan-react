@@ -351,6 +351,21 @@ if(localStorage.getItem('circleWalletId')){
       await onConnected(true, false);
     }
   });
+} else if(localStorage.getItem('nan_dynamic_token')){
+  // MetaMask/wallet-connect users arriving fresh from the landing page's
+  // "Connect Wallet" button never had a restore path at all — the landing
+  // page writes nan_dynamic_token + nan_dynamic_address, but nothing here
+  // ever read them, so the app just stayed blank after redirect. This
+  // mirrors the circleWalletId block above, using getDynamicSigner() (a
+  // real, working silent eth_accounts check) to re-establish a live signer
+  // instead of trusting the stored address blindly.
+  window.addEventListener('load', async ()=>{
+    isCircleWallet=false;
+    const s = await getDynamicSigner();
+    if(s && userAddr){
+      await onConnected(false, false);
+    }
+  });
 }
 
 let arcNames=[];
