@@ -5263,17 +5263,31 @@ function nanConfirm(title, bodyHtml){
 // false "connect your wallet" error if they act quickly after load. Use
 // this instead of checking userAddr directly wherever that's happened.
 async function ensureWalletConnected(){
-  if(userAddr) return userAddr;
-  const stored = localStorage.getItem('circleWalletAddr') || localStorage.getItem('nan_dynamic_address');
-  if(!stored) return null;
-  userAddr = stored; window.userAddr = stored;
-  if(!isCircleWallet && localStorage.getItem('circleWalletId')){
+  // Already fully usable — a real Circle wallet ID, or a real MetaMask
+  // signer. Nothing to recover.
+  if(userAddr && ((isCircleWallet && circleWalletId) || signer)) return userAddr;
+
+  // Recover the address itself if it's missing.
+  if(!userAddr){
+    const stored = localStorage.getItem('circleWalletAddr') || localStorage.getItem('nan_dynamic_address');
+    if(stored){ userAddr = stored; window.userAddr = stored; }
+  }
+
+  // Recover Circle wallet state (walletId is what money-moving calls
+  // actually need — having just the address isn't enough).
+  if(!isCircleWallet && localStorage.getItem('circleWalletId') && localStorage.getItem('circleWalletAddr')){
     isCircleWallet = true; window.isCircleWallet = true;
     circleWalletId = localStorage.getItem('circleWalletId'); window.circleWalletId = circleWalletId;
-    circleWalletAddress = stored; window.circleWalletAddress = stored;
-  } else if(!isCircleWallet && !signer){
+    circleWalletAddress = localStorage.getItem('circleWalletAddr'); window.circleWalletAddress = circleWalletAddress;
+    if(!userAddr){ userAddr = circleWalletAddress; window.userAddr = circleWalletAddress; }
+  }
+  // Not a Circle wallet and no signer yet — try a silent MetaMask
+  // reconnect (eth_accounts, no popup) regardless of whether userAddr
+  // happened to already be set from an earlier step.
+  else if(!isCircleWallet && !signer){
     await getDynamicSigner();
   }
+
   return userAddr;
 }
 async function doBulkSend(){
