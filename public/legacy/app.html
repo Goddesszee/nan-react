@@ -4808,10 +4808,10 @@ html,body{background-color:var(--bg);}
 
         <div style="font-size:.72rem;font-weight:700;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;">Default amount per recipient</div>
         <div style="display:flex;gap:5px;margin-bottom:20px;">
-          <button onclick="setBulkDefaultAmt(10)" class="ibtn" style="flex:1;padding:8px;text-align:center;font-size:.875rem;">10</button>
-          <button onclick="setBulkDefaultAmt(20)" class="ibtn" style="flex:1;padding:8px;text-align:center;font-size:.875rem;">20</button>
-          <button onclick="setBulkDefaultAmt(50)" class="ibtn" style="flex:1;padding:8px;text-align:center;font-size:.875rem;">50</button>
-          <button onclick="setBulkDefaultAmt(100)" class="ibtn" style="flex:1;padding:8px;text-align:center;font-size:.875rem;">100</button>
+          <button onclick="setBulkDefaultAmt(10,this)" class="ibtn bulk-amt-preset" style="flex:1;padding:8px;text-align:center;font-size:.875rem;background:#2563EB;color:#fff;border:none;">10</button>
+          <button onclick="setBulkDefaultAmt(20,this)" class="ibtn bulk-amt-preset" style="flex:1;padding:8px;text-align:center;font-size:.875rem;">20</button>
+          <button onclick="setBulkDefaultAmt(50,this)" class="ibtn bulk-amt-preset" style="flex:1;padding:8px;text-align:center;font-size:.875rem;">50</button>
+          <button onclick="setBulkDefaultAmt(100,this)" class="ibtn bulk-amt-preset" style="flex:1;padding:8px;text-align:center;font-size:.875rem;">100</button>
           <input id="bulkDefaultAmt" type="number" placeholder="Custom" style="flex:1.5;padding:8px;border-radius:8px;font-size:16px;text-align:center;" oninput="updateBulkAmounts()"/>
         </div>
 
