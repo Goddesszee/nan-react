@@ -4712,6 +4712,12 @@ html,body{background-color:var(--bg);}
         <button id="payrollTabWallet" class="ptab" onclick="payrollSwitchTab('wallet')">Wallet</button>
       </div>
 
+      <div id="payrollFxTicker" style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 18px;margin-bottom:16px;font-size:.82rem;">
+        <span style="color:var(--text3);font-weight:600;">Live rate:</span>
+        <span id="payrollFxUsdc" style="color:var(--text);font-weight:700;">1 USDC ≈ — NGN</span>
+        <span id="payrollFxEurc" style="color:var(--text);font-weight:700;">1 EURC ≈ — NGN</span>
+        <span id="payrollFxUpdated" style="color:var(--text3);margin-left:auto;"></span>
+      </div>
       <div id="payrollDashboardPane">
         <div id="payrollStatsRow" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;">
           <div class="pcard"><div style="font-size:.75rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;">Employees</div><div id="dashEmpCount" style="font-family:'JetBrains Mono',monospace;font-size:1.4rem;font-weight:700;margin-top:4px;">—</div></div>
