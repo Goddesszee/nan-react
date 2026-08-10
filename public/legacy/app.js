@@ -8894,8 +8894,10 @@ function setLendTab(tab,el){
 }
 function setLendAsset(asset,el){
   lendAsset=asset;
-  el.closest('.type-sel').querySelectorAll('.topt').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');
+  if(el){
+    el.closest('.type-sel').querySelectorAll('.topt').forEach(b=>b.classList.remove('active'));
+    el.classList.add('active');
+  }
 }
 // Merged Earn page: one mode switch drives which stats row, info banner,
 // and card content (Supply/Withdraw vs cirBTC Deposit/Withdraw/Borrow/Repay)
@@ -8906,8 +8908,6 @@ function setEarnMode(mode){
   document.getElementById('earnModeBtn-borrow').classList.toggle('active', !isEarn);
   document.getElementById('earnStatsRow').style.display = isEarn ? 'grid' : 'none';
   document.getElementById('borrowStatsRow').style.display = isEarn ? 'none' : 'grid';
-  document.getElementById('earnInfoBanner').style.display = isEarn ? 'flex' : 'none';
-  document.getElementById('borrowInfoBanner').style.display = isEarn ? 'none' : 'flex';
   document.getElementById('earnModeContent').style.display = isEarn ? 'block' : 'none';
   document.getElementById('borrowModeContent').style.display = isEarn ? 'none' : 'block';
   document.getElementById('earnCardTitle').textContent = isEarn ? 'Supply & Earn' : 'Lend & Borrow';
