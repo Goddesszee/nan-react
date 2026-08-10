@@ -176,6 +176,13 @@ function goPage(name) {
   if (name === 'multichain') { if(typeof mcRefresh==='function') setTimeout(mcRefresh, 100); }
   if (name === 'payreq-new') initNewPRForm();
   if (name === 'agent-wallet') setTimeout(function(){ if(typeof agentPageRefresh==='function') agentPageRefresh(); }, 80);
+  // initBridgeUI originally only ran once at initial page load, before a
+  // MetaMask wallet would have finished connecting — so the Gateway deposit
+  // box stayed permanently hidden for MetaMask users (Circle users worked
+  // by coincidence, since their address is set synchronously earlier).
+  // Re-running it on every navigation to Bridge fixes that regardless of
+  // when the wallet actually connected.
+  if (name === 'bridge') setTimeout(function(){ if(typeof initBridgeUI==='function') initBridgeUI(); }, 80);
   if (name === 'agent-ai') setTimeout(function(){
     if(typeof renderAgentMsgs==='function') renderAgentMsgs();
     if(typeof renderAgentChips==='function') renderAgentChips();
