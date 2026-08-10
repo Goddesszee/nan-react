@@ -165,6 +165,12 @@ function goPage(name) {
   }
 
   // Trigger page-specific init
+  // Keep the sidebar wallet label (address vs generic "Wallet") in sync on
+  // every navigation, not just once right after login — the same class of
+  // bug found earlier tonight (agentWalletAddr, initBridgeUI) where a
+  // one-time check ran before the wallet had actually finished connecting
+  // and never got a chance to correct itself later.
+  if (typeof nanUpdateSidebarWalletLabel === 'function') nanUpdateSidebarWalletLabel();
   if (name === 'earn' || name === 'lend') initLendUI();
   if (name === 'history') renderHistory();
   if (name === 'arcname') renderArcDirectory();
