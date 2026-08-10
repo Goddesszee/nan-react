@@ -5578,11 +5578,42 @@ function navOpenProfileMenu(e){
 }
 
 // ── Sidebar "Wallet" button -> wallet-actions content, centered modal ──────
+// Uses its own dedicated render function (below), NOT _navRenderWalletMenu —
+// that one was built for the Agent Wallet pill and checks agentWalletAddr
+// first, which meant the sidebar button showed the agent wallet's address
+// instead of the actual login wallet whenever an agent wallet existed.
 function nanSidebarOpenProfile(){
   closeCenteredMenus();
   var navMenu = _navGetWalletMenu();
-  _navRenderWalletMenu();
+  _navRenderMainWalletMenu();
   _navCenterAndShow(navMenu, 'navWalletMenuClose');
+}
+function _navRenderMainWalletMenu(){
+  var navMenu = _navGetWalletMenu();
+  var hasMainWallet = typeof userAddr !== 'undefined' && !!userAddr;
+  if (!hasMainWallet) {
+    navMenu.innerHTML =
+      '<div style="font-size:.72rem;color:var(--text3);margin-bottom:6px;">New here? Sign in with email</div>' +
+      '<input id="navAgentEmailInput" type="email" placeholder="Email address" style="width:100%;box-sizing:border-box;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:.8rem;color:var(--text);outline:none;margin-bottom:6px;" onkeydown="if(event.key===\'Enter\'){event.stopPropagation();navMenuAgentConnect();}"/>' +
+      '<button onclick="event.stopPropagation();navMenuAgentConnect();" style="width:100%;background:#2563EB;border:none;color:#fff;padding:8px;border-radius:8px;font-size:.8rem;font-weight:700;cursor:pointer;margin-bottom:8px;">Send Code</button>' +
+      '<div style="text-align:center;font-size:.75rem;color:var(--text3);margin-bottom:8px;">or</div>' +
+      '<button onclick="event.stopPropagation();navMenuConnectExisting();" style="width:100%;background:none;border:1px solid var(--border);color:var(--text);padding:8px;border-radius:8px;font-size:.8rem;font-weight:600;cursor:pointer;">Connect wallet</button>';
+    return;
+  }
+  var addr = userAddr;
+  var short = addr.slice(0,6) + '...' + addr.slice(-4);
+  navMenu.innerHTML =
+    '<div style="font-size:.75rem;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Wallet</div>' +
+    '<div style="font-family:monospace;font-size:.78rem;color:var(--text2);margin-bottom:10px;">' + short + '</div>' +
+    '<button id="navSidebarWalletCopyBtn" onclick="event.stopPropagation();navSidebarWalletCopy();" style="width:100%;background:none;border:1px solid var(--border);color:var(--text);padding:9px;border-radius:8px;font-size:.82rem;font-weight:700;cursor:pointer;margin-bottom:8px;" onmouseover="this.style.background=\'rgba(255,255,255,.06)\'" onmouseout="this.style.background=\'none\'">Copy Address</button>' +
+    '<button onclick="event.stopPropagation();navMenuSwitchAccount();" style="width:100%;background:none;border:1px solid var(--border);color:#2563EB;padding:9px;border-radius:8px;font-size:.82rem;font-weight:700;cursor:pointer;" onmouseover="this.style.background=\'rgba(37,99,235,.08)\'" onmouseout="this.style.background=\'none\'">Disconnect</button>';
+}
+function navSidebarWalletCopy(){
+  if (typeof userAddr === 'undefined' || !userAddr) return;
+  navigator.clipboard.writeText(userAddr).then(function(){
+    var btn = document.getElementById('navSidebarWalletCopyBtn');
+    if (btn) { btn.textContent = '✓ Copied'; setTimeout(function(){ btn.textContent = 'Copy Address'; }, 1500); }
+  });
 }
 
 // ── Agent Wallet top-nav pill -> lean anchored dropdown (unchanged position) ─
