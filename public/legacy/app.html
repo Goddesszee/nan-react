@@ -4057,24 +4057,14 @@ html,body{background-color:var(--bg);}
       <div id="earnCardTitle" style="font-size:1.05rem;font-weight:700;color:var(--text);font-family:'Inter',sans-serif;letter-spacing:-.02em;">Supply &amp; Earn</div>
     </div>
 
-    <!-- EARN mode info banner -->
-    <div id="earnInfoBanner" style="margin:16px 22px 14px;background:rgba(37,99,235,.07);border:1px solid rgba(37,99,235,.2);border-radius:12px;padding:11px 14px;display:flex;align-items:flex-start;gap:8px;">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <div style="font-size:.75rem;color:var(--text2);line-height:1.5;">Supply USDC or EURC to earn yield on Arc. No lockup, withdraw anytime, interest accrues in real time on NANLendingPool.</div>
-    </div>
-
-    <!-- BORROW mode info banner -->
-    <div id="borrowInfoBanner" style="display:none;margin:16px 22px 14px;background:rgba(37,99,235,.07);border:1px solid rgba(37,99,235,.2);border-radius:12px;padding:11px 14px;display:flex;align-items:flex-start;gap:8px;">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <div style="font-size:.75rem;color:var(--text2);line-height:1.5;">Deposit cirBTC as collateral → borrow up to 50% of its value in USDC. Interest-free. One active loan at a time. Get cirBTC free at <span style="color:#2563EB;">faucet.circle.com</span></div>
-    </div>
-
     <!-- EARN mode content -->
     <div id="earnModeContent">
-      <!-- Asset toggle: USDC / EURC -->
-      <div class="type-sel" style="margin:0 22px 14px;grid-template-columns:repeat(2,1fr);">
-        <button class="topt active" onclick="setLendAsset('USDC',this);updateSupplyAssetUI();">USDC</button>
-        <button class="topt" onclick="setLendAsset('EURC',this);updateSupplyAssetUI();">EURC</button>
+      <!-- Asset picker: USDC / EURC -->
+      <div style="margin:16px 28px 14px;">
+        <select id="earnAssetSelect" onchange="setLendAsset(this.value, null);updateSupplyAssetUI();" style="width:160px;padding:10px 14px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text);font-family:'Inter',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;outline:none;">
+          <option value="USDC">USDC</option>
+          <option value="EURC">EURC</option>
+        </select>
       </div>
 
       <!-- Tabs: Supply / Withdraw -->
