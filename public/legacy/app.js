@@ -784,7 +784,7 @@ async function toggleNotificationsSetting(){
 }
 
 // ── Email notification preferences (per-category, backed by agent-wallets API) ──
-const EMAIL_NOTIF_CATEGORIES = ['transfers','invoices','escrow','recurring'];
+const EMAIL_NOTIF_CATEGORIES = ['invoices'];
 let _emailNotifPrefs = { transfers:true, invoices:true, escrow:true, recurring:true };
 function _emailNotifIds(cat){
   const cap = cat.charAt(0).toUpperCase() + cat.slice(1);
