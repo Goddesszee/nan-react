@@ -3679,12 +3679,38 @@ function _setSendTabOrig(tab){
 // ═══════════════════════════════════════════
 const hasSwap=()=>typeof PERMIT2_ADDR!=='undefined'&&PERMIT2_ADDR.length===42;
 let _quoteTimer=null,_quoteCache={};
+// Shared live NGN rate — used by both the Fiat page's rate ticker and
+// Swap's live amount calculator, so there's one source of truth instead of
+// two separate fetches that could drift out of sync with each other.
+let ngnRate = 1650; // NGN per USD, fallback reference value only
+let ngnRateIsLive = false;
+async function fetchNgnRate(){
+  try{
+    const cached = localStorage.getItem('nan_ngn_rate');
+    const cachedTime = localStorage.getItem('nan_ngn_time');
+    if(cached && cachedTime && Date.now()-parseInt(cachedTime) < 3600000){
+      ngnRate = parseFloat(cached); ngnRateIsLive = true;
+      return ngnRate;
+    }
+    const r = await fetch('https://api.frankfurter.app/latest?from=USD&to=NGN');
+    const d = await r.json();
+    const fresh = d?.rates?.NGN;
+    if(fresh && fresh > 100 && fresh < 10000){
+      ngnRate = fresh; ngnRateIsLive = true;
+      localStorage.setItem('nan_ngn_rate', ngnRate);
+      localStorage.setItem('nan_ngn_time', Date.now());
+    }
+  }catch(e){ /* keep fallback, ngnRateIsLive stays false */ }
+  return ngnRate;
+}
 function calcSwap(){
   const amt=parseFloat(document.getElementById('swapFrom').value)||0;
+  const ngnEl=document.getElementById('swapNgnEquiv');
   if(!amt||amt<=0){
     document.getElementById('swapTo').value='';
     document.getElementById('swapFromUSD').textContent='0.00';
     document.getElementById('swapToUSD').textContent='0.00';
+    if(ngnEl) ngnEl.textContent='';
     return;
   }
   const rate=swapFlipped?(1/FX):FX;
@@ -3692,6 +3718,12 @@ function calcSwap(){
   document.getElementById('swapTo').value=estOut;
   document.getElementById('swapFromUSD').textContent=swapFlipped?(amt*(1/FX)).toFixed(2):amt.toFixed(2);
   document.getElementById('swapToUSD').textContent=swapFlipped?parseFloat(estOut).toFixed(2):(parseFloat(estOut)*(1/FX)).toFixed(2);
+  if(ngnEl){
+    const usdEquiv=swapFlipped?(amt*(1/FX)):amt;
+    const ngnAmount=usdEquiv*ngnRate;
+    const fromSym=swapFlipped?'EURC':'USDC';
+    ngnEl.textContent=amt.toFixed(2)+' '+fromSym+' ≈ '+ngnAmount.toLocaleString(undefined,{maximumFractionDigits:0})+' NGN'+(ngnRateIsLive?'':' (reference rate)');
+  }
 }
 let _contractQuoteTimer=null;
 async function _fetchContractQuote(amt){
@@ -4107,6 +4139,7 @@ function initBridgeUI(){
 function initSwapUI(){
   document.getElementById('swapModeBanner').style.display='none';
   document.getElementById('swapBtn').textContent='Swap USDC ↔ EURC';
+  fetchNgnRate().then(()=>{ if(document.getElementById('swapFrom')?.value) calcSwap(); });
 }
 
 // ═══════════════════════════════════════════
@@ -5374,40 +5407,19 @@ function cioLoadOverview(){
   });
 }
 
-// Live NGN rate for the Fiat page — free, no payment gate (the
-// /api/x402/ngn-rate endpoint requires a real $0.001 micropayment per call
-// and is meant to be sold to other agents, not used for our own UI). Uses
-// the same free Frankfurter source the backend already trusts internally.
-// Always shows a real number — falls back to a fixed reference rate rather
-// than "unavailable" if the live fetch fails, so the UI never looks broken.
-const CIO_NGN_FALLBACK = 1650; // NGN per USD, reference fallback only
+// Live NGN rate display for the Fiat page — reads from the shared
+// fetchNgnRate()/ngnRate (same source Swap's live calculator uses), so
+// both pages always agree on the same number instead of drifting apart.
 async function cioFetchNgnRates(){
   const usdcEl = document.getElementById('cioFxUsdcNgn');
   const eurcEl = document.getElementById('cioFxEurcNgn');
   const updEl  = document.getElementById('cioFxUpdated');
   if(!usdcEl) return;
-  let ngnPerUsd = CIO_NGN_FALLBACK;
-  let live = false;
-  try{
-    const cached = localStorage.getItem('nan_ngn_rate');
-    const cachedTime = localStorage.getItem('nan_ngn_time');
-    if(cached && cachedTime && Date.now()-parseInt(cachedTime) < 3600000){
-      ngnPerUsd = parseFloat(cached); live = true;
-    } else {
-      const r = await fetch('https://api.frankfurter.app/latest?from=USD&to=NGN');
-      const d = await r.json();
-      const fresh = d?.rates?.NGN;
-      if(fresh && fresh > 100 && fresh < 10000){
-        ngnPerUsd = fresh; live = true;
-        localStorage.setItem('nan_ngn_rate', ngnPerUsd);
-        localStorage.setItem('nan_ngn_time', Date.now());
-      }
-    }
-  }catch(e){ /* keep fallback */ }
-  const ngnPerEurc = ngnPerUsd / (FX || 0.9258); // FX = EURC per USDC
-  usdcEl.textContent = '≈ ' + ngnPerUsd.toLocaleString(undefined,{maximumFractionDigits:0}) + ' NGN';
+  await fetchNgnRate();
+  const ngnPerEurc = ngnRate / (FX || 0.9258); // FX = EURC per USDC
+  usdcEl.textContent = '≈ ' + ngnRate.toLocaleString(undefined,{maximumFractionDigits:0}) + ' NGN';
   eurcEl.textContent = '≈ ' + ngnPerEurc.toLocaleString(undefined,{maximumFractionDigits:0}) + ' NGN';
-  if(updEl) updEl.textContent = live ? ('Updated ' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})) : 'Reference rate';
+  if(updEl) updEl.textContent = ngnRateIsLive ? ('Updated ' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})) : 'Reference rate';
 }
 async function cioFetchTransactions(){
   if(!userAddr) return [];
