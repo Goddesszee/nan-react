@@ -4695,9 +4695,9 @@ function liveFeedRenderItem(ev){
     '</div>' +
   '</div>';
 }
-function clearHistory(){
+async function clearHistory(){
   if(!txHistory.length){toast('Nothing to clear','info',2000);return;}
-  if(!confirm('Clear all history?'))return;
+  if(!(await nanConfirm('Clear all history?','This removes your locally stored transaction history. It doesn\'t affect anything on-chain.')))return;
   txHistory=[];localStorage.removeItem('arcTx_'+userAddr);renderHistory();toast('Cleared','info',2000);
 }
 async function loadOnChainHistory(){
@@ -5142,10 +5142,10 @@ function renderPayrollHistory(){
     </div>`).join('');
 }
 
-function schedulePayroll(){
+async function schedulePayroll(){
   if(!bulkRecipients.length){ toast('Add recipients first','error'); return; }
   const total = bulkRecipients.reduce((s,r)=>s+r.amount,0);
-  if(!confirm(`Schedule monthly payroll?\n\n${bulkRecipients.length} recipients · ${total.toFixed(2)} ${bulkToken} total\n\nWill run on the 1st of each month.`)) return;
+  if(!(await nanConfirm('Schedule monthly payroll?', `${bulkRecipients.length} recipients · <strong>${total.toFixed(2)} ${bulkToken}</strong> total<br/>Will run on the 1st of each month.`))) return;
   const nextRun = getNext1st();
   bulkRecipients.forEach(r=>{
     createOrder({
@@ -5637,7 +5637,7 @@ async function cioAddBank(){
   cioLoadBanks();
 }
 async function cioDeleteBank(accountId){
-  if(!confirm('Remove this bank account?')) return;
+  if(!(await nanConfirm('Remove this bank account?','You can add it again later if needed.'))) return;
   await fetch(CASHIO_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete-bank-account', walletAddress:userAddr, accountId})});
   cioLoadBanks();
 }
@@ -5788,7 +5788,7 @@ async function payrollAddEmployee(){
   payrollLoadEmployees();
 }
 async function payrollDeleteEmployee(employeeId){
-  if(!confirm('Remove this employee?')) return;
+  if(!(await nanConfirm('Remove this employee?','They\'ll be removed from your payroll directory. This doesn\'t affect past payments.'))) return;
   await fetch(PAYROLL_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete-employee', employerAddress:userAddr, employeeId})});
   payrollLoadEmployees();
 }
@@ -5818,12 +5818,12 @@ function payrollSetFreq(freq, btnEl){
     b.style.border = active ? 'none' : '1px solid var(--border)';
   });
 }
-function schedulePayrollWithFreq(){
+async function schedulePayrollWithFreq(){
   if(!bulkRecipients.length){ toast('Add recipients in Run Payroll first','error'); return; }
   const intervals = { week: 604800000, '2week': 1209600000, month: 2592000000, quarter: 7776000000 };
   const freqLabels = { week:'weekly', '2week':'bi-weekly', month:'monthly', quarter:'quarterly' };
   const total = bulkRecipients.reduce((s,r)=>s+r.amount,0);
-  if(!confirm(`Schedule ${freqLabels[payrollFreq]} payroll?\n\n${bulkRecipients.length} recipients · ${total.toFixed(2)} ${bulkToken} total`)) return;
+  if(!(await nanConfirm('Schedule '+freqLabels[payrollFreq]+' payroll?', `${bulkRecipients.length} recipients · <strong>${total.toFixed(2)} ${bulkToken}</strong> total`))) return;
   const nextRun = Date.now() + intervals[payrollFreq];
   bulkRecipients.forEach(r=>{
     createOrder({
@@ -9384,7 +9384,7 @@ async function registerArcName(){
   if(bal<arcNameFeeUsdc+0.009){
     toast('Insufficient USDC — need '+(arcNameFeeUsdc+0.009).toFixed(3)+' USDC','error',5000);return;
   }
-  if(!confirm(`Register "${name}.arc" for ${arcNameFeeUsdc} USDC?\n\nDuration: ${arcNameDurationYears} year(s)\nFee: ${arcNameFeeUsdc} USDC\nGas: ~0.009 USDC`)){return;}
+  if(!(await nanConfirm(`Register "${name}.arc"?`, `Duration: ${arcNameDurationYears} year(s)<br/>Fee: <strong>${arcNameFeeUsdc} USDC</strong><br/>Gas: ~0.009 USDC`))){return;}
   const btn=document.querySelector('#page-arcname .card:nth-child(3) .btn');
   if(btn){btn.innerHTML='<span class="spinner"></span>Approving...';btn.disabled=true;}
   try{
@@ -10484,8 +10484,8 @@ async function sendPaymentNotification(pr){
   }catch(e){console.log('Notify error:',e);}
 }
 
-function deletePR(){
-  if(!confirm('Delete this payment request?'))return;
+async function deletePR(){
+  if(!(await nanConfirm('Delete this payment request?','This can\'t be undone.')))return;
   paymentRequests=paymentRequests.filter(p=>p.id!==activePRId);
   savePaymentRequests();
   toast('Deleted','info',2000);
