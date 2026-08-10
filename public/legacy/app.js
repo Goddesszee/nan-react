@@ -5230,14 +5230,46 @@ function downloadPayrollReceipt(){
   toast('Payroll receipt downloaded!','success',3000);
 }
 
+// Reusable styled confirm modal — replaces the browser's native confirm(),
+// which renders as an unstyled OS dialog completely out of place next to
+// the rest of the app's design. Returns a Promise<boolean>, same call shape
+// as confirm() so it's a drop-in replacement at call sites.
+function nanConfirm(title, bodyHtml){
+  return new Promise((resolve) => {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;';
+    overlay.innerHTML = `
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;max-width:420px;width:100%;padding:28px;font-family:'Inter',sans-serif;box-shadow:0 20px 60px rgba(0,0,0,.4);">
+        <div style="font-size:1.2rem;font-weight:700;color:var(--text);margin-bottom:14px;letter-spacing:-.01em;">${title}</div>
+        <div style="font-size:.88rem;color:var(--text2);line-height:1.6;margin-bottom:24px;">${bodyHtml}</div>
+        <div style="display:flex;gap:10px;">
+          <button id="nanConfirmCancel" style="flex:1;padding:13px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--text);font-family:'Inter',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;">Cancel</button>
+          <button id="nanConfirmOk" style="flex:1;padding:13px;border-radius:12px;border:none;background:#2563EB;color:#fff;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(37,99,235,.32);">Confirm</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    const cleanup = (result) => { overlay.remove(); resolve(result); };
+    overlay.querySelector('#nanConfirmOk').onclick = () => cleanup(true);
+    overlay.querySelector('#nanConfirmCancel').onclick = () => cleanup(false);
+    overlay.onclick = (e) => { if(e.target === overlay) cleanup(false); };
+  });
+}
 async function doBulkSend(){
   if(!bulkRecipients.length) return;
 
   // Dry run confirmation
   const total_amt = bulkRecipients.reduce((s,r)=>s+r.amount,0);
-  const preview = bulkRecipients.slice(0,3).map(r=>`  • ${r.name||r.addr.slice(0,10)}… — ${r.amount} ${bulkToken}`).join('\n');
-  const more = bulkRecipients.length>3?`\n  … and ${bulkRecipients.length-3} more`:'';
-  if(!confirm(`Run Payroll?\n\n${preview}${more}\n\nTotal: ${total_amt.toFixed(2)} ${bulkToken} to ${bulkRecipients.length} recipient${bulkRecipients.length!==1?'s':''}\n\nThis will send real tokens on Arc Testnet.`)) return;
+  const previewRows = bulkRecipients.slice(0,3).map(r=>
+    `<div style="display:flex;justify-content:space-between;padding:4px 0;"><span>${r.name||r.addr.slice(0,10)+'…'}</span><span style="font-weight:600;color:var(--text);">${r.amount} ${bulkToken}</span></div>`
+  ).join('');
+  const more = bulkRecipients.length>3?`<div style="color:var(--text3);padding-top:4px;">… and ${bulkRecipients.length-3} more</div>`:'';
+  const confirmBody = `
+    ${previewRows}${more}
+    <div style="border-top:1px solid var(--border);margin-top:10px;padding-top:10px;font-weight:700;color:var(--text);display:flex;justify-content:space-between;">
+      <span>Total</span><span>${total_amt.toFixed(2)} ${bulkToken} to ${bulkRecipients.length} recipient${bulkRecipients.length!==1?'s':''}</span>
+    </div>
+    <div style="margin-top:12px;color:var(--danger);font-size:.82rem;">This will send real tokens on Arc Testnet.</div>`;
+  if(!(await nanConfirm('Run Payroll?', confirmBody))) return;
 
   const btn = document.getElementById('bulkSendBtn');
   const progress = document.getElementById('bulkProgress');
