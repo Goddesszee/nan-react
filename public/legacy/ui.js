@@ -20,7 +20,7 @@ function goPage(name) {
   // actually confirmed there's no wallet, instead of assuming there isn't
   // one just because this tab hasn't fetched it yet.
   if (name === 'agent-wallet' && !(typeof agentWalletAddr !== 'undefined' && agentWalletAddr)) {
-    const _addr = (typeof userAddr !== 'undefined' && userAddr) ? userAddr : localStorage.getItem('nan_dynamic_address');
+    const _addr = (typeof userAddr !== 'undefined' && userAddr) ? userAddr : (localStorage.getItem('circleWalletAddr') || localStorage.getItem('nan_dynamic_address'));
     if (_addr) {
       fetch('https://nan-production.up.railway.app/api/agent-wallets', {
         method: 'POST', headers: {'Content-Type':'application/json'},
@@ -42,11 +42,28 @@ function goPage(name) {
   }
   window._prevPage = window._currentPage || 'home';
   window._currentPage = name;
-  // Check userAddr OR Dynamic localStorage fallback
+  // Check userAddr OR localStorage fallback — circleWalletAddr for Circle
+  // (email login) users, nan_dynamic_address as a legacy fallback. Missing
+  // circleWalletAddr here meant any navigation attempted during the brief
+  // window before the async silent-restore finished setting the in-memory
+  // userAddr would silently fail for Circle users — blank page, even though
+  // they were genuinely logged in and their address was sitting right there
+  // in localStorage the whole time.
   const _userAddr = (typeof userAddr !== 'undefined' && userAddr) 
     ? userAddr 
-    : localStorage.getItem('nan_dynamic_address');
-  if (_userAddr && !userAddr) { userAddr = _userAddr; window.userAddr = _userAddr; }
+    : (localStorage.getItem('circleWalletAddr') || localStorage.getItem('nan_dynamic_address'));
+  if (_userAddr && !userAddr) {
+    userAddr = _userAddr; window.userAddr = _userAddr;
+    // Also restore the rest of Circle wallet state if this recovery came
+    // from circleWalletAddr — otherwise the page would display but agent
+    // actions, balances, and anything checking isCircleWallet would still
+    // silently fail right after.
+    if (typeof isCircleWallet !== 'undefined' && !isCircleWallet && localStorage.getItem('circleWalletId')) {
+      isCircleWallet = true; window.isCircleWallet = true;
+      circleWalletId = localStorage.getItem('circleWalletId'); window.circleWalletId = circleWalletId;
+      circleWalletAddress = _userAddr; window.circleWalletAddress = _userAddr;
+    }
+  }
   if (!_userAddr) { if(typeof toast==='function') toast('Connect wallet first', 'error'); return; }
 
   // Hide all pages
