@@ -5364,6 +5364,7 @@ function cioLoadOverview(){
   document.getElementById('cioBalEurc').textContent = (parseFloat(eurcBal||0)).toFixed(2);
   const usdEl = document.getElementById('cioBalUsdcUsd'); if(usdEl) usdEl.textContent = (parseFloat(usdcBal||0)).toFixed(2);
   const eurEl = document.getElementById('cioBalEurcEur'); if(eurEl) eurEl.textContent = (parseFloat(eurcBal||0)).toFixed(2);
+  cioFetchNgnRates();
   cioFetchTransactions().then(txs => {
     const el = document.getElementById('cioOverviewRecent');
     const head = document.getElementById('cioOverviewRecentHead');
@@ -5373,6 +5374,41 @@ function cioLoadOverview(){
   });
 }
 
+// Live NGN rate for the Fiat page — free, no payment gate (the
+// /api/x402/ngn-rate endpoint requires a real $0.001 micropayment per call
+// and is meant to be sold to other agents, not used for our own UI). Uses
+// the same free Frankfurter source the backend already trusts internally.
+// Always shows a real number — falls back to a fixed reference rate rather
+// than "unavailable" if the live fetch fails, so the UI never looks broken.
+const CIO_NGN_FALLBACK = 1650; // NGN per USD, reference fallback only
+async function cioFetchNgnRates(){
+  const usdcEl = document.getElementById('cioFxUsdcNgn');
+  const eurcEl = document.getElementById('cioFxEurcNgn');
+  const updEl  = document.getElementById('cioFxUpdated');
+  if(!usdcEl) return;
+  let ngnPerUsd = CIO_NGN_FALLBACK;
+  let live = false;
+  try{
+    const cached = localStorage.getItem('nan_ngn_rate');
+    const cachedTime = localStorage.getItem('nan_ngn_time');
+    if(cached && cachedTime && Date.now()-parseInt(cachedTime) < 3600000){
+      ngnPerUsd = parseFloat(cached); live = true;
+    } else {
+      const r = await fetch('https://api.frankfurter.app/latest?from=USD&to=NGN');
+      const d = await r.json();
+      const fresh = d?.rates?.NGN;
+      if(fresh && fresh > 100 && fresh < 10000){
+        ngnPerUsd = fresh; live = true;
+        localStorage.setItem('nan_ngn_rate', ngnPerUsd);
+        localStorage.setItem('nan_ngn_time', Date.now());
+      }
+    }
+  }catch(e){ /* keep fallback */ }
+  const ngnPerEurc = ngnPerUsd / (FX || 0.9258); // FX = EURC per USDC
+  usdcEl.textContent = '≈ ' + ngnPerUsd.toLocaleString(undefined,{maximumFractionDigits:0}) + ' NGN';
+  eurcEl.textContent = '≈ ' + ngnPerEurc.toLocaleString(undefined,{maximumFractionDigits:0}) + ' NGN';
+  if(updEl) updEl.textContent = live ? ('Updated ' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})) : 'Reference rate';
+}
 async function cioFetchTransactions(){
   if(!userAddr) return [];
   try{
@@ -5618,7 +5654,6 @@ function payrollSwitchTab(tab){
 async function payrollLoadDashboard(){
   if (!userAddr) return;
   document.getElementById('dashWalletBal').textContent = (parseFloat(usdcBal||0)).toFixed(2) + ' USDC';
-  payrollFetchNgnRates();
   try{
     const r = await fetch(PAYROLL_API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'dashboard-stats', employerAddress:userAddr})});
     const d = await r.json();
@@ -5640,42 +5675,6 @@ async function payrollLoadDashboard(){
         </div>`).join('');
     }
   }catch(e){ document.getElementById('dashRecentRuns').textContent = '❌ ' + e.message; }
-}
-
-// Live NGN rate for Payroll — free, no payment gate (unlike the x402-sold
-// /api/x402/ngn-rate endpoint, which requires a real $0.001 micropayment per
-// call and is meant to be sold to other agents, not used for our own UI).
-// Uses the same free Frankfurter source the backend already uses internally
-// for its own EUR/USD checks, combined with the FX rate already fetched
-// on page load (EURC per USDC) to derive both NGN/USDC and NGN/EURC.
-async function payrollFetchNgnRates(){
-  const usdcEl = document.getElementById('payrollFxUsdc');
-  const eurcEl = document.getElementById('payrollFxEurc');
-  const updEl  = document.getElementById('payrollFxUpdated');
-  if(!usdcEl) return;
-  try{
-    const cached = localStorage.getItem('nan_ngn_rate');
-    const cachedTime = localStorage.getItem('nan_ngn_time');
-    let ngnPerUsd;
-    if(cached && cachedTime && Date.now()-parseInt(cachedTime) < 3600000){
-      ngnPerUsd = parseFloat(cached);
-    } else {
-      const r = await fetch('https://api.frankfurter.app/latest?from=USD&to=NGN');
-      const d = await r.json();
-      ngnPerUsd = d?.rates?.NGN;
-      if(!ngnPerUsd || ngnPerUsd < 100 || ngnPerUsd > 10000) throw new Error('Bad NGN rate');
-      localStorage.setItem('nan_ngn_rate', ngnPerUsd);
-      localStorage.setItem('nan_ngn_time', Date.now());
-    }
-    const ngnPerEurc = ngnPerUsd / (FX || 0.9258); // FX = EURC per USDC
-    usdcEl.textContent = '1 USDC ≈ ' + ngnPerUsd.toLocaleString(undefined,{maximumFractionDigits:0}) + ' NGN';
-    eurcEl.textContent = '1 EURC ≈ ' + ngnPerEurc.toLocaleString(undefined,{maximumFractionDigits:0}) + ' NGN';
-    if(updEl) updEl.textContent = 'Updated ' + new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-  }catch(e){
-    usdcEl.textContent = '1 USDC ≈ — NGN';
-    eurcEl.textContent = '1 EURC ≈ — NGN';
-    if(updEl) updEl.textContent = 'Rate unavailable';
-  }
 }
 
 let payrollEmployeesCache = [];
