@@ -942,6 +942,26 @@ a:hover{color:var(--text);}
     font-size: 1.2rem !important;
   }
 
+  /* Agent Wallet page: #agentConnectedSection is a flex child with default
+     min-width:auto, so its own dense content (spending-limit inputs, the
+     3-col "what your agent can do" tiles, the dashboard chart grid) refused
+     to shrink below its intrinsic content width, ballooning the whole
+     section ~40px past the viewport and shifting everything sideways. */
+  #agentConnectedSection,
+  #agentLoginSection{
+    min-width: 0 !important;
+  }
+  #agentLimitPerTxInput,
+  #agentLimitDailyInput,
+  #agentLimitWeeklyInput,
+  #agentNanopayCapInput{
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
+  .nan-agent-limits-grid{
+    grid-template-columns: 1fr !important;
+  }
+
   /* Marketplace + Gigs: [style*="2563EB"] color-override rules match any
      element whose inline style merely mentions the accent color (even for
      background), so active-tab pills with a blue background + white text
