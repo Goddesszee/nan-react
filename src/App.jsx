@@ -40,6 +40,15 @@ export default function App() {
         localStorage.setItem('nan_dynamic_address', w.address)
         localStorage.setItem('nan_dynamic_email',   email)
         localStorage.setItem('nan_dynamic_token',   'dynamic_authenticated')
+        // Seed the 30-day skip-OTP remember window too, so a returning
+        // user who first logged in from this landing page also gets the
+        // same skip-OTP benefit as someone who used the in-app modal.
+        localStorage.setItem('nan_remember_email', email.toLowerCase().trim())
+        localStorage.setItem('nan_remember_walletId', w.id)
+        localStorage.setItem('nan_remember_walletAddr', w.address)
+        localStorage.setItem('nan_remember_ts', String(Date.now()))
+        const token = localStorage.getItem('nan_session_token')
+        if (token) localStorage.setItem('nan_remember_token', token)
         window.location.replace('/legacy/app.html')
       } else {
         setStatus('')
