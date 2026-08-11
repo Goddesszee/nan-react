@@ -1484,19 +1484,23 @@ async function onConnected(isEmail=false, isDev=false){
   showPage('dashboard');
   updateTopBar(true);
   if(typeof updateDesktopNav === 'function') updateDesktopNav();
-  // Eagerly resolve the agent wallet address right after login — every
-  // agent-* feature (send, policy, recurring, supply, etc) individually
-  // checks `if(!agentWalletAddr)` and shows a "connect wallet" gate if it's
-  // empty. That variable was previously only populated by whichever page
-  // or action happened to trigger a fetch for it first, so a user could
-  // land on Dashboard, immediately try an Agent Wallet feature, and hit a
-  // false "not connected" gate even though a real funded wallet already
-  // exists server-side. Resolving it once, right here, closes that gap at
-  // the source instead of patching each individual check site.
+  // Resolve (and validate) the agent wallet address right after login.
+  // This used to only fire `if(!agentWalletAddr)` — but agentWalletAddr is
+  // read from a single, non-account-scoped localStorage key ('nan_agent_addr')
+  // at script load, before userAddr is even known. If a DIFFERENT account
+  // was used earlier in the same browser, that account's agent wallet
+  // address gets loaded first and treated as "already resolved" — so it
+  // was never re-checked against the account that's actually logged in
+  // now. That's exactly why the same email could appear to end up with a
+  // different agent wallet: it wasn't actually different, it was stale
+  // data left over from whichever account was used previously in this
+  // browser. Now this always asks the backend for the CURRENT userAddr's
+  // real agent wallet and corrects agentWalletAddr if it doesn't match,
+  // rather than only filling in a blank.
   // Fire-and-forget — must not block or delay the rest of onConnected().
   (async()=>{
     try{
-      if(!agentWalletAddr && userAddr){
+      if(userAddr){
         const _r=await fetch('https://nan-production.up.railway.app/api/agent-wallets',{
           method:'POST',headers:{'Content-Type':'application/json'},
           body:JSON.stringify({action:'get-or-create',userAddress:userAddr}),
@@ -1504,9 +1508,14 @@ async function onConnected(isEmail=false, isDev=false){
         });
         const _d=await _r.json();
         if(_d.success&&_d.wallet?.walletAddress){
+          if(agentWalletAddr && agentWalletAddr.toLowerCase()!==_d.wallet.walletAddress.toLowerCase()){
+            console.warn('[onConnected] agentWalletAddr was stale/cross-account, correcting:', agentWalletAddr, '→', _d.wallet.walletAddress);
+          }
           agentWalletAddr=_d.wallet.walletAddress;
           window.agentWalletAddr=agentWalletAddr;
           localStorage.setItem('nan_agent_addr',agentWalletAddr);
+          localStorage.setItem('nan_agent_wallet_'+userAddr, JSON.stringify({walletAddress:agentWalletAddr}));
+          if(typeof agentPageRefresh==='function' && window._currentPage==='agent-wallet') agentPageRefresh();
         }
       }
     }catch(e){console.warn('[onConnected] agent wallet eager resolve failed:',e.message);}
