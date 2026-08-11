@@ -10760,11 +10760,17 @@ async function loadAdminStats(){
   if(!_adminUnlocked)return;
   const loading=document.getElementById('adminLoading');
   const statsEl=document.getElementById('adminStats');
+  // Show the stats grid immediately — it used to stay hidden for the
+  // ENTIRE duration of the slow sequential block scan below, even though
+  // fast parallel stats (Total Connected Wallets, Circle Wallets All-Time)
+  // are usually ready within a second or two. That made the whole page
+  // look broken/blank for however long a full genesis scan takes, instead
+  // of showing what's already available while the rest keeps loading.
+  statsEl.style.display='block';
   loading.style.display='block';
-  statsEl.style.display='none';
 
   function setMsg(msg){
-    loading.innerHTML=`<div style="font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#e5e5e5;text-align:center;padding:20px;line-height:2;">${msg}</div>`;
+    loading.innerHTML=`<div style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text3);text-align:left;padding:10px 4px;line-height:1.6;">${msg}</div>`;
   }
 
   // Total Connected Wallets — independent of the on-chain scan below, since
