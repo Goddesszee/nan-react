@@ -3501,8 +3501,13 @@ html,body{background-color:var(--bg);}
     if(!title || !budget){ document.getElementById('gigPostStatus').textContent = 'Title and budget are required.'; return; }
     document.getElementById('gigPostStatus').textContent = 'Posting task... (wallet: ' + wallet + ')';
     const d = await gigCall('task-create', { requesterAddress: wallet, title, description, budget, negotiable, notifyEmail: notifyEmail || undefined });
-    document.getElementById('gigPostStatus').innerHTML = `<div style="font-size:.72rem;word-break:break-all;padding:8px;border:1px dashed var(--border);border-radius:6px;">Raw server response:<br><pre style="white-space:pre-wrap;margin:4px 0 0;">${JSON.stringify(d, null, 2)}</pre></div>`;
-    if(!d.success) return;
+    if(d.success){
+      document.getElementById('gigPostStatus').innerHTML = `<div style="color:var(--success);font-size:.85rem;font-weight:600;padding:8px 0;">✓ Task posted — freelancers can now submit work.</div>`;
+      if(typeof toast==='function') toast('Task posted successfully','success',3500);
+    } else {
+      document.getElementById('gigPostStatus').innerHTML = `<div style="color:var(--danger);font-size:.85rem;">${d.error||'Could not post task — please try again.'}</div>`;
+      return;
+    }
     document.getElementById('gigNewTitle').value = document.getElementById('gigNewDesc').value = document.getElementById('gigNewBudget').value = document.getElementById('gigNewEmail').value = '';
   }
   async function gigCreateWatch(){
