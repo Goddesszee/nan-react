@@ -94,6 +94,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
       })
       const d = await r.json()
       if (!d.success) { setError(d.error || 'Invalid code'); setStep('otp'); return }
+      if (d.sessionToken) localStorage.setItem('nan_session_token', d.sessionToken)
       setLoadMsg('Setting up your wallet…')
       await onEmailConnect(email)
     } catch(e) { setError(e.message || 'Error'); setStep('otp') }
