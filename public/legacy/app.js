@@ -5273,18 +5273,25 @@ async function ensureWalletConnected(){
     if(stored){ userAddr = stored; window.userAddr = stored; }
   }
 
+  const hasRealCircleCreds = !!(localStorage.getItem('circleWalletId') && localStorage.getItem('circleWalletAddr'));
+
   // Recover Circle wallet state (walletId is what money-moving calls
-  // actually need — having just the address isn't enough).
-  if(!isCircleWallet && localStorage.getItem('circleWalletId') && localStorage.getItem('circleWalletAddr')){
+  // actually need — having just the address isn't enough). Checked against
+  // real localStorage credentials, not the isCircleWallet flag itself —
+  // that flag can be stale/wrong from an earlier session and would
+  // otherwise block MetaMask signer recovery below even when there's no
+  // real Circle wallet behind it at all.
+  if(hasRealCircleCreds && !circleWalletId){
     isCircleWallet = true; window.isCircleWallet = true;
     circleWalletId = localStorage.getItem('circleWalletId'); window.circleWalletId = circleWalletId;
     circleWalletAddress = localStorage.getItem('circleWalletAddr'); window.circleWalletAddress = circleWalletAddress;
     if(!userAddr){ userAddr = circleWalletAddress; window.userAddr = circleWalletAddress; }
   }
-  // Not a Circle wallet and no signer yet — try a silent MetaMask
-  // reconnect (eth_accounts, no popup) regardless of whether userAddr
-  // happened to already be set from an earlier step.
-  else if(!isCircleWallet && !signer){
+  // No real Circle credentials — try a silent MetaMask reconnect
+  // (eth_accounts, no popup) if we don't already have a signer, regardless
+  // of what the isCircleWallet flag currently says.
+  else if(!hasRealCircleCreds && !signer){
+    isCircleWallet = false; window.isCircleWallet = false;
     await getDynamicSigner();
   }
 
@@ -5363,7 +5370,19 @@ async function doBulkSend(){
         await tx.wait(1);
         addTx({hash:tx.hash,to:r.addr,toRaw:r.name||r.addr,amount:r.amount.toFixed(6),type:'out',token:bulkToken,ts:Date.now(),confirmed:true,source:'metamask'});
       } else {
-        throw new Error('No wallet connected');
+        // Last-resort recovery right at the point of failure — if the
+        // earlier top-level check somehow still left signer/circleWalletId
+        // unresolved, try one more silent reconnect before actually giving
+        // up on this recipient.
+        const s = await getDynamicSigner();
+        if(s){
+          const c = new ethers.Contract(tokenAddr, ERC20_ABI, s);
+          const tx = await c.transfer(r.addr, ethers.parseUnits(r.amount.toFixed(decimals), decimals), arcGasOpts());
+          await tx.wait(1);
+          addTx({hash:tx.hash,to:r.addr,toRaw:r.name||r.addr,amount:r.amount.toFixed(6),type:'out',token:bulkToken,ts:Date.now(),confirmed:true,source:'metamask'});
+        } else {
+          throw new Error('Wallet not connected — try reconnecting from the sidebar, then run payroll again');
+        }
       }
       r.status = 'done';
       document.getElementById('bulk-status-'+i).textContent = '✓';
