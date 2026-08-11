@@ -5823,19 +5823,8 @@ async function navWelcomeClaim(){
   btn.disabled = false;
 }
 
-// Auto-show the welcome modal right after login, for new users without an arc name
-(function(){
-  var _origOnConnected = window.onConnected;
-  window.onConnected = async function(isEmail, isDev){
-    await _origOnConnected(isEmail, isDev);
-    var hasName = typeof arcNames !== 'undefined' && arcNames.some(function(n){ return n.owner === userAddr; });
-    var dismissed = userAddr && localStorage.getItem('nan_welcome_dismissed_' + userAddr);
-    var alreadyShown = userAddr && localStorage.getItem('nan_welcome_shown_' + userAddr);
-    if (!hasName && !dismissed && !alreadyShown) {
-      setTimeout(function(){ navShowWelcomeModal(); }, 600);
-    }
-  };
-})();
+// Arc name welcome modal auto-trigger removed — decided against pushing new
+// users toward claiming a name before they have any gas to pay for it.
 </script>
 
 <!-- ══ BANK PICKER MODAL ══ -->
