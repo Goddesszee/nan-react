@@ -1760,7 +1760,7 @@ async function submitAirtime(){
   btn.disabled = true;
   try{
     const { txHash, usdcAmount } = await payNgnInUsdc(ngnAmount, btn);
-    statusEl.innerHTML = '<span style="color:#000000;">Payment sent ('+usdcAmount.toFixed(4)+' USDC) · Delivering airtime…</span>';
+    statusEl.innerHTML = '<span style="color:var(--text);">Payment sent ('+usdcAmount.toFixed(4)+' USDC) · Delivering airtime…</span>';
     const result = await vtpassCall('purchase', { serviceID, phone, amount: ngnAmount });
     if(result.success){
       statusEl.innerHTML = '<span style="color:#2563EB;">✓ Airtime delivered! Ref: '+result.requestId+'</span>';
@@ -1833,7 +1833,7 @@ async function submitData(){
   btn.disabled = true;
   try{
     const { txHash, usdcAmount } = await payNgnInUsdc(ngnAmount, btn);
-    statusEl.innerHTML = '<span style="color:#000000;">Payment sent ('+usdcAmount.toFixed(4)+' USDC) · Delivering data…</span>';
+    statusEl.innerHTML = '<span style="color:var(--text);">Payment sent ('+usdcAmount.toFixed(4)+' USDC) · Delivering data…</span>';
     const result = await vtpassCall('purchase', { serviceID, phone, variationCode });
     if(result.success){
       statusEl.innerHTML = '<span style="color:#2563EB;">✓ Data delivered! Ref: '+result.requestId+'</span>';
@@ -2250,10 +2250,10 @@ async function submitAjoCreate(){
     const rc=ajoContract(getArcProvider());
     const idBefore=Number(await rc.nextGroupId());
     if(isCircleWallet){
-      statusEl.innerHTML='<span style="color:#000000;">Sending to chain…</span>';
+      statusEl.innerHTML='<span style="color:var(--text);">Sending to chain…</span>';
       const d=await ajoApi('createGroup',{contributionAmount:contribution,maxMembers,roundLength,label});
       if(!d.success) throw new Error(d.error||'Failed');
-      statusEl.innerHTML='<span style="color:#000000;">Confirmed ✓</span>';
+      statusEl.innerHTML='<span style="color:var(--text);">Confirmed ✓</span>';
       // Backend waited for COMPLETE — nextGroupId is already incremented
       for(let i=0;i<10;i++){
         await new Promise(r=>setTimeout(r,1000));
@@ -2267,7 +2267,7 @@ async function submitAjoCreate(){
       const c=ajoContract(signer);
       const amtAtomic=ethers.parseUnits(contribution.toFixed(6),6);
       const tx=await c.createGroup(amtAtomic,maxMembers,roundLength,label,arcGasOpts());
-      statusEl.innerHTML='<span style="color:#000000;">Confirming on-chain…</span>';
+      statusEl.innerHTML='<span style="color:var(--text);">Confirming on-chain…</span>';
       const receipt=await tx.wait(1);
       // Try event log first (most reliable)
       try{
@@ -2417,15 +2417,15 @@ async function submitAjoJoin(){
   btn.disabled=true; btn.textContent='Joining…';
   try{
     if(isCircleWallet){
-      statusEl.innerHTML='<span style="color:#000000;">Sending to chain…</span>';
+      statusEl.innerHTML='<span style="color:var(--text);">Sending to chain…</span>';
       const d=await ajoApi('joinGroup',{groupId});
       if(!d.success) throw new Error(d.error||'Failed');
-      statusEl.innerHTML='<span style="color:#000000;">Confirmed ✓</span>';
+      statusEl.innerHTML='<span style="color:var(--text);">Confirmed ✓</span>';
     } else {
       if(!signer){ toast('Connect MetaMask & switch to Arc Testnet','error',5000); btn.disabled=false; btn.textContent='Join group'; return; }
       const c=ajoContract(signer);
       const tx=await c.joinGroup(groupId,arcGasOpts());
-      statusEl.innerHTML='<span style="color:#000000;">Confirming…</span>';
+      statusEl.innerHTML='<span style="color:var(--text);">Confirming…</span>';
       await tx.wait(1);
     }
     toast('✓ Joined group!','success',5000);
@@ -2512,9 +2512,9 @@ async function showAjoGroup(groupId){
       const adminTag=isCreatorMember?`<span style="font-size:.75rem;color:#2563EB;font-weight:700;margin-left:4px;">Admin</span>`:'';
       let rightTag='';
       if(isThisRound&&isActive) rightTag=`<span style="font-size:.75rem;color:#2563EB;font-weight:700;">← This round</span>`;
-      else if(isPastRound) rightTag=`<span style="font-size:.75rem;color:#000000;">Received ✓</span>`;
+      else if(isPastRound) rightTag=`<span style="font-size:.75rem;color:var(--text);">Received ✓</span>`;
       return `<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:0.5px solid rgba(255,255,255,.05);">
-        <div style="width:20px;font-size:.7rem;color:#000000;text-align:right;flex-shrink:0;">${i+1}</div>
+        <div style="width:20px;font-size:.7rem;color:var(--text);text-align:right;flex-shrink:0;">${i+1}</div>
         <div style="width:32px;height:32px;border-radius:50%;background:${avatarBg};display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:${avatarCol};flex-shrink:0;">${init}</div>
         <div style="flex:1;font-size:.82rem;color:${isMe||isThisRound?'var(--text)':'var(--text3)'};font-weight:${isMe||isThisRound?'600':'400'};">${nameLabel}${adminTag}</div>
         ${rightTag}
@@ -2524,7 +2524,7 @@ async function showAjoGroup(groupId){
     let actionHtml='';
     if(isOpen){
       if(isCreator&&Number(g.memberCount)>=Number(g.maxMembers)){
-        actionHtml=`<button onclick="submitAjoStart(${groupId})" id="ajoActionBtn" style="width:100%;background:#2563EB;border:none;border-radius:14px;color:#000;padding:15px;font-size:.95rem;font-weight:700;cursor:pointer;margin-top:4px;">Everyone's here — Start group</button>`;
+        actionHtml=`<button onclick="submitAjoStart(${groupId})" id="ajoActionBtn" style="width:100%;background:#2563EB;border:none;border-radius:14px;color:var(--text);padding:15px;font-size:.95rem;font-weight:700;cursor:pointer;margin-top:4px;">Everyone's here — Start group</button>`;
       } else if(isCreator){
         actionHtml=`<div style="background:var(--surface);border:0.5px solid var(--border);border-radius:14px;padding:14px;margin-top:4px;text-align:center;font-size:.78rem;color:var(--text3);">Waiting for ${Number(g.maxMembers)-Number(g.memberCount)} more member${Number(g.maxMembers)-Number(g.memberCount)===1?'':'s'} to join.</div>`;
       } else {
@@ -2535,7 +2535,7 @@ async function showAjoGroup(groupId){
         actionHtml=`<button onclick="submitAjoContribute(${groupId})" id="ajoActionBtn" style="width:100%;background:#2563EB;border:none;border-radius:14px;color:#fff;padding:15px;font-size:.95rem;font-weight:700;cursor:pointer;margin-top:4px;">Pay your ${ethers.formatUnits(g.contributionAmount,6)} USDC</button>`;
       } else if(isCreator&&everyonePaid){
         const recipientLabel=recipient&&recipient.toLowerCase()===userAddr.toLowerCase()?'yourself':'round recipient';
-        actionHtml=`<button onclick="submitAjoClaim(${groupId})" id="ajoCreatorPayBtn" style="width:100%;background:#2563EB;border:none;border-radius:14px;color:#000;padding:15px;font-size:.95rem;font-weight:700;cursor:pointer;margin-top:4px;">Release payout to ${recipientLabel}</button>`;
+        actionHtml=`<button onclick="submitAjoClaim(${groupId})" id="ajoCreatorPayBtn" style="width:100%;background:#2563EB;border:none;border-radius:14px;color:var(--text);padding:15px;font-size:.95rem;font-weight:700;cursor:pointer;margin-top:4px;">Release payout to ${recipientLabel}</button>`;
       } else if(isCreator&&!everyonePaid){
         actionHtml=`<div style="background:rgba(37,99,235,.06);border:0.5px solid rgba(37,99,235,.18);border-radius:14px;padding:14px;margin-top:4px;text-align:center;font-size:.78rem;color:var(--text3);">You can release the payout once everyone has contributed.</div>`;
       } else {
@@ -2570,15 +2570,15 @@ async function submitAjoStart(groupId){
   btn.disabled=true; btn.textContent='Starting…';
   try{
     if(isCircleWallet){
-      statusEl.innerHTML='<span style="color:#000000;">Sending to chain…</span>';
+      statusEl.innerHTML='<span style="color:var(--text);">Sending to chain…</span>';
       const d=await ajoApi('startGroup',{groupId});
       if(!d.success) throw new Error(d.error||'Failed');
-      statusEl.innerHTML='<span style="color:#000000;">Confirmed ✓</span>';
+      statusEl.innerHTML='<span style="color:var(--text);">Confirmed ✓</span>';
     } else {
       if(!signer){ toast('Connect MetaMask & switch to Arc Testnet','error',5000); btn.disabled=false; btn.textContent='Start group'; return; }
       const c=ajoContract(signer);
       const tx=await c.startGroup(groupId,arcGasOpts());
-      statusEl.innerHTML='<span style="color:#000000;">Confirming…</span>';
+      statusEl.innerHTML='<span style="color:var(--text);">Confirming…</span>';
       await tx.wait(1);
     }
     toast('✓ Group started!','success',5000);
@@ -2599,10 +2599,10 @@ async function submitAjoContribute(groupId){
     const g=await readC.getGroup(groupId);
     const amtFormatted=ethers.formatUnits(g.contributionAmount,6);
     if(isCircleWallet){
-      statusEl.innerHTML='<span style="color:#000000;">Approving & contributing…</span>';
+      statusEl.innerHTML='<span style="color:var(--text);">Approving & contributing…</span>';
       const d=await ajoApi('contribute',{groupId,contributionAmount:amtFormatted});
       if(!d.success) throw new Error(d.error||'Failed');
-      statusEl.innerHTML='<span style="color:#000000;">Confirmed ✓</span>';
+      statusEl.innerHTML='<span style="color:var(--text);">Confirmed ✓</span>';
       addTx({hash:d.txId,to:AJO_CONTRACT,toRaw:'Group Savings: Contribute',amount:amtFormatted,type:'out',token:'USDC',ts:Date.now(),confirmed:true,source:'ajo'});
     } else {
       if(!signer){ toast('Connect MetaMask & switch to Arc Testnet','error',5000); btn.disabled=false; return; }
@@ -2612,7 +2612,7 @@ async function submitAjoContribute(groupId){
       await approveTx.wait(1);
       btn.textContent='Contributing…';
       const tx=await c.contribute(groupId,arcGasOpts());
-      statusEl.innerHTML='<span style="color:#000000;">Confirming…</span>';
+      statusEl.innerHTML='<span style="color:var(--text);">Confirming…</span>';
       await tx.wait(1);
       addTx({hash:tx.hash,to:AJO_CONTRACT,toRaw:'Group Savings: Contribute',amount:amtFormatted,type:'out',token:'USDC',ts:Date.now(),confirmed:true,source:'ajo'});
     }
@@ -2635,15 +2635,15 @@ async function submitAjoClaim(groupId){
   if(btn){ btn.disabled=true; btn.textContent='Releasing…'; }
   try{
     if(isCircleWallet){
-      if(statusEl) statusEl.innerHTML='<span style="color:#000000;">Sending to chain…</span>';
+      if(statusEl) statusEl.innerHTML='<span style="color:var(--text);">Sending to chain…</span>';
       const d=await ajoApi('claimRoundPayout',{groupId});
       if(!d.success) throw new Error(d.error||'Failed');
-      if(statusEl) statusEl.innerHTML='<span style="color:#000000;">Confirmed ✓</span>';
+      if(statusEl) statusEl.innerHTML='<span style="color:var(--text);">Confirmed ✓</span>';
     } else {
       if(!signer){ toast('Connect MetaMask & switch to Arc Testnet','error',5000); if(btn){btn.disabled=false;} return; }
       const c=ajoContract(signer);
       const tx=await c.claimRoundPayout(groupId,arcGasOpts());
-      if(statusEl) statusEl.innerHTML='<span style="color:#000000;">Confirming…</span>';
+      if(statusEl) statusEl.innerHTML='<span style="color:var(--text);">Confirming…</span>';
       await tx.wait(1);
     }
     toast('✓ Payout released!','success',6000);
@@ -2742,7 +2742,7 @@ async function submitNepa(){
   btn.disabled = true;
   try{
     const { txHash, usdcAmount } = await payNgnInUsdc(ngnAmount, btn);
-    statusEl.innerHTML = '<span style="color:#000000;">Payment sent ('+usdcAmount.toFixed(4)+' USDC) · Processing…</span>';
+    statusEl.innerHTML = '<span style="color:var(--text);">Payment sent ('+usdcAmount.toFixed(4)+' USDC) · Processing…</span>';
     const result = await vtpassCall('purchase', { serviceID, billersCode, variationCode, amount: ngnAmount, phone });
     if(result.success){
       const token = result.purchasedCode || result.transaction?.token || '';
@@ -2828,7 +2828,7 @@ async function submitDstv(){
     if(!amount){ throw new Error('Could not determine bouquet price'); }
 
     const { txHash, usdcAmount } = await payNgnInUsdc(amount, btn);
-    statusEl.innerHTML = '<span style="color:#000000;">Payment sent ('+usdcAmount.toFixed(4)+' USDC) · Processing…</span>';
+    statusEl.innerHTML = '<span style="color:var(--text);">Payment sent ('+usdcAmount.toFixed(4)+' USDC) · Processing…</span>';
     const result = await vtpassCall('purchase', { serviceID:'dstv', billersCode, variationCode, phone, subscriptionType:'change' });
     if(result.success){
       statusEl.innerHTML = '<span style="color:#2563EB;">✓ Subscription updated!</span>';
@@ -3696,7 +3696,7 @@ function _setSendTabOrig(tab){
     if(box){
       box.innerHTML='';
       try{new QRCode(box,{text:userAddr,width:160,height:160,colorDark:'#111111',colorLight:'#ffffff'});}
-      catch(e){box.innerHTML='<p style="padding:10px;font-size:.7rem;color:#000000">QR unavailable</p>';}
+      catch(e){box.innerHTML='<p style="padding:10px;font-size:.7rem;color:var(--text)">QR unavailable</p>';}
     }
     document.getElementById('recvAddr').textContent=userAddr||'Connect wallet';
     // Also update .arc name display
@@ -4475,7 +4475,7 @@ async function pollIrisAttestation(txHash, destChain) {
           mintEl.innerHTML = `
             <div style="margin-top:10px;background:#1a1a1a;border:1px solid #1a1a1a;border-radius:12px;padding:14px;">
               <div style="font-weight:700;color:#fff;margin-bottom:8px;">✅ Burn complete — mint on ${destName}</div>
-              <div style="font-size:.72rem;color:#000000;line-height:1.7;margin-bottom:10px;">
+              <div style="font-size:.72rem;color:var(--text);line-height:1.7;margin-bottom:10px;">
                 Your USDC is burned on Arc. To receive it on <strong style="color:#ccc;">${destName}</strong>, complete the mint using the attestation below.
               </div>
               <div style="font-size:.75rem;font-family:'JetBrains Mono',monospace;color:#aaa;margin-bottom:6px;">MessageTransmitter on ${destName}:</div>
@@ -4911,7 +4911,7 @@ function renderQR(a){
   if(!a)return;
   const isDark=document.documentElement.getAttribute('data-theme')!=='light';
   try{new QRCode(b,{text:a,width:100,height:100,colorDark:isDark?'#111111':'#111111',colorLight:'#ffffff'});}
-  catch{b.innerHTML='<p style="padding:10px;font-size:.7rem;color:#000000">QR unavailable</p>';}
+  catch{b.innerHTML='<p style="padding:10px;font-size:.7rem;color:var(--text)">QR unavailable</p>';}
 }
 function copyAddr(){
   if(!userAddr)return;
@@ -10764,7 +10764,7 @@ async function loadAdminStats(){
   statsEl.style.display='none';
 
   function setMsg(msg){
-    loading.innerHTML=`<div style="font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#000000;text-align:center;padding:20px;line-height:2;">${msg}</div>`;
+    loading.innerHTML=`<div style="font-family:'JetBrains Mono',monospace;font-size:.78rem;color:#e5e5e5;text-align:center;padding:20px;line-height:2;">${msg}</div>`;
   }
 
   // Total Connected Wallets — independent of the on-chain scan below, since
