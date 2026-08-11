@@ -9896,6 +9896,34 @@ window.addEventListener('load',()=>{
   initBridgeUI();
   fetchLiveFX();
   setInterval(fetchLiveFX,60000);
+  // Periodic check for new incoming invoices — invoice-create only ever
+  // sent an email, never an in-app bell notification, so a receiver using
+  // the app elsewhere had no way to know a new invoice existed short of
+  // manually opening Invoicing > Incoming or checking their inbox.
+  setInterval(async()=>{
+    if(!agentWalletAddr) return;
+    try{
+      const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'invoice-list', userAddress: userAddr, agentWalletAddress: agentWalletAddr, direction: 'incoming' })
+      });
+      const d = await r.json();
+      if(!d.success) return;
+      const pending = (d.invoices||[]).filter(inv => inv.status === 'pending');
+      const seenKey = 'nan_invoices_seen_' + agentWalletAddr.toLowerCase();
+      const seenRaw = localStorage.getItem(seenKey);
+      const isFirstRun = seenRaw === null;
+      const seen = new Set(JSON.parse(seenRaw || '[]'));
+      const newOnes = isFirstRun ? [] : pending.filter(inv => !seen.has(inv.id));
+      if(newOnes.length && typeof addNotification === 'function'){
+        newOnes.forEach(inv => {
+          addNotification('New invoice', `${inv.amount} ${inv.token}${inv.reason ? ` — "${inv.reason}"` : ''}`, 'info', 'agent-invoice');
+        });
+        if(typeof toast === 'function') toast(`${newOnes.length} new invoice${newOnes.length>1?'s':''} to review`, 'info', 4500);
+      }
+      localStorage.setItem(seenKey, JSON.stringify(pending.map(inv => inv.id)));
+    }catch(e){ /* silent — this is a background convenience check, not critical */ }
+  }, 45000);
   setInterval(async()=>{
     if(userAddr){
       if(!isCircleWallet)await checkNetwork();
