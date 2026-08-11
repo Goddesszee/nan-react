@@ -313,7 +313,7 @@ html,body{background-color:var(--bg);}
   <button id="nanSidebarCollapseBtn" onclick="nanToggleSidebar()" title="Collapse">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
   </button>
-  <div class="nan-sb-brand" id="nanSidebarBrand" onclick="navOpenProfileMenu(event,this)" style="cursor:pointer;">
+  <div class="nan-sb-brand" id="nanSidebarBrand" onclick="navOpenProfileMenu(event,this);handleSecretTap();" style="cursor:pointer;">
     <div class="nan-sb-logo"><svg viewBox="0 0 324 480" width="13" height="20"><path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill="#fff"/><path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill="#fff"/></svg></div>
     <span class="nan-sb-label nan-sb-brand-label">Profile</span>
   </div>
