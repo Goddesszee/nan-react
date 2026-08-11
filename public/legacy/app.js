@@ -12996,6 +12996,7 @@ async function invoiceLoadList(){
           <div style="min-width:0;">
             <div style="font-size:.85rem;font-weight:700;color:var(--text);">${inv.amount.toFixed(2)} ${inv.token}</div>
             <div style="font-size:.75rem;color:var(--text3);font-family:'JetBrains Mono',monospace;">${invoiceTab==='incoming'?'Billed by':'Billed to'} ${short(counterparty)}</div>
+            ${(invoiceTab==='outgoing' && inv.billedToInput) ? `<div style="font-size:.68rem;color:var(--text3);margin-top:2px;">their agent wallet, resolved from ${short(inv.billedToInput)}</div>` : ''}
           </div>
           ${invoiceStatusPill(inv.status)}
         </div>
@@ -13041,11 +13042,20 @@ async function invoiceCreate(){
         body: JSON.stringify({ action:'get-or-create', userAddress: fromRaw })
       });
       const gd = await gr.json();
-      if(gd.success && gd.wallet?.walletAddress) fromAgentAddress = gd.wallet.walletAddress;
+      if(gd.success && gd.wallet?.walletAddress) {
+        fromAgentAddress = gd.wallet.walletAddress;
+        // Let the user see and verify the resolution — a main wallet
+        // address always resolves to a DIFFERENT-looking agent wallet
+        // address by design, which otherwise just looks like a mistake
+        // with no way to confirm it actually happened correctly.
+        if(fromAgentAddress.toLowerCase() !== fromRaw.toLowerCase() && statusEl){
+          statusEl.innerHTML = `Resolved <span style="font-family:'JetBrains Mono',monospace;">${short(fromRaw)}</span> → their agent wallet <span style="font-family:'JetBrains Mono',monospace;color:var(--text);">${short(fromAgentAddress)}</span>`;
+        }
+      }
     }
     const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ action:'invoice-create', userAddress: userAddr, agentWalletAddress: agentWalletAddr, fromAgentAddress, amount, token, reason })
+      body: JSON.stringify({ action:'invoice-create', userAddress: userAddr, agentWalletAddress: agentWalletAddr, fromAgentAddress, billedToInput: fromRaw, amount, token, reason })
     });
     const d = await r.json();
     if(!d.success) throw new Error(d.error || 'Could not send invoice');
