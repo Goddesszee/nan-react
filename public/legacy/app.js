@@ -10864,8 +10864,20 @@ async function loadAdminStats(){
   const nanC=new Set([SWAP,LEND,NAME,PAYREQ,HIST,USDC].map(x=>x.toLowerCase()));
   let _id=0;
 
-  async function rpc(m,p=[]){
+  async function rpc(m,p=[],retries=3){
     const r=await fetch(RPC,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',method:m,params:p,id:++_id})});
+    if(r.status===429){
+      // Rate limited — the zero-delay pacing between chunks used to fire
+      // requests as fast as the event loop allowed, which is exactly what
+      // triggers this on a public RPC endpoint. Real pacing (below) should
+      // mostly prevent it now, but retry with backoff as a safety net for
+      // whatever still slips through instead of just losing that chunk.
+      if(retries>0){
+        await new Promise(res=>setTimeout(res,800*(4-retries)));
+        return rpc(m,p,retries-1);
+      }
+      throw new Error('RPC 429 (rate limited, retries exhausted)');
+    }
     if(!r.ok)throw new Error('RPC '+r.status);
     const d=await r.json();
     if(d.error)throw new Error(d.error.message);
@@ -10938,7 +10950,10 @@ async function loadAdminStats(){
         logs.push(...r);
         const pct=cached?`resuming from block ${scanFrom.toLocaleString()}`:`${Math.round(((i+1)/chunks)*100)}%`;
         setMsg(`${label}<br/>${logs.length} events · ${pct}`);
-        await new Promise(r=>setTimeout(r,0));
+        // Real pacing between requests — the previous setTimeout(r,0) only
+        // yielded one JS tick with no actual delay, which is exactly what
+        // triggered the 429 rate-limit storm against Arc's public RPC.
+        if(i<chunks-1) await new Promise(r=>setTimeout(r,120));
       }
       saveCache(cacheKey,latest,logs);
       return logs;
@@ -11023,7 +11038,7 @@ async function loadAdminStats(){
         saveUsdcAgg(agg);
         const pct=cached?`resuming from block ${scanFrom.toLocaleString()}`:`${Math.round(((i+1)/chunks)*100)}%`;
         setMsg(`💸 USDC Transfers<br/>${agg.bridges} bridges so far · ${pct}`);
-        await new Promise(r=>setTimeout(r,0));
+        if(i<chunks-1) await new Promise(r=>setTimeout(r,120));
       }
       agg.scannedThrough=latest;
       saveUsdcAgg(agg);
