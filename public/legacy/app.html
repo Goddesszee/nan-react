@@ -466,7 +466,7 @@ html,body{background-color:var(--bg);}
       <div class="net-pill" id="netPill" style="display:none;"><span class="net-pill-full"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:4px;display:inline-block;flex-shrink:0;border-radius:3px;background:#0d1b2e;padding:1px;"><path fill="url(#arc_logo)" d="M3.5 20.999c.146-4.407.893-8.519 2.142-11.717C7.223 5.231 9.513 3 12.088 3s4.865 2.231 6.447 6.283c.822 2.107 1.427 4.61 1.786 7.334q.048.366.087.737.015.024.013.041s.21 1.317.256 3.604h-.024c-.313-.256-4-3.153-10.112-2.314.093-1.035.22-2.04.383-3.005l.027-.146a24.5 24.5 0 0 1 6.104.57q-.007-.056-.017-.115c-.33-2.06-.819-3.945-1.448-5.556-1.029-2.635-2.371-4.271-3.502-4.271-1.132 0-2.474 1.636-3.503 4.271q-.375.958-.679 2.034a30 30 0 0 0-.718 3.213A40 40 0 0 0 6.662 21H3.5z"/><defs><linearGradient id="arc_logo" x1="12" x2="12" y1="3" y2="21" gradientUnits="userSpaceOnUse"><stop stop-color="#d0d8e8"/><stop offset="1" stop-color="#7a8faa"/></linearGradient></defs></svg>Testnet</span><span class="net-pill-short" style="display:none;">Arc</span></div>
       <!-- Profile pill: avatar, notification dot, dropdown (address, Claim .arc name, Notifications, BVN, Credit Scoring, Copy Address, Disconnect/Connect) -->
       <div id="nanProfilePill" onclick="navToggleAgentWalletMenu(event,this)" style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 10px 4px 4px;border-radius:100px;border:none;background:transparent;position:relative;flex-shrink:0;">
-        <div style="width:28px;height:28px;border-radius:50%;background:rgba(37,99,235,.12);display:flex;align-items:center;justify-content:center;color:#2563EB;font-weight:700;font-size:12px;flex-shrink:0;" id="nanProfileAvatar">?</div>
+        <div style="width:28px;height:28px;border-radius:50%;background:rgba(37,99,235,.12);display:flex;align-items:center;justify-content:center;color:#2563EB;font-weight:700;font-size:12px;flex-shrink:0;" id="nanProfileAvatar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
         <span id="nanProfileLabel" style="font-size:13px;font-weight:700;color:var(--text);">Agent Wallet</span>
         <span id="nanProfileNotifDot" style="display:none;position:absolute;top:-2px;right:-2px;width:9px;height:9px;border-radius:50%;background:var(--danger);border:2px solid var(--card);"></span>
         <div id="nanProfileMenu" style="display:none;position:absolute;top:calc(100% + 8px);right:0;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:6px;min-width:220px;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,.25);">
@@ -5509,7 +5509,7 @@ function nanUpdateProfileLabel(){
   var mine = connected && typeof arcNames !== 'undefined'
     ? arcNames.find(function(n){ return n.owner === userAddr; })
     : null;
-  labelEl.textContent = connected ? (mine ? ('Welcome back, ' + mine.name) : 'Welcome back') : 'Profile';
+  labelEl.textContent = connected ? (mine ? (mine.name + '.arc') : 'Agent Wallet') : 'Profile';
   pill.style.background = 'transparent';
   pill.style.border = 'none';
   labelEl.style.color = 'var(--text)';
@@ -5517,6 +5517,11 @@ function nanUpdateProfileLabel(){
   if (avatar) {
     avatar.style.background = 'rgba(37,99,235,.12)';
     avatar.style.color = '#2563EB';
+    if (mine && mine.name) {
+      avatar.textContent = mine.name.charAt(0).toUpperCase();
+    } else {
+      avatar.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+    }
   }
   nanUpdateSidebarWalletLabel();
   if (typeof careerUpdateWelcomeName === 'function') careerUpdateWelcomeName();
@@ -5637,10 +5642,17 @@ function navToggleAgentWalletMenu(e, pillEl){
   if (isOpen) { navMenu.style.display = 'none'; return; }
   _navRenderWalletMenu();
   var r = pillEl.getBoundingClientRect();
+  navMenu.style.visibility = 'hidden';
+  navMenu.style.display = 'block';
+  var menuWidth = navMenu.offsetWidth || 230;
+  navMenu.style.visibility = '';
+  var margin = 10;
+  var left = Math.min(r.left, window.innerWidth - menuWidth - margin);
+  left = Math.max(left, margin);
   navMenu.style.position = 'fixed';
   navMenu.style.top = (r.bottom + 8) + 'px';
-  navMenu.style.left = 'auto';
-  navMenu.style.right = (window.innerWidth - r.right) + 'px';
+  navMenu.style.left = left + 'px';
+  navMenu.style.right = 'auto';
   navMenu.style.transform = 'none';
   navMenu.style.display = 'block';
 }
