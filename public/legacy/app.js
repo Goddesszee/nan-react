@@ -67,7 +67,18 @@ function apiFetch(path, opts){
           // Self-custody wallets sign; Circle-custody wallets (no injected
           // signer for their address) fall back to the session token, which
           // the server accepts only if that email is linked to this wallet.
-          if (window.ethereum && !isCircleWallet) {
+          //
+          // Checked against a REAL stored Circle wallet ID, not the
+          // isCircleWallet flag itself — that flag can be stale/wrong from
+          // an earlier session, and if the browser happens to have any
+          // wallet extension installed (even unused), the flag being wrong
+          // would silently route a genuine Circle/email user down the
+          // MetaMask signature path instead, which fails or produces a
+          // mismatched signature — and the session token then never gets
+          // attached at all, producing exactly a false "no valid session"
+          // error on the backend.
+          const hasRealCircleWallet = !!localStorage.getItem('circleWalletId');
+          if (window.ethereum && !hasRealCircleWallet) {
             const timestamp = Date.now();
             const message = buildAuthMessage(body.action, body.userAddress, timestamp);
             const signature = await window.ethereum.request({ method: 'personal_sign', params: [message, body.userAddress] });
