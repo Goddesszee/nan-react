@@ -1106,7 +1106,18 @@ function detectWallet(){
 }
 async function checkNetwork(){
   if(isCircleWallet){ onArcNetwork=true; return true; } // Circle wallets don't need MetaMask
-  if(!wp){ onArcNetwork=true; return true; }
+  if(!wp){
+    // Don't blindly trust onArcNetwork=true just because our own reference
+    // to the wallet provider is missing — that was a real security gap: a
+    // stale/missing wp meant this function never actually verified
+    // anything and just assumed the user was on the right chain regardless
+    // of what chain their wallet was genuinely connected to. Try to
+    // recover the provider first; if that's not possible, fail safe
+    // (untrusted) rather than fail open.
+    const injected = window.ethereum || (window.evmproviders && Object.values(window.evmproviders)[0]);
+    if(injected){ wp = injected; }
+    else { onArcNetwork = false; return false; }
+  }
   try{
     const hex=await wp.request({method:'eth_chainId'});
     const chainId=parseInt(hex,16);
@@ -1116,7 +1127,7 @@ async function checkNetwork(){
     // Auto-prompt switch if on wrong network (not during bridge mint)
     if(!onArcNetwork&&userAddr&&!_bridging) switchToArc().catch(()=>{});
     return onArcNetwork;
-  }catch{return false;}
+  }catch{onArcNetwork=false;return false;}
 }
 async function switchToArc(){
   if(!wp)return;
