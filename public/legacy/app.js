@@ -5274,9 +5274,19 @@ function nanConfirm(title, bodyHtml){
 // false "connect your wallet" error if they act quickly after load. Use
 // this instead of checking userAddr directly wherever that's happened.
 async function ensureWalletConnected(){
-  // Already fully usable — a real Circle wallet ID, or a real MetaMask
-  // signer. Nothing to recover.
-  if(userAddr && ((isCircleWallet && circleWalletId) || signer)) return userAddr;
+  // Circle wallet money-moving calls need otpEmail too, not just the wallet
+  // identity — a user could have a fully correct userAddr/isCircleWallet/
+  // circleWalletId and still hit 'email is required for this action' if
+  // this one variable specifically was never set or got lost, since it's
+  // a separate piece of state from the rest of the wallet identity.
+  if(isCircleWallet && !otpEmail){
+    const storedEmail = localStorage.getItem('nan_email') || localStorage.getItem('nan_dynamic_email') || localStorage.getItem('nan_remember_email');
+    if(storedEmail){ otpEmail = storedEmail; window.otpEmail = storedEmail; }
+  }
+
+  // Already fully usable — a real Circle wallet ID (with email), or a real
+  // MetaMask signer. Nothing further to recover.
+  if(userAddr && ((isCircleWallet && circleWalletId && otpEmail) || signer)) return userAddr;
 
   // Recover the address itself if it's missing.
   if(!userAddr){
@@ -5297,6 +5307,10 @@ async function ensureWalletConnected(){
     circleWalletId = localStorage.getItem('circleWalletId'); window.circleWalletId = circleWalletId;
     circleWalletAddress = localStorage.getItem('circleWalletAddr'); window.circleWalletAddress = circleWalletAddress;
     if(!userAddr){ userAddr = circleWalletAddress; window.userAddr = circleWalletAddress; }
+    if(!otpEmail){
+      const storedEmail = localStorage.getItem('nan_email') || localStorage.getItem('nan_dynamic_email') || localStorage.getItem('nan_remember_email');
+      if(storedEmail){ otpEmail = storedEmail; window.otpEmail = storedEmail; }
+    }
   }
   // No real Circle credentials — try a silent MetaMask reconnect
   // (eth_accounts, no popup) if we don't already have a signer, regardless
