@@ -4858,9 +4858,28 @@ async function claimFaucet(btnEl){
     }else{
       const msg=data.error||'';
       if(msg.toLowerCase().includes('limit')||msg.toLowerCase().includes('rate')){toast('⏳ Limit reached — try again in 2 hours','error',6000);}
-      else{toast('Opening faucet website…','info',3000);window.open('https://faucet.circle.com','_blank');}
+      else{
+        toast('Opening faucet website — come back here after claiming and give it ~20s','info',6000);
+        window.open('https://faucet.circle.com','_blank');
+        // The automated in-app faucet call failed (usually because Circle
+        // requires the API key's account to have completed mainnet
+        // verification even for testnet claims), so this falls back to a
+        // manual claim on Circle's own site. That claim happens outside
+        // this app entirely, so nothing here would otherwise know to check
+        // for the new balance — schedule a few checks anyway, spaced out
+        // to give a real person time to actually complete the claim.
+        setTimeout(()=>refreshBalances(),20000);
+        setTimeout(()=>refreshBalances(),45000);
+        setTimeout(()=>refreshBalances(),90000);
+      }
     }
-  }catch{toast('Opening faucet website…','info',3000);window.open('https://faucet.circle.com','_blank');}
+  }catch{
+    toast('Opening faucet website — come back here after claiming and give it ~20s','info',6000);
+    window.open('https://faucet.circle.com','_blank');
+    setTimeout(()=>refreshBalances(),20000);
+    setTimeout(()=>refreshBalances(),45000);
+    setTimeout(()=>refreshBalances(),90000);
+  }
   if(btn){btn.innerHTML=origText;btn.disabled=false;}
 }
 
