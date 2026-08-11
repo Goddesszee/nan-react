@@ -10212,18 +10212,18 @@ function renderPaymentRequests(){
     const badgeColor=status==='paid'?'var(--success)':status==='expired'?'#F59E0B':'#2563EB';
     const statusLabel=status==='paid'?'Paid':status==='expired'?'Expired':'Pending';
     const amtText=pr.amount?parseFloat(pr.amount).toFixed(2)+' '+pr.token:'Open, '+pr.token;
-    return `<div onclick="viewPaymentRequest('${pr.id}')" style="display:grid;grid-template-columns:2fr 1.2fr 1fr 1.3fr auto;gap:12px;align-items:center;padding:13px 16px;border-bottom:1px solid var(--border);cursor:pointer;" onmouseover="this.style.background='rgba(37,99,235,.04)'" onmouseout="this.style.background=''">
-      <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+    return `<div class="pr-row" onclick="viewPaymentRequest('${pr.id}')" style="display:grid;grid-template-columns:2fr 1.2fr 1fr 1.3fr auto;gap:12px;align-items:center;padding:13px 16px;border-bottom:1px solid var(--border);cursor:pointer;" onmouseover="this.style.background='rgba(37,99,235,.04)'" onmouseout="this.style.background=''">
+      <div class="pr-row-req" style="display:flex;align-items:center;gap:10px;min-width:0;">
         <div style="width:36px;height:36px;border-radius:10px;background:rgba(37,99,235,.1);border:1px solid rgba(37,99,235,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg></div>
         <div style="min-width:0;">
-          <div style="font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:2px;">${pr.label}</div>
+          <div class="pr-row-label" style="font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:2px;">${pr.label}</div>
           <div style="font-size:.72rem;color:var(--text3);">${pr.linkId?'Link Request':'Request'}</div>
         </div>
       </div>
-      <div style="font-size:.85rem;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace;">${amtText}</div>
-      <div><span style="display:inline-flex;align-items:center;font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:100px;background:${badgeBg};color:${badgeColor};">${statusLabel}</span></div>
-      <div style="font-size:.78rem;color:var(--text3);">${new Date(pr.createdAt).toLocaleDateString(undefined,{day:'2-digit',month:'short',year:'numeric'})}</div>
-      <span style="color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;width:24px;height:24px;">
+      <div class="pr-row-amt" style="font-size:.85rem;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace;">${amtText}</div>
+      <div class="pr-row-status"><span style="display:inline-flex;align-items:center;font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:100px;background:${badgeBg};color:${badgeColor};">${statusLabel}</span></div>
+      <div class="pr-row-date" style="font-size:.78rem;color:var(--text3);">${new Date(pr.createdAt).toLocaleDateString(undefined,{day:'2-digit',month:'short',year:'numeric'})}</div>
+      <span class="pr-row-actions" style="color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;width:24px;height:24px;">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>
       </span>
     </div>`;

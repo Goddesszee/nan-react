@@ -991,6 +991,30 @@ a:hover{color:var(--text);}
     font-size:.75rem !important;
     text-align:center !important;
   }
+  /* Pay Requests Recent Activity list: the 5-column grid row
+     (2fr/1.2fr/1fr/1.3fr/auto) left almost no room for the request label
+     on a phone, and CSS grid doesn't clip overflowing text by default, so
+     the label rendered on top of the amount/status/date columns instead
+     of wrapping — the garbled overlapping text in the report. Restack
+     into two rows: label+status on top, amount+date+menu below. */
+  #payreqListHead{
+    display:none !important;
+  }
+  .pr-row{
+    grid-template-columns: 1fr auto !important;
+    grid-template-areas: "req status" "amt date" !important;
+    row-gap: 6px !important;
+  }
+  .pr-row-req{ grid-area: req; min-width: 0 !important; }
+  .pr-row-label{
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+  .pr-row-status{ grid-area: status; }
+  .pr-row-amt{ grid-area: amt; }
+  .pr-row-date{ grid-area: date; text-align: right; }
+  .pr-row-actions{ display: none !important; }
 
   /* Payroll page: same desktop 40px side-padding + 4-column stat grid
      overflow pattern as Pay Requests — Wallet Balance card was cut off. */
