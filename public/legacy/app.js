@@ -7893,17 +7893,19 @@ function executeAgentAction(action){
             payerAddr = ld.agentWalletAddress;
           }catch(e){ addAgentMsg('❌ Lookup failed: '+e.message); renderAgentMsgs(); return; }
         } else {
-          // A raw address was given — resolve it to THEIR agent wallet
-          // address, not their main login address, same fix as the direct
-          // invoice form. Otherwise the invoice gets filed under an address
-          // their own Incoming tab never queries against.
+          // A raw address was given — could already be their agent wallet
+          // address directly, or their main address needing resolution.
+          // resolve-payee checks which case this is, instead of blindly
+          // treating any address as a main address needing resolution
+          // (which would incorrectly re-resolve an already-correct agent
+          // wallet address into something completely unrelated).
           try{
             var gr = await fetch('https://nan-production.up.railway.app/api/agent-wallets',{
               method:'POST', headers:{'Content-Type':'application/json'},
-              body:JSON.stringify({action:'get-or-create', userAddress:invTo})
+              body:JSON.stringify({action:'resolve-payee', address:invTo})
             });
             var gd = await gr.json();
-            if(gd.success && gd.wallet?.walletAddress) payerAddr = gd.wallet.walletAddress;
+            if(gd.success && gd.agentWalletAddress) payerAddr = gd.agentWalletAddress;
           }catch(e){ /* fall through with the raw address if this fails */ }
         }
 
@@ -13031,24 +13033,24 @@ async function invoiceCreate(){
       if(!ld.success || (!ld.agentWalletAddress && !ld.mainAddress)) throw new Error(`Couldn't resolve "${fromRaw}"`);
       fromAgentAddress = ld.agentWalletAddress || ld.mainAddress;
     } else {
-      // A raw address was entered — this needs to become THEIR agent
-      // wallet address, not their main login address, since invoices are
-      // filed under agent wallet addresses and that's what their own
-      // Incoming tab queries against. Without this, typing someone's main
-      // wallet address here silently filed the invoice under the wrong
-      // address and it could never show up for them at all.
+      // A raw address was entered — could be their MAIN wallet address
+      // (needs resolving to their agent wallet) OR already THEIR agent
+      // wallet address directly (e.g. copied from the Agent Wallet page's
+      // own address popup) — using get-or-create unconditionally treated
+      // an already-correct agent wallet address as a main address and
+      // resolved it AGAIN, producing a completely unrelated wrong result.
+      // resolve-payee checks which case this actually is first.
       const gr = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ action:'get-or-create', userAddress: fromRaw })
+        body: JSON.stringify({ action:'resolve-payee', address: fromRaw })
       });
       const gd = await gr.json();
-      if(gd.success && gd.wallet?.walletAddress) {
-        fromAgentAddress = gd.wallet.walletAddress;
-        // Let the user see and verify the resolution — a main wallet
-        // address always resolves to a DIFFERENT-looking agent wallet
-        // address by design, which otherwise just looks like a mistake
-        // with no way to confirm it actually happened correctly.
-        if(fromAgentAddress.toLowerCase() !== fromRaw.toLowerCase() && statusEl){
+      if(gd.success && gd.agentWalletAddress) {
+        fromAgentAddress = gd.agentWalletAddress;
+        // Only show the resolution note when something actually changed —
+        // if they already typed the correct agent wallet address directly,
+        // there's nothing to explain.
+        if(!gd.alreadyAgentWallet && fromAgentAddress.toLowerCase() !== fromRaw.toLowerCase() && statusEl){
           statusEl.innerHTML = `Resolved <span style="font-family:'JetBrains Mono',monospace;">${short(fromRaw)}</span> → their agent wallet <span style="font-family:'JetBrains Mono',monospace;color:var(--text);">${short(fromAgentAddress)}</span>`;
         }
       }
