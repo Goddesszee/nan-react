@@ -7850,6 +7850,19 @@ function executeAgentAction(action){
             if(!ld.success || !ld.agentWalletAddress){ addAgentMsg('❌ Could not find an agent wallet for '+invTo); renderAgentMsgs(); return; }
             payerAddr = ld.agentWalletAddress;
           }catch(e){ addAgentMsg('❌ Lookup failed: '+e.message); renderAgentMsgs(); return; }
+        } else {
+          // A raw address was given — resolve it to THEIR agent wallet
+          // address, not their main login address, same fix as the direct
+          // invoice form. Otherwise the invoice gets filed under an address
+          // their own Incoming tab never queries against.
+          try{
+            var gr = await fetch('https://nan-production.up.railway.app/api/agent-wallets',{
+              method:'POST', headers:{'Content-Type':'application/json'},
+              body:JSON.stringify({action:'get-or-create', userAddress:invTo})
+            });
+            var gd = await gr.json();
+            if(gd.success && gd.wallet?.walletAddress) payerAddr = gd.wallet.walletAddress;
+          }catch(e){ /* fall through with the raw address if this fails */ }
         }
 
         addAgentMsg('⏳ Sending invoice for '+invAmt+' '+invTok+'...'); renderAgentMsgs();
@@ -12946,6 +12959,19 @@ async function invoiceCreate(){
       const ld = await lr.json();
       if(!ld.success || (!ld.agentWalletAddress && !ld.mainAddress)) throw new Error(`Couldn't resolve "${fromRaw}"`);
       fromAgentAddress = ld.agentWalletAddress || ld.mainAddress;
+    } else {
+      // A raw address was entered — this needs to become THEIR agent
+      // wallet address, not their main login address, since invoices are
+      // filed under agent wallet addresses and that's what their own
+      // Incoming tab queries against. Without this, typing someone's main
+      // wallet address here silently filed the invoice under the wrong
+      // address and it could never show up for them at all.
+      const gr = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'get-or-create', userAddress: fromRaw })
+      });
+      const gd = await gr.json();
+      if(gd.success && gd.wallet?.walletAddress) fromAgentAddress = gd.wallet.walletAddress;
     }
     const r = await fetch('https://nan-production.up.railway.app/api/agent-wallets', {
       method:'POST', headers:{'Content-Type':'application/json'},
