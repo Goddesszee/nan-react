@@ -141,6 +141,12 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
           <span style={{ fontWeight:800, fontSize:'1.1rem', letterSpacing:'-.01em', fontFamily:logoFont }}>NAN</span>
         </div>
         <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+          <a href="https://x.com/nan_arc" target="_blank" rel="noopener noreferrer" title="NAN on X" style={{ width:34, height:34, borderRadius:'50%', border:`1px solid ${border2}`, background:inputBg2, display:'flex', alignItems:'center', justifyContent:'center', color:text2, textDecoration:'none' }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          <a href="https://x.com/zarafatoluu" target="_blank" rel="noopener noreferrer" title="Founder on X" style={{ width:34, height:34, borderRadius:'50%', border:`1px solid ${border2}`, background:inputBg2, display:'flex', alignItems:'center', justifyContent:'center', color:text2, textDecoration:'none' }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
           <button onClick={openConnect} style={{ background:brandGradient, border:'none', color:'#fff', fontWeight:700, fontSize:'.85rem', padding:'10px 20px', borderRadius:12, cursor:'pointer', fontFamily:'Inter,sans-serif' }}>
             Connect Wallet
           </button>
@@ -296,15 +302,13 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
             Everything runs on one wallet
           </h2>
           <p style={{ color:text2, fontSize:'1.02rem', marginTop:14 }}>
-            Rent a home, buy or sell, hire or get hired, run payroll, or let your agent handle it. All settled in stablecoins.
+            Buy or sell, post or take gigs, run payroll, or let your agent handle it. All settled in stablecoins.
           </p>
         </div>
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(200px, 1fr))', gap:20 }}>
           {[
-            { title:'Homes', desc:'Verified landlords, secure rent payments.' },
             { title:'Market', desc:'Buy and sell with built-in escrow.' },
             { title:'Gigs', desc:'Pre-funded jobs, milestone payments.' },
-            { title:'Careers', desc:'Verified listings, AI resume tools.' },
             { title:'Payroll', desc:'Bulk pay your team, on time, every time.' },
             { title:'AI Assistant', desc:'One assistant across the whole ecosystem.' },
           ].map((p, i) => (
