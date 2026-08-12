@@ -134,18 +134,18 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
     <div style={{ background:bg, color:text, fontFamily:'Inter,sans-serif', minHeight:'100vh', overflowX:'hidden' }}>
 
       {/* NAV */}
-      <nav style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'20px 48px', maxWidth:1400, margin:'0 auto', borderBottom:`1px solid ${border}` }}>
-        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+      <nav className="nan-landing-nav" style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'20px 48px', maxWidth:1400, margin:'0 auto', borderBottom:`1px solid ${border}` }}>
+        <div className="nan-landing-logo" style={{ display:'flex', alignItems:'center', gap:10 }}>
           <div style={{ width:30, height:30, borderRadius:'50%', background:brandGradient, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
             <svg viewBox="0 0 324 480" width="12" height="18"><path d="M255,0 L84,167 L71,163 L0,97 L0,378 L246,132 L255,110 Z" fill="#fff"/><path d="M69,480 L240,313 L253,317 L324,383 L324,102 L78,348 L69,370 Z" fill="#fff"/></svg>
           </div>
           <span style={{ fontWeight:800, fontSize:'1.1rem', letterSpacing:'-.01em', fontFamily:logoFont }}>NAN</span>
         </div>
         <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-          <a href="https://x.com/nan_arc" target="_blank" rel="noopener noreferrer" title="NAN on X" style={{ width:34, height:34, borderRadius:'50%', border:`1px solid ${border2}`, background:inputBg2, display:'flex', alignItems:'center', justifyContent:'center', color:text2, textDecoration:'none' }}>
+          <a href="https://x.com/nan_arc" target="_blank" rel="noopener noreferrer" title="NAN on X" className="nan-landing-social" style={{ width:34, height:34, borderRadius:'50%', border:`1px solid ${border2}`, background:inputBg2, display:'flex', alignItems:'center', justifyContent:'center', color:text2, textDecoration:'none' }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
           </a>
-          <a href="https://x.com/zarafatoluu" target="_blank" rel="noopener noreferrer" title="Founder on X" style={{ width:34, height:34, borderRadius:'50%', border:`1px solid ${border2}`, background:inputBg2, display:'flex', alignItems:'center', justifyContent:'center', color:text2, textDecoration:'none' }}>
+          <a href="https://x.com/zarafatoluu" target="_blank" rel="noopener noreferrer" title="Founder on X" className="nan-landing-social" style={{ width:34, height:34, borderRadius:'50%', border:`1px solid ${border2}`, background:inputBg2, display:'flex', alignItems:'center', justifyContent:'center', color:text2, textDecoration:'none' }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
           </a>
           <button onClick={openConnect} style={{ background:brandGradient, border:'none', color:'#fff', fontWeight:700, fontSize:'.85rem', padding:'10px 20px', borderRadius:12, cursor:'pointer', fontFamily:'Inter,sans-serif' }}>
@@ -263,7 +263,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
       </section>
 
       {/* FEATURES */}
-      <section style={{ padding:'80px 24px', maxWidth:1180, margin:'0 auto' }}>
+      <section className="nan-landing-features" style={{ padding:'80px 24px', maxWidth:1180, margin:'0 auto' }}>
         <div style={{ maxWidth:620, margin:'0 auto 48px', textAlign:'center' }}>
           <div style={{ fontFamily:'Space Mono,monospace', fontSize:'.76rem', fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase', color:text3, marginBottom:14 }}>
             Why NAN
@@ -379,11 +379,32 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
             <a href="#" style={{ color:'#b0b0b0' }}>GitHub</a>
             <a href="#" style={{ color:'#b0b0b0' }}>Twitter</a>
           </div>
+          <div className="nan-landing-footer-social" style={{ display:'none', gap:12 }}>
+            <a href="https://x.com/nan_arc" target="_blank" rel="noopener noreferrer" title="NAN on X" style={{ width:34, height:34, borderRadius:'50%', border:'1px solid #2a2a2a', background:'#151515', display:'flex', alignItems:'center', justifyContent:'center', color:'#b0b0b0', textDecoration:'none' }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+            <a href="https://x.com/zarafatoluu" target="_blank" rel="noopener noreferrer" title="Founder on X" style={{ width:34, height:34, borderRadius:'50%', border:'1px solid #2a2a2a', background:'#151515', display:'flex', alignItems:'center', justifyContent:'center', color:'#b0b0b0', textDecoration:'none' }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+          </div>
           <div style={{ fontSize:'.78rem' }}>© 2026 NAN. Built on Arc Testnet.</div>
         </div>
       </footer>
 
-      <style>{`@keyframes pulseDot{0%,100%{opacity:.4}50%{opacity:1}} @keyframes tickerScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}`}</style>
+      <style>{`
+        @keyframes pulseDot{0%,100%{opacity:.4}50%{opacity:1}} @keyframes tickerScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+        @media (max-width:640px){
+          /* Nav was cramming logo + 2 social icons + Connect Wallet + theme
+             toggle into one row on phones, causing everything to overlap.
+             Move the social icons down to the footer instead. */
+          .nan-landing-nav{ padding:16px 20px !important; }
+          .nan-landing-logo{ margin-right:auto !important; padding-left:2px !important; }
+          .nan-landing-social{ display:none !important; }
+          .nan-landing-footer-social{ display:flex !important; order:-1; width:100%; justify-content:center; margin-bottom:8px; }
+          /* Tighten the gap before "Why NAN" so it isn't pushed so far down */
+          .nan-landing-features{ padding:40px 24px 80px !important; }
+        }
+      `}</style>
     </div>
   )
 }
