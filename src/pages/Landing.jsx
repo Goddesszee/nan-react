@@ -151,7 +151,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
           <button onClick={openConnect} style={{ background:brandGradient, border:'none', color:'#fff', fontWeight:700, fontSize:'.85rem', padding:'10px 20px', borderRadius:12, cursor:'pointer', fontFamily:'Inter,sans-serif' }}>
             Connect Wallet
           </button>
-          <button onClick={toggleTheme} style={{ width:34, height:34, borderRadius:'50%', border:`1px solid ${border2}`, background:inputBg2, display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', color:text2 }}>
+          <button onClick={toggleTheme} className="nan-landing-toggle" style={{ width:34, height:34, borderRadius:'50%', border:`1px solid ${border2}`, background:inputBg2, display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer', color:text2 }}>
             {dark
               ? <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M18.36 5.64l1.41-1.41"/></svg>
               : <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -160,8 +160,17 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
         </div>
       </nav>
 
+      {/* Theme toggle, relocated here from the nav on mobile (floating,
+          always reachable regardless of scroll position) */}
+      <button onClick={toggleTheme} className="nan-landing-toggle-body" style={{ display:'none', width:44, height:44, borderRadius:'50%', border:`1px solid ${border2}`, background:inputBg2, alignItems:'center', justifyContent:'center', cursor:'pointer', color:text2, position:'fixed', right:16, bottom:16, zIndex:40, boxShadow:'0 4px 16px rgba(0,0,0,.18)' }}>
+        {dark
+          ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M18.36 5.64l1.41-1.41"/></svg>
+          : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        }
+      </button>
+
       {/* HERO */}
-      <section style={{ minHeight:'auto', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center', padding:'32px 24px 44px' }}>
+      <section className="nan-landing-hero" style={{ minHeight:'auto', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center', padding:'32px 24px 44px' }}>
 
         <div style={{ display:'inline-flex', alignItems:'center', gap:9, fontSize:'.72rem', fontWeight:600, letterSpacing:'.12em', textTransform:'uppercase', color:accentL, background:'rgba(37,99,235,.1)', border:'1px solid rgba(37,99,235,.28)', padding:'8px 18px', borderRadius:100, marginBottom:20 }}>
           <span style={{ width:6, height:6, borderRadius:'50%', background:accentL, animation:'pulseDot 1.6s ease-in-out infinite' }}/>
@@ -275,7 +284,7 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
             One wallet that handles identity, limits, and settlement, so your agent can act without a human in the loop.
           </p>
         </div>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:24 }}>
+        <div className="nan-landing-features-grid" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:24 }}>
           {[
             { n:'01', title:'Nanopayments', desc:'Send fractions of a cent between agents with x402, settled onchain in under a second.' },
             { n:'02', title:'Spending limits', desc:'Set hard caps per agent, per task, or per counterparty. No surprise drains, ever.' },
@@ -401,8 +410,17 @@ export function Landing({ onEmailConnect, onWalletConnect }) {
           .nan-landing-logo{ margin-right:auto !important; padding-left:2px !important; }
           .nan-landing-social{ display:none !important; }
           .nan-landing-footer-social{ display:flex !important; order:-1; width:100%; justify-content:center; margin-bottom:8px; }
+          /* Theme toggle moved out of the nav to a floating button in the
+             body, so Connect Wallet now sits alone on the right. */
+          .nan-landing-toggle{ display:none !important; }
+          .nan-landing-toggle-body{ display:flex !important; }
           /* Tighten the gap before "Why NAN" so it isn't pushed so far down */
-          .nan-landing-features{ padding:40px 24px 80px !important; }
+          .nan-landing-hero{ padding-bottom:20px !important; }
+          .nan-landing-features{ padding:24px 24px 64px !important; }
+          /* The 3-up feature card grid left each card ~130-190px wide on a
+             phone, wrapping every line of copy and making cards look
+             broken/cut off. Stack to one column. */
+          .nan-landing-features-grid{ grid-template-columns:1fr !important; }
         }
       `}</style>
     </div>
