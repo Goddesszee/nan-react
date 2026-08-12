@@ -974,8 +974,11 @@ a:hover{color:var(--text);}
 
   /* Pay Requests page: desktop-oriented 40px side padding plus 4-column
      stat/tile grids don't fit a phone width — cards were getting clipped
-     off the right edge entirely. */
-  #page-payreq > div{
+     off the right edge entirely. NOTE: these padding selectors must beat
+     an inline <style> block of equal specificity that appears later in
+     the document (loads after style.css), so they need a "body " prefix
+     to win on specificity rather than relying on source order. */
+  body #page-payreq > div{
     padding-left:16px !important;
     padding-right:16px !important;
   }
@@ -1018,9 +1021,38 @@ a:hover{color:var(--text);}
 
   /* Payroll page: same desktop 40px side-padding + 4-column stat grid
      overflow pattern as Pay Requests — Wallet Balance card was cut off. */
-  #page-bulk > div{
+  body #page-bulk > div{
     padding-left:16px !important;
     padding-right:16px !important;
+  }
+  .bulk-run-grid{
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Same desktop two-column (form + sticky preview/summary panel) pattern
+     repeated across Pay Request detail view and four Agent Wallet action
+     pages (Nanopayments, Escrow, Invoicing, Recurring payments) — each had
+     a fixed 40px side padding and a 1fr/1.2-1.4fr grid that didn't fit a
+     phone width, pushing the second column off-screen to the right. Stack
+     to one column and drop the sticky positioning that assumed side-by-side
+     scrolling. */
+  body #page-payreq-view > div{
+    padding-left:16px !important;
+    padding-right:16px !important;
+  }
+  body #page-agent-nanopay > div,
+  body #page-agent-escrow > div,
+  body #page-agent-invoice > div,
+  body #page-agent-recurring > div{
+    padding-left:16px !important;
+    padding-right:16px !important;
+  }
+  #prGenericSections,
+  .agent-2col-grid{
+    grid-template-columns: 1fr !important;
+  }
+  #prGenericSections > div[style*="position:sticky"]{
+    position: static !important;
   }
 
   /* Fiat page: 3-up balance card grid overflows viewport because grid items

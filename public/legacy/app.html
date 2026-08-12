@@ -67,7 +67,7 @@
 <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="/legacy/style.css?v=1786429025"/>
+<link rel="stylesheet" href="/legacy/style.css?v=1786513944"/>
 <style>
 /* ══ THEME TOKENS — scoped per theme so neither fights the other ══ */
 :root,[data-theme="dark"]{
@@ -4763,7 +4763,7 @@ html,body{background-color:var(--bg);}
     </div>
     <div style="font-size:.8rem;color:var(--text2);margin:0 0 18px 42px;">Pay your team in USDC or EURC, on schedule.</div>
 
-    <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:16px;align-items:start;">
+    <div class="bulk-run-grid" style="display:grid;grid-template-columns:1.4fr 1fr;gap:16px;align-items:start;">
 
       <div class="pcard">
         <div style="display:flex;gap:6px;margin-bottom:10px;">
@@ -5222,6 +5222,11 @@ html,body{background-color:var(--bg);}
   #page-payreq-new{padding-top:14px !important;}
   #page-payreq-new .prn-expiry-btn{background:var(--bg);border:1px solid var(--border);color:var(--text2);}
   #page-payreq-new .prn-expiry-btn.active{background:#2563EB;border-color:#2563EB;color:#fff;}
+  @media(max-width:767px){
+    #page-payreq-new > div{padding-left:16px !important;padding-right:16px !important;}
+    #page-payreq-new .prn-grid{grid-template-columns:1fr !important;}
+    #page-payreq-new .prn-grid > div[style*="position:sticky"]{position:static !important;}
+  }
 </style>
 
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
@@ -5232,7 +5237,7 @@ html,body{background-color:var(--bg);}
 </div>
 <div style="font-size:.85rem;color:var(--text2);margin:0 0 20px 44px;">Fill in the details, share the link, get paid.</div>
 
-<div style="display:grid;grid-template-columns:1.4fr 1fr;gap:20px;align-items:start;">
+<div class="prn-grid" style="display:grid;grid-template-columns:1.4fr 1fr;gap:20px;align-items:start;">
 
   <!-- ═══ LEFT: FORM ═══ -->
   <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:22px;">
@@ -6160,7 +6165,7 @@ window.addEventListener('load', function() {
     </div>
     <div style="font-size:.8rem;color:var(--text2);margin:0 0 20px 88px;">Pay for any x402-compatible API, per call, in USDC — no subscriptions, no accounts.</div>
 
-    <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:16px;align-items:start;">
+    <div class="agent-2col-grid" style="display:grid;grid-template-columns:1fr 1.2fr;gap:16px;align-items:start;">
 
       <!-- Quick pay: your own real service -->
       <div class="pcard">
@@ -6313,7 +6318,7 @@ window.addEventListener('load', function() {
     </div>
     <div style="font-size:.8rem;color:var(--text2);margin:0 0 20px 88px;">Funds are held by logic, not by trust, until both sides confirm.</div>
 
-    <div style="display:grid;grid-template-columns:1fr 1.3fr;gap:16px;align-items:start;">
+    <div class="agent-2col-grid" style="display:grid;grid-template-columns:1fr 1.3fr;gap:16px;align-items:start;">
 
       <!-- Create escrow -->
       <div class="pcard">
@@ -6371,7 +6376,7 @@ window.addEventListener('load', function() {
     </div>
     <div style="font-size:.8rem;color:var(--text2);margin:0 0 20px 88px;">Request payment from another agent. If you're within their trust tier and policy, it can honor automatically.</div>
 
-    <div style="display:grid;grid-template-columns:1fr 1.3fr;gap:16px;align-items:start;">
+    <div class="agent-2col-grid" style="display:grid;grid-template-columns:1fr 1.3fr;gap:16px;align-items:start;">
 
       <!-- Create invoice -->
       <div class="pcard">
@@ -6430,7 +6435,7 @@ window.addEventListener('load', function() {
     </div>
     <div style="font-size:.8rem;color:var(--text2);margin:0 0 20px 88px;">Set it once, your agent pays on schedule. A cron job checks every 60 seconds for what's due.</div>
 
-    <div style="display:grid;grid-template-columns:1fr 1.3fr;gap:16px;align-items:start;">
+    <div class="agent-2col-grid" style="display:grid;grid-template-columns:1fr 1.3fr;gap:16px;align-items:start;">
 
       <!-- Create schedule -->
       <div class="pcard">
