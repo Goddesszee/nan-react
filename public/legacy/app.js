@@ -9301,12 +9301,18 @@ async function doSupply(){
       btn.innerHTML='<span class="spinner"></span>Approving...';
       const supApprKey='nan_lend_approved_'+circleWalletId+'_'+lendAsset;
       if(!sessionStorage.getItem(supApprKey)){
-        fetch('https://nan-production.up.railway.app/api/circle-wallets',{method:'POST',headers:{'Content-Type':'application/json'},
+        // Was fire-and-forget (fetch not awaited) with a flat 2s sleep — the
+        // supply() call could fire before Circle even accepted the approve
+        // request, causing intermittent "insufficient allowance" reverts.
+        // Now await the approve response before proceeding.
+        const supApprRes=await fetch('https://nan-production.up.railway.app/api/circle-wallets',{method:'POST',headers:{'Content-Type':'application/json'},
           body:JSON.stringify({action:'contractCall',walletId:circleWalletId,email:otpEmail,
             contractAddress:tokenAddr,functionSignature:'approve(address,uint256)',
-            params:[LENDING_CONTRACT,'115792089237316195423570985008687907853269984665640564039457584007913129639935']})})
-          .then(()=>sessionStorage.setItem(supApprKey,'1')).catch(()=>{});
-        await new Promise(r=>setTimeout(r,2000));
+            params:[LENDING_CONTRACT,'115792089237316195423570985008687907853269984665640564039457584007913129639935']})});
+        const supApprData=await supApprRes.json();
+        if(!supApprData.success)throw new Error(supApprData.error||'Approval failed');
+        sessionStorage.setItem(supApprKey,'1');
+        await new Promise(r=>setTimeout(r,4000)); // let approval land before supply
       }
       btn.innerHTML='<span class="spinner"></span>Supplying on Arc...';
       const supRes=await fetch('https://nan-production.up.railway.app/api/circle-wallets',{method:'POST',headers:{'Content-Type':'application/json'},
@@ -9478,10 +9484,14 @@ async function doRepay(){
       // Approve first
       const repApprKey='nan_repay_approved_'+circleWalletId;
       if(!sessionStorage.getItem(repApprKey)){
-        fetch('https://nan-production.up.railway.app/api/circle-wallets',{method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({action:'contractCall',walletId:circleWalletId,email:otpEmail,contractAddress:USDC_ADDR,functionSignature:'approve(address,uint256)',params:[LENDING_CONTRACT,'115792089237316195423570985008687907853269984665640564039457584007913129639935']})})
-          .then(()=>sessionStorage.setItem(repApprKey,'1')).catch(()=>{});
-        await new Promise(r=>setTimeout(r,2000));
+        // Same fire-and-forget race as supply() — await the approve response
+        // before firing repay(), instead of assuming a flat 2s is enough.
+        const repApprRes=await fetch('https://nan-production.up.railway.app/api/circle-wallets',{method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({action:'contractCall',walletId:circleWalletId,email:otpEmail,contractAddress:USDC_ADDR,functionSignature:'approve(address,uint256)',params:[LENDING_CONTRACT,'115792089237316195423570985008687907853269984665640564039457584007913129639935']})});
+        const repApprData=await repApprRes.json();
+        if(!repApprData.success)throw new Error(repApprData.error||'Approval failed');
+        sessionStorage.setItem(repApprKey,'1');
+        await new Promise(r=>setTimeout(r,4000)); // let approval land before repay
       }
       const r=await fetch('https://nan-production.up.railway.app/api/circle-wallets',{method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({action:'contractCall',walletId:circleWalletId,email:otpEmail,contractAddress:LENDING_CONTRACT,functionSignature:'repay(uint256)',params:[amtAtomic]})});
