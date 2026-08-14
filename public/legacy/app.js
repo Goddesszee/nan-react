@@ -4341,7 +4341,7 @@ async function doBridge(){
       body:JSON.stringify({action:'contractCall',walletId:circleWalletId,email:otpEmail,
         contractAddress:CCTP_TOKEN_MESSENGER,
         functionSignature:'depositForBurn(uint256,uint32,bytes32,address,bytes32,uint256,uint32)',
-        params:[amtParsed.toString(),destDomainCW,mintRecipient,USDC_ADDR,destinationCallerBytes32,'1000','1000']})});
+        params:[amtParsed.toString(),destDomainCW,mintRecipient,USDC_ADDR,destinationCallerBytes32,'1000','2000']})}); // 2000=finalized, required for Arc-sourced burns (circlefin/arc-node#110)
     const burnData=await burnRes.json();
     if(!burnData.success)throw new Error(burnData.error||'Burn failed');
     if(!burnData.transactionId)throw new Error('No transaction ID returned from burn');
@@ -4431,7 +4431,9 @@ async function doBridge(){
       USDC_ADDR,
       destinationCaller,
       1000n,
-      1000,
+      2000, // Arc Testnet requires 2000 (finalized) — 1000 (safe) never
+            // progresses past "pending" in Circle's Iris attestation API
+            // for burns sourced from Arc (confirmed: circlefin/arc-node#110)
       arcGasOpts()
     );
     burnTxHash=burnTx.hash;
