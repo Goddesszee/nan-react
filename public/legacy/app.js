@@ -4308,21 +4308,75 @@ async function doBridge(){
   const amt=parseFloat(document.getElementById('bridgeAmt').value);
   if(!userAddr){toast('Connect wallet first','error');return;}
   if(isCircleWallet){
-  if(!circleWalletAddress){toast('Wallet not ready — log in again','error');return;}
+  if(!circleWalletId){toast('Wallet not ready — log in again','error');return;}
+  const destDomainCW=CCTP_DEST_DOMAIN[destChain];
+  if(destDomainCW===undefined){toast('Unsupported destination chain','error');return;}
+  if(!destAddr||!ethers.isAddress(destAddr)){toast('Enter a valid destination address','error');return;}
+  if(!amt||amt<=0){toast('Enter an amount','error');return;}
   const btn=document.getElementById('bridgeBtn');
-  btn.innerHTML='<span class="spinner"></span>Bridging via App Kit…';btn.disabled=true;
+  btn.innerHTML='<span class="spinner"></span>Step 1/3: Approving USDC…';btn.disabled=true;
   try{
-    const r=await fetch('https://nan-production.up.railway.app/api/appkit/bridge',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({walletAddress:circleWalletAddress,destChain,destAddr,amount:amt.toString()})});
-    const data=await r.json();
-    if(!data.success)throw new Error(data.error||'Bridge failed');
-    const txHash=data.burnTxHash||null;
-    addTx({hash:txHash,to:destAddr,toRaw:'Bridge→'+destChain,amount:amt.toFixed(6),type:'bridge',token:'USDC',ts:Date.now(),confirmed:data.state==='success',source:'appkit-bridge',destChain});
-    if(data.state==='success'){toast('✅ Bridge complete! USDC arrived on '+destChain,'success',8000);
-    setTimeout(()=>refreshGatewayBalance(), 3000);
-    addNotification('✅ Bridge complete', 'USDC arrived on '+destChain, 'bridge');}
-    else{toast('✓ Bridge submitted via App Kit — CCTP processing…','success',6000);
-    addNotification('🌉 Bridge submitted', 'CCTP bridge processing — USDC on the way', 'bridge');}
+    // NOTE: /api/appkit/bridge was removed from the API during the security
+    // audit cleanup (dead code) — this now drives the burn via the same
+    // contractCall action already used for lending/swaps, exactly like a
+    // MetaMask approve+depositForBurn, just signed server-side by Circle.
+    const amtParsed=ethers.parseUnits(amt.toFixed(USDC_DECIMALS),USDC_DECIMALS);
+    const MAX_UINT256='115792089237316195423570985008687907853269984665640564039457584007913129639935';
+    const apprKey='nan_cctp_approved_'+circleWalletId;
+    if(!sessionStorage.getItem(apprKey)){
+      const apprRes=await fetch('https://nan-production.up.railway.app/api/circle-wallets',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({action:'contractCall',walletId:circleWalletId,email:otpEmail,
+          contractAddress:USDC_ADDR,functionSignature:'approve(address,uint256)',
+          params:[CCTP_TOKEN_MESSENGER,MAX_UINT256]})});
+      const apprData=await apprRes.json();
+      if(!apprData.success)throw new Error(apprData.error||'Approval failed');
+      sessionStorage.setItem(apprKey,'1');
+      await new Promise(r=>setTimeout(r,4000)); // let approval land before burn
+    }
+
+    btn.innerHTML='<span class="spinner"></span>Step 2/3: Burning USDC on Arc…';
+    const mintRecipient=ethers.zeroPadValue(destAddr,32);
+    const destinationCallerBytes32='0x'+'00'.repeat(32);
+    const burnRes=await fetch('https://nan-production.up.railway.app/api/circle-wallets',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'contractCall',walletId:circleWalletId,email:otpEmail,
+        contractAddress:CCTP_TOKEN_MESSENGER,
+        functionSignature:'depositForBurn(uint256,uint32,bytes32,address,bytes32,uint256,uint32)',
+        params:[amtParsed.toString(),destDomainCW,mintRecipient,USDC_ADDR,destinationCallerBytes32,'1000','1000']})});
+    const burnData=await burnRes.json();
+    if(!burnData.success)throw new Error(burnData.error||'Burn failed');
+    if(!burnData.transactionId)throw new Error('No transaction ID returned from burn');
+
+    // Poll Circle for the on-chain burn tx hash before moving to attestation
+    let burnTxHash=null;
+    for(let i=0;i<40;i++){
+      await new Promise(r=>setTimeout(r,3000));
+      const pr=await fetch('https://nan-production.up.railway.app/api/transaction/'+burnData.transactionId);
+      const pd=await pr.json();
+      if(pd.failed)throw new Error('Burn transaction failed on-chain — check NAN activity for details');
+      if(pd.confirmed&&pd.txHash){burnTxHash=pd.txHash;break;}
+    }
+    if(!burnTxHash)throw new Error('Timed out waiting for burn confirmation — check NAN activity, it may still land');
+
+    lastTxHash=burnTxHash;
+    toast('✓ Burn submitted! Waiting for Circle attestation…','info',8000);
+    addTx({hash:burnTxHash,to:destAddr,toRaw:'Bridge→'+destChain,amount:amt.toFixed(6),type:'bridge',token:'USDC',ts:Date.now(),confirmed:true,source:'cctp',destChain});
+
+    const statusCard=document.getElementById('bridgeStatusCard');
+    const statusContent=document.getElementById('bridgeStatusContent');
+    statusCard.style.display='block';
+    statusCard.scrollIntoView({behavior:'smooth',block:'center'});
+    statusContent.innerHTML=`<div style="font-family:'Inter',sans-serif;font-size:.82rem;line-height:2;color:var(--text);">
+      <div>✅ Step 1: USDC burned on Arc</div>
+      <div id="attestStatus">⏳ Step 2: Waiting for Circle attestation…</div>
+      <div id="mintStatus" style="display:none;"></div>
+      <div style="margin-top:6px;">Burn tx: <a href="${ARC_EXP}/tx/${burnTxHash}" target="_blank" style="color:var(--accent3);">${short(burnTxHash)} ↗</a></div>
+    </div>`;
+
+    btn.innerHTML='<span class="spinner"></span>Step 3/3: Polling attestation…';
+    // pollIrisAttestation already branches on isCircleWallet to show the
+    // manual copy-paste mint panel, since Circle wallets are Arc-only and
+    // can't sign a receiveMessage tx on the destination chain themselves.
+    await pollIrisAttestation(burnTxHash,destChain);
     await refreshBalances();
   }catch(err){
     toast((err?.message||'Bridge failed').slice(0,140),'error',8000);
@@ -4560,8 +4614,18 @@ async function pollIrisAttestation(txHash, destChain) {
         });
         // Show destination balance
         try{
+          // Was hardcoded to the ETH-Sepolia USDC address for every destination
+          // chain, so Base/Arbitrum/OP/Avalanche mints showed a 0/wrong balance
+          // here even when the mint itself succeeded. Look up the right one.
+          const DEST_USDC_ADDR={
+            'ETH-SEPOLIA':'0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',
+            'BASE-SEPOLIA':'0x036CbD53842c5426634e7929541eC2318f3dCF7e',
+            'ARB-SEPOLIA':'0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d',
+            'OP-SEPOLIA':'0x5fd84259d66Cd46123540766Be93DFE6D43130D7',
+            'AVAX-FUJI':'0x5425890298aed601595a70ab815c96711a31Bc65',
+          };
           const destUSDC=new ethers.Contract(
-            '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238', // USDC on testnets
+            DEST_USDC_ADDR[destChain]||'0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',
             ['function balanceOf(address) view returns (uint256)'],
             destProvider
           );
