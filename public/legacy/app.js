@@ -3869,23 +3869,53 @@ function lbShowStatus(msg, type='info') {
   setTimeout(()=>{ if(el) el.style.display='none'; }, 6000);
 }
 
+// Shared helper for Circle (email-login) wallet contract calls that need to
+// wait for on-chain confirmation before proceeding — e.g. approve() before
+// depositCollateral()/repayLoan(). Returns the real tx hash once confirmed.
+async function circleContractCallAndWait(contractAddress, functionSignature, params, timeoutTries=40){
+  const res = await fetch('https://nan-production.up.railway.app/api/circle-wallets', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ action:'contractCall', walletId:circleWalletId, email:otpEmail,
+      contractAddress, functionSignature, params })
+  });
+  const data = await res.json();
+  if(!data.success) throw new Error(data.error || 'Transaction failed');
+  if(!data.transactionId) throw new Error('No transaction ID returned');
+  for(let i=0;i<timeoutTries;i++){
+    await new Promise(r=>setTimeout(r,3000));
+    const pr = await fetch('https://nan-production.up.railway.app/api/transaction/'+data.transactionId);
+    const pd = await pr.json();
+    if(pd.failed) throw new Error('Transaction failed on-chain');
+    if(pd.confirmed && pd.txHash) return pd.txHash;
+  }
+  throw new Error('Timed out waiting for confirmation — check NAN activity, it may still land');
+}
+
 async function doLBDeposit() {
-  if (!signer || !userAddr) { toast('Connect MetaMask first','error',3000); return; }
-  if (!onArcNetwork) { toast('Switch to Arc Testnet first','error',3000); return; }
+  if (!userAddr) { toast('Connect wallet first','error',3000); return; }
+  if (!isCircleWallet && !signer) { toast('Connect MetaMask first','error',3000); return; }
+  if (!isCircleWallet && !onArcNetwork) { toast('Switch to Arc Testnet first','error',3000); return; }
   const amt = parseFloat(document.getElementById('lbDepositAmt')?.value);
   if (!amt || amt <= 0) { lbShowStatus('Enter an amount','error'); return; }
   if (amt > parseFloat(cirbtcBal||0)) { lbShowStatus('Insufficient cirBTC balance','error'); return; }
+  const amtBig = ethers.parseUnits(amt.toFixed(8), CIRBTC_DECIMALS);
   try {
-    lbShowStatus('Approving cirBTC…','info');
-    const cirbtcC = new ethers.Contract(CIRBTC_ADDR, ERC20_ABI, signer);
-    const amtBig = ethers.parseUnits(amt.toFixed(8), CIRBTC_DECIMALS);
-    const approveTx = await cirbtcC.approve(LENDING_CONTRACT, amtBig, arcGasOpts());
-    await approveTx.wait();
-    lbShowStatus('Depositing cirBTC…','info');
-    const lendABI = ['function depositCollateral(uint256) external'];
-    const lendC = new ethers.Contract(LENDING_CONTRACT, lendABI, signer);
-    const tx = await lendC.depositCollateral(amtBig, arcGasOpts());
-    await tx.wait();
+    if(isCircleWallet){
+      lbShowStatus('Approving cirBTC…','info');
+      await circleContractCallAndWait(CIRBTC_ADDR, 'approve(address,uint256)', [LENDING_CONTRACT, amtBig.toString()]);
+      lbShowStatus('Depositing cirBTC…','info');
+      await circleContractCallAndWait(LENDING_CONTRACT, 'depositCollateral(uint256)', [amtBig.toString()]);
+    } else {
+      lbShowStatus('Approving cirBTC…','info');
+      const cirbtcC = new ethers.Contract(CIRBTC_ADDR, ERC20_ABI, signer);
+      const approveTx = await cirbtcC.approve(LENDING_CONTRACT, amtBig, arcGasOpts());
+      await approveTx.wait();
+      lbShowStatus('Depositing cirBTC…','info');
+      const lendABI = ['function depositCollateral(uint256) external'];
+      const lendC = new ethers.Contract(LENDING_CONTRACT, lendABI, signer);
+      const tx = await lendC.depositCollateral(amtBig, arcGasOpts());
+      await tx.wait();
+    }
     lbShowStatus('✓ cirBTC deposited as collateral!','success');
     document.getElementById('lbDepositAmt').value = '';
     setTimeout(()=>{ refreshLBStats(); loadBalances(); }, 2000);
@@ -3895,16 +3925,21 @@ async function doLBDeposit() {
 }
 
 async function doLBWithdraw() {
-  if (!signer || !userAddr) { toast('Connect MetaMask first','error',3000); return; }
+  if (!userAddr) { toast('Connect wallet first','error',3000); return; }
+  if (!isCircleWallet && !signer) { toast('Connect MetaMask first','error',3000); return; }
   const amt = parseFloat(document.getElementById('lbWithdrawAmt')?.value);
   if (!amt || amt <= 0) { lbShowStatus('Enter an amount','error'); return; }
+  const amtBig = ethers.parseUnits(amt.toFixed(8), CIRBTC_DECIMALS);
   try {
     lbShowStatus('Withdrawing cirBTC…','info');
-    const lendABI = ['function withdrawCollateral(uint256) external'];
-    const lendC = new ethers.Contract(LENDING_CONTRACT, lendABI, signer);
-    const amtBig = ethers.parseUnits(amt.toFixed(8), CIRBTC_DECIMALS);
-    const tx = await lendC.withdrawCollateral(amtBig, arcGasOpts());
-    await tx.wait();
+    if(isCircleWallet){
+      await circleContractCallAndWait(LENDING_CONTRACT, 'withdrawCollateral(uint256)', [amtBig.toString()]);
+    } else {
+      const lendABI = ['function withdrawCollateral(uint256) external'];
+      const lendC = new ethers.Contract(LENDING_CONTRACT, lendABI, signer);
+      const tx = await lendC.withdrawCollateral(amtBig, arcGasOpts());
+      await tx.wait();
+    }
     lbShowStatus('✓ cirBTC withdrawn!','success');
     document.getElementById('lbWithdrawAmt').value = '';
     setTimeout(()=>{ refreshLBStats(); loadBalances(); }, 2000);
@@ -3914,16 +3949,21 @@ async function doLBWithdraw() {
 }
 
 async function doLBBorrow() {
-  if (!signer || !userAddr) { toast('Connect MetaMask first','error',3000); return; }
+  if (!userAddr) { toast('Connect wallet first','error',3000); return; }
+  if (!isCircleWallet && !signer) { toast('Connect MetaMask first','error',3000); return; }
   const amt = parseFloat(document.getElementById('lbBorrowAmt')?.value);
   if (!amt || amt <= 0) { lbShowStatus('Enter an amount','error'); return; }
+  const amtBig = ethers.parseUnits(amt.toFixed(6), 6);
   try {
     lbShowStatus('Borrowing USDC…','info');
-    const lendABI = ['function takeLoan(uint256) external'];
-    const lendC = new ethers.Contract(LENDING_CONTRACT, lendABI, signer);
-    const amtBig = ethers.parseUnits(amt.toFixed(6), 6);
-    const tx = await lendC.takeLoan(amtBig, arcGasOpts());
-    await tx.wait();
+    if(isCircleWallet){
+      await circleContractCallAndWait(LENDING_CONTRACT, 'takeLoan(uint256)', [amtBig.toString()]);
+    } else {
+      const lendABI = ['function takeLoan(uint256) external'];
+      const lendC = new ethers.Contract(LENDING_CONTRACT, lendABI, signer);
+      const tx = await lendC.takeLoan(amtBig, arcGasOpts());
+      await tx.wait();
+    }
     lbShowStatus('✓ USDC borrowed successfully!','success');
     document.getElementById('lbBorrowAmt').value = '';
     setTimeout(()=>{ refreshLBStats(); loadBalances(); }, 2000);
@@ -3933,20 +3973,28 @@ async function doLBBorrow() {
 }
 
 async function doLBRepay() {
-  if (!signer || !userAddr) { toast('Connect MetaMask first','error',3000); return; }
+  if (!userAddr) { toast('Connect wallet first','error',3000); return; }
+  if (!isCircleWallet && !signer) { toast('Connect MetaMask first','error',3000); return; }
   const amt = parseFloat(document.getElementById('lbRepayAmt')?.value);
   if (!amt || amt <= 0) { lbShowStatus('Enter an amount','error'); return; }
+  const amtBig = ethers.parseUnits(amt.toFixed(6), 6);
   try {
-    lbShowStatus('Approving USDC for repayment…','info');
-    const usdcC = new ethers.Contract(USDC_ADDR, ERC20_ABI, signer);
-    const amtBig = ethers.parseUnits(amt.toFixed(6), 6);
-    const approveTx = await usdcC.approve(LENDING_CONTRACT, amtBig, arcGasOpts());
-    await approveTx.wait();
-    lbShowStatus('Repaying loan…','info');
-    const lendABI = ['function repayLoan(uint256) external'];
-    const lendC = new ethers.Contract(LENDING_CONTRACT, lendABI, signer);
-    const tx = await lendC.repayLoan(amtBig, arcGasOpts());
-    await tx.wait();
+    if(isCircleWallet){
+      lbShowStatus('Approving USDC for repayment…','info');
+      await circleContractCallAndWait(USDC_ADDR, 'approve(address,uint256)', [LENDING_CONTRACT, amtBig.toString()]);
+      lbShowStatus('Repaying loan…','info');
+      await circleContractCallAndWait(LENDING_CONTRACT, 'repayLoan(uint256)', [amtBig.toString()]);
+    } else {
+      lbShowStatus('Approving USDC for repayment…','info');
+      const usdcC = new ethers.Contract(USDC_ADDR, ERC20_ABI, signer);
+      const approveTx = await usdcC.approve(LENDING_CONTRACT, amtBig, arcGasOpts());
+      await approveTx.wait();
+      lbShowStatus('Repaying loan…','info');
+      const lendABI = ['function repayLoan(uint256) external'];
+      const lendC = new ethers.Contract(LENDING_CONTRACT, lendABI, signer);
+      const tx = await lendC.repayLoan(amtBig, arcGasOpts());
+      await tx.wait();
+    }
     lbShowStatus('✓ Loan repaid! cirBTC unlocked.','success');
     document.getElementById('lbRepayAmt').value = '';
     setTimeout(()=>{ refreshLBStats(); loadBalances(); }, 2000);
@@ -7506,7 +7554,7 @@ function executeAgentAction(action){
     case 'cirbtc-deposit':{
       const amt=parseFloat(action.amount);
       if(!amt||amt<=0){addAgentMsg('❌ Specify how much cirBTC to deposit as collateral.');renderAgentMsgs();break;}
-      if(!signer){addAgentMsg('⚠️ cirBTC collateral deposits currently require a MetaMask-connected wallet — this isn\'t available for Circle email-login wallets yet.');renderAgentMsgs();break;}
+      if(!signer && !isCircleWallet){addAgentMsg('⚠️ Connect your wallet first.');renderAgentMsgs();break;}
       addAgentMsg(`₿ Confirm cirBTC deposit:\n${amt} cirBTC → collateral\nUnlocks borrowing up to 50% of its value in USDC`);
       renderAgentMsgs();
       setTimeout(()=>{
@@ -7531,7 +7579,7 @@ function executeAgentAction(action){
     case 'cirbtc-withdraw':{
       const amt=parseFloat(action.amount);
       if(!amt||amt<=0){addAgentMsg('❌ Specify how much cirBTC to withdraw.');renderAgentMsgs();break;}
-      if(!signer){addAgentMsg('⚠️ cirBTC collateral withdrawals currently require a MetaMask-connected wallet.');renderAgentMsgs();break;}
+      if(!signer && !isCircleWallet){addAgentMsg('⚠️ Connect your wallet first.');renderAgentMsgs();break;}
       addAgentMsg(`₿ Confirm cirBTC withdrawal: ${amt} cirBTC`);
       renderAgentMsgs();
       setTimeout(()=>{
@@ -7556,7 +7604,7 @@ function executeAgentAction(action){
     case 'borrow':{
       const amt=parseFloat(action.amount);
       if(!amt||amt<=0){addAgentMsg('❌ Specify an amount of USDC to borrow against your cirBTC collateral.');renderAgentMsgs();break;}
-      if(!signer){addAgentMsg('⚠️ Borrowing against cirBTC currently requires a MetaMask-connected wallet.');renderAgentMsgs();break;}
+      if(!signer && !isCircleWallet){addAgentMsg('⚠️ Connect your wallet first.');renderAgentMsgs();break;}
       addAgentMsg(`🏦 Confirm borrow: ${amt} USDC against your cirBTC collateral (interest-free)`);
       renderAgentMsgs();
       setTimeout(()=>{
@@ -7581,7 +7629,7 @@ function executeAgentAction(action){
     case 'repay-loan':{
       const amt=parseFloat(action.amount);
       if(!amt||amt<=0){addAgentMsg('❌ Specify an amount of USDC to repay.');renderAgentMsgs();break;}
-      if(!signer){addAgentMsg('⚠️ Repaying a cirBTC loan currently requires a MetaMask-connected wallet.');renderAgentMsgs();break;}
+      if(!signer && !isCircleWallet){addAgentMsg('⚠️ Connect your wallet first.');renderAgentMsgs();break;}
       addAgentMsg(`🏦 Confirm loan repayment: ${amt} USDC`);
       renderAgentMsgs();
       setTimeout(()=>{
