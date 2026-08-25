@@ -1959,6 +1959,7 @@ function doList(){
   `);
 }
 async function submitListService(){
+  await ensureWalletConnected();
   const btn = document.getElementById('listBtn');
   const statusEl = document.getElementById('listStatus');
   const label = document.getElementById('listServiceName').value.trim();
@@ -3890,6 +3891,7 @@ async function circleContractCallAndWait(contractAddress, functionSignature, par
 }
 
 async function doLBDeposit() {
+  await ensureWalletConnected();
   if (!userAddr) { toast('Connect wallet first','error',3000); return; }
   if (!isCircleWallet && !signer) { toast('Connect MetaMask first','error',3000); return; }
   if (!isCircleWallet && !onArcNetwork) { toast('Switch to Arc Testnet first','error',3000); return; }
@@ -3923,6 +3925,7 @@ async function doLBDeposit() {
 }
 
 async function doLBWithdraw() {
+  await ensureWalletConnected();
   if (!userAddr) { toast('Connect wallet first','error',3000); return; }
   if (!isCircleWallet && !signer) { toast('Connect MetaMask first','error',3000); return; }
   const amt = parseFloat(document.getElementById('lbWithdrawAmt')?.value);
@@ -3947,6 +3950,7 @@ async function doLBWithdraw() {
 }
 
 async function doLBBorrow() {
+  await ensureWalletConnected();
   if (!userAddr) { toast('Connect wallet first','error',3000); return; }
   if (!isCircleWallet && !signer) { toast('Connect MetaMask first','error',3000); return; }
   const amt = parseFloat(document.getElementById('lbBorrowAmt')?.value);
@@ -3971,6 +3975,7 @@ async function doLBBorrow() {
 }
 
 async function doLBRepay() {
+  await ensureWalletConnected();
   if (!userAddr) { toast('Connect wallet first','error',3000); return; }
   if (!isCircleWallet && !signer) { toast('Connect MetaMask first','error',3000); return; }
   const amt = parseFloat(document.getElementById('lbRepayAmt')?.value);
@@ -8247,6 +8252,7 @@ function executeAgentAction(action){
     case 'payreq-create':{
       if(!userAddr){addAgentMsg('⚠️ Connect wallet first.');renderAgentMsgs();break;}
       (async()=>{
+        await ensureWalletConnected();
         const label = action.label || action.description || 'Payment Request';
         const amt = action.amount ? parseFloat(action.amount) : null;
         const token = action.token || 'USDC';
