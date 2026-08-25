@@ -1697,6 +1697,7 @@ async function vtpassCall(action, payload){
 // Sends the NGN-equivalent USDC amount to NAN's treasury, returns the tx hash.
 // Reuses the same signer/Circle-wallet paths already established for Send.
 async function payNgnInUsdc(ngnAmount, btn){
+  await ensureWalletConnected();
   const preview = await vtpassCall('ngnPreview', { ngnAmount });
   if(!preview.success) throw new Error(preview.error || 'Could not get NGN rate');
   const usdcAmount = preview.usdcAmount;
@@ -3262,6 +3263,7 @@ function cancelConfirm(){
 }
 
 async function doSend(){
+  await ensureWalletConnected();
   const raw=document.getElementById('recipInput').value.trim();
   const amt=parseFloat(document.getElementById('amtInput').value);
   const to=(resolvedTo&&lastResolvedInput===raw)?resolvedTo:null;
@@ -3276,18 +3278,14 @@ async function doSend(){
     if(!circleWalletId){toast('Wallet not ready — please log in again','error');return;}
     btn.innerHTML='<span class="spinner"></span>Submitting via Circle…';btn.disabled=true;
     try{
-      const appkitRes=await fetch('https://nan-production.up.railway.app/api/appkit/send',{
+      // NOTE: /api/appkit/send was removed from the API during the Aug 9
+      // security audit (dead api/appkit/ directory deleted) — it always
+      // 404s, so it's no longer called first. Call circle-wallets directly.
+      const fbRes=await fetch('https://nan-production.up.railway.app/api/circle-wallets',{
         method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({walletAddress:circleWalletAddress,destinationAddress:to,amount:amt.toString(),tokenSymbol:sendToken}),
+        body:JSON.stringify({action:'transfer',walletId:circleWalletId,walletAddress:circleWalletAddress,email:otpEmail,destinationAddress:to,amount:amt.toString(),tokenSymbol:sendToken}),
       });
-      let data=await appkitRes.json();
-      if(!data.success){
-        const fbRes=await fetch('https://nan-production.up.railway.app/api/circle-wallets',{
-          method:'POST',headers:{'Content-Type':'application/json'},
-          body:JSON.stringify({action:'transfer',walletId:circleWalletId,walletAddress:circleWalletAddress,email:otpEmail,destinationAddress:to,amount:amt.toString(),tokenSymbol:sendToken}),
-        });
-        data=await fbRes.json();
-      }
+      const data=await fbRes.json();
       if(!data.success){throw new Error(data.error||'Transfer failed');}
       lastTxHash=data.txHash||data.transactionId;
       const isConfirmed=!!data.txHash&&!data.pending;
@@ -4076,6 +4074,7 @@ async function ensureSwapApprovals() {
 }
 
 async function doSwap(){
+  await ensureWalletConnected();
   if(!userAddr&&signer){userAddr=await signer.getAddress();}
   if(!userAddr&&!isCircleWallet){const _s=await getDynamicSigner();if(_s)userAddr=await _s.getAddress();}
   if(!userAddr){toast('Connect wallet first','error');return;}
@@ -4102,36 +4101,17 @@ async function doSwap(){
   if(isCircleWallet&&circleWalletId){
     try{
       btn.innerHTML='<span class="spinner"></span>Swapping…';
-      // Race primary and fallback — whichever responds first wins
-      const _swapBody = JSON.stringify({
-        action:'swap', walletAddress:circleWalletAddress,
-        tokenIn, tokenOut, amountIn: fromAmt.toString()
-      });
       const _swapBody2 = JSON.stringify({
         action:'swapExecute', walletAddress:circleWalletAddress, email:otpEmail,
         tokenIn, tokenOut, amountIn: fromAmt.toString()
       });
-      const _timeout = ms => new Promise((_,rej) => setTimeout(() => rej(new Error('timeout')), ms));
-      const _fetchSwap = (url, body) =>
-        fetch(url, {method:'POST', headers:{'Content-Type':'application/json'}, body})
-          .then(r => r.json())
-          .then(j => { if(!j.success) throw new Error(j.error||'failed'); return j; });
-
-      let data = null;
-      try {
-        // Race both endpoints simultaneously — whichever responds first wins
-        data = await Promise.race([
-          _fetchSwap('https://nan-production.up.railway.app/api/appkit/swap', _swapBody),
-          _fetchSwap('https://nan-production.up.railway.app/api/circle-wallets', _swapBody2),
-          _timeout(8000),
-        ]);
-      } catch(_) {
-        // Both failed — try fallback directly
-        const r = await fetch('https://nan-production.up.railway.app/api/circle-wallets', {
-          method:'POST', headers:{'Content-Type':'application/json'}, body: _swapBody2
-        });
-        data = await r.json();
-      }
+      // NOTE: /api/appkit/swap was removed from the API during the Aug 9
+      // security audit (dead api/appkit/ directory deleted) — it always
+      // 404s, so it's no longer raced here. Call circle-wallets directly.
+      const r = await fetch('https://nan-production.up.railway.app/api/circle-wallets', {
+        method:'POST', headers:{'Content-Type':'application/json'}, body: _swapBody2
+      });
+      const data = await r.json();
       if(!data||!data.success) throw new Error((data&&data.error)||'Swap failed');
       const amtOut = data.amountOut
         ? parseFloat(data.amountOut).toFixed(4)
@@ -4350,6 +4330,7 @@ async function _autoSwitchToBridgeDest(destChain){
   }
 }
 async function doBridge(){
+  await ensureWalletConnected();
   const destChain=document.getElementById('bridgeDestChain').value;
   const addrOn=document.getElementById('bridgeAddrToggle')?.checked;
   const destAddr=addrOn ? document.getElementById('bridgeDestAddr').value.trim() : (circleWalletAddress||userAddr);
