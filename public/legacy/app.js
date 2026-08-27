@@ -2911,6 +2911,7 @@ async function refreshBalances(){
     if(emptyHint){emptyHint.style.display=(parseFloat(u)===0&&parseFloat(e)===0)?'flex':'none';}
     const _sfb=document.getElementById('swapFromBal');if(_sfb)_sfb.textContent=swapFlipped?e:u;
     const _stb=document.getElementById('swapToBal');if(_stb)_stb.textContent=swapFlipped?u:e;
+    const _bab2=document.getElementById('bridgeAvailBal2');if(_bab2)_bab2.textContent=u;
     // Update home page balance card
     // Use stable FX: only update if we have a fresh rate, otherwise keep last known
     // This prevents balance flickering on refresh due to FX changes
@@ -4224,6 +4225,245 @@ function toggleBridgeAddr(){
   if(track) track.style.borderColor=on?'var(--accent3)':'var(--border)';
   if(knob) knob.style.left=on?'21px':'3px';
   updateBridgeSummary();
+}
+
+// ── Bridge direction toggle (outbound Arc→X vs inbound X→Arc) ──
+let _bridgeDirection = 'out'; // 'out' | 'in'
+function toggleBridgeDirection(){
+  _bridgeDirection = (_bridgeDirection === 'out') ? 'in' : 'out';
+  const outBox = document.getElementById('bridgeOutBox');
+  const inBox = document.getElementById('bridgeInBox');
+  const outFooter = document.getElementById('bridgeOutFooter');
+  const addrWrap = document.getElementById('bridgeAddrToggleWrap');
+  const label = document.getElementById('bridgeDirLabel');
+  const isIn = _bridgeDirection === 'in';
+  if(outBox) outBox.style.display = isIn ? 'none' : 'block';
+  if(inBox) inBox.style.display = isIn ? 'block' : 'none';
+  if(outFooter) outFooter.style.display = isIn ? 'none' : 'block';
+  if(addrWrap) addrWrap.style.display = isIn ? 'none' : 'block';
+  if(label) label.textContent = isIn ? 'Bridge out of Arc instead' : 'Bridge into Arc instead';
+  if(isIn) refreshBridgeInBalance();
+}
+
+function setBridgeInChainVal(val){
+  document.getElementById('bridgeInChain-val').value = val;
+  refreshBridgeInBalance();
+}
+
+// Fetch the connected wallet's USDC balance on the selected source chain
+async function refreshBridgeInBalance(){
+  const chainId = document.getElementById('bridgeInChain-val')?.value || 'ETH-SEPOLIA';
+  const addr = circleWalletAddress || userAddr;
+  const el = document.getElementById('bridgeInAvailBal');
+  if(!addr || !el) return;
+  const chainCfg = MC_CHAINS.find(c=>c.id===chainId);
+  if(!chainCfg){ el.textContent = '0.00'; return; }
+  try{
+    const bal = await mcFetchBalance(chainCfg, addr);
+    el.textContent = (parseFloat(bal)||0).toFixed(4);
+  }catch(_){ el.textContent = '0.00'; }
+}
+
+function setBridgeInMax(){
+  const el = document.getElementById('bridgeInAvailBal');
+  const max = Math.max(0, parseFloat(el?.textContent) || 0);
+  document.getElementById('bridgeInAmt').value = max.toFixed(6);
+}
+
+// Poll Iris for a burn originating on an EXTERNAL chain, then complete the
+// mint on Arc by calling receiveMessage() on Arc's MessageTransmitterV2.
+// Mirrors pollIrisAttestation() but reversed: source domain is the external
+// chain's CCTP domain, and the final receiveMessage call targets Arc.
+async function pollIrisAttestationInbound(txHash, sourceChain){
+  const sourceDomain = CCTP_DEST_DOMAIN[sourceChain];
+  const irisUrl = 'https://iris-api-sandbox.circle.com/v2/messages/' + sourceDomain + '?transactionHash=' + txHash;
+  const maxAttempts = 80;
+  let attempts = 0;
+  const statusCard = document.getElementById('bridgeInStatusCard');
+  const attestEl = document.getElementById('bridgeInAttestStatus');
+  const mintEl = document.getElementById('bridgeInMintStatus');
+  if(statusCard) statusCard.style.display = 'block';
+
+  while(attempts < maxAttempts){
+    attempts++;
+    await new Promise(r=>setTimeout(r, 15000));
+    try{
+      let attestation = null, message = null;
+      try{
+        const pr = await fetch('https://nan-production.up.railway.app/api/cctp-attest', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({action:'getAttestation', txHash, sourceDomain}),
+        });
+        if(pr.ok){
+          const pd = await pr.json();
+          if(pd.status === 'complete' && pd.attestation){ attestation = pd.attestation; message = pd.message; }
+        }
+      }catch(_){}
+      if(!attestation){
+        try{
+          const res = await fetch(irisUrl);
+          if(res.ok){
+            const data = await res.json();
+            const m = data.messages?.[0];
+            if(m?.status === 'complete' && m.attestation && m.attestation !== 'PENDING'){ attestation = m.attestation; message = m.message; }
+          }
+        }catch(_){}
+      }
+      if(!attestation || !message){
+        if(attestEl) attestEl.textContent = '⏳ Iris attesting… (' + (attempts*15) + 's elapsed, up to ~20 min on testnet)';
+        continue;
+      }
+
+      if(attestEl) attestEl.innerHTML = '✅ Iris attestation received!';
+      toast('✓ Attestation ready! Completing mint on Arc…', 'success', 5000);
+
+      // Circle-wallet (email OTP) users: Circle wallets in NAN are
+      // provisioned on Arc only, so they can't sign a burn tx on an
+      // external chain and never reach this step — this path is
+      // MetaMask-only, mirroring the outbound bridge's own limitation.
+      if(!signer){
+        if(mintEl) mintEl.innerHTML = '⚠️ Wallet signer lost — reconnect and complete the mint manually using the message/attestation below.<br><br>Message: <span style="word-break:break-all;color:#666;">'+message+'</span><br><br>Attestation: <span style="word-break:break-all;color:#666;">'+attestation+'</span>';
+        return;
+      }
+
+      if(mintEl) mintEl.textContent = '⏳ Switching wallet to Arc Testnet…';
+      await switchToArc();
+      const _wp2 = wp || window.ethereum;
+      const _cidCheck = _wp2 ? await _wp2.request({method:'eth_chainId'}) : null;
+      if(!_cidCheck || _cidCheck.toLowerCase() !== ARC_HEX.toLowerCase()){
+        if(mintEl) mintEl.innerHTML = '⚠️ Please switch your wallet to Arc Testnet manually, then complete the mint using the message/attestation below.<br><br>Message: <span style="word-break:break-all;color:#666;">'+message+'</span><br><br>Attestation: <span style="word-break:break-all;color:#666;">'+attestation+'</span>';
+        return;
+      }
+
+      const arcProvider = new ethers.BrowserProvider(wp || window.ethereum);
+      const arcSigner = await arcProvider.getSigner();
+      if(mintEl) mintEl.textContent = '⏳ Minting USDC on Arc…';
+
+      const transmitter = new ethers.Contract(
+        CCTP_MESSAGE_TRANSMITTER,
+        ['function receiveMessage(bytes message, bytes attestation) returns (bool)'],
+        arcSigner,
+      );
+      const mintTx = await transmitter.receiveMessage(message, attestation);
+      if(mintEl) mintEl.textContent = '⏳ Waiting for confirmation…';
+      await mintTx.wait(1);
+
+      const mintUrl = ARC_EXP + '/tx/' + mintTx.hash;
+      if(mintEl) mintEl.innerHTML = '✅ USDC minted on Arc! <a href="'+mintUrl+'" target="_blank" style="color:var(--accent3);">View tx ↗</a>';
+      toast('✅ Bridge complete! USDC minted on Arc', 'success', 10000);
+      addTx({
+        hash: mintTx.hash, to: CCTP_MESSAGE_TRANSMITTER,
+        toRaw: 'CCTP mint on Arc (from '+sourceChain+')',
+        amount:'0', type:'bridge', token:'USDC',
+        ts: Date.now(), confirmed:true, source:'cctp-mint-inbound', destChain:'ARC-TESTNET',
+      });
+      await refreshBalances();
+      return;
+    }catch(err){
+      if(attestEl) attestEl.textContent = '⚠️ ' + (err?.message || 'Attestation polling error').slice(0,140);
+    }
+  }
+  if(attestEl) attestEl.textContent = '⚠️ Timed out waiting for attestation — check back later, the burn already succeeded on the source chain.';
+}
+
+// Bridge USDC FROM an external testnet INTO Arc.
+// MetaMask users: switch to source chain → approve → depositForBurn →
+// poll attestation → switch back to Arc → receiveMessage.
+// Circle (email OTP) wallet users are not supported yet — those wallets
+// are only provisioned on Arc today, so there's no way to sign a burn tx
+// on an external chain without also provisioning a Circle wallet there.
+async function doBridgeIn(){
+  await ensureWalletConnected();
+  if(isCircleWallet){
+    toast('Bridging into Arc needs a MetaMask wallet for now — NAN email wallets are Arc-only.', 'error', 8000);
+    return;
+  }
+  if(!signer){ toast('Connect MetaMask to bridge into Arc', 'error'); return; }
+
+  const sourceChain = document.getElementById('bridgeInChain-val')?.value || 'ETH-SEPOLIA';
+  const amt = parseFloat(document.getElementById('bridgeInAmt')?.value);
+  if(!amt || amt <= 0){ toast('Enter an amount', 'error'); return; }
+
+  const sourceCfg = MC_CHAINS.find(c=>c.id===sourceChain);
+  const netCfg = CCTP_DEST_CONFIG[sourceChain];
+  const sourceDomain = CCTP_DEST_DOMAIN[sourceChain];
+  if(!sourceCfg || !netCfg || sourceDomain===undefined){ toast('Unsupported source chain', 'error'); return; }
+
+  const btn = document.getElementById('bridgeInBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Switching to '+netCfg.chainName+'…';
+
+  try{
+    // 1. Switch wallet to the source chain
+    if(!wp) wp = window.rabby || window.ethereum || null;
+    if(!wp) throw new Error('Wallet disconnected — reconnect and retry');
+    try{
+      await wp.request({method:'wallet_switchEthereumChain', params:[{chainId:netCfg.chainId}]});
+    }catch(switchErr){
+      if(switchErr.code === 4902 || switchErr.code === -32603){
+        await wp.request({
+          method:'wallet_addEthereumChain',
+          params:[{
+            chainId: netCfg.chainId, chainName: netCfg.chainName,
+            nativeCurrency:{name:netCfg.currency, symbol:netCfg.currency, decimals:18},
+            rpcUrls:[netCfg.rpc], blockExplorerUrls:[netCfg.explorer],
+          }],
+        });
+        await wp.request({method:'wallet_switchEthereumChain', params:[{chainId:netCfg.chainId}]});
+      } else { throw switchErr; }
+    }
+
+    const srcProvider = new ethers.BrowserProvider(wp);
+    const srcSigner = await srcProvider.getSigner();
+    const srcAddr = await srcSigner.getAddress();
+    const amtParsed = ethers.parseUnits(amt.toFixed(6), 6);
+
+    // 2. Approve TokenMessengerV2 to spend USDC on the source chain
+    // (same TokenMessengerV2 address on every CCTP V2 testnet, incl. Arc)
+    const usdcContract = new ethers.Contract(
+      sourceCfg.usdc,
+      ['function approve(address,uint256) returns (bool)', 'function allowance(address,address) view returns (uint256)'],
+      srcSigner,
+    );
+    btn.innerHTML = '<span class="spinner"></span>Step 1/3: Approving USDC…';
+    const currentAllowance = await usdcContract.allowance(srcAddr, CCTP_TOKEN_MESSENGER);
+    if(currentAllowance < amtParsed){
+      const apprTx = await usdcContract.approve(CCTP_TOKEN_MESSENGER, amtParsed);
+      await apprTx.wait(1);
+    }
+
+    // 3. Burn on the source chain, destined for Arc (domain 26)
+    btn.innerHTML = '<span class="spinner"></span>Step 2/3: Burning USDC on '+netCfg.chainName+'…';
+    const mintRecipient = ethers.zeroPadValue(userAddr, 32);
+    const destinationCallerBytes32 = '0x' + '00'.repeat(32);
+    const tokenMessenger = new ethers.Contract(
+      CCTP_TOKEN_MESSENGER,
+      ['function depositForBurn(uint256,uint32,bytes32,address,bytes32,uint256,uint32)'],
+      srcSigner,
+    );
+    const burnTx = await tokenMessenger.depositForBurn(
+      amtParsed, ARC_CCTP_DOMAIN, mintRecipient, sourceCfg.usdc,
+      destinationCallerBytes32, 1000, 2000, // 2000 = finalized threshold
+    );
+    const burnReceipt = await burnTx.wait(1);
+    const burnTxHash = burnReceipt.hash || burnTx.hash;
+
+    toast('✓ Burn submitted on '+netCfg.chainName+'! Waiting for Circle attestation…', 'info', 8000);
+    addTx({
+      hash: burnTxHash, to: CCTP_TOKEN_MESSENGER,
+      toRaw: 'Bridge←'+sourceChain, amount: amt.toFixed(6),
+      type:'bridge', token:'USDC', ts: Date.now(), confirmed:true,
+      source:'cctp-inbound', destChain:'ARC-TESTNET',
+    });
+
+    btn.innerHTML = '<span class="spinner"></span>Step 3/3: Polling attestation…';
+    await pollIrisAttestationInbound(burnTxHash, sourceChain);
+  }catch(err){
+    toast((err?.message || 'Bridge failed').slice(0,140), 'error', 8000);
+  }finally{
+    btn.disabled = false;
+    btn.innerHTML = 'Bridge USDC into Arc →';
+  }
 }
 
 function updateBridgeSummary(){
