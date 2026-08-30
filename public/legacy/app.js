@@ -4083,6 +4083,37 @@ document.addEventListener('click', function(e){
   if(list && !e.target.closest('#swapToToken-wrap')) list.classList.remove('open');
 });
 
+function toggleSwapFromDropdown(){
+  document.getElementById('swapFromToken-list')?.classList.toggle('open');
+}
+function closeSwapFromDropdown(){
+  document.getElementById('swapFromToken-list')?.classList.remove('open');
+}
+document.addEventListener('click', function(e){
+  const list = document.getElementById('swapFromToken-list');
+  if(list && !e.target.closest('#swapFromToken-wrap')) list.classList.remove('open');
+});
+
+function pickSwapFromToken(token){
+  if(token==='cirBTC'){
+    toast('cirBTC swap pool is coming soon', 'info', 3000);
+    closeSwapFromDropdown();
+    return;
+  }
+  const toLbl=document.getElementById('toTokenLabel');
+  const curTo=toLbl?toLbl.textContent:'EURC';
+  // Mirror of pickSwapToToken: figure out which of the 4 cycle modes
+  // matches the desired From token, given the current To token.
+  let targetMode;
+  if(token==='USDC') targetMode = 0;      // USDC→EURC (or USDC→cirBTC if curTo was cirBTC)
+  else if(token==='EURC' && curTo==='USDC') targetMode = 1; // EURC→USDC
+  else if(token==='EURC') targetMode = 1; // fallback EURC→USDC
+  else targetMode = 0;
+  window._swapMode = targetMode;
+  flipSwap(targetMode);
+  closeSwapFromDropdown();
+}
+
 
 // ── Swap pre-approval — run once on connect so swap has zero approval delay ──
 const _swapApproved = { USDC: false, EURC: false };
