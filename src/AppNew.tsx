@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useNanStore } from './store/nanStore'
 import { AppShell } from './components/layout/AppShell'
 import { OnboardingPage } from './components/pages/OnboardingPage'
@@ -8,10 +9,21 @@ import { AgentPage } from './components/pages/AgentPage'
 import { ActivityPage } from './components/pages/ActivityPage'
 import { SettingsPage } from './components/pages/SettingsPage'
 
-export default function AppNew() {
-  const { activeView, onboarding } = useNanStore()
+type View = 'home' | 'wallet' | 'send' | 'receive' | 'shop' | 'agent' | 'activity' | 'settings' | 'help' | 'landing' | 'onboarding'
 
-  // If not onboarded yet, show onboarding
+interface Props {
+  initialView?: string
+}
+
+export default function AppNew({ initialView }: Props) {
+  const { activeView, setActiveView, onboarding } = useNanStore()
+
+  useEffect(() => {
+    if (initialView && initialView !== activeView) {
+      setActiveView(initialView as View)
+    }
+  }, [initialView, activeView, setActiveView])
+
   if (!onboarding.completed) return <OnboardingPage />
 
   return (

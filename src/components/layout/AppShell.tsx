@@ -90,7 +90,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         flexShrink: 0,
         zIndex: 50,
       }}>
-        <NanLogo size="sm" />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <NanLogo size="sm" />
+          <a href="/" style={{
+            fontSize: 12, color: '#64748B', textDecoration: 'none',
+            padding: '3px 8px', borderRadius: 6,
+            border: '1px solid rgba(255,255,255,0.07)',
+            background: 'rgba(255,255,255,0.03)',
+            fontFamily: 'Inter, sans-serif', fontWeight: 500,
+            transition: 'all 0.15s',
+            whiteSpace: 'nowrap',
+          }}>← Nan</a>
+        </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div className="net-pill">Arc Testnet</div>
           <button
