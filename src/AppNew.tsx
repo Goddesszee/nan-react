@@ -16,7 +16,16 @@ interface Props {
 }
 
 export default function AppNew({ initialView }: Props) {
-  const { activeView, setActiveView, onboarding } = useNanStore()
+  const { activeView, setActiveView, onboarding, setOnboarding } = useNanStore()
+
+  useEffect(() => {
+    // If user is already logged in via legacy Nan (has token in localStorage), skip onboarding
+    const legacyToken = localStorage.getItem('nan_dynamic_token')
+    const legacyAddr  = localStorage.getItem('nan_dynamic_address')
+    if (legacyToken && legacyAddr && !onboarding.completed) {
+      setOnboarding({ completed: true })
+    }
+  }, [onboarding.completed, setOnboarding])
 
   useEffect(() => {
     if (initialView && initialView !== activeView) {
@@ -24,7 +33,7 @@ export default function AppNew({ initialView }: Props) {
     }
   }, [initialView, activeView, setActiveView])
 
-  if (!onboarding.completed) return <OnboardingPage />
+  if (!onboarding.completed && !localStorage.getItem('nan_dynamic_token')) return <OnboardingPage />
 
   return (
     <AppShell>
