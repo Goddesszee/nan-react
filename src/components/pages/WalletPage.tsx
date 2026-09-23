@@ -14,7 +14,7 @@ import { useNanStore, ActivityItem } from '../../store/nanStore'
 import { formatAddress, formatUSDC, parseOnchainError } from '../../utils/format'
 import { getUsdc, requireChain, buildTxExplorerUrl } from '@/onchain-facts'
 import { parseAmount } from '@/onchain-money'
-import { TokenUSDC } from '@web3icons/react'
+
 import { getWallet, sendUsdc, nanBackendConfigured } from '../../lib/nan'
 
 const ARC_TESTNET_ID = 5042002
@@ -126,7 +126,7 @@ export function WalletPage({ initialSubView = 'main' }: { initialSubView?: Walle
       {/* Balance card */}
       <Card padding="lg">
         <div className="flex items-center gap-3 mb-4">
-          <TokenUSDC variant="branded" size={32} />
+          <span style={{ width: 32, height: 32, borderRadius: '50%', background: '#2775CA', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 13, color: '#fff', flexShrink: 0 }}>$</span>
           <div>
             <div className="text-xs font-bold text-[#6b6580] uppercase tracking-wider">Total Balance</div>
           </div>
