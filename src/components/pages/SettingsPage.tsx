@@ -1,20 +1,23 @@
 import React from 'react'
-import { Wallet, Bot, Shield, HelpCircle, ExternalLink, ChevronRight, LogOut } from 'lucide-react'
-import { useAccount, useDisconnect } from 'wagmi'
-import { ConnectKitButton } from 'connectkit'
+import { Wallet, Bot, Shield, HelpCircle, ExternalLink, ChevronRight, LogOut, Mail } from 'lucide-react'
 import { Card } from '../ui/Card'
 import { Badge } from '../ui/Badge'
 import { useNanStore } from '../../store/nanStore'
 import { formatAddress } from '../../utils/format'
-import { requireChain } from '@/onchain-facts.ts'
 
-const ARC_TESTNET_ID = 5042002
+const ARC_EXPLORER = 'https://explorer.testnet.arc.io'
+const ARC_CHAIN_NAME = 'Arc Testnet'
 
 export function SettingsPage() {
-  const { address, isConnected } = useAccount()
-  const { disconnect } = useDisconnect()
-  const { agentPermissions, setOnboarding, setActiveView } = useNanStore()
-  const chain = requireChain(ARC_TESTNET_ID)
+  const { nanAuth, setNanAuth, agentPermissions, setOnboarding, setActiveView } = useNanStore()
+
+  const handleSignOut = () => {
+    if (window.confirm('Sign out of Nan? Your Circle wallet will remain safe.')) {
+      setNanAuth(null)
+      setOnboarding({ completed: false, step: 0 })
+      setActiveView('landing')
+    }
+  }
 
   const handleReset = () => {
     if (window.confirm('Reset onboarding? This will take you back to the welcome screen.')) {
@@ -25,19 +28,29 @@ export function SettingsPage() {
 
   const sections = [
     {
-      title: 'Wallet',
+      title: 'Account',
       items: [
         {
-          icon: <Wallet size={17} className="text-[#1a6fd4]" />,
-          label: 'Connected wallet',
-          value: isConnected ? formatAddress(address!) : 'Not connected',
-          badge: isConnected ? <Badge variant="success" size="sm">Connected</Badge> : null,
+          icon: <Mail size={17} className="text-[#1a6fd4]" />,
+          label: 'Email',
+          value: nanAuth?.email ?? 'Not signed in',
+          badge: nanAuth ? <Badge variant="success" size="sm">Signed in</Badge> : null,
           action: null,
+        },
+        {
+          icon: <Wallet size={17} className="text-[#1a6fd4]" />,
+          label: 'Circle wallet',
+          value: nanAuth?.walletAddress ? formatAddress(nanAuth.walletAddress) : '—',
+          badge: nanAuth?.walletAddress ? <Badge variant="blue" size="sm">Active</Badge> : null,
+          action: nanAuth?.walletAddress
+            ? () => window.open(`${ARC_EXPLORER}/address/${nanAuth.walletAddress}`, '_blank')
+            : null,
+          external: true,
         },
         {
           icon: <Shield size={17} className="text-[#6d28d9]" />,
           label: 'Network',
-          value: chain.name,
+          value: ARC_CHAIN_NAME,
           badge: <Badge variant="blue" size="sm">Testnet</Badge>,
           action: null,
         },
@@ -50,7 +63,9 @@ export function SettingsPage() {
           icon: <Bot size={17} className="text-[#122d45]" />,
           label: 'Agent status',
           value: agentPermissions.enabled ? 'Active' : 'Disabled',
-          badge: agentPermissions.enabled ? <Badge variant="success" size="sm">On</Badge> : <Badge variant="default" size="sm">Off</Badge>,
+          badge: agentPermissions.enabled
+            ? <Badge variant="success" size="sm">On</Badge>
+            : <Badge variant="default" size="sm">Off</Badge>,
           action: () => setActiveView('agent'),
         },
         {
@@ -60,10 +75,17 @@ export function SettingsPage() {
           badge: null,
           action: () => setActiveView('agent'),
         },
+        {
+          icon: <Shield size={17} className="text-[#1a8047]" />,
+          label: 'Per-transaction limit',
+          value: `${agentPermissions.perTxLimit} USDC`,
+          badge: null,
+          action: () => setActiveView('agent'),
+        },
       ],
     },
     {
-      title: 'Support',
+      title: 'Resources',
       items: [
         {
           icon: <HelpCircle size={17} className="text-[#6b6580]" />,
@@ -76,9 +98,17 @@ export function SettingsPage() {
         {
           icon: <ExternalLink size={17} className="text-[#6b6580]" />,
           label: 'Arc Testnet explorer',
-          value: chain.explorerBase,
+          value: ARC_EXPLORER,
           badge: null,
-          action: () => window.open(chain.explorerBase, '_blank'),
+          action: () => window.open(ARC_EXPLORER, '_blank'),
+          external: true,
+        },
+        {
+          icon: <ExternalLink size={17} className="text-[#6b6580]" />,
+          label: 'Circle developer docs',
+          value: 'developers.circle.com',
+          badge: null,
+          action: () => window.open('https://developers.circle.com', '_blank'),
           external: true,
         },
       ],
@@ -91,11 +121,15 @@ export function SettingsPage() {
         Settings
       </h1>
 
-      {/* Wallet connection block */}
-      {!isConnected && (
+      {!nanAuth && (
         <Card padding="md">
-          <p className="text-sm text-[#6b6580] mb-3">Connect a wallet to use Nan.</p>
-          <ConnectKitButton />
+          <p className="text-sm text-[#6b6580] mb-3">Sign in to access your Circle wallet.</p>
+          <button
+            onClick={() => setActiveView('onboarding')}
+            className="w-full py-3 px-4 rounded-xl bg-[#2563EB] text-white font-semibold text-sm hover:bg-[#1D4ED8] transition-colors"
+          >
+            Sign in with email →
+          </button>
         </Card>
       )}
 
@@ -108,9 +142,9 @@ export function SettingsPage() {
                 key={idx}
                 onClick={item.action ?? undefined}
                 disabled={!item.action}
-                className={`w-full flex items-center gap-3 px-4 py-3.5 text-left transition-colors ${
-                  idx > 0 ? 'border-t border-[rgba(18,45,69,0.05)]' : ''
-                } ${item.action ? 'hover:bg-[#f9f9fc] cursor-pointer' : 'cursor-default'}`}
+                className={`w-full flex items-center gap-3 px-4 py-3.5 text-left transition-colors
+                  ${idx > 0 ? 'border-t border-[rgba(18,45,69,0.05)]' : ''}
+                  ${item.action ? 'hover:bg-[#f9f9fc] cursor-pointer' : 'cursor-default'}`}
               >
                 <div className="w-8 h-8 rounded-lg bg-[#f5f5f8] flex items-center justify-center flex-shrink-0">
                   {item.icon}
@@ -129,19 +163,19 @@ export function SettingsPage() {
         </div>
       ))}
 
-      {/* Danger zone */}
+      {/* Account actions */}
       <div>
-        <p className="text-xs font-bold text-[#6b6580] uppercase tracking-wider mb-2 px-1">Account</p>
+        <p className="text-xs font-bold text-[#6b6580] uppercase tracking-wider mb-2 px-1">Session</p>
         <Card padding="none">
-          {isConnected && (
+          {nanAuth && (
             <button
-              onClick={() => disconnect()}
+              onClick={handleSignOut}
               className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[#fee2e2] transition-colors text-left"
             >
               <div className="w-8 h-8 rounded-lg bg-[#fee2e2] flex items-center justify-center flex-shrink-0">
                 <LogOut size={17} className="text-[#ba2b4c]" />
               </div>
-              <span className="text-sm font-semibold text-[#ba2b4c]">Disconnect wallet</span>
+              <span className="text-sm font-semibold text-[#ba2b4c]">Sign out</span>
             </button>
           )}
           <button
@@ -157,7 +191,7 @@ export function SettingsPage() {
       </div>
 
       <p className="text-center text-xs text-[#8a849c]">
-        Nan · Testnet demo · Powered by Arc
+        Nan · Powered by Circle developer-controlled wallets · Arc Testnet
       </p>
     </div>
   )

@@ -1,22 +1,18 @@
-import React from 'react'
-import { useAccount, useReadContract } from 'wagmi'
-import { erc20Abi } from 'viem'
+import React, { useEffect, useState, useCallback } from 'react'
 import { useNanStore, ActivityItem } from '../../store/nanStore'
 import { Badge } from '../ui/Badge'
-import { getUsdc } from '@/onchain-facts.ts'
-import { Amount, usdcDecimalsFor } from '@/onchain-money.ts'
+import { getWallet } from '../../lib/nan'
 
-const NAN_TEXT = '#F4F4F8'
-const NAN_TEXT_2 = '#9AA0B0'
-const NAN_TEXT_3 = '#64748B'
-const NAN_BLUE = '#2563EB'
+const NAN_TEXT    = '#F4F4F8'
+const NAN_TEXT_2  = '#9AA0B0'
+const NAN_TEXT_3  = '#64748B'
+const NAN_BLUE    = '#2563EB'
 const NAN_BLUE_LIGHT = '#60A5FA'
-const NAN_BORDER = 'rgba(37,99,235,0.16)'
+const NAN_BORDER  = 'rgba(37,99,235,0.16)'
 const MONO = 'IBM Plex Mono, monospace'
 const SANS = 'Inter, sans-serif'
-const ARC_TESTNET_ID = 5042002
 
-function QuickAction({ icon, label, primary, onClick }: { icon: string, label: string, primary?: boolean, onClick: () => void }) {
+function QuickAction({ icon, label, primary, onClick }: { icon: string; label: string; primary?: boolean; onClick: () => void }) {
   return (
     <button
       onClick={onClick}
@@ -27,23 +23,14 @@ function QuickAction({ icon, label, primary, onClick }: { icon: string, label: s
         border: `1px solid ${primary ? 'rgba(37,99,235,0.35)' : 'rgba(37,99,235,0.18)'}`,
         borderRadius: 16, padding: '14px 8px',
         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 7,
-        cursor: 'pointer', transition: 'all 0.2s',
-        boxShadow: primary ? '0 4px 20px rgba(37,99,235,0.18)' : 'none',
-        fontFamily: SANS,
+        cursor: 'pointer', transition: 'all 0.2s', fontFamily: SANS,
       }}
-      onMouseEnter={e => {
-        e.currentTarget.style.transform = 'translateY(-2px)'
-        e.currentTarget.style.borderColor = primary ? 'rgba(37,99,235,0.55)' : 'rgba(37,99,235,0.36)'
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.transform = 'translateY(0)'
-        e.currentTarget.style.borderColor = primary ? 'rgba(37,99,235,0.35)' : 'rgba(37,99,235,0.18)'
-      }}
+      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)' }}
+      onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)' }}
     >
       <div style={{
         width: 34, height: 34, borderRadius: 10,
         background: primary ? '#111111' : 'rgba(37,99,235,0.14)',
-        border: `1px solid ${primary ? 'none' : 'rgba(37,99,235,0.22)'}`,
         boxShadow: primary ? '0 4px 12px rgba(37,99,235,0.4)' : 'none',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         fontSize: 16, lineHeight: 1,
@@ -54,32 +41,22 @@ function QuickAction({ icon, label, primary, onClick }: { icon: string, label: s
 }
 
 function ActivityRow({ item }: { item: ActivityItem }) {
-  const sign = item.sign === '+' ? '+' : '-'
   const isIn = item.sign === '+'
   return (
     <div style={{
       display: 'flex', alignItems: 'center', gap: 12,
       padding: '11px 12px', borderRadius: 14, marginBottom: 6,
-      background: 'rgba(255,255,255,0.02)', border: `1px solid rgba(37,99,235,0.1)`,
+      background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(37,99,235,0.1)',
       cursor: 'pointer', transition: 'all 0.18s',
     }}
-      onMouseEnter={e => {
-        e.currentTarget.style.background = 'rgba(37,99,235,0.06)'
-        e.currentTarget.style.borderColor = 'rgba(37,99,235,0.22)'
-        e.currentTarget.style.transform = 'translateX(2px)'
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.background = 'rgba(255,255,255,0.02)'
-        e.currentTarget.style.borderColor = 'rgba(37,99,235,0.1)'
-        e.currentTarget.style.transform = 'translateX(0)'
-      }}
+      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(37,99,235,0.06)'; e.currentTarget.style.transform = 'translateX(2px)' }}
+      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.02)'; e.currentTarget.style.transform = 'translateX(0)' }}
     >
       <div style={{
         width: 36, height: 36, borderRadius: 11, flexShrink: 0,
         background: isIn ? 'rgba(34,197,94,0.12)' : 'rgba(37,99,235,0.1)',
         border: `1px solid ${isIn ? 'rgba(34,197,94,0.2)' : 'rgba(37,99,235,0.2)'}`,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 16,
+        display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16,
       }}>
         {item.agentInitiated ? '🤖' : isIn ? '↓' : '↑'}
       </div>
@@ -90,42 +67,48 @@ function ActivityRow({ item }: { item: ActivityItem }) {
           {new Date(item.timestamp).toLocaleDateString('en', { month: 'short', day: 'numeric' })}
         </div>
       </div>
-      <span style={{
-        fontFamily: MONO, fontSize: 14, fontWeight: 600,
-        color: isIn ? '#22C55E' : NAN_TEXT,
-      }}>
-        {sign}{item.amount} USDC
+      <span style={{ fontFamily: MONO, fontSize: 14, fontWeight: 600, color: isIn ? '#22C55E' : NAN_TEXT }}>
+        {item.sign}{item.amount} USDC
       </span>
     </div>
   )
 }
 
 export function HomePage() {
-  const { address, isConnected } = useAccount()
-  const { activity, agentPermissions, agentDailyUsed, setActiveView } = useNanStore()
-  const usdcFact = getUsdc(ARC_TESTNET_ID)
+  const { nanAuth, activity, agentPermissions, agentDailyUsed, setActiveView } = useNanStore()
 
-  const { data: rawBalance, isLoading } = useReadContract({
-    address: usdcFact?.address as `0x${string}`,
-    abi: erc20Abi,
-    functionName: 'balanceOf',
-    args: address ? [address as `0x${string}`] : undefined,
-    chainId: ARC_TESTNET_ID,
-    query: { enabled: !!address && !!usdcFact },
-  })
+  // Balance fetched from Circle SDK via the backend
+  const [balance, setBalance]     = useState<string | null>(null)
+  const [balLoading, setBalLoading] = useState(false)
 
-  const formattedBalance = rawBalance !== undefined
-    ? Amount.fromRaw(rawBalance, usdcDecimalsFor(ARC_TESTNET_ID)).toFixed(2)
-    : null
+  const fetchBalance = useCallback(async () => {
+    if (!nanAuth?.sessionToken || !nanAuth?.email) return
+    setBalLoading(true)
+    try {
+      const data = await getWallet(nanAuth.email, nanAuth.sessionToken)
+      setBalance(parseFloat(data.usdc).toFixed(2))
+    } catch {
+      // silent
+    } finally {
+      setBalLoading(false)
+    }
+  }, [nanAuth?.sessionToken, nanAuth?.email])
 
-  const totalBalance = formattedBalance ? parseFloat(formattedBalance) : 0
-  const agentBal = agentPermissions.dailyLimit
-  const available = Math.max(0, totalBalance - agentBal)
+  useEffect(() => { void fetchBalance() }, [fetchBalance])
+
+  const totalBalance  = balance ? parseFloat(balance) : 0
+  const agentBal      = agentPermissions.dailyLimit
+  const available     = Math.max(0, totalBalance - agentBal)
   const dailyRemaining = Math.max(0, agentPermissions.dailyLimit - agentDailyUsed)
-  const pct = agentPermissions.dailyLimit > 0 ? (agentDailyUsed / agentPermissions.dailyLimit) * 100 : 0
+  const pct           = agentPermissions.dailyLimit > 0 ? (agentDailyUsed / agentPermissions.dailyLimit) * 100 : 0
 
-  const hour = new Date().getHours()
+  const hour     = new Date().getHours()
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
+  const displayName = nanAuth?.email
+    ? nanAuth.email.split('@')[0]
+    : nanAuth?.walletAddress
+      ? nanAuth.walletAddress.slice(0, 6) + '...' + nanAuth.walletAddress.slice(-4)
+      : 'Welcome to Nan'
 
   const recent = activity.slice(0, 4)
 
@@ -136,11 +119,11 @@ export function HomePage() {
       <div style={{ marginBottom: 16 }}>
         <div style={{ fontSize: 13, color: NAN_TEXT_3, fontWeight: 500, marginBottom: 2 }}>{greeting}</div>
         <div style={{ fontSize: 20, fontWeight: 700, color: NAN_TEXT, letterSpacing: '-0.5px' }}>
-          {address ? address.slice(0, 6) + '...' + address.slice(-4) : 'Welcome to Nan'}
+          {displayName}
         </div>
       </div>
 
-      {/* Balance card — Nan's exact style */}
+      {/* Balance card */}
       <div style={{
         background: 'linear-gradient(145deg,#1a1a1a 0%,#111111 50%,#1a1a1a 100%)',
         border: '1px solid rgba(255,255,255,0.08)',
@@ -148,21 +131,22 @@ export function HomePage() {
         position: 'relative', overflow: 'hidden',
         boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
       }}>
-        {/* Glow orb */}
         <div style={{ position: 'absolute', top: -20, right: -20, width: 140, height: 140, borderRadius: '50%', background: 'radial-gradient(circle,rgba(37,99,235,0.22),transparent 70%)', pointerEvents: 'none' }} />
 
         <div style={{ fontFamily: MONO, fontSize: 10, color: 'rgba(255,255,255,0.38)', letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: 6 }}>Total Balance</div>
-        {isLoading ? (
-          <div style={{ fontSize: 38, fontWeight: 700, color: '#f0f0f0', marginBottom: 4, letterSpacing: '-1.5px' }}>
-            <span style={{ opacity: 0.3 }}>— USDC</span>
-          </div>
+
+        {balLoading ? (
+          <div style={{ fontSize: 38, fontWeight: 700, color: '#f0f0f0', marginBottom: 4, letterSpacing: '-1.5px', opacity: 0.3 }}>— USDC</div>
         ) : (
           <div style={{ fontSize: 38, fontWeight: 700, color: '#f0f0f0', marginBottom: 4, letterSpacing: '-1.5px', fontFamily: MONO }}>
-            {formattedBalance ?? '0.00'} <span style={{ fontSize: 18, color: NAN_BLUE_LIGHT }}>USDC</span>
+            {balance ?? '0.00'} <span style={{ fontSize: 18, color: NAN_BLUE_LIGHT }}>USDC</span>
           </div>
         )}
-        {!isConnected && (
-          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginBottom: 12, fontFamily: MONO }}>Connect wallet to see balance</div>
+
+        {!nanAuth && (
+          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginBottom: 12, fontFamily: MONO }}>
+            Sign in to see balance
+          </div>
         )}
 
         <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
@@ -182,10 +166,10 @@ export function HomePage() {
 
       {/* Quick actions */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 8, marginBottom: 10 }}>
-        <QuickAction icon="⬆️" label="Send" primary onClick={() => setActiveView('send')} />
-        <QuickAction icon="⬇️" label="Receive" onClick={() => setActiveView('receive')} />
-        <QuickAction icon="🛍️" label="Shop" onClick={() => setActiveView('shop')} />
-        <QuickAction icon="🤖" label="Agent" onClick={() => setActiveView('agent')} />
+        <QuickAction icon="⬆️" label="Send"    primary onClick={() => setActiveView('send')} />
+        <QuickAction icon="⬇️" label="Receive"        onClick={() => setActiveView('receive')} />
+        <QuickAction icon="🛍️" label="Shop"           onClick={() => setActiveView('shop')} />
+        <QuickAction icon="🤖" label="Agent"          onClick={() => setActiveView('agent')} />
       </div>
 
       {/* Agent spending */}
@@ -201,8 +185,8 @@ export function HomePage() {
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
           {[
             { label: 'Daily limit', val: `${agentPermissions.dailyLimit} USDC` },
-            { label: 'Used today', val: `${agentDailyUsed} USDC` },
-            { label: 'Remaining', val: `${dailyRemaining} USDC` },
+            { label: 'Used today',  val: `${agentDailyUsed} USDC` },
+            { label: 'Remaining',   val: `${dailyRemaining} USDC` },
           ].map(({ label, val }) => (
             <div key={label} style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 13, fontWeight: 700, color: NAN_TEXT, fontFamily: MONO }}>{val}</div>
@@ -210,7 +194,6 @@ export function HomePage() {
             </div>
           ))}
         </div>
-        {/* Progress bar */}
         <div style={{ height: 4, background: 'rgba(37,99,235,0.12)', borderRadius: 2, overflow: 'hidden' }}>
           <div style={{ width: `${Math.min(pct, 100)}%`, height: '100%', background: pct > 80 ? '#ef4444' : NAN_BLUE, borderRadius: 2, transition: 'width 0.5s ease' }} />
         </div>
@@ -220,7 +203,6 @@ export function HomePage() {
             marginTop: 14, width: '100%', padding: '10px', borderRadius: 9,
             background: 'rgba(37,99,235,0.08)', border: '1px solid rgba(37,99,235,0.2)',
             color: NAN_BLUE_LIGHT, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: SANS,
-            transition: 'all 0.2s',
           }}
         >Open Agent →</button>
       </div>
