@@ -1,8 +1,29 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNanStore } from '../../store/nanStore'
 import { NanLogo } from '../ui/Logo'
 import { Button } from '../ui/Button'
 import { sendOtp, verifyOtp } from '../../lib/nan'
+
+// ── Google One-Tap / GSI ──────────────────────────────────────────────────────
+declare global {
+  interface Window {
+    google?: {
+      accounts: {
+        id: {
+          initialize: (cfg: object) => void
+          renderButton: (el: HTMLElement, cfg: object) => void
+          prompt: () => void
+        }
+      }
+    }
+  }
+}
+
+function parseGoogleJwt(token: string): { email?: string; name?: string; picture?: string } {
+  try {
+    return JSON.parse(atob(token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')))
+  } catch { return {} }
+}
 
 const NAN_BG      = '#0A0A0F'
 const NAN_SURFACE = '#111118'
@@ -23,17 +44,83 @@ const USE_CASES = [
   { id: 'merchant',  label: 'Sell as Merchant', icon: '🏪', desc: 'List products and accept USDC' },
 ]
 
+// ── Wallet login via window.ethereum (MetaMask, Rabby, Trust, Coinbase) ────────
+async function connectWallet(): Promise<{ address: string; signature: string }> {
+  const eth = (window as Record<string, unknown>).ethereum as {
+    request: (args: { method: string; params?: unknown[] }) => Promise<unknown>
+  } | undefined
+  if (!eth) throw new Error('No wallet found. Install MetaMask or Rabby.')
+
+  const accounts = await eth.request({ method: 'eth_requestAccounts', params: [] }) as string[]
+  if (!accounts || accounts.length === 0) throw new Error('No accounts returned.')
+  const address = accounts[0]
+
+  const message = `Sign in to NAN\n\nThis request will not trigger a blockchain transaction or cost any gas fees.\n\nAddress: ${address}\nTimestamp: ${Date.now()}`
+  const signature = await eth.request({
+    method: 'personal_sign',
+    params: [message, address],
+  }) as string
+
+  return { address, signature }
+}
+
 export function OnboardingPage() {
   const { setNanAuth, setOnboarding, agentPermissions, setAgentPermissions, setActiveView } = useNanStore()
 
-  // Step machine: email → otp → usecases → agent → limits
-  const [step, setStep] = useState<'email' | 'otp' | 'usecases' | 'agent' | 'limits'>('email')
+  // Auth method: 'choose' | 'email' | 'wallet'
+  const [authMethod, setAuthMethod] = useState<'choose' | 'email' | 'wallet'>('choose')
+
+  // ── Google GSI — load script and handle credential response ──────────────
+  const GOOGLE_CLIENT_ID = (import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined) ?? ''
+
+  useEffect(() => {
+    if (!GOOGLE_CLIENT_ID) return
+    const script = document.createElement('script')
+    script.src = 'https://accounts.google.com/gsi/client'
+    script.async = true
+    script.onload = () => {
+      window.google?.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: (response: { credential: string }) => {
+          const { email, name } = parseGoogleJwt(response.credential)
+          if (!email) { setError('Google sign-in failed — no email returned'); return }
+          // Use the Google email to get/create a Circle wallet via OTP backend
+          setNanAuth({
+            email: email,
+            sessionToken: `google:${response.credential.slice(-32)}`,
+            walletAddress: '',
+            walletId: '',
+          })
+          // Trigger OTP-based wallet creation silently
+          sendOtp(email).then(res => {
+            // Auto-verify not possible — just proceed to use cases; wallet created on next login
+            setStep('usecases')
+          }).catch(() => setStep('usecases'))
+          void name
+        },
+        auto_select: false,
+        cancel_on_tap_outside: true,
+      })
+      const el = document.getElementById('nan-google-btn')
+      if (el) window.google?.accounts.id.renderButton(el, {
+        theme: 'filled_black', size: 'large', width: 380,
+        text: 'continue_with', shape: 'rectangular',
+      })
+    }
+    document.head.appendChild(script)
+    return () => { document.head.removeChild(script) }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [GOOGLE_CLIENT_ID])
+
+  // Step machine (post-auth): usecases → agent → limits
+  const [step, setStep] = useState<'auth' | 'usecases' | 'agent' | 'limits'>('auth')
 
   // Email / OTP state
   const [email, setEmail]         = useState('')
   const [otpCode, setOtpCode]     = useState('')
   const [otpToken, setOtpToken]   = useState('')
   const [otpExpiry, setOtpExpiry] = useState(0)
+  const [devCode, setDevCode]     = useState('')   // shown on screen if email fails
   const [loading, setLoading]     = useState(false)
   const [error, setError]         = useState('')
 
@@ -50,7 +137,28 @@ export function OnboardingPage() {
     setActiveView('home')
   }
 
-  const stepNum = { email: 1, otp: 1, usecases: 2, agent: 3, limits: 4 }[step] ?? 1
+  const stepNum = step === 'auth' ? 1 : step === 'usecases' ? 2 : step === 'agent' ? 3 : 4
+
+  // ── Wallet connect login ──────────────────────────────────────────────────
+  const handleWalletLogin = async () => {
+    setError('')
+    setLoading(true)
+    try {
+      const { address } = await connectWallet()
+      // Use wallet address as the identity — no Circle wallet creation for wallet users
+      setNanAuth({
+        email: '',
+        sessionToken: `wallet:${address}`,
+        walletAddress: address,
+        walletId: '',
+      })
+      setStep('usecases')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Wallet connection failed')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   // ── Send OTP ──────────────────────────────────────────────────────────────
   const handleSendOtp = async () => {
@@ -59,12 +167,19 @@ export function OnboardingPage() {
       setError('Enter a valid email address'); return
     }
     setError('')
+    setDevCode('')
     setLoading(true)
     try {
       const res = await sendOtp(trimmed)
       setOtpToken(res.token)
       setOtpExpiry(res.expiresAt)
-      setStep('otp')
+      // If backend returns dev:true, the code wasn't emailed — show it on screen
+      if ((res as { dev?: boolean }).dev) {
+        // Fetch the code from the Vercel function log isn't possible client-side,
+        // but we can prompt the user to check Vercel logs OR we just show a hint
+        setDevCode('⚠️ Email not configured — check Vercel function logs for your code, or set SMTP_PASS.')
+      }
+      setAuthMethod('email')  // move to OTP entry step
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to send code')
     } finally {
@@ -72,7 +187,7 @@ export function OnboardingPage() {
     }
   }
 
-  // ── Verify OTP + create Circle wallet ────────────────────────────────────
+  // ── Verify OTP ────────────────────────────────────────────────────────────
   const handleVerifyOtp = async () => {
     const code = otpCode.trim()
     if (code.length !== 6 || !/^\d+$/.test(code)) {
@@ -82,12 +197,11 @@ export function OnboardingPage() {
     setLoading(true)
     try {
       const res = await verifyOtp(email.trim().toLowerCase(), code, otpToken, otpExpiry)
-      // Persist the Circle session into Zustand (+ localStorage via persist middleware)
       setNanAuth({
-        email:        email.trim().toLowerCase(),
-        sessionToken: res.sessionToken,
+        email: email.trim().toLowerCase(),
+        sessionToken: (res as Record<string, string>).sessionToken,
         walletAddress: (res as Record<string, string>).walletAddress ?? '',
-        walletId:      (res as Record<string, string>).walletId ?? '',
+        walletId: (res as Record<string, string>).walletId ?? '',
       })
       setStep('usecases')
     } catch (err) {
@@ -96,6 +210,14 @@ export function OnboardingPage() {
       setLoading(false)
     }
   }
+
+  const inputStyle = (hasError: boolean) => ({
+    width: '100%', padding: '13px 14px',
+    background: 'rgba(255,255,255,0.05)',
+    border: `1px solid ${hasError ? '#ef4444' : 'rgba(37,99,235,0.22)'}`,
+    borderRadius: 10, color: NAN_TEXT, fontSize: 15, fontFamily: SANS,
+    outline: 'none', boxSizing: 'border-box' as const, transition: 'border-color 0.2s',
+  })
 
   return (
     <div style={{
@@ -116,43 +238,141 @@ export function OnboardingPage() {
           <p style={{ color: NAN_TEXT_2, fontSize: 13, marginTop: 10, textAlign: 'center' }}>
             The intelligent payment layer
           </p>
-          <div style={{ display: 'flex', gap: 6, marginTop: 20 }}>
-            {[1,2,3,4].map(n => (
-              <div key={n} style={{
-                width: n === stepNum ? 20 : 6, height: 6, borderRadius: 3,
-                background: n <= stepNum ? NAN_BLUE : 'rgba(37,99,235,0.18)',
-                transition: 'all 0.3s ease',
-              }} />
-            ))}
-          </div>
+          {step !== 'auth' && (
+            <div style={{ display: 'flex', gap: 6, marginTop: 20 }}>
+              {[1,2,3,4].map(n => (
+                <div key={n} style={{
+                  width: n === stepNum ? 20 : 6, height: 6, borderRadius: 3,
+                  background: n <= stepNum ? NAN_BLUE : 'rgba(37,99,235,0.18)',
+                  transition: 'all 0.3s ease',
+                }} />
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* ── Step 1a: Email entry ── */}
-        {step === 'email' && (
+        {/* ── Step Auth: Choose method ── */}
+        {step === 'auth' && authMethod === 'choose' && (
           <div>
-            <div style={{ fontFamily: MONO, fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: NAN_BLUE_LIGHT, marginBottom: 10 }}>Step 01</div>
-            <h2 style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 8 }}>Sign in to Nan</h2>
+            <h2 style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 8, textAlign: 'center' }}>
+              Sign in to Nan
+            </h2>
+            <p style={{ color: NAN_TEXT_2, fontSize: 14, lineHeight: 1.6, marginBottom: 24, textAlign: 'center' }}>
+              Choose how you'd like to continue.
+            </p>
+
+            {/* Google Sign-In — rendered by GSI SDK when VITE_GOOGLE_CLIENT_ID is set */}
+            {GOOGLE_CLIENT_ID ? (
+              <div id="nan-google-btn" style={{ marginBottom: 12, display: 'flex', justifyContent: 'center' }} />
+            ) : (
+              <button
+                disabled
+                style={{
+                  width: '100%', padding: '15px 20px', marginBottom: 12,
+                  background: 'rgba(255,255,255,0.03)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: 12, cursor: 'not-allowed', display: 'flex',
+                  alignItems: 'center', gap: 14, color: NAN_TEXT_3, fontFamily: SANS, opacity: 0.5,
+                }}
+              >
+                <div style={{ width: 40, height: 40, borderRadius: 11, flexShrink: 0, background: 'rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>G</div>
+                <div style={{ textAlign: 'left' }}>
+                  <div style={{ fontSize: 15, fontWeight: 700 }}>Continue with Google</div>
+                  <div style={{ fontSize: 12, color: NAN_TEXT_3, marginTop: 2 }}>Set VITE_GOOGLE_CLIENT_ID to enable</div>
+                </div>
+              </button>
+            )}
+
+            {/* Wallet connect button */}
+            <button
+              onClick={() => void handleWalletLogin()}
+              disabled={loading}
+              style={{
+                width: '100%', padding: '15px 20px', marginBottom: 12,
+                background: 'linear-gradient(135deg,rgba(37,99,235,0.18),rgba(124,58,237,0.14))',
+                border: '1px solid rgba(37,99,235,0.4)',
+                borderRadius: 12, cursor: 'pointer', display: 'flex',
+                alignItems: 'center', gap: 14, color: NAN_TEXT, fontFamily: SANS,
+                opacity: loading ? 0.6 : 1, transition: 'all 0.2s',
+              }}
+            >
+              <div style={{
+                width: 40, height: 40, borderRadius: 11, flexShrink: 0,
+                background: 'rgba(37,99,235,0.15)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20,
+              }}>🦊</div>
+              <div style={{ textAlign: 'left' }}>
+                <div style={{ fontSize: 15, fontWeight: 700 }}>MetaMask / Rabby</div>
+                <div style={{ fontSize: 12, color: NAN_TEXT_3, marginTop: 2 }}>
+                  Connect any injected wallet
+                </div>
+              </div>
+              <div style={{ marginLeft: 'auto', color: NAN_BLUE_LIGHT, fontSize: 18 }}>→</div>
+            </button>
+
+            {/* Divider */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '4px 0 12px' }}>
+              <div style={{ flex: 1, height: 1, background: 'rgba(37,99,235,0.12)' }} />
+              <span style={{ fontSize: 11, color: NAN_TEXT_3, fontFamily: MONO }}>or</span>
+              <div style={{ flex: 1, height: 1, background: 'rgba(37,99,235,0.12)' }} />
+            </div>
+
+            {/* Email OTP button */}
+            <button
+              onClick={() => setAuthMethod('email_entry' as unknown as 'email')}
+              style={{
+                width: '100%', padding: '15px 20px', marginBottom: 20,
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(37,99,235,0.18)',
+                borderRadius: 12, cursor: 'pointer', display: 'flex',
+                alignItems: 'center', gap: 14, color: NAN_TEXT, fontFamily: SANS,
+                transition: 'all 0.2s',
+              }}
+            >
+              <div style={{
+                width: 40, height: 40, borderRadius: 11, flexShrink: 0,
+                background: 'rgba(255,255,255,0.06)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20,
+              }}>✉️</div>
+              <div style={{ textAlign: 'left' }}>
+                <div style={{ fontSize: 15, fontWeight: 700 }}>Email OTP</div>
+                <div style={{ fontSize: 12, color: NAN_TEXT_3, marginTop: 2 }}>
+                  Get a 6-digit code by email
+                </div>
+              </div>
+              <div style={{ marginLeft: 'auto', color: NAN_TEXT_3, fontSize: 18 }}>→</div>
+            </button>
+
+            {error && <p style={{ color: '#ef4444', fontSize: 12, fontFamily: MONO, textAlign: 'center', marginTop: -8, marginBottom: 8 }}>{error}</p>}
+
+            <p style={{ color: NAN_TEXT_3, fontSize: 12, textAlign: 'center', fontFamily: MONO }}>
+              Noncustodial · No seed phrase · Circle MPC
+            </p>
+          </div>
+        )}
+
+        {/* ── Email entry ── */}
+        {step === 'auth' && (authMethod as string) === 'email_entry' && (
+          <div>
+            <button onClick={() => { setAuthMethod('choose'); setError('') }}
+              style={{ background: 'none', border: 'none', color: NAN_TEXT_3, fontSize: 13, cursor: 'pointer', fontFamily: MONO, marginBottom: 16 }}>
+              ← Back
+            </button>
+            <div style={{ fontFamily: MONO, fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: NAN_BLUE_LIGHT, marginBottom: 10 }}>Email login</div>
+            <h2 style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 8 }}>Enter your email</h2>
             <p style={{ color: NAN_TEXT_2, fontSize: 14, lineHeight: 1.6, marginBottom: 24 }}>
-              Enter your email to receive a one-time code. Nan creates a Circle-powered USDC wallet for you automatically — no private keys.
+              We'll send a 6-digit code. No password needed.
             </p>
             <div style={{ marginBottom: 16 }}>
               <label style={{ fontFamily: MONO, fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', color: NAN_TEXT_3, display: 'block', marginBottom: 8 }}>
                 Email address
               </label>
               <input
-                type="email"
-                value={email}
+                type="email" value={email}
                 onChange={e => { setEmail(e.target.value); setError('') }}
                 onKeyDown={e => e.key === 'Enter' && void handleSendOtp()}
-                placeholder="you@example.com"
-                autoFocus
-                style={{
-                  width: '100%', padding: '13px 14px', background: 'rgba(255,255,255,0.05)',
-                  border: `1px solid ${error ? '#ef4444' : 'rgba(37,99,235,0.22)'}`,
-                  borderRadius: 10, color: NAN_TEXT, fontSize: 15, fontFamily: SANS,
-                  outline: 'none', boxSizing: 'border-box',
-                  transition: 'border-color 0.2s',
-                }}
+                placeholder="you@example.com" autoFocus
+                style={inputStyle(!!error)}
                 onFocus={e => { e.target.style.borderColor = NAN_BLUE }}
                 onBlur={e => { e.target.style.borderColor = error ? '#ef4444' : 'rgba(37,99,235,0.22)' }}
               />
@@ -164,35 +384,34 @@ export function OnboardingPage() {
           </div>
         )}
 
-        {/* ── Step 1b: OTP verify ── */}
-        {step === 'otp' && (
+        {/* ── OTP verify ── */}
+        {step === 'auth' && authMethod === 'email' && (
           <div>
-            <div style={{ fontFamily: MONO, fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: NAN_BLUE_LIGHT, marginBottom: 10 }}>Step 01</div>
-            <h2 style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 8 }}>Check your email</h2>
-            <p style={{ color: NAN_TEXT_2, fontSize: 14, lineHeight: 1.6, marginBottom: 24 }}>
-              We sent a 6-digit code to <strong style={{ color: NAN_TEXT }}>{email}</strong>. Enter it below.
+            <div style={{ fontFamily: MONO, fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: NAN_BLUE_LIGHT, marginBottom: 10 }}>Check your email</div>
+            <h2 style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 8 }}>Enter your code</h2>
+            <p style={{ color: NAN_TEXT_2, fontSize: 14, lineHeight: 1.6, marginBottom: 16 }}>
+              We sent a 6-digit code to <strong style={{ color: NAN_TEXT }}>{email}</strong>.
             </p>
+            {devCode && (
+              <div style={{
+                background: 'rgba(234,179,8,0.1)', border: '1px solid rgba(234,179,8,0.3)',
+                borderRadius: 10, padding: '10px 14px', marginBottom: 16,
+                fontSize: 12, color: '#fbbf24', fontFamily: MONO,
+              }}>
+                {devCode}
+              </div>
+            )}
             <div style={{ marginBottom: 16 }}>
               <label style={{ fontFamily: MONO, fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', color: NAN_TEXT_3, display: 'block', marginBottom: 8 }}>
                 One-time code
               </label>
               <input
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                maxLength={6}
+                type="text" inputMode="numeric" pattern="[0-9]*" maxLength={6}
                 value={otpCode}
                 onChange={e => { setOtpCode(e.target.value.replace(/\D/g, '')); setError('') }}
                 onKeyDown={e => e.key === 'Enter' && void handleVerifyOtp()}
-                placeholder="123456"
-                autoFocus
-                style={{
-                  width: '100%', padding: '13px 14px', background: 'rgba(255,255,255,0.05)',
-                  border: `1px solid ${error ? '#ef4444' : 'rgba(37,99,235,0.22)'}`,
-                  borderRadius: 10, color: NAN_TEXT, fontSize: 24, fontFamily: MONO,
-                  letterSpacing: '0.3em', textAlign: 'center',
-                  outline: 'none', boxSizing: 'border-box',
-                }}
+                placeholder="123456" autoFocus
+                style={{ ...inputStyle(!!error), fontSize: 24, letterSpacing: '0.3em', textAlign: 'center' }}
                 onFocus={e => { e.target.style.borderColor = NAN_BLUE }}
                 onBlur={e => { e.target.style.borderColor = error ? '#ef4444' : 'rgba(37,99,235,0.22)' }}
               />
@@ -201,17 +420,12 @@ export function OnboardingPage() {
             <Button fullWidth loading={loading} onClick={() => void handleVerifyOtp()}>
               Verify code →
             </Button>
-            <button
-              onClick={() => { setStep('email'); setOtpCode(''); setError('') }}
-              style={{ marginTop: 14, width: '100%', background: 'none', border: 'none', color: NAN_TEXT_3, fontSize: 13, cursor: 'pointer', fontFamily: MONO }}
-            >
+            <button onClick={() => { setAuthMethod('email_entry' as unknown as 'email'); setOtpCode(''); setError('') }}
+              style={{ marginTop: 14, width: '100%', background: 'none', border: 'none', color: NAN_TEXT_3, fontSize: 13, cursor: 'pointer', fontFamily: MONO }}>
               ← Use a different email
             </button>
-            <button
-              onClick={() => void handleSendOtp()}
-              disabled={loading}
-              style={{ marginTop: 8, width: '100%', background: 'none', border: 'none', color: NAN_BLUE_LIGHT, fontSize: 13, cursor: 'pointer', fontFamily: MONO }}
-            >
+            <button onClick={() => void handleSendOtp()} disabled={loading}
+              style={{ marginTop: 8, width: '100%', background: 'none', border: 'none', color: NAN_BLUE_LIGHT, fontSize: 13, cursor: 'pointer', fontFamily: MONO }}>
               Resend code
             </button>
           </div>
@@ -227,17 +441,13 @@ export function OnboardingPage() {
               {USE_CASES.map(({ id, label, icon, desc }) => {
                 const on = selected.includes(id)
                 return (
-                  <button
-                    key={id}
-                    onClick={() => toggleCase(id)}
-                    style={{
-                      display: 'flex', alignItems: 'center', gap: 14,
-                      padding: '13px 16px', borderRadius: 12, cursor: 'pointer', textAlign: 'left',
-                      background: on ? 'rgba(37,99,235,0.12)' : 'rgba(255,255,255,0.03)',
-                      border: `1px solid ${on ? 'rgba(37,99,235,0.4)' : 'rgba(37,99,235,0.14)'}`,
-                      transition: 'all 0.18s', color: NAN_TEXT, fontFamily: SANS,
-                    }}
-                  >
+                  <button key={id} onClick={() => toggleCase(id)} style={{
+                    display: 'flex', alignItems: 'center', gap: 14,
+                    padding: '13px 16px', borderRadius: 12, cursor: 'pointer', textAlign: 'left',
+                    background: on ? 'rgba(37,99,235,0.12)' : 'rgba(255,255,255,0.03)',
+                    border: `1px solid ${on ? 'rgba(37,99,235,0.4)' : 'rgba(37,99,235,0.14)'}`,
+                    transition: 'all 0.18s', color: NAN_TEXT, fontFamily: SANS,
+                  }}>
                     <span style={{ fontSize: 20, flexShrink: 0 }}>{icon}</span>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 2 }}>{label}</div>
