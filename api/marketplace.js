@@ -5,7 +5,6 @@
 // GET  /api/marketplace?action=orders              -> { orders }
 
 import crypto from 'crypto'
-import { initiateDeveloperControlledWalletsClient } from '@circle-fin/developer-controlled-wallets'
 import { requireEmailSession } from './_lib/auth.js'
 import { parseBody, parseQuery } from './_lib/parse.js'
 
@@ -35,10 +34,11 @@ function buildProducts() {
 // In-memory order store (in production: use a DB — Vercel serverless resets per cold start)
 const orders = new Map()
 
-function getCircleClient() {
+async function getCircleClient() {
   const apiKey = process.env.CIRCLE_API_KEY || process.env.CIRCLE_DEVELOPER_CONTROLLED_API_KEY
   const entitySecret = process.env.CIRCLE_ENTITY_SECRET || process.env.ENTITY_SECRET
   if (!apiKey || !entitySecret) return null
+  const { initiateDeveloperControlledWalletsClient } = await import('@circle-fin/developer-controlled-wallets')
   return initiateDeveloperControlledWalletsClient({ apiKey, entitySecret })
 }
 
@@ -104,7 +104,7 @@ export default async function handler(req, res) {
     const orderId = crypto.randomUUID()
     let txId = null
 
-    const sdk = getCircleClient()
+    const sdk = await getCircleClient()
     if (sdk) {
       try {
         const idem = `nan-order-${orderId}`.slice(0, 64)

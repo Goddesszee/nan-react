@@ -4,17 +4,17 @@
 // POST /api/circle-wallets { action:'transfer', to, amount } -> { txId, state, txHash }
 // GET  /api/circle-wallets?action=txStatus&txId=...      -> { txId, state, txHash }
 
-import { initiateDeveloperControlledWalletsClient } from '@circle-fin/developer-controlled-wallets'
 import { requireEmailSession } from './_lib/auth.js'
 import { parseBody, parseQuery } from './_lib/parse.js'
 
 const ARC_TESTNET_USDC = '0x3600000000000000000000000000000000000000'
 const ARC_CHAIN = 'ARC-TESTNET'
 
-function getCircleClient() {
+async function getCircleClient() {
   const apiKey = process.env.CIRCLE_API_KEY || process.env.CIRCLE_DEVELOPER_CONTROLLED_API_KEY
   const entitySecret = process.env.CIRCLE_ENTITY_SECRET || process.env.ENTITY_SECRET
   if (!apiKey || !entitySecret) throw new Error('Circle credentials not configured')
+  const { initiateDeveloperControlledWalletsClient } = await import('@circle-fin/developer-controlled-wallets')
   return initiateDeveloperControlledWalletsClient({ apiKey, entitySecret })
 }
 
@@ -34,7 +34,7 @@ export default async function handler(req, res) {
   // ── GET wallet info ──────────────────────────────────────────────────────────
   if (action === 'wallet') {
     try {
-      const sdk = getCircleClient()
+      const sdk = await getCircleClient()
       const r = await sdk.getWallet({ id: walletId })
       const w = r.data?.wallet
       return res.json({
@@ -52,7 +52,7 @@ export default async function handler(req, res) {
   // ── GET balance ──────────────────────────────────────────────────────────────
   if (action === 'balance') {
     try {
-      const sdk = getCircleClient()
+      const sdk = await getCircleClient()
       const r = await sdk.getWalletTokenBalance({ id: walletId })
       const balances = r.data?.tokenBalances || []
       // Find USDC balance (by token address or symbol)
@@ -92,7 +92,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ success: false, error: 'Amount exceeds per-request safety limit (10,000 USDC)' })
     }
     try {
-      const sdk = getCircleClient()
+      const sdk = await getCircleClient()
       // Idempotency key: walletId + to + amount + minute-floored timestamp
       const idem = `nan-tx-${walletId}-${to}-${amtFloat}-${Math.floor(Date.now() / 60000)}`
         .replace(/[^a-zA-Z0-9-]/g, '-').slice(0, 64)
@@ -117,7 +117,7 @@ export default async function handler(req, res) {
     const txId = req.query?.txId
     if (!txId) return res.status(400).json({ success: false, error: 'txId required' })
     try {
-      const sdk = getCircleClient()
+      const sdk = await getCircleClient()
       const r = await sdk.getTransaction({ id: txId })
       const tx = r.data?.transaction
       return res.json({

@@ -3,7 +3,6 @@
 // POST { action: 'verify', email, otp, token, expiresAt } -> { sessionToken, walletAddress, walletId }
 
 import crypto from 'crypto'
-import { initiateDeveloperControlledWalletsClient } from '@circle-fin/developer-controlled-wallets'
 import { signEmailSession } from './_lib/auth.js'
 import { parseBody } from './_lib/parse.js'
 
@@ -75,11 +74,12 @@ async function sendOtpEmail(to, code) {
   return { sent: true }
 }
 
-// ── Circle SDK — get or create wallet for email ───────────────────────────────
-function getCircleClient() {
+// ── Circle SDK — lazy-loaded to avoid Vercel cold-start import errors ─────────
+async function getCircleClient() {
   const apiKey = process.env.CIRCLE_API_KEY || process.env.CIRCLE_DEVELOPER_CONTROLLED_API_KEY
   const entitySecret = process.env.CIRCLE_ENTITY_SECRET || process.env.ENTITY_SECRET
   if (!apiKey || !entitySecret) return null
+  const { initiateDeveloperControlledWalletsClient } = await import('@circle-fin/developer-controlled-wallets')
   return initiateDeveloperControlledWalletsClient({ apiKey, entitySecret })
 }
 
@@ -91,7 +91,7 @@ const walletCache = new Map()
 async function getOrCreateWallet(email) {
   if (walletCache.has(email)) return walletCache.get(email)
 
-  const sdk = getCircleClient()
+  const sdk = await getCircleClient()
   if (!sdk) {
     // No Circle credentials — return a placeholder so login still works
     const fake = { walletId: `demo-${email}`, walletAddress: '0x0000000000000000000000000000000000000000' }

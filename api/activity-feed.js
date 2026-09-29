@@ -1,13 +1,13 @@
 // api/activity-feed.js — transaction history from Circle SDK
 // GET /api/activity-feed -> { items: ActivityItem[] }
 
-import { initiateDeveloperControlledWalletsClient } from '@circle-fin/developer-controlled-wallets'
 import { requireEmailSession } from './_lib/auth.js'
 
-function getCircleClient() {
+async function getCircleClient() {
   const apiKey = process.env.CIRCLE_API_KEY || process.env.CIRCLE_DEVELOPER_CONTROLLED_API_KEY
   const entitySecret = process.env.CIRCLE_ENTITY_SECRET || process.env.ENTITY_SECRET
   if (!apiKey || !entitySecret) throw new Error('Circle credentials not configured')
+  const { initiateDeveloperControlledWalletsClient } = await import('@circle-fin/developer-controlled-wallets')
   return initiateDeveloperControlledWalletsClient({ apiKey, entitySecret })
 }
 
@@ -41,7 +41,7 @@ export default async function handler(req, res) {
   const { walletId, walletAddress } = req.session
 
   try {
-    const sdk = getCircleClient()
+    const sdk = await getCircleClient()
     // List outbound transactions from this wallet
     const [outRes, inRes] = await Promise.allSettled([
       sdk.listTransactions({ walletIds: [walletId], pageSize: 50 }),
