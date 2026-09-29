@@ -12,8 +12,8 @@ import { Input, Textarea } from '../ui/Input'
 import { Badge } from '../ui/Badge'
 import { useNanStore, ActivityItem } from '../../store/nanStore'
 import { formatAddress, formatUSDC, parseOnchainError } from '../../utils/format'
-import { getUsdc, requireChain, buildTxExplorerUrl } from '@/onchain-facts'
-import { parseAmount } from '@/onchain-money'
+import { getUsdc, requireChain, buildTxExplorerUrl } from '@/onchain-facts.ts'
+import { parseAmount } from '@/onchain-money.ts'
 
 import { getWallet, sendUsdc, nanBackendConfigured } from '../../lib/nan'
 

@@ -4,7 +4,7 @@ import { Card } from '../ui/Card'
 import { Badge } from '../ui/Badge'
 import { useNanStore, ActivityItem, ActivityType } from '../../store/nanStore'
 import { formatUSDC, formatRelativeTime } from '../../utils/format'
-import { buildTxExplorerUrl } from '@/onchain-facts'
+import { buildTxExplorerUrl } from '@/onchain-facts.ts'
 import { getActivity, nanBackendConfigured } from '../../lib/nan'
 
 const TYPE_FILTERS = [

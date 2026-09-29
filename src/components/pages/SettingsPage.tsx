@@ -6,7 +6,7 @@ import { Card } from '../ui/Card'
 import { Badge } from '../ui/Badge'
 import { useNanStore } from '../../store/nanStore'
 import { formatAddress } from '../../utils/format'
-import { requireChain } from '@/onchain-facts'
+import { requireChain } from '@/onchain-facts.ts'
 
 const ARC_TESTNET_ID = 5042002
 
