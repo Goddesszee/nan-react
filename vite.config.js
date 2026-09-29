@@ -26,9 +26,10 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
-      // zod/mini is a zod v4 export; wagmi's porto connector references it but
-      // we're on zod v3. Point it at the v3 compat shim so Vite doesn't error.
-      'zod/mini': path.resolve(__dirname, 'node_modules/zod/v4-mini/index.js'),
+      // zod/mini is a zod v4 subpath; wagmi's porto connector imports it but
+      // zod v3 exposes it as ./v4-mini. Map it to the ESM dist directly so
+      // both local and Vercel builds resolve it identically.
+      'zod/mini': path.resolve(__dirname, 'node_modules/zod/dist/esm/v4/mini/index.js'),
     },
   },
   server: {
