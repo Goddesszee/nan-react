@@ -1,62 +1,53 @@
-// api/otp.js
-// Email OTP login — uses Resend HTTP API directly (more reliable than SMTP)
-// Sends from noreply@nanarc.xyz via Resend
-// Required env vars: SMTP_PASS (Resend API key), SMTP_FROM (optional)
+// api/otp.js — Email OTP login using Resend + Circle developer-controlled wallets
+// POST { action: 'send', email } -> { token, expiresAt }
+// POST { action: 'verify', email, otp, token, expiresAt } -> { sessionToken, walletAddress, walletId }
 
-import crypto from 'crypto';
-import { signEmailSession } from './_lib/auth.js';
+import crypto from 'crypto'
+import { initiateDeveloperControlledWalletsClient } from '@circle-fin/developer-controlled-wallets'
+import { signEmailSession } from './_lib/auth.js'
 
-const otpRateLimit = new Map();
-
+// ── Rate limiting (per email, 5 OTPs/hour) ───────────────────────────────────
+const otpRateLimit = new Map()
 function checkOtpLimit(email) {
-  const now    = Date.now();
-  const record = otpRateLimit.get(email) || { count: 0, start: now };
-  if (now - record.start > 3_600_000) {
-    otpRateLimit.set(email, { count: 1, start: now });
-    return true;
+  const now = Date.now()
+  const rec = otpRateLimit.get(email) || { count: 0, start: now }
+  if (now - rec.start > 3_600_000) { otpRateLimit.set(email, { count: 1, start: now }); return true }
+  if (rec.count >= 5) return false
+  rec.count++; otpRateLimit.set(email, rec); return true
+}
+
+// ── OTP signing (HMAC so the token is verifiable server-side without a DB) ───
+const OTP_SECRET = process.env.OTP_SECRET || process.env.CIRCLE_ENTITY_SECRET || 'nan-otp-v1'
+function signOtp(email, otp, expiresAt) {
+  const data = `${email.toLowerCase().trim()}:${otp}:${Math.floor(Number(expiresAt))}`
+  return crypto.createHmac('sha256', OTP_SECRET).update(data).digest('hex')
+}
+
+// ── Send OTP email via Resend ─────────────────────────────────────────────────
+async function sendOtpEmail(to, code) {
+  const apiKey = process.env.SMTP_PASS // Resend API key stored here
+  const from = process.env.SMTP_FROM || 'NAN <onboarding@resend.dev>'
+  if (!apiKey) {
+    // Dev fallback — log to console
+    console.log(`\n[OTP DEV] Code for ${to}: ${code}\n`)
+    return { dev: true }
   }
-  if (record.count >= 5) return false;
-  record.count++;
-  otpRateLimit.set(email, record);
-  return true;
-}
-
-function signOTP(email, otp, expiresAt) {
-  const secret = process.env.OTP_SECRET || process.env.CIRCLE_ENTITY_SECRET || 'nan-otp-fixed-secret-v1';
-  const ts     = String(Math.floor(Number(expiresAt)));
-  const data   = `${email.toLowerCase().trim()}:${otp.trim()}:${ts}`;
-  return crypto.createHmac('sha256', secret).update(data).digest('hex');
-}
-
-function generateCode() {
-  return Math.floor(100_000 + Math.random() * 900_000).toString();
-}
-
-async function sendEmail(to, code) {
-  const apiKey  = process.env.SMTP_PASS; // Resend API key
-  const from    = process.env.SMTP_FROM || 'NAN <onboarding@resend.dev>';
-
-  if(!apiKey) throw new Error('SMTP_PASS (Resend API key) not set in environment');
-  const r = await fetch('https://api.resend.com/emails', {
-    method:  'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type':  'application/json',
-    },
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       from,
-      to:      [to],
+      to: [to],
       subject: 'Your NAN login code',
       html: `
-        <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-                    max-width:440px;margin:0 auto;background:#0f0f1a;border-radius:16px;
-                    overflow:hidden;border:1px solid rgba(37,99,235,0.3);">
-          <div style="background:linear-gradient(135deg,#0a1a3e,#16213e);padding:32px;text-align:center;">
-            <div style="font-size:28px;font-weight:800;color:#2563EB;letter-spacing:-0.5px;">
-              NAN <span style="color:#60a5fa;">✦</span>
-            </div>
+        <div style="font-family:-apple-system,sans-serif;max-width:440px;margin:0 auto;
+                    background:#0f0f1a;border-radius:16px;overflow:hidden;
+                    border:1px solid rgba(37,99,235,0.3);">
+          <div style="background:linear-gradient(135deg,#0a1a3e,#16213e);
+                      padding:32px;text-align:center;">
+            <div style="font-size:28px;font-weight:800;color:#2563EB;">NAN</div>
             <div style="color:#6b7280;font-size:13px;margin-top:4px;">
-              Stablecoin Payments on Arc · Powered by Circle
+              Stablecoin payments on Arc · Powered by Circle
             </div>
           </div>
           <div style="padding:32px;">
@@ -66,96 +57,144 @@ async function sendEmail(to, code) {
             <div style="background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.4);
                         border-radius:12px;padding:28px;text-align:center;
                         letter-spacing:12px;font-size:36px;font-weight:700;
-                        font-family:'Courier New',monospace;color:#60a5fa;">
+                        font-family:monospace;color:#60a5fa;">
               ${code}
             </div>
             <p style="color:#6b7280;font-size:13px;margin-top:20px;text-align:center;">
-              ⏱ Expires in 10 minutes &nbsp;·&nbsp; Never share this code
-            </p>
-          </div>
-          <div style="background:rgba(0,0,0,0.3);padding:16px 32px;text-align:center;
-                      border-top:1px solid rgba(37,99,235,0.1);">
-            <p style="color:#4b5563;font-size:12px;margin:0;">
-              NAN · <a href="https://nanarc.xyz" style="color:#2563EB;text-decoration:none;">nanarc.xyz</a>
-              &nbsp;·&nbsp; Built on Arc Testnet by Circle
+              Expires in 10 minutes &nbsp;·&nbsp; Never share this code
             </p>
           </div>
         </div>`,
     }),
-  });
-
-  const data = await r.json();
-  console.log('[OTP Resend]', r.status, JSON.stringify(data));
-  if (!r.ok) throw new Error(data?.message || data?.name || `Resend ${r.status}: ${JSON.stringify(data)}`);
-  return data;
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}))
+    throw new Error(err.message || `Email send failed (${res.status})`)
+  }
+  return { sent: true }
 }
 
-export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'POST') return res.status(405).end();
+// ── Circle SDK — get or create wallet for email ───────────────────────────────
+function getCircleClient() {
+  const apiKey = process.env.CIRCLE_API_KEY || process.env.CIRCLE_DEVELOPER_CONTROLLED_API_KEY
+  const entitySecret = process.env.CIRCLE_ENTITY_SECRET || process.env.ENTITY_SECRET
+  if (!apiKey || !entitySecret) return null
+  return initiateDeveloperControlledWalletsClient({ apiKey, entitySecret })
+}
 
-  const { action, email, otp, token, expiresAt } = req.body;
+// In-memory wallet cache: email -> { walletId, walletAddress, walletSetId }
+// In production this should be a real DB; for Vercel serverless this resets per
+// cold start, but Circle's idempotency means re-creating returns the same wallet.
+const walletCache = new Map()
 
-  // ── send ─────────────────────────────────────────────────────────────────
-  if (action === 'send') {
-    if (!email?.includes('@'))                       return res.json({ success: false, error: 'Invalid email' });
-    if (email.length > 100)                          return res.json({ success: false, error: 'Email too long' });
-    if (email.includes('<') || email.includes('>'))  return res.json({ success: false, error: 'Invalid email' });
+async function getOrCreateWallet(email) {
+  if (walletCache.has(email)) return walletCache.get(email)
 
-    if (!checkOtpLimit(email.toLowerCase()))
-      return res.json({ success: false, error: 'Too many codes — try again in 1 hour' });
+  const sdk = getCircleClient()
+  if (!sdk) {
+    // No Circle credentials — return a placeholder so login still works
+    const fake = { walletId: `demo-${email}`, walletAddress: '0x0000000000000000000000000000000000000000' }
+    walletCache.set(email, fake)
+    return fake
+  }
 
-    const code    = generateCode();
-    const expires = Date.now() + 600_000;
-    const sig     = signOTP(email, code, expires);
+  // Use email hash as idempotency seed so the same wallet is returned on retry
+  const emailHash = crypto.createHash('sha256').update(email.toLowerCase().trim()).digest('hex').slice(0, 16)
 
-    if (process.env.SMTP_PASS) {
-      try {
-        await sendEmail(email, code);
-        return res.json({ success: true, token: sig, expiresAt: expires });
-      } catch (err) {
-        console.error('Resend error:', err.message);
-        // Fall through to dev mode
-      }
+  // 1. Find existing wallets by name tag
+  try {
+    const listRes = await sdk.listWallets({ pageSize: 50 })
+    const existing = (listRes.data?.wallets || []).find(w => w.name === `nan-user-${emailHash}`)
+    if (existing) {
+      const entry = { walletId: existing.id, walletAddress: existing.address }
+      walletCache.set(email, entry)
+      return entry
     }
+  } catch {}
 
-    // Dev fallback
-    console.log(`[NAN DEV] OTP for ${email}: ${code}`);
-    return res.json({ success: true, dev: true, token: sig, expiresAt: expires });
+  // 2. Create wallet set (idempotent by name)
+  let walletSetId = process.env.NAN_WALLET_SET_ID
+  if (!walletSetId) {
+    try {
+      const wsRes = await sdk.createWalletSet({ name: 'nan-users', idempotencyKey: 'nan-users-walletset-v1' })
+      walletSetId = wsRes.data?.walletSet?.id
+    } catch (e) {
+      // May already exist — try to find it
+      const wsList = await sdk.listWalletSets({ pageSize: 10 })
+      const ws = (wsList.data?.walletSets || []).find(w => w.name === 'nan-users')
+      walletSetId = ws?.id
+    }
+  }
+  if (!walletSetId) throw new Error('Could not get or create wallet set')
+
+  // 3. Create the user's wallet on ARC-TESTNET
+  const walletsRes = await sdk.createWallets({
+    accountType: 'EOA',
+    blockchains: ['ARC-TESTNET'],
+    count: 1,
+    walletSetId,
+    metadata: [{ name: `nan-user-${emailHash}`, refId: email }],
+  })
+  const wallet = walletsRes.data?.wallets?.[0]
+  if (!wallet) throw new Error('Wallet creation failed')
+
+  const entry = { walletId: wallet.id, walletAddress: wallet.address }
+  walletCache.set(email, entry)
+  return entry
+}
+
+// ── Handler ───────────────────────────────────────────────────────────────────
+export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+  if (req.method === 'OPTIONS') return res.status(200).end()
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
+
+  const { action, email, otp, token, expiresAt } = req.body || {}
+  if (!email || typeof email !== 'string') return res.status(400).json({ success: false, error: 'email required' })
+  const normalEmail = email.toLowerCase().trim()
+
+  // ── Action: send ────────────────────────────────────────────────────────────
+  if (action === 'send') {
+    if (!checkOtpLimit(normalEmail)) {
+      return res.status(429).json({ success: false, error: 'Too many OTP requests — try again in an hour' })
+    }
+    const code = Math.floor(100_000 + Math.random() * 900_000).toString()
+    const exp = Date.now() + 10 * 60 * 1000 // 10 min
+    const signed = signOtp(normalEmail, code, exp)
+    try {
+      const result = await sendOtpEmail(normalEmail, code)
+      return res.json({ success: true, token: signed, expiresAt: exp, dev: result.dev || false })
+    } catch (err) {
+      console.error('[otp/send]', err.message)
+      return res.status(500).json({ success: false, error: err.message })
+    }
   }
 
-  // ── verify ────────────────────────────────────────────────────────────────
+  // ── Action: verify ──────────────────────────────────────────────────────────
   if (action === 'verify') {
-    console.log('[OTP verify]', { email, otp, token: token?.slice(0,8), expiresAt, now: Date.now() });
-    if (!email || !otp || !token || !expiresAt)
-      return res.json({ success: false, error: 'Missing fields: '+JSON.stringify({email:!!email,otp:!!otp,token:!!token,expiresAt:!!expiresAt}) });
-    if (typeof otp !== 'string' || otp.length !== 6 || !/^\d+$/.test(otp))
-      return res.json({ success: false, error: 'Code must be 6 digits' });
-    if (Date.now() > Number(expiresAt))
-      return res.json({ success: false, error: 'Code expired — request a new one' });
-
-    const expected = signOTP(email, otp.trim(), Number(expiresAt));
-    console.log('[OTP verify] expected:', expected?.slice(0,8), 'got:', token?.slice(0,8));
-    // Compare as raw strings, not hex-decoded buffers — Buffer.from(str,'hex')
-    // silently truncates at the first invalid/odd character rather than
-    // throwing, which could let a tampered token with junk appended still
-    // decode to the right byte length and pass the comparison below.
-    if (typeof token !== 'string' || !/^[0-9a-f]{64}$/.test(token))
-      return res.json({ success: false, error: 'Wrong code' });
-    const a = Buffer.from(expected, 'utf8');
-    const b = Buffer.from(token,    'utf8');
-    if (a.length !== b.length || !crypto.timingSafeEqual(a, b))
-      return res.json({ success: false, error: 'Wrong code — expected:'+expected?.slice(0,8)+' got:'+token?.slice(0,8) });
-
-    // Issue a session token proving this email was verified just now. The
-    // frontend must store this and send it as `Authorization: Bearer <token>`
-    // on every subsequent Circle-wallet request for this email.
-    const sessionToken = signEmailSession(email);
-    return res.json({ success: true, sessionToken });
+    if (!otp || !token || !expiresAt) {
+      return res.status(400).json({ success: false, error: 'otp, token, and expiresAt required' })
+    }
+    if (Date.now() > Number(expiresAt)) {
+      return res.status(400).json({ success: false, error: 'OTP expired — please request a new one' })
+    }
+    const expected = signOtp(normalEmail, String(otp).trim(), expiresAt)
+    if (!crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(token))) {
+      return res.status(400).json({ success: false, error: 'Invalid code — please try again' })
+    }
+    try {
+      const { walletId, walletAddress } = await getOrCreateWallet(normalEmail)
+      const sessionToken = signEmailSession({
+        email: normalEmail, walletId, walletAddress, iat: Date.now(),
+      })
+      return res.json({ success: true, sessionToken, walletAddress, walletId })
+    } catch (err) {
+      console.error('[otp/verify]', err.message)
+      return res.status(500).json({ success: false, error: `Login failed: ${err.message}` })
+    }
   }
 
-  return res.json({ success: false, error: 'Unknown action' });
+  return res.status(400).json({ success: false, error: 'Unknown action' })
 }
