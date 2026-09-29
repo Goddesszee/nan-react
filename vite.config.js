@@ -11,6 +11,16 @@ export default defineConfig({
     react(),
     nodePolyfills({ include: ['buffer', 'process', 'util', 'stream'] }),
   ],
+  build: {
+    rollupOptions: {
+      onwarn(warning, warn) {
+        // Suppress circular dependency warnings from node-stdlib-browser polyfills
+        if (warning.code === 'CIRCULAR_DEPENDENCY') return
+        if (warning.code === 'INVALID_ANNOTATION') return
+        warn(warning)
+      },
+    },
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
