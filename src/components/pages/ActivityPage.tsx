@@ -4,8 +4,12 @@ import { Card } from '../ui/Card'
 import { Badge } from '../ui/Badge'
 import { useNanStore, ActivityItem, ActivityType } from '../../store/nanStore'
 import { formatUSDC, formatRelativeTime } from '../../utils/format'
-import { buildTxExplorerUrl } from '@/onchain-facts.ts'
 import { getActivity, nanBackendConfigured } from '../../lib/nan'
+
+const ARC_EXPLORER = 'https://explorer.testnet.arc.io'
+function buildTxExplorerUrl(_chainId: number, txHash: string) {
+  return `${ARC_EXPLORER}/tx/${txHash}`
+}
 
 const TYPE_FILTERS = [
   { id: 'all', label: 'All' },

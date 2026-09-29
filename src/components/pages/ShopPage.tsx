@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react'
 import { Search, Star, ShoppingCart, ArrowLeft, Check, X, SlidersHorizontal, ShoppingBag } from 'lucide-react'
-import { useAccount } from 'wagmi'
 import { toast } from 'sonner'
 import { Card } from '../ui/Card'
 import { Button } from '../ui/Button'
@@ -18,8 +17,8 @@ export function ShopPage() {
   const [activeCategory, setActiveCategory] = useState('all')
   const [search, setSearch] = useState('')
 
-  const { cart, addToCart, removeFromCart, clearCart, addActivity } = useNanStore()
-  const { isConnected } = useAccount()
+  const { cart, addToCart, removeFromCart, clearCart, addActivity, nanAuth } = useNanStore()
+  const isConnected = !!nanAuth?.sessionToken
 
   const filteredProducts = useMemo(() => {
     return PRODUCTS.filter((p) => {
