@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
@@ -9,14 +8,17 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 export default defineConfig({
   plugins: [
     react(),
-    nodePolyfills({ include: ['buffer', 'process', 'util', 'stream'] }),
   ],
+  define: {
+    // Required for wagmi / viem / connectkit in browser builds
+    global: 'globalThis',
+  },
   build: {
     rollupOptions: {
       onwarn(warning, warn) {
-        // Suppress circular dependency warnings from node-stdlib-browser polyfills
         if (warning.code === 'CIRCULAR_DEPENDENCY') return
         if (warning.code === 'INVALID_ANNOTATION') return
+        if (warning.code === 'MODULE_LEVEL_DIRECTIVE') return
         warn(warning)
       },
     },
