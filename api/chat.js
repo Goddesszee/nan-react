@@ -2,6 +2,7 @@
 // POST { messages, usdcBal, userAddress } -> { reply, action?, productId?, amount? }
 
 import { requireEmailSession } from './_lib/auth.js'
+import { parseBody } from './_lib/parse.js'
 
 const PRODUCTS = [
   { id: 'p1', name: 'Wireless Mechanical Keyboard', price: 24, merchant: 'TechFlow', category: 'tech', inStock: true },
@@ -42,7 +43,8 @@ export default async function handler(req, res) {
 
   if (!requireEmailSession(req, res)) return
 
-  const { messages = [], usdcBal, userAddress } = req.body || {}
+  const body = await parseBody(req)
+  const { messages = [], usdcBal, userAddress } = body
   if (!Array.isArray(messages) || messages.length === 0) {
     return res.status(400).json({ success: false, error: 'messages array required' })
   }

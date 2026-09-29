@@ -7,6 +7,7 @@
 import crypto from 'crypto'
 import { initiateDeveloperControlledWalletsClient } from '@circle-fin/developer-controlled-wallets'
 import { requireEmailSession } from './_lib/auth.js'
+import { parseBody, parseQuery } from './_lib/parse.js'
 
 const ARC_TESTNET_USDC = process.env.VITE_ARC_USDC_ADDRESS
 const TREASURY_ADDRESS = process.env.NAN_TREASURY_ADDRESS
@@ -91,9 +92,9 @@ export default async function handler(req, res) {
   if (!requireEmailSession(req, res)) return
   const { walletId } = req.session
 
-  const action = req.method === 'GET'
-    ? (req.query?.action || 'status')
-    : (req.body?.action)
+  const query = parseQuery(req)
+  const body = await parseBody(req)
+  const action = req.method === 'GET' ? (query.action || 'status') : body.action
 
   // ── GET status ───────────────────────────────────────────────────────────────
   if (action === 'status') {

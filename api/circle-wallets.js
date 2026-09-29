@@ -6,6 +6,7 @@
 
 import { initiateDeveloperControlledWalletsClient } from '@circle-fin/developer-controlled-wallets'
 import { requireEmailSession } from './_lib/auth.js'
+import { parseBody, parseQuery } from './_lib/parse.js'
 
 const ARC_TESTNET_USDC = '0x3600000000000000000000000000000000000000'
 const ARC_CHAIN = 'ARC-TESTNET'
@@ -26,9 +27,9 @@ export default async function handler(req, res) {
   if (!requireEmailSession(req, res)) return
   const { walletId, walletAddress } = req.session
 
-  const action = req.method === 'GET'
-    ? (req.query?.action || 'wallet')
-    : (req.body?.action)
+  const query = parseQuery(req)
+  const body = await parseBody(req)
+  const action = req.method === 'GET' ? (query.action || 'wallet') : body.action
 
   // ── GET wallet info ──────────────────────────────────────────────────────────
   if (action === 'wallet') {
@@ -76,7 +77,7 @@ export default async function handler(req, res) {
   // ── POST transfer ────────────────────────────────────────────────────────────
   if (action === 'transfer') {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
-    const { to, amount } = req.body || {}
+    const { to, amount } = body
     if (!to || !amount) {
       return res.status(400).json({ success: false, error: '`to` and `amount` are required' })
     }

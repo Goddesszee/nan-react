@@ -5,6 +5,7 @@
 import crypto from 'crypto'
 import { initiateDeveloperControlledWalletsClient } from '@circle-fin/developer-controlled-wallets'
 import { signEmailSession } from './_lib/auth.js'
+import { parseBody } from './_lib/parse.js'
 
 // ── Rate limiting (per email, 5 OTPs/hour) ───────────────────────────────────
 const otpRateLimit = new Map()
@@ -151,7 +152,8 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end()
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  const { action, email, otp, token, expiresAt } = req.body || {}
+  const body = await parseBody(req)
+  const { action, email, otp, token, expiresAt } = body
   if (!email || typeof email !== 'string') return res.status(400).json({ success: false, error: 'email required' })
   const normalEmail = email.toLowerCase().trim()
 

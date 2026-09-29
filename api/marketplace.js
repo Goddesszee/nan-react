@@ -7,6 +7,7 @@
 import crypto from 'crypto'
 import { initiateDeveloperControlledWalletsClient } from '@circle-fin/developer-controlled-wallets'
 import { requireEmailSession } from './_lib/auth.js'
+import { parseBody, parseQuery } from './_lib/parse.js'
 
 // Treasury address comes from env — set NAN_TREASURY_ADDRESS in Vercel
 // (the USDC contract address is read from onchain-facts on the frontend;
@@ -47,15 +48,15 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
   if (req.method === 'OPTIONS') return res.status(200).end()
 
-  const action = req.method === 'GET'
-    ? (req.query?.action || 'products')
-    : (req.body?.action)
+  const query = parseQuery(req)
+  const body = await parseBody(req)
+  const action = req.method === 'GET' ? (query.action || 'products') : body.action
 
   const PRODUCTS = buildProducts()
 
   // ── Public: product catalog ──────────────────────────────────────────────────
   if (action === 'products') {
-    const { category, search, maxPrice } = req.query || {}
+    const { category, search, maxPrice } = query
     let list = PRODUCTS
     if (category && category !== 'all') list = list.filter(p => p.category === category)
     if (search) {
@@ -72,7 +73,7 @@ export default async function handler(req, res) {
   }
 
   if (action === 'product') {
-    const id = req.query?.id
+    const id = query.id
     const product = PRODUCTS.find(p => p.id === id)
     if (!product) return res.status(404).json({ success: false, error: 'Product not found' })
     const { merchantAddress, ...safe } = product
