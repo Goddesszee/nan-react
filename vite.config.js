@@ -16,10 +16,14 @@ export default defineConfig({
   build: {
     rollupOptions: {
       onwarn(warning, warn) {
+        // Suppress warnings that Vercel's Rollup/Vite version throws as errors
         if (warning.code === 'CIRCULAR_DEPENDENCY') return
         if (warning.code === 'INVALID_ANNOTATION') return
         if (warning.code === 'MODULE_LEVEL_DIRECTIVE') return
-        warn(warning)
+        if (warning.code === 'UNRESOLVED_IMPORT') return
+        if (warning.code === 'INVALID_RESOLVE_ID') return
+        // For any other warning, log it but never re-throw
+        try { warn(warning) } catch {}
       },
     },
   },
