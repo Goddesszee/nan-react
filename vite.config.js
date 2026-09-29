@@ -28,7 +28,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
-      'zod/mini': path.resolve(__dirname, 'src/zod-mini-stub.js'),
+      'zod/mini': path.resolve(__dirname, 'node_modules/@wagmi/connectors/node_modules/zod/dist/esm/v4/mini/index.js'),
     },
   },
   server: {
