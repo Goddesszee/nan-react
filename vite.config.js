@@ -12,14 +12,26 @@ export default defineConfig({
     nodePolyfills({ include: ['buffer', 'process', 'util', 'stream'] }),
   ],
   resolve: {
-    alias: { '@': path.resolve(__dirname, 'src') },
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+      // zod/mini is a zod v4 export; wagmi's porto connector references it but
+      // we're on zod v3. Point it at the v3 compat shim so Vite doesn't error.
+      'zod/mini': path.resolve(__dirname, 'node_modules/zod/v4-mini/index.js'),
+    },
   },
   server: {
     port: 5174,
+    // In local dev, proxy /api to the local Express server (bun run server).
+    // On Vercel, /api/* is handled natively by the serverless functions in api/.
     proxy: {
       '/api': {
-        target: 'https://nan-production.up.railway.app',
+        target: process.env.VITE_NAN_API_URL || 'http://localhost:3000',
         changeOrigin: true,
+        configure: (proxy) => {
+          proxy.on('error', () => {
+            // Silently ignore proxy errors — backend may not be running locally
+          })
+        },
       },
     },
   },

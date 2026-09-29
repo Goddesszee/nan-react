@@ -1,14 +1,15 @@
 /**
  * nan.ts — typed client for all Nan backend API routes
  *
- * When deployed on Vercel (nanarc.xyz), the frontend and backend are on the
- * same domain — API calls use relative paths (/api/...).
- * When hosted separately, set VITE_NAN_API_URL to the Railway backend URL.
+ * Frontend and backend are co-deployed in the same Vercel project.
+ * API calls use relative paths (/api/...) — they resolve on the same domain
+ * in both production (Vercel serverless functions) and local dev (Vite proxy
+ * forwarding to the local Express server on port 3000).
+ *
+ * Override BASE only for cross-origin testing: set VITE_NAN_API_URL in .env.local
  */
 
-// Production: relative paths work when Vercel proxies /api/* to Railway.
-// Development: Vite dev server proxies /api to localhost:3000.
-// Override: set VITE_NAN_API_URL=https://nan-production.up.railway.app in .env.local
+// Relative by default — works both on Vercel and through the Vite dev proxy.
 const BASE = (import.meta.env.VITE_NAN_API_URL as string | undefined) ?? ''
 
 // ── helpers ──────────────────────────────────────────────────────────────────
@@ -322,7 +323,11 @@ export async function nanChat(opts: {
 
 // ── Utility ───────────────────────────────────────────────────────────────────
 
-/** True when the app is configured to talk to a real Nan backend */
+/**
+ * True when the Nan backend API is expected to be reachable.
+ * In the merged monorepo the backend is always co-deployed, so this always
+ * returns true unless explicitly disabled via VITE_NAN_BACKEND_DISABLED=true.
+ */
 export function nanBackendConfigured(): boolean {
-  return !!(import.meta.env.VITE_NAN_API_URL as string | undefined)
+  return (import.meta.env.VITE_NAN_BACKEND_DISABLED as string | undefined) !== 'true'
 }
