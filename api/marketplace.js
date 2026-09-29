@@ -1,151 +1,437 @@
-// api/marketplace.js — product catalog + USDC order execution via Circle SDK
-// GET  /api/marketplace?action=products            -> { products }
-// GET  /api/marketplace?action=product&id=...      -> { product }
-// POST /api/marketplace { action:'order', productId, quantity } -> { orderId, txId, state }
-// GET  /api/marketplace?action=orders              -> { orders }
+import { parseBody } from './_lib/parse.js';
+// api/marketplace.js — NAN Marketplace: listings, offers, and true escrow orders
+// Escrow custody: a dedicated Circle Developer-Controlled Wallet, auto-provisioned on
+// first use (find-or-create, same pattern as api/circle-wallets.js's getWallet). Circle's
+// MPC network holds the actual key material — no private key ever touches this server.
+import crypto from 'crypto';
 
-import crypto from 'crypto'
-import { requireEmailSession } from './_lib/auth.js'
-import { parseBody, parseQuery } from './_lib/parse.js'
+const BLOCKCHAIN = 'ARC-TESTNET';
+const ARC_USDC   = process.env.USDC_ADDRESS || '0x3600000000000000000000000000000000000000';
+const ESCROW_WALLETSET_NAME = 'nan-marketplace-escrow';
 
-// Treasury address comes from env — set NAN_TREASURY_ADDRESS in Vercel
-// (the USDC contract address is read from onchain-facts on the frontend;
-// here we only need the destination wallet address for payments)
-const TREASURY_ADDRESS = process.env.NAN_TREASURY_ADDRESS
-const ARC_TESTNET_USDC = process.env.VITE_ARC_USDC_ADDRESS // set via printf in .env
+const KV_URL   = process.env.KV_REST_API_URL;
+const KV_TOKEN = process.env.KV_REST_API_TOKEN;
 
-// ── Product catalog ────────────────────────────────────────────────────────────
-function buildProducts() {
-  const dest = TREASURY_ADDRESS || null
-  return [
-    { id: 'p1', name: 'Wireless Mechanical Keyboard', price: 24, merchant: 'TechFlow', merchantAddress: dest, category: 'tech', inStock: true, rating: 4.8, reviewCount: 124, description: 'Compact TKL layout with tactile brown switches, per-key RGB lighting, and 2.4GHz wireless receiver. Up to 70-hour battery.', tags: ['wireless', 'mechanical', 'rgb'], imageUrl: 'https://images.unsplash.com/photo-1595044426077-d36d9236d54a?w=400&q=80' },
-    { id: 'p2', name: 'Noise-Cancelling Headphones', price: 49, merchant: 'AudioHub', merchantAddress: dest, category: 'tech', inStock: true, rating: 4.6, reviewCount: 89, description: 'Active noise cancellation, 30-hour playtime, foldable design, premium 40mm drivers with Hi-Res Audio certification.', tags: ['anc', 'wireless', 'audio'], imageUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&q=80' },
-    { id: 'p3', name: 'Laptop Stand Adjustable', price: 18, merchant: 'DeskMate', merchantAddress: dest, category: 'tech', inStock: true, rating: 4.7, reviewCount: 203, description: 'Ergonomic aluminium stand, 6 height settings, fits laptops 10-17 inches. Improves posture and airflow.', tags: ['ergonomic', 'aluminium', 'adjustable'], imageUrl: 'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&q=80' },
-    { id: 'p4', name: 'LED Desk Lamp', price: 12, merchant: 'LightUp', merchantAddress: dest, category: 'home', inStock: true, rating: 4.5, reviewCount: 67, description: 'Touch-dimmer, 5 colour temperatures 2700-6500K, USB-A charging port, flexible gooseneck.', tags: ['led', 'dimmable', 'usb'], imageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80' },
-    { id: 'p5', name: 'Urban Backpack 30L', price: 38, merchant: 'UrbanGear', merchantAddress: dest, category: 'fashion', inStock: true, rating: 4.9, reviewCount: 156, description: 'Water-resistant 420D nylon, dedicated 16" laptop compartment, hidden anti-theft pocket, USB-A pass-through port.', tags: ['waterproof', 'laptop', 'commute'], imageUrl: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&q=80' },
-    { id: 'p6', name: 'UI Kit Template Pro', price: 9, merchant: 'DesignLab', merchantAddress: dest, category: 'digital', inStock: true, rating: 4.8, reviewCount: 44, description: '320+ components, 12 page templates, dark + light modes, auto-layout, Figma native. Instant download.', tags: ['figma', 'components', 'design-system'], imageUrl: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&q=80' },
-    { id: 'p7', name: 'Premium Icon Set 1200+', price: 7, merchant: 'DesignLab', merchantAddress: dest, category: 'digital', inStock: true, rating: 4.7, reviewCount: 31, description: '1200+ icons in SVG and PNG, 3 weights (Regular, Medium, Bold), MIT licensed for commercial use.', tags: ['svg', 'icons', 'mit'], imageUrl: 'https://images.unsplash.com/photo-1618788372246-79faff0c3742?w=400&q=80' },
-    { id: 'p8', name: 'Braided USB-C Cable 2m', price: 5, merchant: 'TechFlow', merchantAddress: dest, category: 'tech', inStock: true, rating: 4.4, reviewCount: 312, description: 'USB 3.2 Gen 2, 100W PD charging, 10Gbps data, Aramid fibre braid, USB-IF certified.', tags: ['fast-charge', '100w', 'data'], imageUrl: 'https://images.unsplash.com/photo-1625315700946-4e24d504df1d?w=400&q=80' },
-    { id: 'p9', name: 'Minimalist Leather Wallet', price: 22, merchant: 'UrbanGear', merchantAddress: dest, category: 'fashion', inStock: true, rating: 4.6, reviewCount: 78, description: 'Full-grain veg-tanned leather, holds 6 cards + cash, slim 6mm profile, RFID blocking lining.', tags: ['rfid', 'slim', 'leather'], imageUrl: 'https://images.unsplash.com/photo-1627123424574-724758594e93?w=400&q=80' },
-    { id: 'p10', name: 'USB Hub 7-Port', price: 16, merchant: 'TechFlow', merchantAddress: dest, category: 'tech', inStock: true, rating: 4.5, reviewCount: 91, description: '4× USB-A 3.0 + 3× USB-A 2.0, individual LED power switches, braided 1m cable, bus-powered.', tags: ['usb3', 'hub', 'bus-powered'], imageUrl: 'https://images.unsplash.com/photo-1531492746076-161ca9bcad58?w=400&q=80' },
-  ]
+// ── Redis helpers — identical implementation to api/agent-wallets.js ────────
+async function kvGet(key) {
+  const { default: fetch } = await import('node-fetch');
+  const r = await fetch(KV_URL, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${KV_TOKEN}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(['GET', key]),
+  });
+  const d = await r.json();
+  return d?.result ? JSON.parse(d.result) : null;
+}
+async function kvSet(key, value) {
+  const { default: fetch } = await import('node-fetch');
+  const r = await fetch(KV_URL, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${KV_TOKEN}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(['SET', key, JSON.stringify(value)]),
+  });
+  const d = await r.json();
+  if (!r.ok || d?.error) throw new Error(`kvSet failed for ${key}: ${d?.error || r.status}`);
+}
+async function kvKeys(prefix) {
+  const { default: fetch } = await import('node-fetch');
+  const r = await fetch(`${KV_URL}/keys/${encodeURIComponent(prefix + '*')}`, {
+    headers: { Authorization: `Bearer ${KV_TOKEN}` }
+  });
+  const d = await r.json();
+  return d?.result || [];
 }
 
-// In-memory order store (in production: use a DB — Vercel serverless resets per cold start)
-const orders = new Map()
+function deterministicUUID(scope, key) {
+  const hex = crypto.createHash('sha256').update(`nan:${scope}:${key}`).digest('hex');
+  return `${hex.slice(0,8)}-${hex.slice(8,12)}-4${hex.slice(13,16)}-${hex.slice(16,20)}-${hex.slice(20,32)}`;
+}
+function newId(prefix) { return prefix + '_' + crypto.randomBytes(8).toString('hex'); }
 
 async function getCircleClient() {
-  const apiKey = process.env.CIRCLE_API_KEY || process.env.CIRCLE_DEVELOPER_CONTROLLED_API_KEY
-  const entitySecret = process.env.CIRCLE_ENTITY_SECRET || process.env.ENTITY_SECRET
-  if (!apiKey || !entitySecret) return null
-  const { initiateDeveloperControlledWalletsClient } = await import('@circle-fin/developer-controlled-wallets')
-  return initiateDeveloperControlledWalletsClient({ apiKey, entitySecret })
+  const { initiateDeveloperControlledWalletsClient } = await import('@circle-fin/developer-controlled-wallets');
+  const apiKey = process.env.CIRCLE_API_KEY;
+  const entitySecret = process.env.CIRCLE_ENTITY_SECRET;
+  if (!apiKey || !entitySecret) throw new Error('CIRCLE_API_KEY and CIRCLE_ENTITY_SECRET must be set');
+  return initiateDeveloperControlledWalletsClient({ apiKey, entitySecret });
+}
+
+async function findWalletSetByName(client, name) {
+  let pageAfter;
+  do {
+    const res = await client.listWalletSets({ pageSize: 50, pageAfter });
+    const found = (res.data?.walletSets || []).find(ws => ws.name === name);
+    if (found) return found;
+    pageAfter = res.data?.pageCursor;
+  } while (pageAfter);
+  return null;
+}
+
+// Find-or-create the single platform-owned escrow wallet. Idempotency keys are
+// deterministic, so calling this concurrently or repeatedly never creates duplicates.
+let _escrowWalletCache = null;
+async function getOrCreateEscrowWallet() {
+  if (_escrowWalletCache) return _escrowWalletCache;
+
+  const cached = await kvGet('nan:mkt:escrowWallet').catch(() => null);
+  if (cached?.id && cached?.address) { _escrowWalletCache = cached; return cached; }
+
+  const client = await getCircleClient();
+  let walletSet = await findWalletSetByName(client, ESCROW_WALLETSET_NAME);
+  if (!walletSet) {
+    const wsRes = await client.createWalletSet({
+      name: ESCROW_WALLETSET_NAME,
+      idempotencyKey: deterministicUUID('escrow-walletset', ESCROW_WALLETSET_NAME),
+    });
+    walletSet = wsRes.data?.walletSet;
+    if (!walletSet?.id) throw new Error('Circle did not return a walletSet ID for escrow wallet');
+  }
+
+  const listRes = await client.listWallets({ walletSetId: walletSet.id, pageSize: 20 });
+  let wallet = listRes.data?.wallets?.find(w => w.blockchain === BLOCKCHAIN);
+  if (!wallet) {
+    const wRes = await client.createWallets({
+      walletSetId: walletSet.id,
+      blockchains: [BLOCKCHAIN],
+      count: 1,
+      accountType: 'EOA',
+      idempotencyKey: deterministicUUID('escrow-wallet', ESCROW_WALLETSET_NAME),
+    });
+    wallet = wRes.data?.wallets?.[0];
+    if (!wallet?.id || !wallet?.address) throw new Error('Circle did not return an escrow wallet');
+  }
+
+  const result = { id: wallet.id, address: wallet.address };
+  await kvSet('nan:mkt:escrowWallet', result);
+  _escrowWalletCache = result;
+  return result;
+}
+
+async function transferUSDC(client, { fromWalletAddress, toAddress, amount, idempotencyKey }) {
+  const txRes = await client.createTransaction({
+    blockchain: BLOCKCHAIN,
+    walletAddress: fromWalletAddress,
+    destinationAddress: toAddress,
+    amount: [String(amount)],
+    tokenAddress: ARC_USDC,
+    fee: { type: 'level', config: { feeLevel: 'MEDIUM' } },
+    idempotencyKey,
+  });
+  const txId = txRes.data?.id;
+  if (!txId) throw new Error('No transaction ID in Circle response: ' + JSON.stringify(txRes.data));
+  return txId;
+}
+
+async function listByPrefix(prefix) {
+  const keys = await kvKeys(prefix);
+  const items = [];
+  for (const k of keys) {
+    const v = await kvGet(k);
+    if (v) items.push(v);
+  }
+  return items;
+}
+
+async function _handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+  const { action } = req.body || {};
+
+  try {
+    // ── listing-create ──────────────────────────────────────────────────────
+    if (action === 'listing-create') {
+      const { sellerAddress, sellerEmail, title, description, price, category, location, images } = req.body;
+      if (!sellerAddress || !title || !price) return res.json({ success: false, error: 'sellerAddress, title, and price are required' });
+      const parsedPrice = parseFloat(price);
+      if (isNaN(parsedPrice) || parsedPrice <= 0) return res.json({ success: false, error: 'Invalid price' });
+
+      const kyc = await kvGet(`nan:kyc:${sellerAddress.toLowerCase()}`);
+      if (!kyc || kyc.status !== 'approved')
+        return res.json({ success: false, error: 'Marketplace requires identity verification before you can list an item. Submit a verification request and wait for approval.' });
+
+      let safeImages = [];
+      if (Array.isArray(images)) {
+        if (images.length > 4) return res.json({ success: false, error: 'Max 4 images per listing' });
+        for (const img of images) {
+          if (typeof img !== 'string' || !img.startsWith('data:image/')) return res.json({ success: false, error: 'Invalid image data' });
+          if (img.length > 350_000) return res.json({ success: false, error: 'An image is too large — please use a smaller photo' });
+        }
+        safeImages = images;
+      }
+
+      const listing = {
+        id: newId('lst'), sellerAddress, sellerEmail: sellerEmail || null,
+        title: String(title).slice(0, 140), description: String(description || '').slice(0, 2000),
+        price: parsedPrice, category: category || 'general', location: location || null,
+        images: safeImages, status: 'active', createdAt: Date.now(),
+      };
+      await kvSet(`nan:mkt:listing:${listing.id}`, listing);
+      return res.json({ success: true, listing });
+    }
+
+    // ── listing-list ─────────────────────────────────────────────────────────
+    if (action === 'listing-list') {
+      const { query, category } = req.body;
+      let listings = (await listByPrefix('nan:mkt:listing:')).filter(l => l.status === 'active');
+      if (category) listings = listings.filter(l => l.category === category);
+      if (query) {
+        const q = String(query).toLowerCase();
+        listings = listings.filter(l => l.title.toLowerCase().includes(q) || l.description.toLowerCase().includes(q));
+      }
+      listings.sort((a, b) => b.createdAt - a.createdAt);
+      return res.json({ success: true, listings });
+    }
+
+    // ── offer-create ─────────────────────────────────────────────────────────
+    if (action === 'offer-create') {
+      const { listingId, buyerAddress, buyerWalletId, offerPrice } = req.body;
+      if (!listingId || !buyerAddress || !buyerWalletId) return res.json({ success: false, error: 'listingId, buyerAddress, buyerWalletId required' });
+      const listing = await kvGet(`nan:mkt:listing:${listingId}`);
+      if (!listing) return res.json({ success: false, error: 'Listing not found' });
+      if (listing.status !== 'active') return res.json({ success: false, error: 'Listing is not active' });
+
+      const offer = {
+        id: newId('off'), listingId, buyerAddress, buyerWalletId,
+        price: offerPrice ? parseFloat(offerPrice) : listing.price,
+        status: 'pending', createdAt: Date.now(),
+      };
+      await kvSet(`nan:mkt:offer:${offer.id}`, offer);
+      return res.json({ success: true, offer });
+    }
+
+    // ── offer-respond (seller accepts/rejects) ──────────────────────────────
+    if (action === 'offer-respond') {
+      const { offerId, response, sellerWalletId } = req.body; // response: 'accept' | 'reject'
+      const offer = await kvGet(`nan:mkt:offer:${offerId}`);
+      if (!offer) return res.json({ success: false, error: 'Offer not found' });
+      if (offer.status !== 'pending') return res.json({ success: false, error: `Offer is already ${offer.status}` });
+
+      if (response === 'reject') {
+        offer.status = 'rejected';
+        await kvSet(`nan:mkt:offer:${offer.id}`, offer);
+        return res.json({ success: true, offer });
+      }
+
+      const listing = await kvGet(`nan:mkt:listing:${offer.listingId}`);
+      if (!listing) return res.json({ success: false, error: 'Listing not found' });
+
+      offer.status = 'accepted';
+      await kvSet(`nan:mkt:offer:${offer.id}`, offer);
+
+      const order = {
+        id: newId('ord'), listingId: offer.listingId, offerId: offer.id,
+        buyerAddress: offer.buyerAddress, buyerWalletId: offer.buyerWalletId,
+        sellerAddress: listing.sellerAddress, sellerWalletId: sellerWalletId || null,
+        amount: offer.price, status: 'awaiting_payment',
+        escrowTxId: null, releaseTxId: null,
+        createdAt: Date.now(), updatedAt: Date.now(),
+      };
+      await kvSet(`nan:mkt:order:${order.id}`, order);
+      return res.json({ success: true, offer, order });
+    }
+
+    // ── order-pay (buyer → escrow wallet, real onchain transfer) ────────────
+    if (action === 'order-pay') {
+      const { orderId, buyerWalletAddress } = req.body;
+      const order = await kvGet(`nan:mkt:order:${orderId}`);
+      if (!order) return res.json({ success: false, error: 'Order not found' });
+      if (order.status !== 'awaiting_payment') return res.json({ success: false, error: `Order is ${order.status}, not awaiting payment` });
+      if (!buyerWalletAddress) return res.json({ success: false, error: 'buyerWalletAddress required' });
+
+      const escrowWallet = await getOrCreateEscrowWallet();
+      const client = await getCircleClient();
+      const txId = await transferUSDC(client, {
+        fromWalletAddress: buyerWalletAddress,
+        toAddress: escrowWallet.address,
+        amount: order.amount,
+        idempotencyKey: deterministicUUID('order-pay', order.id),
+      });
+
+      order.status = 'escrowed';
+      order.escrowTxId = txId;
+      order.updatedAt = Date.now();
+      await kvSet(`nan:mkt:order:${order.id}`, order);
+      return res.json({ success: true, order, escrowWalletAddress: escrowWallet.address });
+    }
+
+    // ── order-mark-shipped (seller) ──────────────────────────────────────────
+    if (action === 'order-mark-shipped') {
+      const { orderId } = req.body;
+      const order = await kvGet(`nan:mkt:order:${orderId}`);
+      if (!order) return res.json({ success: false, error: 'Order not found' });
+      if (order.status !== 'escrowed') return res.json({ success: false, error: `Order is ${order.status}, cannot mark shipped` });
+      order.status = 'shipped';
+      order.updatedAt = Date.now();
+      await kvSet(`nan:mkt:order:${order.id}`, order);
+      return res.json({ success: true, order });
+    }
+
+    // ── order-confirm-received (buyer → releases escrow → seller) ──────────
+    if (action === 'order-confirm-received') {
+      const { orderId, sellerWalletAddress } = req.body;
+      const order = await kvGet(`nan:mkt:order:${orderId}`);
+      if (!order) return res.json({ success: false, error: 'Order not found' });
+      if (order.status !== 'shipped') return res.json({ success: false, error: `Order is ${order.status}, cannot confirm receipt yet` });
+      if (!sellerWalletAddress) return res.json({ success: false, error: 'sellerWalletAddress required' });
+
+      const escrowWallet = await getOrCreateEscrowWallet();
+      const client = await getCircleClient();
+      const txId = await transferUSDC(client, {
+        fromWalletAddress: escrowWallet.address,
+        toAddress: sellerWalletAddress,
+        amount: order.amount,
+        idempotencyKey: deterministicUUID('order-release', order.id),
+      });
+
+      order.status = 'released';
+      order.releaseTxId = txId;
+      order.updatedAt = Date.now();
+      await kvSet(`nan:mkt:order:${order.id}`, order);
+
+      const listing = await kvGet(`nan:mkt:listing:${order.listingId}`);
+      if (listing) { listing.status = 'sold'; await kvSet(`nan:mkt:listing:${listing.id}`, listing); }
+
+      return res.json({ success: true, order });
+    }
+
+    // ── order-dispute (either party flags a problem — halts everything) ────
+    if (action === 'order-dispute') {
+      const { orderId, reason, raisedBy } = req.body;
+      const order = await kvGet(`nan:mkt:order:${orderId}`);
+      if (!order) return res.json({ success: false, error: 'Order not found' });
+      if (order.status === 'released' || order.status === 'refunded') return res.json({ success: false, error: `Order already ${order.status}, cannot dispute` });
+      order.status = 'disputed';
+      order.dispute = { reason: String(reason || '').slice(0, 1000), raisedBy: raisedBy || null, at: Date.now() };
+      order.updatedAt = Date.now();
+      await kvSet(`nan:mkt:order:${order.id}`, order);
+      return res.json({ success: true, order });
+    }
+
+    // ── admin-list-disputes ──────────────────────────────────────────────────
+    if (action === 'admin-list-disputes') {
+      const { secret } = req.body;
+      if (secret !== process.env.ADMIN_PASSWORD) return res.json({ success: false, error: 'Unauthorized' });
+      const disputed = (await listByPrefix('nan:mkt:order:')).filter(o => o.status === 'disputed');
+      return res.json({ success: true, orders: disputed });
+    }
+
+    // ── admin-resolve (release to seller OR refund to buyer) ────────────────
+    if (action === 'admin-resolve') {
+      const { secret, orderId, resolution, buyerWalletAddress, sellerWalletAddress } = req.body; // resolution: 'release' | 'refund'
+      if (secret !== process.env.ADMIN_PASSWORD) return res.json({ success: false, error: 'Unauthorized' });
+      const order = await kvGet(`nan:mkt:order:${orderId}`);
+      if (!order) return res.json({ success: false, error: 'Order not found' });
+      if (order.status !== 'disputed') return res.json({ success: false, error: `Order is ${order.status}, not disputed` });
+
+      const escrowWallet = await getOrCreateEscrowWallet();
+      const client = await getCircleClient();
+
+      if (resolution === 'release') {
+        if (!sellerWalletAddress) return res.json({ success: false, error: 'sellerWalletAddress required' });
+        const txId = await transferUSDC(client, { fromWalletAddress: escrowWallet.address, toAddress: sellerWalletAddress, amount: order.amount, idempotencyKey: deterministicUUID('order-admin-release', order.id) });
+        order.status = 'released'; order.releaseTxId = txId;
+      } else if (resolution === 'refund') {
+        if (!buyerWalletAddress) return res.json({ success: false, error: 'buyerWalletAddress required' });
+        const txId = await transferUSDC(client, { fromWalletAddress: escrowWallet.address, toAddress: buyerWalletAddress, amount: order.amount, idempotencyKey: deterministicUUID('order-admin-refund', order.id) });
+        order.status = 'refunded'; order.refundTxId = txId;
+      } else {
+        return res.json({ success: false, error: 'resolution must be "release" or "refund"' });
+      }
+      order.updatedAt = Date.now();
+      await kvSet(`nan:mkt:order:${order.id}`, order);
+      return res.json({ success: true, order });
+    }
+
+    // ── listing-get ──────────────────────────────────────────────────────────
+    if (action === 'listing-get') {
+      const { listingId } = req.body;
+      const listing = await kvGet(`nan:mkt:listing:${listingId}`);
+      if (!listing) return res.json({ success: false, error: 'Listing not found' });
+      return res.json({ success: true, listing });
+    }
+
+    // ── my-orders (as buyer or seller) ──────────────────────────────────────
+    if (action === 'my-orders') {
+      const { walletAddress } = req.body;
+      if (!walletAddress) return res.json({ success: false, error: 'walletAddress required' });
+      const addr = walletAddress.toLowerCase();
+      const orders = (await listByPrefix('nan:mkt:order:')).filter(
+        o => o.buyerAddress?.toLowerCase() === addr || o.sellerAddress?.toLowerCase() === addr
+      );
+      orders.sort((a, b) => b.updatedAt - a.updatedAt);
+      return res.json({ success: true, orders });
+    }
+
+    // ── my-listings-offers (pending offers on my listings) ──────────────────
+    if (action === 'my-listings-offers') {
+      const { sellerAddress } = req.body;
+      if (!sellerAddress) return res.json({ success: false, error: 'sellerAddress required' });
+      const myListings = (await listByPrefix('nan:mkt:listing:')).filter(l => l.sellerAddress?.toLowerCase() === sellerAddress.toLowerCase());
+      const myListingIds = new Set(myListings.map(l => l.id));
+      const offers = (await listByPrefix('nan:mkt:offer:')).filter(o => myListingIds.has(o.listingId) && o.status === 'pending');
+      return res.json({ success: true, offers, listings: myListings });
+    }
+
+    // ── review-create (buyer reviews a completed order, photos optional) ───
+    if (action === 'review-create') {
+      const { orderId, reviewerAddress, rating, comment, images } = req.body;
+      const order = await kvGet(`nan:mkt:order:${orderId}`);
+      if (!order) return res.json({ success: false, error: 'Order not found' });
+      if (order.status !== 'released') return res.json({ success: false, error: 'You can only review a completed (released) order' });
+      if (!reviewerAddress || reviewerAddress.toLowerCase() !== order.buyerAddress?.toLowerCase())
+        return res.json({ success: false, error: 'Only the buyer on this order can leave a review' });
+      const existing = await kvGet(`nan:mkt:review-by-order:${orderId}`);
+      if (existing) return res.json({ success: false, error: 'This order has already been reviewed' });
+
+      const parsedRating = parseInt(rating, 10);
+      if (isNaN(parsedRating) || parsedRating < 1 || parsedRating > 5) return res.json({ success: false, error: 'Rating must be 1-5' });
+
+      let safeImages = [];
+      if (Array.isArray(images)) {
+        if (images.length > 3) return res.json({ success: false, error: 'Max 3 images per review' });
+        for (const img of images) {
+          if (typeof img !== 'string' || !img.startsWith('data:image/')) return res.json({ success: false, error: 'Invalid image data' });
+          if (img.length > 350_000) return res.json({ success: false, error: 'An image is too large — please use a smaller photo' });
+        }
+        safeImages = images;
+      }
+
+      const review = {
+        id: newId('rev'), orderId, listingId: order.listingId,
+        sellerAddress: order.sellerAddress, reviewerAddress,
+        rating: parsedRating, comment: String(comment || '').slice(0, 1000),
+        images: safeImages, createdAt: Date.now(),
+      };
+      await kvSet(`nan:mkt:review:${review.id}`, review);
+      await kvSet(`nan:mkt:review-by-order:${orderId}`, review.id);
+      return res.json({ success: true, review });
+    }
+
+    // ── review-list (for a listing, or a seller overall) ───────────────────
+    if (action === 'review-list') {
+      const { listingId, sellerAddress } = req.body;
+      let reviews = await listByPrefix('nan:mkt:review:');
+      if (listingId) reviews = reviews.filter(r => r.listingId === listingId);
+      else if (sellerAddress) reviews = reviews.filter(r => r.sellerAddress?.toLowerCase() === sellerAddress.toLowerCase());
+      reviews.sort((a, b) => b.createdAt - a.createdAt);
+      const avgRating = reviews.length ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length) : null;
+      return res.json({ success: true, reviews, avgRating, count: reviews.length });
+    }
+
+    return res.status(400).json({ error: 'Unknown action' });
+  } catch (e) {
+    console.error('[marketplace]', e.message);
+    return res.status(500).json({ success: false, error: e.message.slice(0, 300) });
+  }
 }
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-  if (req.method === 'OPTIONS') return res.status(200).end()
-
-  const query = parseQuery(req)
-  const body = await parseBody(req)
-  const action = req.method === 'GET' ? (query.action || 'products') : body.action
-
-  const PRODUCTS = buildProducts()
-
-  // ── Public: product catalog ──────────────────────────────────────────────────
-  if (action === 'products') {
-    const { category, search, maxPrice } = query
-    let list = PRODUCTS
-    if (category && category !== 'all') list = list.filter(p => p.category === category)
-    if (search) {
-      const q = search.toLowerCase()
-      list = list.filter(p =>
-        p.name.toLowerCase().includes(q) ||
-        p.merchant.toLowerCase().includes(q) ||
-        p.tags.some(t => t.includes(q))
-      )
-    }
-    if (maxPrice) list = list.filter(p => p.price <= parseFloat(maxPrice))
-    // Strip merchantAddress from public listing
-    return res.json({ success: true, products: list.map(({ merchantAddress, ...p }) => p) })
+  if (!req.body || typeof req.body !== 'object') {
+    req.body = await parseBody(req);
   }
-
-  if (action === 'product') {
-    const id = query.id
-    const product = PRODUCTS.find(p => p.id === id)
-    if (!product) return res.status(404).json({ success: false, error: 'Product not found' })
-    const { merchantAddress, ...safe } = product
-    return res.json({ success: true, product: safe })
-  }
-
-  // ── Auth required ────────────────────────────────────────────────────────────
-  if (!requireEmailSession(req, res)) return
-  const { walletId, walletAddress } = req.session
-
-  // ── POST order ───────────────────────────────────────────────────────────────
-  if (action === 'order') {
-    if (req.method !== 'POST') return res.status(405).end()
-    const { productId, quantity = 1 } = req.body || {}
-    const product = PRODUCTS.find(p => p.id === productId)
-    if (!product) return res.status(404).json({ success: false, error: 'Product not found' })
-    if (!product.inStock) return res.status(400).json({ success: false, error: 'Product out of stock' })
-    if (!product.merchantAddress) {
-      return res.status(503).json({ success: false, error: 'NAN_TREASURY_ADDRESS not configured in Vercel env vars' })
-    }
-    const qty = Math.max(1, parseInt(quantity) || 1)
-    const total = (product.price * qty).toFixed(6)
-
-    if (!ARC_TESTNET_USDC) {
-      return res.status(503).json({ success: false, error: 'VITE_ARC_USDC_ADDRESS not configured in Vercel env vars' })
-    }
-
-    const orderId = crypto.randomUUID()
-    let txId = null
-
-    const sdk = await getCircleClient()
-    if (sdk) {
-      try {
-        const idem = `nan-order-${orderId}`.slice(0, 64)
-        const txRes = await sdk.createTransaction({
-          walletId,
-          tokenAddress: ARC_TESTNET_USDC,
-          destinationAddress: product.merchantAddress,
-          amounts: [total],
-          fee: { type: 'level', config: { feeLevel: 'MEDIUM' } },
-          idempotencyKey: idem,
-        })
-        txId = txRes.data?.id
-      } catch (err) {
-        console.error('[marketplace/order] tx error:', err.message)
-      }
-    }
-
-    const order = {
-      orderId,
-      productId,
-      productName: product.name,
-      merchant: product.merchant,
-      quantity: qty,
-      total: parseFloat(total),
-      walletId,
-      buyerAddress: walletAddress,
-      txId,
-      state: txId ? 'INITIATED' : 'PENDING_TX',
-      createdAt: new Date().toISOString(),
-    }
-    orders.set(orderId, order)
-    return res.json({ success: true, orderId, txId, state: order.state, total: parseFloat(total) })
-  }
-
-  // ── GET orders ───────────────────────────────────────────────────────────────
-  if (action === 'orders') {
-    const userOrders = [...orders.values()]
-      .filter(o => o.walletId === walletId)
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-    return res.json({ success: true, orders: userOrders })
-  }
-
-  return res.status(400).json({ success: false, error: 'Unknown action' })
+  return _handler(req, res);
 }

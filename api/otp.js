@@ -1,38 +1,32 @@
 // api/otp.js — Email OTP login using Resend + Circle developer-controlled wallets
-// POST { action: 'send', email } -> { token, expiresAt }
-// POST { action: 'verify', email, otp, token, expiresAt } -> { sessionToken, walletAddress, walletId }
+import crypto from 'crypto';
+import { signEmailSession } from './_lib/auth.js';
+import { parseBody } from './_lib/parse.js';
 
-import crypto from 'crypto'
-import { signEmailSession } from './_lib/auth.js'
-import { parseBody } from './_lib/parse.js'
+const otpRateLimit = new Map();
 
-// ── Rate limiting (per email, 5 OTPs/hour) ───────────────────────────────────
-const otpRateLimit = new Map()
 function checkOtpLimit(email) {
-  const now = Date.now()
-  const rec = otpRateLimit.get(email) || { count: 0, start: now }
-  if (now - rec.start > 3_600_000) { otpRateLimit.set(email, { count: 1, start: now }); return true }
-  if (rec.count >= 5) return false
-  rec.count++; otpRateLimit.set(email, rec); return true
+  const now = Date.now();
+  const record = otpRateLimit.get(email) || { count: 0, start: now };
+  if (now - record.start > 3_600_000) { otpRateLimit.set(email, { count: 1, start: now }); return true; }
+  if (record.count >= 5) return false;
+  record.count++;
+  otpRateLimit.set(email, record);
+  return true;
 }
 
-// ── OTP signing (HMAC so the token is verifiable server-side without a DB) ───
-const OTP_SECRET = process.env.OTP_SECRET || process.env.CIRCLE_ENTITY_SECRET || 'nan-otp-v1'
-function signOtp(email, otp, expiresAt) {
-  const data = `${email.toLowerCase().trim()}:${otp}:${Math.floor(Number(expiresAt))}`
-  return crypto.createHmac('sha256', OTP_SECRET).update(data).digest('hex')
+function signOTP(email, otp, expiresAt) {
+  const secret = process.env.OTP_SECRET || process.env.CIRCLE_ENTITY_SECRET || 'nan-otp-fixed-secret-v1';
+  const ts = String(Math.floor(Number(expiresAt)));
+  const data = `${email.toLowerCase().trim()}:${otp.trim()}:${ts}`;
+  return crypto.createHmac('sha256', secret).update(data).digest('hex');
 }
 
-// ── Send OTP email via Resend ─────────────────────────────────────────────────
-async function sendOtpEmail(to, code) {
-  const apiKey = process.env.SMTP_PASS // Resend API key stored here
-  const from = process.env.SMTP_FROM || 'NAN <onboarding@resend.dev>'
-  if (!apiKey) {
-    // Dev fallback — log to console
-    console.log(`\n[OTP DEV] Code for ${to}: ${code}\n`)
-    return { dev: true }
-  }
-  const res = await fetch('https://api.resend.com/emails', {
+async function sendEmail(to, code) {
+  const apiKey = process.env.SMTP_PASS;
+  const from   = process.env.SMTP_FROM || 'NAN <onboarding@resend.dev>';
+  if (!apiKey) throw new Error('SMTP_PASS (Resend API key) not set');
+  const r = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -40,163 +34,151 @@ async function sendOtpEmail(to, code) {
       to: [to],
       subject: 'Your NAN login code',
       html: `
-        <div style="font-family:-apple-system,sans-serif;max-width:440px;margin:0 auto;
-                    background:#0f0f1a;border-radius:16px;overflow:hidden;
-                    border:1px solid rgba(37,99,235,0.3);">
-          <div style="background:linear-gradient(135deg,#0a1a3e,#16213e);
-                      padding:32px;text-align:center;">
-            <div style="font-size:28px;font-weight:800;color:#2563EB;">NAN</div>
+        <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+                    max-width:440px;margin:0 auto;background:#0f0f1a;border-radius:16px;
+                    overflow:hidden;border:1px solid rgba(37,99,235,0.3);">
+          <div style="background:linear-gradient(135deg,#0a1a3e,#16213e);padding:32px;text-align:center;">
+            <div style="font-size:28px;font-weight:800;color:#2563EB;letter-spacing:-0.5px;">
+              NAN <span style="color:#60a5fa;">✦</span>
+            </div>
             <div style="color:#6b7280;font-size:13px;margin-top:4px;">
-              Stablecoin payments on Arc · Powered by Circle
+              Stablecoin Payments on Arc · Powered by Circle
             </div>
           </div>
           <div style="padding:32px;">
-            <p style="color:#e5e7eb;font-size:16px;margin:0 0 24px;">
-              Your one-time login code:
-            </p>
+            <p style="color:#e5e7eb;font-size:16px;margin:0 0 24px;">Your one-time login code:</p>
             <div style="background:rgba(37,99,235,0.1);border:1px solid rgba(37,99,235,0.4);
                         border-radius:12px;padding:28px;text-align:center;
                         letter-spacing:12px;font-size:36px;font-weight:700;
-                        font-family:monospace;color:#60a5fa;">
+                        font-family:'Courier New',monospace;color:#60a5fa;">
               ${code}
             </div>
             <p style="color:#6b7280;font-size:13px;margin-top:20px;text-align:center;">
-              Expires in 10 minutes &nbsp;·&nbsp; Never share this code
+              ⏱ Expires in 10 minutes &nbsp;·&nbsp; Never share this code
+            </p>
+          </div>
+          <div style="background:rgba(0,0,0,0.3);padding:16px 32px;text-align:center;
+                      border-top:1px solid rgba(37,99,235,0.1);">
+            <p style="color:#4b5563;font-size:12px;margin:0;">
+              NAN · <a href="https://nanarc.xyz" style="color:#2563EB;text-decoration:none;">nanarc.xyz</a>
+              &nbsp;·&nbsp; Built on Arc Testnet by Circle
             </p>
           </div>
         </div>`,
     }),
-  })
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}))
-    throw new Error(err.message || `Email send failed (${res.status})`)
-  }
-  return { sent: true }
+  });
+  const data = await r.json();
+  console.log('[OTP Resend]', r.status, JSON.stringify(data));
+  if (!r.ok) throw new Error(data?.message || data?.name || `Resend ${r.status}: ${JSON.stringify(data)}`);
+  return data;
 }
 
-// ── Circle SDK — lazy-loaded to avoid Vercel cold-start import errors ─────────
-async function getCircleClient() {
-  const apiKey = process.env.CIRCLE_API_KEY || process.env.CIRCLE_DEVELOPER_CONTROLLED_API_KEY
-  const entitySecret = process.env.CIRCLE_ENTITY_SECRET || process.env.ENTITY_SECRET
-  if (!apiKey || !entitySecret) return null
-  const { initiateDeveloperControlledWalletsClient } = await import('@circle-fin/developer-controlled-wallets')
-  return initiateDeveloperControlledWalletsClient({ apiKey, entitySecret })
-}
-
-// In-memory wallet cache: email -> { walletId, walletAddress, walletSetId }
-// In production this should be a real DB; for Vercel serverless this resets per
-// cold start, but Circle's idempotency means re-creating returns the same wallet.
-const walletCache = new Map()
-
+// ── Circle SDK — lazy-loaded ──────────────────────────────────────────────────
 async function getOrCreateWallet(email) {
-  if (walletCache.has(email)) return walletCache.get(email)
+  const apiKey = process.env.CIRCLE_API_KEY || process.env.CIRCLE_DEVELOPER_CONTROLLED_API_KEY;
+  const entitySecret = process.env.CIRCLE_ENTITY_SECRET || process.env.ENTITY_SECRET;
+  if (!apiKey || !entitySecret) return null;
+  const { initiateDeveloperControlledWalletsClient } = await import('@circle-fin/developer-controlled-wallets');
+  const sdk = initiateDeveloperControlledWalletsClient({ apiKey, entitySecret });
 
-  const sdk = await getCircleClient()
-  if (!sdk) {
-    // No Circle credentials — return a placeholder so login still works
-    const fake = { walletId: `demo-${email}`, walletAddress: '0x0000000000000000000000000000000000000000' }
-    walletCache.set(email, fake)
-    return fake
-  }
+  const emailHash = crypto.createHash('sha256').update(email.toLowerCase().trim()).digest('hex').slice(0, 16);
+  const walletName = `nan-user-${emailHash}`;
 
-  // Use email hash as idempotency seed so the same wallet is returned on retry
-  const emailHash = crypto.createHash('sha256').update(email.toLowerCase().trim()).digest('hex').slice(0, 16)
-
-  // 1. Find existing wallets by name tag
+  // Find existing wallet
   try {
-    const listRes = await sdk.listWallets({ pageSize: 50 })
-    const existing = (listRes.data?.wallets || []).find(w => w.name === `nan-user-${emailHash}`)
-    if (existing) {
-      const entry = { walletId: existing.id, walletAddress: existing.address }
-      walletCache.set(email, entry)
-      return entry
-    }
+    const listRes = await sdk.listWallets({ pageSize: 50 });
+    const existing = (listRes.data?.wallets || []).find(w => w.name === walletName);
+    if (existing) return { walletId: existing.id, walletAddress: existing.address };
   } catch {}
 
-  // 2. Create wallet set (idempotent by name)
-  let walletSetId = process.env.NAN_WALLET_SET_ID
+  // Get or create wallet set
+  let walletSetId = process.env.NAN_WALLET_SET_ID;
   if (!walletSetId) {
     try {
-      const wsRes = await sdk.createWalletSet({ name: 'nan-users', idempotencyKey: 'nan-users-walletset-v1' })
-      walletSetId = wsRes.data?.walletSet?.id
-    } catch (e) {
-      // May already exist — try to find it
-      const wsList = await sdk.listWalletSets({ pageSize: 10 })
-      const ws = (wsList.data?.walletSets || []).find(w => w.name === 'nan-users')
-      walletSetId = ws?.id
+      const wsRes = await sdk.createWalletSet({ name: 'nan-users', idempotencyKey: 'nan-users-walletset-v1' });
+      walletSetId = wsRes.data?.walletSet?.id;
+    } catch {
+      const wsList = await sdk.listWalletSets({ pageSize: 10 });
+      walletSetId = (wsList.data?.walletSets || []).find(w => w.name === 'nan-users')?.id;
     }
   }
-  if (!walletSetId) throw new Error('Could not get or create wallet set')
+  if (!walletSetId) return null;
 
-  // 3. Create the user's wallet on ARC-TESTNET
   const walletsRes = await sdk.createWallets({
-    accountType: 'EOA',
-    blockchains: ['ARC-TESTNET'],
-    count: 1,
-    walletSetId,
-    metadata: [{ name: `nan-user-${emailHash}`, refId: email }],
-  })
-  const wallet = walletsRes.data?.wallets?.[0]
-  if (!wallet) throw new Error('Wallet creation failed')
-
-  const entry = { walletId: wallet.id, walletAddress: wallet.address }
-  walletCache.set(email, entry)
-  return entry
+    accountType: 'EOA', blockchains: ['ARC-TESTNET'], count: 1,
+    walletSetId, metadata: [{ name: walletName, refId: email }],
+  });
+  const wallet = walletsRes.data?.wallets?.[0];
+  if (!wallet) return null;
+  return { walletId: wallet.id, walletAddress: wallet.address };
 }
 
-// ── Handler ───────────────────────────────────────────────────────────────────
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-  if (req.method === 'OPTIONS') return res.status(200).end()
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).end();
 
-  const body = await parseBody(req)
-  const { action, email, otp, token, expiresAt } = body
-  if (!email || typeof email !== 'string') return res.status(400).json({ success: false, error: 'email required' })
-  const normalEmail = email.toLowerCase().trim()
+  const { action, email, otp, token, expiresAt } = await parseBody(req);
 
-  // ── Action: send ────────────────────────────────────────────────────────────
+  // ── send ──────────────────────────────────────────────────────────────────
   if (action === 'send') {
-    if (!checkOtpLimit(normalEmail)) {
-      return res.status(429).json({ success: false, error: 'Too many OTP requests — try again in an hour' })
+    if (!email?.includes('@')) return res.json({ success: false, error: 'Invalid email' });
+    if (email.length > 100)    return res.json({ success: false, error: 'Email too long' });
+    if (!checkOtpLimit(email.toLowerCase()))
+      return res.json({ success: false, error: 'Too many codes — try again in 1 hour' });
+
+    const code    = Math.floor(100_000 + Math.random() * 900_000).toString();
+    const expires = Date.now() + 600_000;
+    const sig     = signOTP(email, code, expires);
+
+    if (process.env.SMTP_PASS) {
+      try {
+        await sendEmail(email, code);
+        return res.json({ success: true, token: sig, expiresAt: expires });
+      } catch (err) {
+        console.error('[otp/send] Resend error:', err.message);
+        return res.json({ success: false, error: err.message });
+      }
     }
-    const code = Math.floor(100_000 + Math.random() * 900_000).toString()
-    const exp = Date.now() + 10 * 60 * 1000 // 10 min
-    const signed = signOtp(normalEmail, code, exp)
-    try {
-      const result = await sendOtpEmail(normalEmail, code)
-      return res.json({ success: true, token: signed, expiresAt: exp, dev: result.dev || false })
-    } catch (err) {
-      console.error('[otp/send]', err.message)
-      return res.status(500).json({ success: false, error: err.message })
-    }
+
+    // Dev fallback — log to Vercel function logs
+    console.log(`[NAN DEV] OTP for ${email}: ${code}`);
+    return res.json({ success: true, dev: true, token: sig, expiresAt: expires });
   }
 
-  // ── Action: verify ──────────────────────────────────────────────────────────
+  // ── verify ────────────────────────────────────────────────────────────────
   if (action === 'verify') {
-    if (!otp || !token || !expiresAt) {
-      return res.status(400).json({ success: false, error: 'otp, token, and expiresAt required' })
-    }
-    if (Date.now() > Number(expiresAt)) {
-      return res.status(400).json({ success: false, error: 'OTP expired — please request a new one' })
-    }
-    const expected = signOtp(normalEmail, String(otp).trim(), expiresAt)
-    if (!crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(token))) {
-      return res.status(400).json({ success: false, error: 'Invalid code — please try again' })
-    }
+    if (!email || !otp || !token || !expiresAt)
+      return res.json({ success: false, error: 'Missing fields' });
+    if (typeof otp !== 'string' || otp.length !== 6 || !/^\d+$/.test(otp))
+      return res.json({ success: false, error: 'Code must be 6 digits' });
+    if (Date.now() > Number(expiresAt))
+      return res.json({ success: false, error: 'Code expired — request a new one' });
+
+    const expected = signOTP(email, otp.trim(), Number(expiresAt));
+    if (typeof token !== 'string' || !/^[0-9a-f]{64}$/.test(token))
+      return res.json({ success: false, error: 'Wrong code' });
+    const a = Buffer.from(expected, 'utf8');
+    const b = Buffer.from(token, 'utf8');
+    if (a.length !== b.length || !crypto.timingSafeEqual(a, b))
+      return res.json({ success: false, error: 'Wrong code' });
+
+    const sessionToken = signEmailSession(email);
+
+    // Try to get/create Circle wallet (non-blocking — login succeeds even without it)
+    let walletAddress = null, walletId = null;
     try {
-      const { walletId, walletAddress } = await getOrCreateWallet(normalEmail)
-      const sessionToken = signEmailSession({
-        email: normalEmail, walletId, walletAddress, iat: Date.now(),
-      })
-      return res.json({ success: true, sessionToken, walletAddress, walletId })
-    } catch (err) {
-      console.error('[otp/verify]', err.message)
-      return res.status(500).json({ success: false, error: `Login failed: ${err.message}` })
+      const wallet = await getOrCreateWallet(email);
+      walletAddress = wallet?.walletAddress || null;
+      walletId = wallet?.walletId || null;
+    } catch (e) {
+      console.error('[otp/verify] wallet error:', e.message);
     }
+
+    return res.json({ success: true, sessionToken, walletAddress, walletId });
   }
 
-  return res.status(400).json({ success: false, error: 'Unknown action' })
+  return res.json({ success: false, error: 'Unknown action' });
 }

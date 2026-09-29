@@ -1,25 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useNanStore } from '../../store/nanStore'
 
-// ── Replace these URLs with your actual uploaded images ──────────────────────
-// Drop the two photos into public/assets/ and update the paths below:
-//   /assets/hero-1.jpg  (girl with afro puffs)
-//   /assets/hero-2.jpg  (man with headphones + phone)
+// ── Slide images — swap /assets/hero-1.jpg and /assets/hero-2.jpg with your
+// own photos by dropping them into public/assets/ in the Code panel. ──────────
 const SLIDES = [
   {
     img: '/assets/hero-1.jpg',
-    // Fallback gradient if image not found yet
-    fallback: 'linear-gradient(160deg,#1a1a2e 0%,#16213e 40%,#0f3460 100%)',
+    fallback: 'linear-gradient(160deg,#e8e0f0 0%,#c9d6e8 100%)',
     headline: 'Send money\nto anyone.',
     sub: 'Instant USDC transfers on Arc. No fees, no waiting.',
-    accent: '#60A5FA',
+    accent: '#2563EB',
+    dark: false,
   },
   {
-    img: '/assets/hero-2.jpg',
-    fallback: 'linear-gradient(160deg,#0f2027 0%,#203a43 40%,#2c5364 100%)',
+    // Man with headphones + phone — replace with /assets/hero-2.jpg once uploaded
+    img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=85&fit=crop',
+    fallback: 'linear-gradient(160deg,#dce8f5 0%,#b8d4f0 100%)',
     headline: 'Your AI agent\nshops for you.',
     sub: 'Set spending limits, let Nan find the best deals.',
-    accent: '#818CF8',
+    accent: '#2563EB',
+    dark: false,
   },
 ]
 
