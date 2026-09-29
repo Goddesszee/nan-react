@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTheme } from '../hooks/useTheme'
 
-const API = 'https://nan-production.up.railway.app'
+const API = ''
 const LOGO_FONT_LINK = 'https://fonts.googleapis.com/css2?family=Manrope:wght@800&display=swap'
 
 export function Landing({ onEmailConnect, onWalletConnect }) {
