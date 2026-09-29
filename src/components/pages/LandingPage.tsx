@@ -81,7 +81,12 @@ function NanCard({ visible }: { visible: boolean }) {
 }
 
 // ── Main landing page ─────────────────────────────────────────────────────────
-export function LandingPage() {
+interface LandingPageProps {
+  onEmailConnect?: () => void
+  onWalletConnect?: () => void
+}
+
+export function LandingPage({ onEmailConnect, onWalletConnect }: LandingPageProps = {}) {
   const { setActiveView } = useNanStore()
   const [current, setCurrent] = useState(0)
   const [loaded, setLoaded] = useState<boolean[]>([false, false, false])
@@ -111,7 +116,14 @@ export function LandingPage() {
     timerRef.current = setInterval(() => setCurrent(c => (c + 1) % SLIDES.length), 4000)
   }
 
-  const launch = () => setActiveView('onboarding')
+  const launch = () => {
+    if (onEmailConnect) { onEmailConnect(); return }
+    setActiveView('onboarding')
+  }
+  const launchWallet = () => {
+    if (onWalletConnect) { onWalletConnect(); return }
+    setActiveView('onboarding')
+  }
 
   return (
     <div style={{ minHeight: '100dvh', background: '#000', display: 'flex', flexDirection: 'column', fontFamily: 'DM Sans, sans-serif', overflow: 'hidden' }}>
