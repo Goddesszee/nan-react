@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react'
 import { Search, Star, ShoppingCart, ArrowLeft, Check, X, SlidersHorizontal, ShoppingBag } from 'lucide-react'
+import { useAccount } from 'wagmi'
 import { toast } from 'sonner'
 import { Card } from '../ui/Card'
 import { Button } from '../ui/Button'
@@ -8,7 +9,6 @@ import { Input } from '../ui/Input'
 import { useNanStore, CartItem } from '../../store/nanStore'
 import { PRODUCTS, CATEGORIES, Product } from '../../data/products'
 import { formatUSDC } from '../../utils/format'
-import { buyListing, nanBackendConfigured } from '../../lib/nan'
 
 type ShopSubView = 'catalog' | 'product' | 'cart' | 'checkout' | 'success'
 
@@ -18,8 +18,8 @@ export function ShopPage() {
   const [activeCategory, setActiveCategory] = useState('all')
   const [search, setSearch] = useState('')
 
-  const { cart, addToCart, removeFromCart, clearCart, addActivity, nanAuth } = useNanStore()
-  const isConnected = !!nanAuth?.sessionToken
+  const { cart, addToCart, removeFromCart, clearCart, addActivity } = useNanStore()
+  const { isConnected } = useAccount()
 
   const filteredProducts = useMemo(() => {
     return PRODUCTS.filter((p) => {
@@ -79,7 +79,6 @@ export function ShopPage() {
         cart={cart}
         total={cartTotal}
         isConnected={isConnected}
-        nanAuth={nanAuth}
         onBack={() => setSubView('cart')}
         onComplete={handlePurchaseComplete}
       />
@@ -412,39 +411,23 @@ function CheckoutPage({
   cart,
   total,
   isConnected,
-  nanAuth,
   onBack,
   onComplete,
 }: {
   cart: CartItem[]
   total: number
   isConnected: boolean
-  nanAuth: { email: string; sessionToken: string; walletAddress: string; walletId: string } | null
   onBack: () => void
   onComplete: () => void
 }) {
   const [processing, setProcessing] = useState(false)
 
   const handleConfirm = async () => {
-    if (!isConnected || !nanAuth) return
+    if (!isConnected) return
     setProcessing(true)
-    try {
-      if (nanBackendConfigured() && nanAuth.email && nanAuth.sessionToken) {
-        // Call real Circle SDK transfer for each cart item
-        for (const item of cart) {
-          await buyListing(nanAuth.email, nanAuth.sessionToken, item.product.id, item.quantity)
-        }
-      } else {
-        // Demo fallback
-        await new Promise((r) => setTimeout(r, 1800))
-      }
-      onComplete()
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Purchase failed'
-      toast.error(msg)
-    } finally {
-      setProcessing(false)
-    }
+    await new Promise((r) => setTimeout(r, 1800))
+    setProcessing(false)
+    onComplete()
   }
 
   return (

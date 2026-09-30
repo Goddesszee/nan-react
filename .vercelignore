@@ -1,6 +1,0 @@
-# Exclude the cloned backend source — API route handlers are in api/ already
-nan-backend/
-# Exclude contracts and test artifacts
-contracts/
-# Node modules
-node_modules/

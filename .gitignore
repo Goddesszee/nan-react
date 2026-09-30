@@ -12,15 +12,6 @@ dist
 dist-ssr
 *.local
 
-# Secrets
-.env
-.env.local
-.env.production
-.circle/
-
-# Cloned backend source (api/ handlers are the merged copy)
-nan-backend/
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

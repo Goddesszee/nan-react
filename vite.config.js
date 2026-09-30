@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
@@ -8,38 +9,17 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 export default defineConfig({
   plugins: [
     react(),
+    nodePolyfills({ include: ['buffer', 'process', 'util', 'stream'] }),
   ],
-  define: {
-    // Required for wagmi / viem / connectkit in browser builds
-    global: 'globalThis',
-  },
-  build: {
-    // Suppress chunk size warnings
-    chunkSizeWarningLimit: 2000,
-    rollupOptions: {
-      onwarn(warning, warn) {
-        if (warning.code === 'CIRCULAR_DEPENDENCY') return
-        if (warning.code === 'INVALID_ANNOTATION') return
-        if (warning.code === 'MODULE_LEVEL_DIRECTIVE') return
-        try { warn(warning) } catch {}
-      },
-    },
-  },
   resolve: {
-    alias: {
-      '@': path.resolve(__dirname, 'src'),
-      'zod/mini': path.resolve(__dirname, 'node_modules/@wagmi/connectors/node_modules/zod/dist/esm/v4/mini/index.js'),
-    },
+    alias: { '@': path.resolve(__dirname, 'src') },
   },
   server: {
     port: 5174,
     proxy: {
       '/api': {
-        target: process.env.VITE_NAN_API_URL || 'http://localhost:3000',
+        target: 'https://nan-production.up.railway.app',
         changeOrigin: true,
-        configure: (proxy) => {
-          proxy.on('error', () => {})
-        },
       },
     },
   },

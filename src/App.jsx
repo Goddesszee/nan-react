@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Landing } from './pages/Landing'
 import './App.css'
 
-const API = ''
+const API = 'https://nan-production.up.railway.app'
 
 // Handle disconnect at module load, before anything renders
 const _params = new URLSearchParams(window.location.search)
